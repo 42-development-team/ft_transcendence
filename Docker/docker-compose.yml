@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: react
+    volumes:
+      - frontend_vol:/app
+    ports: 
+      - 3000:3000
+    networks:
+      - transcendence
+    restart: always
+
+volumes:
+
+  frontend_vol:
+    driver: local
+    driver_opts:
+      device: ../Frontend
+      o: bind
+      type: none
+
+
+networks:
+  transcendence:
+    driver: bridge
+    name: transcendence
