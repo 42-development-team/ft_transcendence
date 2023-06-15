@@ -4,14 +4,15 @@ services:
   frontend:
     build:
       context: ./Frontend
-    container_name: react
+    image: front_react
+    container_name: front_react
     volumes:
       - frontend_vol:/app
     ports: 
       - 3000:3000
     networks:
       - transcendence
-    restart: always
+    # restart: always
 
 volumes:
 
@@ -21,7 +22,6 @@ volumes:
       device: ../Frontend
       o: bind
       type: none
-
 
 networks:
   transcendence:
