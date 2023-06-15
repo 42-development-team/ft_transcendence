@@ -12,7 +12,20 @@ services:
       - 3000:3000
     networks:
       - transcendence
-    # restart: always
+    restart: always
+
+  backend:
+    build:
+      context: ./Backend
+    image: back_nest
+    container_name: back_nest
+    volumes:
+      - backend_vol:/app
+    ports: 
+      - 4000:4000
+    networks:
+      - transcendence
+    restart: always
 
 volumes:
 
@@ -20,6 +33,13 @@ volumes:
     driver: local
     driver_opts:
       device: ../Frontend
+      o: bind
+      type: none
+
+  backend_vol:
+    driver: local
+    driver_opts:
+      device: ../Backend
       o: bind
       type: none
 
