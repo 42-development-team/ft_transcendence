@@ -3,6 +3,8 @@
 .
 ├── Backend                     # Nest JS directory
 │   └── ... 
+├── Database                    # PostgreSQL directory
+│   └── ... 
 ├── Docker                      # Docker environment           
 │   ├── docker-compose.yml
 │   ├── Front
