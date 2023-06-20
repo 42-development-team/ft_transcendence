@@ -1,31 +1,43 @@
 version: '3.7'
 
 services:
-  frontend:
-    build:
-      context: ./Frontend
-    image: front_react
-    container_name: front_react
-    volumes:
-      - frontend_vol:/app
-    ports: 
-      - 3000:3000
+  # frontend:
+  #   build:
+  #     context: ./Frontend
+  #   image: front_react
+  #   container_name: front_react
+  #   volumes:
+  #     - frontend_vol:/app
+  #   ports: 
+  #     - 3000:3000
+  #   networks:
+  #     - transcendence
+  #   restart: always
+
+  # backend:
+  #   build:
+  #     context: ./Backend
+  #   image: back_nest
+  #   container_name: back_nest
+  #   volumes:
+  #     - backend_vol:/app
+  #   ports: 
+  #     - 4000:4000
+  #   networks:
+  #     - transcendence
+  #   restart: always
+
+  database:
+    image: postgres:15.3
+    container_name: database_postgres
+    #volumes:
+     # - database_vol:
+    ports:
+      - 5000:5000
     networks:
       - transcendence
     restart: always
 
-  backend:
-    build:
-      context: ./Backend
-    image: back_nest
-    container_name: back_nest
-    volumes:
-      - backend_vol:/app
-    ports: 
-      - 4000:4000
-    networks:
-      - transcendence
-    restart: always
 
 volumes:
 
