@@ -21,6 +21,10 @@ All containers are build from latest node version (alpine version is lighter).
 
 Official docker image: [docs/postgres/README.md at master · docker-library/docs · GitHub](https://github.com/docker-library/docs/blob/master/postgres/README.md) 
 
+To verify that psql is working:
+- `docker exec -it database_postgres sh`
+- `psql -U username -d database_name`
+
 
 ---
 ## References

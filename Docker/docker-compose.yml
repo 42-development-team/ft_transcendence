@@ -29,7 +29,7 @@ services:
 
   database:
     image: postgres:latest
-    container_name: database_postgres
+    container_name: db_postgres
     # volumes:
     #   - database_vol:/var/lib/postgresql/data
     ports:
