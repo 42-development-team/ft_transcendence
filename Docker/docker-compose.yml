@@ -28,10 +28,10 @@ services:
   #   restart: always
 
   database:
-    image: postgres:latest
+    image: postgres
     container_name: db_postgres
-    # volumes:
-    #   - database_vol:/var/lib/postgresql/data
+    volumes:
+      - database_vol:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -48,26 +48,21 @@ services:
 
 volumes:
 
-  # frontend_vol:
-  #   driver: local
-  #   driver_opts:
-  #     device: ../Frontend
-  #     o: bind
-  #     type: none
-
-  # backend_vol:
-  #   driver: local
-  #   driver_opts:
-  #     device: ../Backend
-  #     o: bind
-  #     type: none
-  
-  database_vol:
+  frontend_vol:
     driver: local
     driver_opts:
-      device: ../Database
+      device: ../Frontend
       o: bind
       type: none
+
+  backend_vol:
+    driver: local
+    driver_opts:
+      device: ../Backend
+      o: bind
+      type: none
+  
+  database_vol:
 
 networks:
   transcendence:
