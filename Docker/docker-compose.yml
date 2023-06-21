@@ -28,30 +28,44 @@ services:
   #   restart: always
 
   database:
-    image: postgres:15.3
+    image: postgres:latest
     container_name: database_postgres
-    #volumes:
-     # - database_vol:
+    # volumes:
+    #   - database_vol:/var/lib/postgresql/data
     ports:
-      - 5000:5000
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - transcendence
     restart: always
+    # command: sh -c "yarn install
+        #&& npx prisma migrate deploy
+        #&& yarn run start"
 
 
 volumes:
 
-  frontend_vol:
-    driver: local
-    driver_opts:
-      device: ../Frontend
-      o: bind
-      type: none
+  # frontend_vol:
+  #   driver: local
+  #   driver_opts:
+  #     device: ../Frontend
+  #     o: bind
+  #     type: none
 
-  backend_vol:
+  # backend_vol:
+  #   driver: local
+  #   driver_opts:
+  #     device: ../Backend
+  #     o: bind
+  #     type: none
+  
+  database_vol:
     driver: local
     driver_opts:
-      device: ../Backend
+      device: ../Database
       o: bind
       type: none
 

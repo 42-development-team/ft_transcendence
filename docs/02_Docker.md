@@ -16,7 +16,10 @@ All containers are build from latest node version (alpine version is lighter).
 ### NestJS
 - Port 4000
 
-### PostgreSQL 
+### PostgreSQL
+- Port 5000
+
+Official docker image: [docs/postgres/README.md at master · docker-library/docs · GitHub](https://github.com/docker-library/docs/blob/master/postgres/README.md) 
 
 
 ---
