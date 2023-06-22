@@ -11,7 +11,6 @@ RUN npm uninstall -g create-react-app
 RUN npx create-react-app transcendence_application --template typescript
 EXPOSE 3000
 
-COPY ./tools/start_react.sh .
-RUN chmod +x start_react.sh
+WORKDIR transcendence_application
 
-CMD ["./start_react.sh"]
+CMD ["npm", "start"]
