@@ -5,6 +5,7 @@
 - [03 - Tutorials](./03_Tutorials.md)
 - [04 - Database](./04_Database.md)
 - [05 - Design](./05_Design.md)
+- [06 - Git Workflow](./06_Git_workflow.md)
 
 ## API
 - [10 - API](./API/API.md)
