@@ -1,31 +1,35 @@
 version: '3.7'
 
 services:
-  # frontend:
-  #   build:
-  #     context: ./Frontend
-  #   image: front_react
-  #   container_name: front_react
-  #   volumes:
-  #     - frontend_vol:/app
-  #   ports: 
-  #     - 3000:3000
-  #   networks:
-  #     - transcendence
-  #   restart: always
+  frontend:
+    build:
+      context: ./Frontend
+    image: front_react
+    container_name: front_react
+    depends_on:
+      - backend 
+    volumes:
+      - frontend_vol:/app
+    ports: 
+      - 3000:3000
+    networks:
+      - transcendence
+    restart: always
 
-  # backend:
-  #   build:
-  #     context: ./Backend
-  #   image: back_nest
-  #   container_name: back_nest
-  #   volumes:
-  #     - backend_vol:/app
-  #   ports: 
-  #     - 4000:4000
-  #   networks:
-  #     - transcendence
-  #   restart: always
+  backend:
+    build:
+      context: ./Backend
+    image: back_nest
+    container_name: back_nest
+    depends_on:
+      - database
+    volumes:
+      - backend_vol:/app
+    ports: 
+      - 4000:4000
+    networks:
+      - transcendence
+    restart: always
 
   database:
     image: postgres
@@ -41,10 +45,6 @@ services:
     networks:
       - transcendence
     restart: always
-    # command: sh -c "yarn install
-        #&& npx prisma migrate deploy
-        #&& yarn run start"
-
 
 volumes:
 
