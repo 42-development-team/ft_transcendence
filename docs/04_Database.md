@@ -42,6 +42,13 @@ model Todo {
 }
 ```
 
+`npx prisma migrate save --name <lower_case_name>`
+
 This model represents a single database table. When this model is executed it will create a table *Todo* and add each field.
 - Each field has a name and a data type
 - *id* is the primary key, unique identifier
+
+
+`nest generate service prisma`
+
+-> [How I Build Backend Services in 2022 - YouTube](https://www.youtube.com/watch?v=twi33GVRazE)
