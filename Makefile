@@ -33,8 +33,8 @@ ls:
 
 re: clean all
 
-#prune:
-#@echo "$(_GREEN)Removes all unused images, containers, networks and volumes$(_END)"
-#sudo docker system prune -f -a
+prune:
+	@echo "$(_GREEN)Removes all unused images, containers, networks and volumes$(_END)"
+	docker system prune -f -a
 
-.PHONY: all build start stop ls clean re
+.PHONY: all build start stop ls clean re prune

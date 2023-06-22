@@ -11,3 +11,44 @@ Here is a breakdown of each CRUD operation:
 - **Read**: Retrieve or read existing records or entities from a database. It involves querying the database to retrieve specific data.
 - **Update**: Modify or update existing records or entities in a database. It involves changing the values of certain fields or attributes of a record.
 - **Delete**: Remove or delete existing records or entities from a database. It involves removing data from the database.
+
+## ORM
+
+To connect to that database, you can use native drivers. For example, when working with Node.js as the backend and MySQL as the database, you can choose to use a MySQL native driver provided by the Node.js NPM.
+
+However, they do not provide a way to modify or validate the data structures or a way to model the relationships between the databases. This means that you can’t model your data relations, seed, or migrate them.
+
+Other options would be to use an ORM (object-relational mapper). This makes it easier for a developer to connect a Node.js backend to a MongoDB database.
+
+ORM will introduce you to some new features like:
+
+- Modeling
+- Validating
+- Migrating data
+- Describing the relationships between different data fields, and so on.
+
+### Prisma
+**Modeling schemas:**
+Models represent the entities of your application domains. A model maps to a table on the database.
+
+```
+model Todo {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  title String
+  description String?
+  completed Boolean @default(false)
+}
+```
+
+`npx prisma migrate save --name <lower_case_name>`
+
+This model represents a single database table. When this model is executed it will create a table *Todo* and add each field.
+- Each field has a name and a data type
+- *id* is the primary key, unique identifier
+
+
+`nest generate service prisma`
+
+-> [How I Build Backend Services in 2022 - YouTube](https://www.youtube.com/watch?v=twi33GVRazE)

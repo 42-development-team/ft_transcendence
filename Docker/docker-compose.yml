@@ -6,6 +6,8 @@ services:
       context: ./Frontend
     image: front_react
     container_name: front_react
+    depends_on:
+      - backend 
     volumes:
       - frontend_vol:/app
     ports: 
@@ -19,10 +21,29 @@ services:
       context: ./Backend
     image: back_nest
     container_name: back_nest
+    depends_on:
+      - database
+    env_file:
+      - .env
     volumes:
       - backend_vol:/app
     ports: 
       - 4000:4000
+    networks:
+      - transcendence
+    restart: always
+
+  database:
+    image: postgres
+    container_name: db_postgres
+    volumes:
+      - database_vol:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - transcendence
     restart: always
@@ -42,6 +63,8 @@ volumes:
       device: ../Backend
       o: bind
       type: none
+  
+  database_vol:
 
 networks:
   transcendence:
