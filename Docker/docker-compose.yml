@@ -23,6 +23,8 @@ services:
     container_name: back_nest
     depends_on:
       - database
+    env_file:
+      - .env
     volumes:
       - backend_vol:/app
     ports: 
