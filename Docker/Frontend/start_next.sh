@@ -1,14 +1,15 @@
 #!/bin/sh
 
-mkdir -p app
-cd app
-
-if [ ! -d "/app/transcendence_application" ]; then
+# Create the project if it doesn't exist
+if [ ! -d "/app/next_app" ]; then
     export CI=true
-    npx create-next-app transcendence_application --ts --src-dir
+    npx create-next-app next_app --ts --src-dir
+
+    cd /app/next_app
+    npx next telemetry disable
 fi
 
-cd transcendence_application
+cd /app/next_app
 npm install
 
 ## Development

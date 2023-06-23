@@ -1,32 +1,32 @@
 version: '3.8'
 
 services:
-  frontend:
+  front:
     build:
       context: ./Frontend
-    image: front_react
-    container_name: front_react
+    image: front
+    container_name: front
     depends_on:
-      - backend 
+      - back
     volumes:
-      - frontend_vol:/app
+      - front_vol:/app
     ports: 
       - 3000:3000
     networks:
       - transcendence
     restart: always
 
-  backend:
+  back:
     build:
       context: ./Backend
-    image: back_nest
-    container_name: back_nest
+    image: back
+    container_name: back
     depends_on:
       - database
     env_file:
       - .env
     volumes:
-      - backend_vol:/app
+      - back_vol:/app
     ports: 
       - 4000:4000
     networks:
@@ -35,7 +35,7 @@ services:
 
   database:
     image: postgres
-    container_name: db_postgres
+    container_name: database
     volumes:
       - database_vol:/var/lib/postgresql/data
     ports:
@@ -50,17 +50,17 @@ services:
 
 volumes:
 
-  frontend_vol:
+  front_vol:
     driver: local
     driver_opts:
-      device: ../Frontend
+      device: ../App/Next
       o: bind
       type: none
 
-  backend_vol:
+  back_vol:
     driver: local
     driver_opts:
-      device: ../Backend
+      device: ../App/Nest
       o: bind
       type: none
   

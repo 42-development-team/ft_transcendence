@@ -2,11 +2,11 @@
 # Project structure
 ```
 .
-├── Backend                     # Nest JS directory
-│   └── ... 
-├── Database                    # PostgreSQL directory
-│   └── ... 
-├── Docker                      # Docker environment           
+├── App
+│   └── Nest                    # Backend
+│   └── Next                    # Frontend
+├── Docker                      # Docker          
+│   ├── .env
 │   ├── docker-compose.yml
 │   ├── Front
 │   │   └── Dockerfile
@@ -15,7 +15,5 @@
 │   └── Database
 │       └── Dockerfile
 ├── docs                        # Documentation
-├── Frontend                    # React directory
-│   └── ... 
 └── Makefile
 ```
