@@ -6,12 +6,13 @@ _GREEN			:=	\033[32m
 all: start
 
 build:
+	mkdir -p ./App
+	mkdir -p ./App/Nest
+	mkdir -p ./App/Next
 	${DOCKER_COMPOSE} build
 
 start: build
 	@echo "$(_GREEN)Start containers$(_END)"
-	mkdir -p ./Backend
-	mkdir -p ./Frontend
 	${DOCKER_COMPOSE} up -d
 
 stop:
