@@ -15,7 +15,7 @@ export class UsersController {
 
     @Post()
     create(@Body() CreateUserDto: CreateUserDto): string {
-        return `Name: ${CreateUserDto.name}`;
+        return `Name: ${CreateUserDto.username}`;
     }
 
     @Delete(':id')
@@ -25,6 +25,6 @@ export class UsersController {
 
     @Put(':id')
     update(@Body() UpdateUserDto : CreateUserDto, @Param('id') id): string {
-        return `update ${id} = Name: ${UpdateUserDto.name}`
+        return `update ${id} = Userame: ${UpdateUserDto.username}`
     }
 }
