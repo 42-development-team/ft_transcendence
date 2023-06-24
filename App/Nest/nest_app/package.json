@@ -25,7 +25,9 @@
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^4.16.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
