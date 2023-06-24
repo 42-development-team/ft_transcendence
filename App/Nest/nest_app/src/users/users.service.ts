@@ -26,7 +26,7 @@ export class UsersService {
 
     /* R(ead) */
 
-    async getAllUser(): Promise<CreateUserDto[]> {
+    async getAllUsers(): Promise<CreateUserDto[]> {
         const users = await this.prisma.user.findMany({
             orderBy: { id: 'asc' },
         });
