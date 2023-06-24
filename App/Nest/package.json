@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@nestjs/common": "^10.0.3",
+    "@nestjs/core": "^10.0.3",
+    "typescript": "^5.1.3"
+  }
+}
