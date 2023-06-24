@@ -24,7 +24,7 @@ export class UsersController {
     }
 
     @Put(':id')
-    update(@Body() UpdateUserDto : CreateUserDto, @Param('id') id): string {
+    update(@Body() UpdateUserDto: CreateUserDto, @Param('id') id): string {
         return `update ${id} = Userame: ${UpdateUserDto.username}`
     }
 }
