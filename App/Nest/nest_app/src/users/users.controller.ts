@@ -24,10 +24,10 @@ export class UsersController {
         return userListDto;
     }
 
-    @Get()
-    findAll(): string {
-        return 'Get all items';
-    }
+    // @Get()
+    // findAll(): string {
+    //     return 'Get all items';
+    // }
 
     @Get(':id')
     findOne(@Param('id') id): string {

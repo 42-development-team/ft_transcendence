@@ -34,6 +34,50 @@ export class UsersService {
         return userlistDto;
     }
 
+    async getUserFromId(id: number): Promise<CreateUserDto> {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+            rejectOnNotFound: true,
+        });
+        const userDto = plainToClass(CreateUserDto, user);
+        return userDto;
+    }
+
+    async getUserFromUsername(username: string): Promise<CreateUserDto> {
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+            rejectOnNotFound: true,
+        });
+        const userDto = plainToClass(CreateUserDto, user);
+        return userDto;
+    }
+
+    /* U(pdate) */
+
+    async updateUsername(username: string, updatedUsername: string): Promise<CreateUserDto> {
+        const updatedUser = await this.prisma.user.update({
+            where: { username },
+            data: { username: updatedUsername },
+        });
+        return updatedUser;
+    }
+
+    async updateEmail(username: string, updatedEmail: string): Promise<CreateUserDto> {
+        const updatedUser = await this.prisma.user.update({
+            where: { username },
+            data: { email: updatedEmail },
+        });
+        return updatedUser;
+    }
+
+    async updateAvatar(username: string, updatedAvatar: string): Promise<CreateUserDto> {
+        const updatedUser = await this.prisma.user.update({
+            where: { username },
+            data: { avatar: updatedAvatar },
+        });
+        return updatedUser;
+    }
+
     /* testing */
     // async generateRandomUsers(): Promise<void> {
     //     const usersToCreate: CreateUserDto[] = [];
