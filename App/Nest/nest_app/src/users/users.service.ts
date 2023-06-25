@@ -54,47 +54,35 @@ export class UsersService {
 
     /* U(pdate) */
 
-    async updateUsername(username: string, updatedUsername: string): Promise<CreateUserDto> {
+    async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { username },
+            where: { id },
             data: { username: updatedUsername },
         });
         return updatedUser;
     }
 
-    async updateEmail(username: string, updatedEmail: string): Promise<CreateUserDto> {
+    async updateEmail(id: number, updatedEmail: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { username },
+            where: { id },
             data: { email: updatedEmail },
         });
         return updatedUser;
     }
 
-    async updateAvatar(username: string, updatedAvatar: string): Promise<CreateUserDto> {
+    async updateAvatar(id: number, updatedAvatar: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { username },
+            where: { id },
             data: { avatar: updatedAvatar },
         });
         return updatedUser;
     }
 
-    /* testing */
-    // async generateRandomUsers(): Promise<void> {
-    //     const usersToCreate: CreateUserDto[] = [];
+      /* D(elete) */
       
-    //     for (let i = 0; i < 10; i++) {
-    //       const randomUser: CreateUserDto = {
-    //         id: i + 1,
-    //         username: `User${i + 1}`,
-    //         email: `user${i + 1}@example.com`,
-    //         avatar: `avatar${i + 1}.jpg`,
-    //         password: 'password123',
-    //       };
-      
-    //       usersToCreate.push(randomUser);
-    //     }
-      
-    //     await Promise.all(usersToCreate.map(user => this.prisma.user.create({ data: user })));
-    //   }
-      
+      async deleteUser(id: number): Promise<void> {
+        await this.prisma.user.delete({
+            where: { id },
+        });
+    }
 }
