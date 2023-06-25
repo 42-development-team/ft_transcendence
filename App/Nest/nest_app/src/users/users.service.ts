@@ -35,22 +35,22 @@ export class UsersService {
     }
 
     /* testing */
-    async generateRandomUsers(): Promise<void> {
-        const usersToCreate: CreateUserDto[] = [];
+    // async generateRandomUsers(): Promise<void> {
+    //     const usersToCreate: CreateUserDto[] = [];
       
-        for (let i = 0; i < 10; i++) {
-          const randomUser: CreateUserDto = {
-            id: i + 1,
-            username: `User${i + 1}`,
-            email: `user${i + 1}@example.com`,
-            avatar: `avatar${i + 1}.jpg`,
-            password: 'password123',
-          };
+    //     for (let i = 0; i < 10; i++) {
+    //       const randomUser: CreateUserDto = {
+    //         id: i + 1,
+    //         username: `User${i + 1}`,
+    //         email: `user${i + 1}@example.com`,
+    //         avatar: `avatar${i + 1}.jpg`,
+    //         password: 'password123',
+    //       };
       
-          usersToCreate.push(randomUser);
-        }
+    //       usersToCreate.push(randomUser);
+    //     }
       
-        await Promise.all(usersToCreate.map(user => this.prisma.user.create({ data: user })));
-      }
+    //     await Promise.all(usersToCreate.map(user => this.prisma.user.create({ data: user })));
+    //   }
       
 }
