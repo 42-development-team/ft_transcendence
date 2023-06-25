@@ -24,14 +24,10 @@ export class UsersController {
         return userListDto;
     }
 
-    // @Get()
-    // findAll(): string {
-    //     return 'Get all items';
-    // }
-
     @Get(':id')
-    findOne(@Param('id') id): string {
-        return `User ${id}`;
+    async findOne(@Param('id') id: number): Promise<CreateUserDto> {
+        this.logger.log('gettin a specific user');
+        return this.userService.getUserFromId(Number(id));
     }
 
     @Post()
