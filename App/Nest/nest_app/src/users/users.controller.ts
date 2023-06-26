@@ -7,7 +7,7 @@ The OpenAPI Specification (OAS) is a specification document written in JSON or Y
 that defines the structure and behavior of RESTful APIs. It describes the available endpoints, 
 their input/output parameters, authentication requirements, response formats, and more.
 */
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateEmailDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -45,23 +45,23 @@ export class UsersController {
 
     /* U(pdate) */
 
-    @Put(':id')
-    async update(@Body() updateUserDto: CreateUserDto, @Param('id') id: number): Promise<CreateUserDto> {
-        const { username, email, avatar } = updateUserDto; // destructuring the object received in the body request from Client
-        if (username){
-            this.logger.log(`Updating username for user with ID ${id}`);
-            return this.userService.updateUsername(id, username);
-        }
-        if (email){
-            this.logger.log(`Updating email for user with ID ${id}`);
-            return this.userService.updateEmail(id, email);
-        }
-        if (avatar){
-            this.logger.log(`Updating avatar for user with ID ${id}`);
-            return this.userService.updateAvatar(id, avatar);
-        }
-        throw new BadRequestException('Invalid update request');
+    @Put('/update_email/:id')
+    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id') id: string): Promise<CreateUserDto> {
+        this.logger.log(`Updating email for user with ID ${id}`);
+        const { email } = updatedEmail;
+        const updatedObject = await this.userService.updateEmail(Number(id), email);
+        return updatedObject;
     }
+
+    @Put('/update_username/:id')
+    async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id') id: string): Promise<CreateUserDto> {
+        this.logger.log(`Updating username for user with ID ${id}`);
+        const { username } = updatedUsername;
+        const updatedObject = await this.userService.updateUsername(Number(id), username);
+        return updatedObject;
+    }
+
+    // should we add updateAvatar?
 
     /* D(elete) */
 
