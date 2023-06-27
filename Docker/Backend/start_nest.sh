@@ -23,5 +23,8 @@ npm update --save --save-dev
 echo "Prisma migrate reset"
 npx prisma migrate reset -f
 
+#npx prisma generate
+#npx prisma migrate dev
+
 echo "Starting backend"
 npm run start:dev
