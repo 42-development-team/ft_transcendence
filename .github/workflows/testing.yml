@@ -29,8 +29,6 @@ jobs:
       run: make
     - name: Navigate to nest_app directory
       run: cd app/nest/nest_app
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: Run Tests in 'back' container
-      run: docker exec -it back sh -c "cd app/nest/nest_app && npm run test"
+    - name: Run Tests
+      run: npm run test
 
