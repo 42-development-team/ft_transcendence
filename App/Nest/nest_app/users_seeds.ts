@@ -24,5 +24,11 @@ export const users = [
         password: "password",
         avatar: "profil.jpg",
     },
+    {
+        username: "dockermetue",
+        email: "oskour",
+        password: "password",
+        avatar: "profil.jpg",
+    },
   ];
   
