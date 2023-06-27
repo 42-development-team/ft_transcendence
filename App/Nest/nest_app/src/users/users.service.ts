@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service'; 
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from '@prisma/client' 
+import { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class UsersService {
             }
         });
         return user;
-    } 
+    }
 
     /* R(ead) */
 
@@ -79,8 +79,8 @@ export class UsersService {
     }
 
       /* D(elete) */
-      
-      async deleteUser(id: number): Promise<void> {
+
+    async deleteUser(id: number): Promise<void> {
         await this.prisma.user.delete({
             where: { id },
         });
