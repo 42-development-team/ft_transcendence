@@ -23,8 +23,11 @@ npm update --save --save-dev
 echo "Prisma migrate reset"
 npx prisma migrate reset -f
 
+# Allow to access and edit database in the browser via port 5555
 #npx prisma generate
 #npx prisma migrate dev
 
+(npx prisma studio&)
+
 echo "Starting backend"
-npm run start:dev
+npm run start
