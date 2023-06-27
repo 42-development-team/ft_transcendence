@@ -1,4 +1,4 @@
-DOCKER_COMPOSE := docker-compose -f Docker/docker-compose.yml
+DOCKER_COMPOSE := docker-compose -f ./docker-compose.yml
 
 _END			:=	\033[0m
 _GREEN			:=	\033[32m
@@ -34,7 +34,7 @@ ls:
 
 re: clean all
 
-prune:
+prune: stop
 	@echo "$(_GREEN)Removes all unused images, containers, networks and volumes$(_END)"
 	docker system prune -f -a
 

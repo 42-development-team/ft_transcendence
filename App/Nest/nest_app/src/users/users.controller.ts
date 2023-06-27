@@ -10,7 +10,10 @@ their input/output parameters, authentication requirements, response formats, an
 import { CreateUserDto, UpdateEmailDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 
-@ApiTags('Users')
+
+// Nestjs/swagger decorator to display the routes: localhost:4000/api
+@ApiTags('Users')  
+
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) {}
