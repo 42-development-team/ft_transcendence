@@ -16,6 +16,7 @@ fi
 cd /app/nest_app
 
 npm install
+npm update
 npm update --save --save-dev
 
 ## Todo: regenerate database without reset
