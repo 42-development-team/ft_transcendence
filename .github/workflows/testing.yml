@@ -25,8 +25,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
     - name: Launch Docker Compose
       run: make
     - name: Run Tests in 'back' container
