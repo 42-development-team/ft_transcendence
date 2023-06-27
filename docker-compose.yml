@@ -3,7 +3,7 @@ version: '3.8'
 services:
   front:
     build:
-      context: ./Frontend
+      context: ./Docker/Frontend
     image: front
     container_name: front
     depends_on:
@@ -18,7 +18,7 @@ services:
 
   back:
     build:
-      context: ./Backend
+      context: ./Docker/Backend
     image: back
     container_name: back
     depends_on:
@@ -53,14 +53,14 @@ volumes:
   front_vol:
     driver: local
     driver_opts:
-      device: ../App/Next
+      device: ./App/Next
       o: bind
       type: none
 
   back_vol:
     driver: local
     driver_opts:
-      device: ../App/Nest
+      device: ./App/Nest
       o: bind
       type: none
   

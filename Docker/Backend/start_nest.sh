@@ -16,4 +16,15 @@ fi
 cd /app/nest_app
 
 npm install
+npm update
+npm update --save --save-dev
+
+## Todo: regenerate database without reset
+echo "Prisma migrate reset"
+npx prisma migrate reset -f
+
+#npx prisma generate
+#npx prisma migrate dev
+
+echo "Starting backend"
 npm run start:dev
