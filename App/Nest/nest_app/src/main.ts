@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { AppService } from './app.service';
+import { AppModule } from './app/app.module';
+import { AppService } from './app/app.service';
 import { UsersService } from './users/users.service';
 
 // Swagger
