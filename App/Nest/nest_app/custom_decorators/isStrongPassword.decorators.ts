@@ -1,5 +1,4 @@
 import { registerDecorator, ValidationOptions, ValidationArguments } from "class-validator";
-import { Console } from "console";
 
 export function isStrongPassword(validationOptions?: ValidationOptions) {
     return function(object: Object, propertyName: string) {
@@ -8,21 +7,19 @@ export function isStrongPassword(validationOptions?: ValidationOptions) {
         target: object.constructor,
         propertyName: propertyName,
         options: {
-            message: 'Password has to contain at least one Special Char, one Upper-case Char and one digit',
+            message: 'You have to include one special char, one digit and one uppercase in password',
         },
         validator:{
             validate(value: string, args: ValidationArguments) {
                 if (!value || value.length < 10)
                     return false;
-                if (!/[$#!?]/.test(value)) {
+                else if (!/[$#!?]/.test(value)) {
                     return false;
                 }
-                if (!/[A-Z]/.test(value)) {
+                else if (!/[A-Z]/.test(value)) {
                     return false;
                 }
-                if (!/[1-9]/.test(value))
-                    return false;
-                return true;
+                return /[1-9]/.test(value);
               },
             }
         })
