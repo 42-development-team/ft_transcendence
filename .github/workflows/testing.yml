@@ -18,7 +18,7 @@ jobs:
       - name: Launch Docker Compose
         uses: adambirds/docker-compose-action@v1.3.0
         with:
-          compose-file: "./docker-compose.yml"
+          compose-file: "${{ github.workspace }}/docker-compose.yml"
           test-container: "back"
           test-command: |
             cd nest_app
