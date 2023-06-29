@@ -2,7 +2,7 @@ import './globals.css';
 import Head from 'next/head';
 import { FaBeer, FaRegEnvelope } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
-import Register from '../log_components/registerField'
+import LoginComponent from '../log_components/login'
 
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
 
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <div>
-          <Register />
+          <LoginComponent />
         </div>
       </main>
     </div>
