@@ -24,11 +24,9 @@ jobs:
           ENV_VARS: ${{ secrets.ENV_VARS }}
 
       - name: Launch Docker Compose
-        uses: adambirds/docker-compose-action@v1.3.0
-        with:
-          compose-file: "docker-compose.yml"
-          test-container: "back"
-          test-command: |
-            sh -c 'cd nest_app && npm run test'
+        run: |
+          docker-compose -f docker-compose.yml up -d
+          docker exec back sh -c 'cd nest_app && npm run test'
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
+
