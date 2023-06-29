@@ -18,6 +18,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
+      - name: Set up environment variables
+        run: echo "$ENV_VARS" > .env
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+
       - name: Launch Docker Compose
         uses: adambirds/docker-compose-action@v1.3.0
         with:
@@ -26,3 +31,5 @@ jobs:
           test-command: |
             cd nest_app
             npm run test
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
