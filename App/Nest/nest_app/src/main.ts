@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { AppService } from './app.service';
+import { AppModule } from './app/app.module';
+import { AppService } from './app/app.service';
 import { UsersService } from './users/users.service';
 
 // Swagger
@@ -17,11 +17,7 @@ async function bootstrap() {
     .setVersion('0.1')
     .build()
   const document = SwaggerModule.createDocument(app, config);
-  app.useGlobalPipes( 
-    new ValidationPipe({
-      whitelist: true,
-    })
-  );
+  app.useGlobalPipes( new ValidationPipe() );
   SwaggerModule.setup('api', app, document);
 
   await app.listen(4000);
