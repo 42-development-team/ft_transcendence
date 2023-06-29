@@ -7,6 +7,8 @@ if [ ! -d "/app/next_app" ]; then
 
     cd /app/next_app
     npx next telemetry disable
+
+    npm install axios
 fi
 
 cd /app/next_app
