@@ -29,7 +29,6 @@ jobs:
           compose-file: "docker-compose.yml"
           test-container: "back"
           test-command: |
-            cd nest_app
-            npm run test
+            sh -c "find /app -type d -name 'nest_app' -execdir npm run test \;"
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
