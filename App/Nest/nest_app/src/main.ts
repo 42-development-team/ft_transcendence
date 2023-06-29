@@ -7,6 +7,9 @@ import { UsersService } from './users/users.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 
+
+// const URL: string = process.env.LOCAL_IP + ":" + process.env.FRONT_PORT;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const appService = app.get(AppService);
@@ -19,7 +22,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({
-    origin: process.env.LOCAL_IP + ":" + process.env.BACK_PORT,
+    // origin: "URL",
+    // origin: "http://front:3000"
     // credentials: true,
   });
   await app.listen(4000);

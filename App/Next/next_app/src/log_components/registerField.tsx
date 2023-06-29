@@ -1,6 +1,8 @@
 "use client";
 import React, { useRef, useState, useEffect } from 'react'
 import { FaCheck, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import FetchUserList from './fetch_exemple'
+
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react'
-
+import React from 'react'
 
 interface userList {
 	username: string,
@@ -9,18 +8,14 @@ interface userList {
     avatar?: string,
 }[]
 
-const getUserList = async (): Promise<userList> => {
-	const listUser = await fetch("http://localhost:4000/users/", {
-		// credentials: "include"
-	});
-	return (await listUser.json());
-}
 
-async function fetchingData() {
+async function FetchingData() {
 	try {
-		const list: userList = await getUserList();
-
-		console.log(list);
+		const listUser = await fetch("http://localhost:4000/users", {
+			// credentials: "include"
+		});
+		const dataReturn = listUser.json();
+		console.log(dataReturn);
 	}
 	catch (err) {
 		console.error(err);
@@ -28,14 +23,11 @@ async function fetchingData() {
 
 }
 
-async function FetchUserList() {
-	// const userList = await getUserList();
-
-	// error cause fetchingData return a promise!
+function FetchUserList() {
 	return (
-		<div>
-			<button onClick={fetchingData}>Click me get users on console.log</button>
-		</div>
+			<div>
+				<button onClick={FetchingData}>Click Me</button>
+			</div>
 	)
 }
 
