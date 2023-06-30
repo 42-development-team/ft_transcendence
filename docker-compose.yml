@@ -23,12 +23,22 @@ services:
     container_name: back
     depends_on:
       - database
-    env_file:
-      - .env
+    environment:
+    - FRONT_PORT=${FRONT_PORT}
+    - BACK_PORT=${BACK_PORT}
+    - DB_PORT=${DB_PORT}
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=${POSTGRES_DB}
+    - URL_ARGUMENTS=sslmode=prefer
+    - DATABASE_CONTAINER_NAME=${DATABASE_CONTAINER_NAME}
+    - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_CONTAINER_NAME}:${DB_PORT}/${POSTGRES_DB}?schema=public
+    - LOCAL_IP=${LOCAL_IP}
     volumes:
       - back_vol:/app
     ports: 
       - 4000:4000
+      - 5555:5555
     networks:
       - transcendence
     restart: always

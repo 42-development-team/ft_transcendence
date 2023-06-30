@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger'
-/* 
-Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs. 
+/*
+Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
 It provides a set of tools and specifications, including the Swagger UI and the OpenAPI Specification which document APIs in a standardized way.
-The OpenAPI Specification (OAS) is a specification document written in JSON or YAML format 
-that defines the structure and behavior of RESTful APIs. It describes the available endpoints, 
+The OpenAPI Specification (OAS) is a specification document written in JSON or YAML format
+that defines the structure and behavior of RESTful APIs. It describes the available endpoints,
 their input/output parameters, authentication requirements, response formats, and more.
 */
 import { CreateUserDto, UpdateEmailDto, UpdateUsernameDto } from './dto';
@@ -71,6 +71,6 @@ export class UsersController {
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
         this.logger.log(`Deleting user with ID: ${id}`);
-        await this.userService.deleteUser(id);
+        await this.userService.deleteUser(Number(id));
     }
 }
