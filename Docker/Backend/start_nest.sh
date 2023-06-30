@@ -19,6 +19,10 @@ npm install
 npm update
 npm update --save --save-dev
 
+######### TEST CORS ############3
+npm install cors
+####################################
+
 ## Todo: regenerate database without reset
 echo "Prisma migrate reset"
 npx prisma migrate reset -f
