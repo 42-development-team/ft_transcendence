@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger'
 /*
 Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
@@ -40,7 +40,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<CreateUserDto> {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
         this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
@@ -49,7 +49,7 @@ export class UsersController {
     /* U(pdate) */
 
     @Put('/update_email/:id')
-    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id') id: string): Promise<CreateUserDto> {
+    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id', ParseIntPipe) id: Number): Promise<CreateUserDto> {
         this.logger.log(`Updating email for user with ID ${id}`);
         const { email } = updatedEmail;
         const updatedObject = await this.userService.updateEmail(Number(id), email);
@@ -57,7 +57,7 @@ export class UsersController {
     }
 
     @Put('/update_username/:id')
-    async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id') id: string): Promise<CreateUserDto> {
+    async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id', ParseIntPipe) id: Number): Promise<CreateUserDto> {
         this.logger.log(`Updating username for user with ID ${id}`);
         const { username } = updatedUsername;
         const updatedObject = await this.userService.updateUsername(Number(id), username);
@@ -69,7 +69,7 @@ export class UsersController {
     /* D(elete) */
 
     @Delete(':id')
-    async delete(@Param('id') id: string): Promise<void> {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
         this.logger.log(`Deleting user with ID: ${id}`);
         await this.userService.deleteUser(Number(id));
     }
