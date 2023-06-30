@@ -24,15 +24,11 @@ jobs:
           node-version: ${{matrix.node-version}}
       
       - name: Set up environment variables
-        run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.GITHUB_ACTION }}
 
       - name: Launch Docker Compose
-        run: |
-          make
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
+        run: make
         
       - name: Check running containers
         run: make ls
