@@ -25,8 +25,19 @@ jobs:
 
       - name: Launch Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up -d
-          docker exec back sh -c 'cd nest_app && npm run test'
+          docker-compose -f ./docker-compose.yml
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
+        
+      - name: Check running containers
+        run: make ps
+        
+      - name: Accessing back container
+        run: docker exec -it back sh 
+      
+      - name: Moving to nest_app
+        run: cd nest_app
+        
+      - name: Launching test
+        run: npm run test
 
