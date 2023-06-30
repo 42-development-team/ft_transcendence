@@ -51,14 +51,13 @@ jobs:
       - name: Inspecting database container logs
         run: docker logs database
         
-      - name: Accessing back container
-        run: docker exec back sh 
+      - name: Inspecting back container logs
+        run: docker logs back
       
-      - name: Moving to nest_app
+      - name: Accessing back container
         run: |
+          docker exec back sh 
           pwd
           ls
           cd nest_app
-        
-      - name: Launching test
-        run: npm run test
+          npm run test
