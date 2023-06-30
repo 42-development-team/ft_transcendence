@@ -55,9 +55,4 @@ jobs:
         run: docker logs back
 
       - name: Accessing back container and running tests
-        run: |
-          docker exec back sh -c "cd nest_app && pwd && npm run test"
-          # pwd
-          # ls
-          # cd nest_app
-          # npm run test
+        run: docker exec back sh -c "cd nest_app && pwd && npm run test:watchAll"
