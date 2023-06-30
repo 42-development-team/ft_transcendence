@@ -25,12 +25,12 @@ jobs:
 
       - name: Launch Docker Compose
         run: |
-          docker-compose -f ./docker-compose.yml
+          make
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
         
       - name: Check running containers
-        run: make ps
+        run: make ls
         
       - name: Accessing back container
         run: docker exec -it back sh 
