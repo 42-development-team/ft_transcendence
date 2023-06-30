@@ -68,7 +68,7 @@ describe('UsersController', () => {
 
   describe('updateUsername', () => {
     it('should update the username of a user', async () => {
-      const userId = '1';
+      const userId = 1;
       const updatedUsernameDto: UpdateUsernameDto = {
         username: 'new_username',
       };
