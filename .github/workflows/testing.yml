@@ -46,5 +46,5 @@ jobs:
       # - name: Inspecting back container logs
       #   run: docker logs back
 
-      - name: Accessing back container and running tests
+      - name: Running backend tests
         run: docker exec back sh -c "cd nest_app && npm install && npm run test"
