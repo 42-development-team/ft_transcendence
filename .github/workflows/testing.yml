@@ -6,19 +6,19 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  FRONT_PORT: ${{ secrets.FRONT_PORT }}
-  BACK_PORT: ${{ secrets.BACK_PORT }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-  POSTGRES_USER:  ${{ secrets.POSTGRES_USER }}
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-  DATABASE_CONTAINER_NAME: ${{ secrets.DATABASE_CONTAINER_NAME }}
-
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      FRONT_PORT: ${{ secrets.FRONT_PORT }}
+      BACK_PORT: ${{ secrets.BACK_PORT }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      POSTGRES_USER:  ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      DATABASE_CONTAINER_NAME: ${{ secrets.DATABASE_CONTAINER_NAME }}
 
     strategy:
       matrix:
