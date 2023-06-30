@@ -3,21 +3,9 @@ import { AppModule } from './app/app.module';
 import { AppService } from './app/app.service';
 import { UsersService } from './users/users.service';
 
+
 /////////// TEST CORS ///////////////
-// var whitelist = ['https://localhost:4000'];
-//   app.enableCors({
-//     origin: function(origin, callback) {
-//         if (whitelist.indexOf(origin) !== -1) {
-//           console.log("allowed cors for:", origin)
-//           callback(null, true)
-//         } else {
-//           console.log("blocked cors for:", origin)
-//           callback(new Error('Not allowed by CORS'))
-//         }
-//       },
-//     methods: "GET, PUT, POST, DELETE, OPTIONS",
-//     credentials : true,
-//   });
+
 //////////////////////////////////////
 
 // Swagger
@@ -40,9 +28,6 @@ async function bootstrap() {
     .build()
   const document = SwaggerModule.createDocument(app, config);
   app.useGlobalPipes( new ValidationPipe() );
-  app.enableCors({
-    origin:'http://localhost:4000/users',
-  });
   SwaggerModule.setup('api', app, document);
   await app.listen(4000);
 
