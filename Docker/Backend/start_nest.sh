@@ -21,6 +21,7 @@ npm update --save --save-dev
 
 ######### TEST CORS ############3
 npm install cors
+
 ####################################
 
 ## Todo: regenerate database without reset

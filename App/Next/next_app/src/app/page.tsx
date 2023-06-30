@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { FaBeer, FaRegEnvelope } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import LoginComponent from '../log_components/login'
+import Component from '../test-cors/test-cors'
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
 
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <div>
-          <LoginComponent />
+          <Component />
         </div>
       </main>
     </div>

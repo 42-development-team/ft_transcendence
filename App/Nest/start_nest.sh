@@ -14,6 +14,7 @@ if [ ! -d "/app/nest_app" ]; then
 fi
 
 cd /app/nest_app
+npm install cors
 
 npm install
 npm update
