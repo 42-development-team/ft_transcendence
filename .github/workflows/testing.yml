@@ -44,10 +44,7 @@ jobs:
              echo "LOCAL_IP=${LOCAL_IP}" >> .env
 
       - name: Launch Docker Compose
-        run: |
-          make
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
+        run: make
         
       - name: Check running containers
         run: make ls
