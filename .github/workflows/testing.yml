@@ -52,7 +52,7 @@ jobs:
         run: docker logs database
         
       - name: Accessing back container
-        run: docker exec -it back sh 
+        run: docker exec back sh 
       
       - name: Moving to nest_app
         run: cd nest_app
