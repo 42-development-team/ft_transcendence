@@ -19,9 +19,29 @@ jobs:
         uses: actions/checkout@v3
       
       - name: Set up environment variables
-        run: echo "$ENV_VARS" > .env
         env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
+          FRONT_PORT: ${{ secrets.FRONT_PORT }}
+          BACK_PORT: ${{ secrets.BACK_PORT }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          DATABASE_CONTAINER_NAME: ${{ secrets.DATABASE_CONTAINER_NAME }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          URL_ARGUMENTS: ${{ secrets.URL_ARGUMENTS }}
+          LOCAL_IP: ${{ secrets.LOCAL_IP }}
+        
+      - name: Echo environment variables
+        run: echo "FRONT_PORT=${FRONT_PORT}" >> .env && \
+             echo "BACK_PORT=${BACK_PORT}" >> .env && \
+             echo "DB_PORT=${DB_PORT}" >> .env && \
+             echo "POSTGRES_USER=${POSTGRES_USER}" >> .env && \
+             echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env && \
+             echo "POSTGRES_DB=${POSTGRES_DB}" >> .env && \
+             echo "DATABASE_CONTAINER_NAME=${DATABASE_CONTAINER_NAME}" >> .env && \
+             echo "DATABASE_URL=${DATABASE_URL}" >> .env && \
+             echo "URL_ARGUMENTS=${URL_ARGUMENTS}" >> .env && \
+             echo "LOCAL_IP=${LOCAL_IP}" >> .env
 
       - name: Launch Docker Compose
         run: |
