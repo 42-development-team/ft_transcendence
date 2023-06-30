@@ -53,10 +53,7 @@ jobs:
         
       - name: Inspecting back container logs
         run: docker logs back
-
-  running_test:
-    container: back
-    steps:
+        
       - name: Accessing back container and running tests
         run: |
           docker exec back sh 
