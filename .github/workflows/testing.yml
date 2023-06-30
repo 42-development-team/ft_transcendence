@@ -6,41 +6,45 @@ on:
   pull_request:
     branches: [ "main" ]
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
       - name: Set up environment variables
-        run: echo "$ENV_VARS" > .env
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
-
-      - name: Launch Docker Compose
         run: |
-          make
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
+          touch .env
+          echo FRONT_PORT=${{ secrets.FRONT_PORT }} >> .env
+          echo BACK_PORT=${{ secrets.BACK_PORT }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+          echo DATABASE_CONTAINER_NAME=${{ secrets.DATABASE_CONTAINER_NAME }} >> .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo URL_ARGUMENTS=${{ secrets.URL_ARGUMENTS }} >> .env
+          echo LOCAL_IP=${{ secrets.LOCAL_IP }} >> .env
+          cat .env
         
-      - name: Check running containers
-        run: make ls
+      - name: Launch Docker Compose
+        run: make
         
-      - name: Inspecting database container logs
-        run: docker logs database
+      # - name: Check running containers
+      #   run: make ls
         
-      - name: Accessing back container
-        run: docker exec back sh 
-      
-      - name: Moving to nest_app
-        run: cd nest_app
+      # - name: Inspecting database container logs
+      #   run: docker logs database
         
-      - name: Launching test
-        run: npm run test
+      # - name: Inspecting back container logs
+      #   run: docker logs back
 
+      - name: Running backend tests
+        run: docker exec back sh -c "cd nest_app && npm install && npm run test"
