@@ -49,18 +49,18 @@ export class UsersController {
     /* U(pdate) */
 
     @Put('/update_email/:id')
-    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id') id: string): Promise<CreateUserDto> {
+    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
         this.logger.log(`Updating email for user with ID ${id}`);
         const { email } = updatedEmail;
-        const updatedObject = await this.userService.updateEmail(Number(id), email);
+        const updatedObject = await this.userService.updateEmail(id, email);
         return updatedObject;
     }
 
     @Put('/update_username/:id')
-    async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id', ParseIntPipe) id: Number): Promise<CreateUserDto> {
+    async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
         this.logger.log(`Updating username for user with ID ${id}`);
         const { username } = updatedUsername;
-        const updatedObject = await this.userService.updateUsername(Number(id), username);
+        const updatedObject = await this.userService.updateUsername(id, username);
         return updatedObject;
     }
 
@@ -69,8 +69,8 @@ export class UsersController {
     /* D(elete) */
 
     @Delete(':id')
-    async delete(@Param('id') id: string): Promise<void> {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
         this.logger.log(`Deleting user with ID: ${id}`);
-        await this.userService.deleteUser(Number(id));
+        await this.userService.deleteUser(id);
     }
 }

@@ -41,7 +41,7 @@ describe('UsersController', () => {
 
   describe('updateEmail', () => {
     it('should update the email of a user', async () => {
-      const userId = '1';
+      const userId = 1;
       const updatedEmailDto: UpdateEmailDto = {
         email: 'newemail@example.com',
       };
@@ -127,7 +127,7 @@ describe('UsersController', () => {
 
   describe('deleteUser', () => {
 	it('should delete a user', async () => {
-	  const userId = '1';
+	  const userId = 1;
 	//   const deletedUserDto: CreateUserDto = {
 	// 	id: 2,
 	// 	username: 'jqhns_doe',
