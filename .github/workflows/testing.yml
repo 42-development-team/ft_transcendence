@@ -17,11 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - names: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.node-version}}
       
       - name: Set up environment variables
         run: echo "$ENV_VARS" > .env
