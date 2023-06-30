@@ -55,7 +55,10 @@ jobs:
         run: docker exec back sh 
       
       - name: Moving to nest_app
-        run: cd nest_app
+        run: |
+          pwd
+          ls
+          cd nest_app
         
       - name: Launching test
         run: npm run test
