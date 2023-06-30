@@ -10,14 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # env:
-    #   FRONT_PORT: ${{ secrets.FRONT_PORT }}
-    #   BACK_PORT: ${{ secrets.BACK_PORT }}
-    #   DB_PORT: ${{ secrets.DB_PORT }}
-    #   POSTGRES_USER:  ${{ secrets.POSTGRES_USER }}
-    #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-    #   DATABASE_CONTAINER_NAME: ${{ secrets.DATABASE_CONTAINER_NAME }}
 
     strategy:
       matrix:
@@ -45,14 +37,14 @@ jobs:
       - name: Launch Docker Compose
         run: make
         
-      - name: Check running containers
-        run: make ls
+      # - name: Check running containers
+      #   run: make ls
         
-      - name: Inspecting database container logs
-        run: docker logs database
+      # - name: Inspecting database container logs
+      #   run: docker logs database
         
-      - name: Inspecting back container logs
-        run: docker logs back
+      # - name: Inspecting back container logs
+      #   run: docker logs back
 
       - name: Accessing back container and running tests
         run: docker exec back sh -c "cd nest_app && npm install && npm run test"
