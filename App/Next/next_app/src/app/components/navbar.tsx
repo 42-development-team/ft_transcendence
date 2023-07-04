@@ -24,7 +24,7 @@ const Logo = () => {
 const NavLinks = () => {
     return (
         <div className="flex items-center gap-8 px-8 text-xl transition-all">
-            <Link href="/profile">Profile</Link>
+            <Link href="/profile" className="text-mauve hover:text-pink">Profile</Link>
         </div>
     )
 }

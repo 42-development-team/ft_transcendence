@@ -20,18 +20,27 @@ export default function FirstLogin() {
                         alt="default avatar"
                         width={128}
                         height={128}
+                        className=" drop-shadow-xl"
                     />
                 </div>
                 
-                <div className="m-4 flex-auto">
-                    <label className="">
-                        <input type="checkbox" name="2fa" id="2fa" className="mr-2"/>
+                <div className="m-4 flex flex-auto items-center">
+                    <label className=" h-4">
+                        <input type="checkbox" 
+                            name="2fa" id="2fa" 
+                            className="w-4 h-4 mr-2  accent-mauve before:accent-lavender unchecked-checkbox"/>
                         Activate Two-Factor
                     </label>
+                    <style jsx>{`
+                        .unchecked-checkbox:checked {
+                            @apply bg-blue-500;
+                        }
+                    `}</style>
+
                 </div>
                 
                 <button
-                    className="font-bold text-sm rounded-lg text-base bg-mauve drop-shadow-xl p-3 w-40 m-4" 
+                    className="font-bold text-base rounded-xl bg-mauve drop-shadow-xl p-3 w-40 m-4 hover:bg-pink" 
                     onClick={ () => console.log("Validate clicked!")}>
                     Validate
                 </button>

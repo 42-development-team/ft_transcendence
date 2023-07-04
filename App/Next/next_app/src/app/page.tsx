@@ -15,7 +15,7 @@ export default function Home() {
           <LoginComponent />
           <br></br>
           <button
-            className="font-bold text-sm rounded-lg text-base bg-mauve drop-shadow-xl p-3" 
+            className="font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl p-3" 
             onClick={ () => setLoggedIn(!isLoggedIn)}>
             Testing conditionnal display
           </button>
