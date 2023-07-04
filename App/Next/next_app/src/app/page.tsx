@@ -15,8 +15,10 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
           <LoginComponent />
           <br></br>
-          <button className='bg-blue' onClick={ () => setLoggedIn(!isLoggedIn)}>
-            Test
+          <button
+            className="font-bold text-sm rounded-lg text-base bg-mauve drop-shadow-xl p-3" 
+            onClick={ () => setLoggedIn(!isLoggedIn)}>
+            Testing conditionnal display
           </button>
       </div>
     </body>
