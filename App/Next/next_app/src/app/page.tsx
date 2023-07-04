@@ -8,7 +8,6 @@ import Navbar from './components/navbar';
 export default function Home() {
   const [isLoggedIn, setLoggedIn] = useState(true);
 
-
   return (
     <body className="bg-mantle text-text">
       <Navbar displayNavLinks={isLoggedIn}/>
