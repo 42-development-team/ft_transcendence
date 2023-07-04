@@ -5,15 +5,15 @@ import Image from 'next/image';
 
 export default function FirstLogin() {
     return (
-        <body className="bg-mantle text-text">
+        <body className="flex flex-col bg-mantle text-text min-h-screen">
             <Navbar displayNavLinks={false}/>
-            <div className="flex flex-col items-center justify-center min-h-screen py-2">
-                <div className="m-4">
+            <div className="flex flex-col items-center justify-center">
+                <div className="m-4 pt-4">
                     <p className="font-bold text-center">Choose your username</p>
                     <input type="text" className="m-2 bg-base border-red  border-0  w-64 h-8 "/>
                 </div>
                 
-                <div className="m-4">
+                <div className="m-4 flex-auto">
                     <p className="font-bold mb-2">Choose your avatar</p>
                     <Image 
                         src="https://img.freepik.com/free-icon/user_318-563642.jpg"
@@ -23,7 +23,7 @@ export default function FirstLogin() {
                     />
                 </div>
                 
-                <div className="m-4">
+                <div className="m-4 flex-auto">
                     <label className="">
                         <input type="checkbox" name="2fa" id="2fa" className="mr-2"/>
                         Activate Two-Factor

@@ -9,9 +9,9 @@ export default function Home() {
   const [isLoggedIn, setLoggedIn] = useState(true);
 
   return (
-    <body className="bg-mantle text-text">
+    <body className="flex flex-col items-stretch bg-mantle text-text min-h-screen">
       <Navbar displayNavLinks={isLoggedIn}/>
-      <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <div className=" flex flex-col flex-auto items-center justify-center py-2">
           <LoginComponent />
           <br></br>
           <button
