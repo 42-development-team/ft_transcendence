@@ -1,9 +1,10 @@
-import { Injectable} from "@nestjs/common";
+import { Injectable, UnauthorizedException} from "@nestjs/common";
 import { authenticator } from 'otplib';
 import {UsersService} from "../../users/users.service";
-import { toDataURL } from 'qrcode'; //TODO: find lib
+import qrcode from 'qrcode'; //TODO: find lib
 import {PrismaService} from "../../prisma/prisma.service";
 import {User} from "@prisma/client";
+import { CreateUserDto } from "src/users/dto";
 
 @Injectable()
 export class TwoFAService {
@@ -11,29 +12,45 @@ export class TwoFAService {
         private prisma: PrismaService,
     ) {}
 
-    async generate2FA(username: string) {
+    async generateTwoFA(username: string) {
         const secret = authenticator.generateSecret();
-        await this.prisma.user.update({
-            where: {username: username},
-            data: {twoFAsecret: secret},
+        const updateSecret = await this.prisma.user.updateMany({
+            where: {
+                username: username
+            },
+            data: {
+                twoFAsecret: secret
+            },
         });
+        return ;
     }
 
-    async generate2FAQrcode( username: string, secret: string ) {
+    async generateTwoFAQrcode( username: string, secret: string ) {
             const qrcodeURL = authenticator.keyuri(
                 username,
                 process.env.AUTH_FACTOR_APP_NAME,
                 secret
             );
-            return toDataURL( qrcodeURL );
-        }
+            qrcode.toDataURL(qrcodeURL, (err, imageUrl) => {
+                if (err) {
+                  console.log('Error with QR');
+                  return;
+                }
+                console.log(imageUrl);
+            })
+    }
 
     async turnOnTwoFA( username: string ) {
-            await this.prisma.user.update({
-                where: {username: username},
-                data: {isTwoFAEnabled: true},
+            const updateEnabledTFa = await this.prisma.user.updateMany({
+                where: {
+                    username: username
+                },
+                data: {
+                    isTwoFAEnabled: true
+                },
             });
-            this.generate2FA( username );
+            this.generateTwoFA( username );
+            return ;
     }
 
         async isTwoFACodeValid( twoFACode: string, user: User) {

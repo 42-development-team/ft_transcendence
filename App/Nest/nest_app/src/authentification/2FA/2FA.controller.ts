@@ -11,7 +11,10 @@ export class TwoFAController {
     constructor (private twoFAService: TwoFAService) {}
 
     @Post('turn-on/:username')
-    async turnOn2Fa(@Param ('username') username: string) {
+    async turnOnTwoFa(
+        @Param ('username') username: string,
+        @Body() { twoFACode } 
+        ) {
         this.twoFAService.turnOnTwoFA( username );
     }
 

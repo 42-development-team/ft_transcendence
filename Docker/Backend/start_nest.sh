@@ -25,7 +25,7 @@ npx prisma migrate reset -f
 
 #2FA
 npm install otplib
-npm install qrcode
+npm i --save-dev @types/qrcode
 
 # Allow to access and edit database in the browser via port 5555
 #npx prisma generate

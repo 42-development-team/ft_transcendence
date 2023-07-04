@@ -5,6 +5,7 @@ export const users = [
         email: "dburain",
         password: "password",
         avatar: "profil.jpg",
+        twoFAsecret: "facticeSecret",
     },
     {
         username: "mjaune",

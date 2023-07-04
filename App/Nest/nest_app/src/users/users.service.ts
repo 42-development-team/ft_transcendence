@@ -19,6 +19,7 @@ export class UsersService {
                 email: createUserDto.email,
                 password: createUserDto.password,
                 avatar: createUserDto.avatar,
+                twoFAsecret: createUserDto.twoFAsecret,
             }
         });
         return user;

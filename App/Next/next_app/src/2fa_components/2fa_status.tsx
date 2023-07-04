@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from "react";
 
 async function toFetch() {
-    const canva = await fetch("http://localhost:4000/2fa/turn-on/dubrain");
+    const canva = await fetch("http://localhost:4000/2fa/turn-on/1");
     const dataFormat = await canva.json();
     console.log(dataFormat);
     return (dataFormat);
