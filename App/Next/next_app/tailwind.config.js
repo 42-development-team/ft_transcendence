@@ -11,6 +11,10 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require("@catppuccin/tailwindcss")({
+      defaultFlavour: "mocha",
+    }),
+  ],
 }
   

@@ -10,7 +10,9 @@ function SignIn() {
 const LoginComponent = () => {
 	return (
 		<div>
-			<button onClick={SignIn}>Sign With 42</button>
+			<button onClick={SignIn} className="font-bold text-2xl rounded-lg text-base bg-mauve drop-shadow-xl p-3">
+				Sign With 42
+			</button>
 		</div>
 	)
 }

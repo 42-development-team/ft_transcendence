@@ -1,23 +1,25 @@
+"use client";
+
 import './globals.css';
-import Head from 'next/head';
-import { FaBeer, FaRegEnvelope } from 'react-icons/fa';
-import { MdLockOutline } from 'react-icons/md';
 import LoginComponent from '../log_components/login'
+import { useState } from 'react';
+import Navbar from './components/navbar';
 
 export default function Home() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
-      <Head>
-        <title>Transcendence</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+  const [isLoggedIn, setLoggedIn] = useState(true);
 
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <div>
+
+  return (
+    <body className="bg-mantle text-text">
+      <Navbar displayNavLinks={isLoggedIn}/>
+      <div className="flex flex-col items-center justify-center min-h-screen py-2">
           <LoginComponent />
-        </div>
-      </main>
-    </div>
+          <br></br>
+          <button className='bg-blue' onClick={ () => setLoggedIn(!isLoggedIn)}>
+            Test
+          </button>
+      </div>
+    </body>
   )
 }
 
