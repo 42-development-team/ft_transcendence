@@ -1,0 +1,30 @@
+name: JIRA branch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  jira-branch-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
+
+      - name: Check branch name
+        run: |
+          branchName="${{ env.branch }}"
+          
+          if [[ ! $branchName =~ ^FT-[0-9]+$ ]]; then
+            echo "Invalid branch name '${branchName}'"
+            exit 1
+          fi
+
