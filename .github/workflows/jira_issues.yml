@@ -1,4 +1,4 @@
-name: JIRA branch
+name: Branch name check
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  jira-branch-check:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,8 +23,8 @@ jobs:
         run: |
           branchName="${{ env.branch }}"
           
-          if [[ ! $branchName =~ ^FT-[0-9]+$ ]]; then
-            echo "Invalid branch name '${branchName}'"
+          if [[ ! $branchName =~ ^FT-[0-9]+-[a-zA-Z0-9-]+$ ]]; then
+            echo "Invalid branch name '${branchName}'. It doesn't match a JIRA issue"
             exit 1
           fi
 
