@@ -23,11 +23,11 @@ async function bootstrap() {
   app.useGlobalPipes( new ValidationPipe() );
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({
-    // origin: "URL",
-    // origin: "http://front:3000"
-    // credentials: true,
-  });
+  // app.enableCors({
+  //   // origin: "URL",
+  //   // origin: "http://front:3000"
+  //   // credentials: true,
+  // });
   await app.listen(4000);
 
 }

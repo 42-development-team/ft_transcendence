@@ -1,18 +1,18 @@
-import { TwoFactorDto } from '../dto/TwoFactor.dto';
+// import { TwoFactorUserDto } from '../dto/';
+import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
-import {Controller, UseGuards} from "@nestjs/common";
-import { Controller, Post } from '@nestjs/common';
+import {UseGuards} from "@nestjs/common";
+import { Controller, Post, Body, Param } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 
-@ApiTags("twoFA")
+@ApiTags("TwoFA")
 @Controller('/2fa')
 export class TwoFAController {
-    constructor (private twoFAService: twoFactorAuthService) {}
+    constructor (private twoFAService: TwoFAService) {}
 
-    @Post('generate')
-    async generate2Fa(
-        @GetCurrentUser('username') username: string,
-    ) {
-        const qrcodeUrl = await this.twoFAService.generate2FA(username)
+    @Post('turn-on/:username')
+    async turnOn2Fa(@Param ('username') username: string) {
+        this.twoFAService.turnOnTwoFA( username );
     }
 
     // @Post('turn-on') ==> TODO: enable or disable 2FA

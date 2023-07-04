@@ -6,44 +6,40 @@ import {PrismaService} from "../../prisma/prisma.service";
 import {User} from "@prisma/client";
 
 @Injectable()
-export class TwoFactorAuthService {
+export class TwoFAService {
     constructor(
         private prisma: PrismaService,
-    ) {
-    }
+    ) {}
 
     async generate2FA(username: string) {
         const secret = authenticator.generateSecret();
-        const qrcodeURL = authenticator.keyuri(
-            username,
-            process.env.AUTH_FACTOR_APP_NAME,
-            secret
-        );
         await this.prisma.user.update({
             where: {username: username},
             data: {twoFAsecret: secret},
         });
-        return {
-            secret,
-            qrcodeURL,
-        };
     }
 
-        async generate2FAQrcode( qrcodeURL: string ) {
+    async generate2FAQrcode( username: string, secret: string ) {
+            const qrcodeURL = authenticator.keyuri(
+                username,
+                process.env.AUTH_FACTOR_APP_NAME,
+                secret
+            );
             return toDataURL( qrcodeURL );
         }
 
-        async turnOnTwoFA( username: string ) {
-            this.user.update({
+    async turnOnTwoFA( username: string ) {
+            await this.prisma.user.update({
                 where: {username: username},
                 data: {isTwoFAEnabled: true},
-            })
-        }
+            });
+            this.generate2FA( username );
+    }
 
         async isTwoFACodeValid( twoFACode: string, user: User) {
             return authenticator.verify({
                 token: twoFACode,
-                secret: User.secret,
+                secret: user.twoFAsecret,
             });
         }
 }
