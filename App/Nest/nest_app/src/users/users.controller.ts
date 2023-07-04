@@ -7,7 +7,7 @@ The OpenAPI Specification (OAS) is a specification document written in JSON or Y
 that defines the structure and behavior of RESTful APIs. It describes the available endpoints,
 their input/output parameters, authentication requirements, response formats, and more.
 */
-import { CreateUserDto, UpdateEmailDto, UpdateUsernameDto } from './dto';
+import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 
 
@@ -26,7 +26,7 @@ export class UsersController {
     async create(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
         this.logger.log('Creating a new user');
         const newUser = await this.userService.createUser(createUserDto);
-        this.logger.log(`Successfully created user with username ${createUserDto.username} and email ${createUserDto.email}` );
+        this.logger.log(`Successfully created user with username ${createUserDto.username}` );
         return newUser;
     }
 
@@ -47,14 +47,6 @@ export class UsersController {
 
 
     /* U(pdate) */
-
-    @Put('/update_email/:id')
-    async updateEmail(@Body() updatedEmail: UpdateEmailDto, @Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
-        this.logger.log(`Updating email for user with ID ${id}`);
-        const { email } = updatedEmail;
-        const updatedObject = await this.userService.updateEmail(id, email);
-        return updatedObject;
-    }
 
     @Put('/update_username/:id')
     async updateUsername(@Body() updatedUsername: UpdateUsernameDto, @Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
