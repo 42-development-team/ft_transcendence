@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException} from "@nestjs/common";
 import { authenticator } from 'otplib';
 import {UsersService} from "../../users/users.service";
-import qrcode from 'qrcode'; //TODO: find lib
+import qrcode, { toDataURL } from 'qrcode'; //TODO: find lib
 import {PrismaService} from "../../prisma/prisma.service";
 import {User} from "@prisma/client";
 import { CreateUserDto } from "src/users/dto";
+import axios from 'axios';
 
 @Injectable()
 export class TwoFAService {
@@ -26,19 +27,23 @@ export class TwoFAService {
     }
 
     async generateTwoFAQrcode( username: string, secret: string ) {
-            const qrcodeURL = authenticator.keyuri(
-                username,
-                process.env.AUTH_FACTOR_APP_NAME,
-                secret
-            );
-            qrcode.toDataURL(qrcodeURL, (err, imageUrl) => {
-                if (err) {
-                  console.log('Error with QR');
-                  return;
+        const qrcodeURL = authenticator.keyuri(
+            username,
+            process.env.AUTH_FACTOR_APP_NAME,
+            secret
+        );
+            // qrcode.toDataURL(qrcodeURL, async (err, imageUrl) => {
+            //     if (err) {
+            //       console.log('Error with QR');
+            //       return;
+                // }
+        try {
+                (await axios.post('http://localhost:3000', { imageUrl: qrcodeURL }));
+                console.log('Image URL sent successfully');
+                } catch (error) {
+                console.error('Error sending image URL:', error.message);
                 }
-                console.log(imageUrl);
-            })
-    }
+        }
 
     async turnOnTwoFA( username: string ) {
             const updateEnabledTFa = await this.prisma.user.updateMany({

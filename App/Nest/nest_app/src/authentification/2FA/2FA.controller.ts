@@ -6,18 +6,17 @@ import { Controller, Post, Body, Param } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 
 @ApiTags("TwoFA")
-@Controller('/2fa')
+@Controller('2fa')
 export class TwoFAController {
     constructor (private twoFAService: TwoFAService) {}
 
-    @Post('turn-on/:username')
+    @Post('/turn-on/:username')
     async turnOnTwoFa(
-        @Param ('username') username: string,
-        @Body() { twoFACode } 
+        @Param ('username') username: string
         ) {
         this.twoFAService.turnOnTwoFA( username );
     }
 
-    // @Post('turn-on') ==> TODO: enable or disable 2FA
+    // @Post('auth') ==> TODO: auth signin + disable
     // @Post('turn-off')
 }
