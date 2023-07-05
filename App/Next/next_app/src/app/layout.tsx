@@ -1,3 +1,5 @@
+import Navbar from './components/navbar/navbar'
+import { LoggedInContextProvider } from './context/LoggedInContextProvider'
 import './globals.css'
 
 export const metadata = {
@@ -13,9 +15,14 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      {/* <body className="bg-mantle text-text"> */}
-        {children}
-      {/* </body> */}
+      <body className="bg-mantle text-text min-h-screen flex flex-col">
+      <LoggedInContextProvider>
+        <Navbar/>
+        <div className='flex flex-col flex-auto items-stretch'>
+          {children}
+        </div>
+      </LoggedInContextProvider>
+      </body>
     </html>
   )
 }

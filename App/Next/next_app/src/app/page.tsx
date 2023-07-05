@@ -2,25 +2,22 @@
 
 import './globals.css';
 import LoginComponent from '../log_components/login'
-import { useState } from 'react';
-import Navbar from './components/navbar';
+import { useLoggedInContext } from './context/LoggedInContextProvider';
 
 export default function Home() {
-  const [isLoggedIn, setLoggedIn] = useState(true);
-
+  const {isLoggedIn, login, logout} = useLoggedInContext();
   return (
-    <body className="flex flex-col items-stretch bg-mantle text-text min-h-screen">
-      <Navbar displayNavLinks={isLoggedIn}/>
-      <div className=" flex flex-col flex-auto items-center justify-center py-2">
+      <div className="flex flex-col flex-auto items-center justify-center">
           <LoginComponent />
-          <br></br>
           <button
-            className="font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl p-3" 
-            onClick={ () => setLoggedIn(!isLoggedIn)}>
-            Testing conditionnal display
+            className="font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3" 
+            onClick={ () => {
+              isLoggedIn ? logout() : login();
+              console.log(isLoggedIn)
+            }}>
+            {isLoggedIn ? "<Test> Logout" : "<Test> Login" }
           </button>
       </div>
-    </body>
   )
 }
 
