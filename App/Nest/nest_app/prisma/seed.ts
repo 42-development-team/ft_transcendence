@@ -1,9 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { users } from '../users_seeds'
+import { users } from '../seeds/seeds_users'
+import { messages } from '../seeds/seeds_messages'
 
 const prisma = new PrismaClient()
 
-async function main() {
+async function seedFeeding() {
+    await seedUsers();
+    await seedMessages();
+}
+
+async function seedUsers() {
     for (let user of users) {
         await prisma.user.create({
             data: user,
@@ -11,7 +17,15 @@ async function main() {
     }
 }
 
-main().catch((e) => {
+async function seedMessages() {
+    for (let message of messages) {
+        await prisma.message.create({
+            data: message,
+        });
+    }
+}
+
+seedFeeding().catch((e) => {
     console.error(e);
     process.exit(1);
 })

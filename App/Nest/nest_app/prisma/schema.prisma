@@ -11,11 +11,26 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   
-  login     String    @unique
-  username  String?   @unique
-  avatar    String? 
+  login           String    @unique
+  username        String?   @unique
+  avatar          String? 
+
+  messagesSent    Message[] @relation("SentMessages") // one (user) to many (messages)
+  messageReceived Message[] @relation("ReceivedMessages") // one (user) to many (messages)
 } 
+
+model Message {
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  content         String
+  sender          User      @relation("SentMessages", fields: [senderId], references: [id])
+  senderId        Int
+  receiver        User?     @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
+  receiverId      Int
+}
