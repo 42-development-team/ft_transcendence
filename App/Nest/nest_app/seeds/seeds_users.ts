@@ -1,3 +1,4 @@
+// database product seed
 export const users = [
     {
         login: "dburain",
