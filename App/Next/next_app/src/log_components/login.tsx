@@ -1,5 +1,5 @@
 "use client";
-import React, {useState, useEffect} from "react";
+import CustomBtn from "@/app/components/CustomBtn";
 
 //
 // must be async ?
@@ -10,11 +10,9 @@ function SignIn() {
 const LoginComponent = () => {
 	return (
 		<div>
-			<button 
-				onClick={SignIn} 
-				className="font-bold text-2xl rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl p-3">
+			<CustomBtn onClick={SignIn} >
 				Sign With 42
-			</button>
+			</CustomBtn>
 		</div>
 	)
 }

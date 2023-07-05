@@ -1,5 +1,5 @@
 "use client";
-import {useContext, createContext, useState} from "react";
+import React, {useContext, createContext, useState} from "react";
 
 type LoggedInContextType = {
     isLoggedIn: boolean;

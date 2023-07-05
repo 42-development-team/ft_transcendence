@@ -1,6 +1,7 @@
-import Navbar from './components/navbar/navbar'
+import Navbar from './components/navbar/Navbar'
 import { LoggedInContextProvider } from './context/LoggedInContextProvider'
 import './globals.css'
+import React from "react";
 
 export const metadata = {
   title: 'Pongolin',

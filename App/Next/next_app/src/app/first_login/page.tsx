@@ -1,6 +1,6 @@
 "use client";
-// import defaultAvater from "https://img.freepik.com/free-icon/user_318-563642.jpg'
 import Image from 'next/image';
+import CustomBtn from '../components/CustomBtn';
 
 export default function FirstLogin() {
     return (
@@ -35,12 +35,9 @@ export default function FirstLogin() {
                 `}</style>
 
             </div>
-            
-            <button
-                className="font-bold text-base rounded-xl bg-mauve drop-shadow-xl p-3 w-40 m-4 hover:bg-pink" 
-                onClick={ () => console.log("Validate clicked!")}>
+            <CustomBtn onClick={() => console.log("Validate!")}>
                 Validate
-            </button>
+            </CustomBtn>
         </div>
     )
   }

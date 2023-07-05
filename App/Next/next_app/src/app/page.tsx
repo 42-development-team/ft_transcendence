@@ -3,20 +3,19 @@
 import './globals.css';
 import LoginComponent from '../log_components/login'
 import { useLoggedInContext } from './context/LoggedInContextProvider';
+import CustomBtn from './components/CustomBtn';
 
 export default function Home() {
   const {isLoggedIn, login, logout} = useLoggedInContext();
   return (
       <div className="flex flex-col flex-auto items-center justify-center">
           <LoginComponent />
-          <button
-            className="font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3" 
-            onClick={ () => {
+          <CustomBtn onClick={ () => {
               isLoggedIn ? logout() : login();
               console.log(isLoggedIn)
             }}>
             {isLoggedIn ? "<Test> Logout" : "<Test> Login" }
-          </button>
+          </CustomBtn>
       </div>
   )
 }
