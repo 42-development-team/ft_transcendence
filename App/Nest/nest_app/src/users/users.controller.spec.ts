@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateEmailDto, UpdateUsernameDto } from './dto';
+import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 describe('UsersController', () => {
@@ -24,9 +24,8 @@ describe('UsersController', () => {
     it('should create a new user', async () => {
       const createUserDto: CreateUserDto = {
         id: 1,
+        login: 'john_doe',
         username: 'john_doe',
-        email: 'john@example.com',
-        password: 'password',
         avatar: 'avatar.png',
       };
 
@@ -39,33 +38,6 @@ describe('UsersController', () => {
     });
   });
 
-  describe('updateEmail', () => {
-    it('should update the email of a user', async () => {
-      const userId = 1;
-      const updatedEmailDto: UpdateEmailDto = {
-        email: 'newemail@example.com',
-      };
-
-      const updatedUserDto: CreateUserDto = {
-        id: 1,
-        username: 'john_doe',
-        email: 'newemail@example.com',
-        password: 'password',
-        avatar: 'avatar.png',
-      };
-
-      jest.spyOn(service, 'updateEmail').mockResolvedValue(updatedUserDto as any);
-
-      const result = await controller.updateEmail(updatedEmailDto, userId);
-
-      expect(result).toBe(updatedUserDto);
-      expect(service.updateEmail).toHaveBeenCalledWith(
-        Number(userId),
-        updatedEmailDto.email,
-      );
-    });
-  });
-
   describe('updateUsername', () => {
     it('should update the username of a user', async () => {
       const userId = 1;
@@ -75,9 +47,8 @@ describe('UsersController', () => {
 
       const updatedUserDto: CreateUserDto = {
         id: 1,
-        username: 'new_username',
-        email: 'john@example.com',
-        password: 'password',
+        login: 'john_doe',
+        username: 'john_doe',
         avatar: 'avatar.png',
       };
 
@@ -100,17 +71,15 @@ describe('UsersController', () => {
     it('should return an array of users', async () => {
       const userDto1: CreateUserDto = {
         id: 1,
+        login: 'john_doe',
         username: 'john_doe',
-        email: 'john@example.com',
-        password: 'password',
         avatar: 'avatar.png',
       };
 
       const userDto2: CreateUserDto = {
-        id: 2,
-        username: 'jane_doe',
-        email: 'jane@example.com',
-        password: 'password',
+        id: 1,
+        login: 'john_doe',
+        username: 'john_doe',
         avatar: 'avatar.png',
       };
 
@@ -128,16 +97,7 @@ describe('UsersController', () => {
   describe('deleteUser', () => {
 	it('should delete a user', async () => {
 	  const userId = 1;
-	//   const deletedUserDto: CreateUserDto = {
-	// 	id: 2,
-	// 	username: 'jqhns_doe',
-	// 	email: 'joh@exsaqmple.com',
-	// 	password: 'passsqword',
-	// 	avatar: 'avatasrq.png',
-	//   };
 	  jest.spyOn(service, 'deleteUser').mockResolvedValue();
-	//   await controller.create(deletedUserDto);
-	//   console.log(deletedUserDto);
 
 	  await controller.delete(userId);
 
@@ -145,7 +105,6 @@ describe('UsersController', () => {
 	  const userExists = await prismaservice.$queryRaw
 		'SELECT EXISTS (SELECT 1 FROM user WHERE id = ${userId});';
 	  expect(userExists).toBeFalsy;
-	//   console.log(userExists);
 	});
   });
 });
