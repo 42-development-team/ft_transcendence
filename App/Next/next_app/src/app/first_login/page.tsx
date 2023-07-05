@@ -1,6 +1,6 @@
 "use client";
 import Image from 'next/image';
-import CustomBtn from '../components/CustomBtn';
+import CustomBtn from "@/components/CustomBtn";
 
 export default function FirstLogin() {
     return (

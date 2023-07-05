@@ -1,9 +1,9 @@
 "use client";
 
 import './globals.css';
-import LoginComponent from '../log_components/login'
-import { useLoggedInContext } from './context/LoggedInContextProvider';
-import CustomBtn from './components/CustomBtn';
+import useLoggedInContext from "@/context/LoggedInContextProvider";
+import CustomBtn from "@/components/CustomBtn";
+import LoginComponent from "@/components/Login";
 
 export default function Home() {
   const {isLoggedIn, login, logout} = useLoggedInContext();

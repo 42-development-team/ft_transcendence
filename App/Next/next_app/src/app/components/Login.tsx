@@ -1,5 +1,5 @@
 "use client";
-import CustomBtn from "@/app/components/CustomBtn";
+import CustomBtn from "@/components/CustomBtn";
 
 //
 // must be async ?

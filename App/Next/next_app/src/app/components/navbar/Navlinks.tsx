@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLoggedInContext } from '../../context/LoggedInContextProvider';
+import { useLoggedInContext } from '@/context/LoggedInContextProvider';
 
 const NavLinks = () => {
     const {isLoggedIn} = useLoggedInContext();  
