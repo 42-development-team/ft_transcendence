@@ -1,23 +1,22 @@
+"use client";
+
 import './globals.css';
-import Head from 'next/head';
-import { FaBeer, FaRegEnvelope } from 'react-icons/fa';
-import { MdLockOutline } from 'react-icons/md';
-import LoginComponent from '../log_components/login'
+import {useLoggedInContext} from "@/context/LoggedInContextProvider";
+import CustomBtn from "@/components/CustomBtn";
+import LoginComponent from "@/components/Login";
 
 export default function Home() {
+  const {isLoggedIn, login, logout} = useLoggedInContext();
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
-      <Head>
-        <title>Transcendence</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <div>
+      <div className="flex flex-col flex-auto items-center justify-center">
           <LoginComponent />
-        </div>
-      </main>
-    </div>
+          <CustomBtn onClick={ () => {
+              isLoggedIn ? logout() : login();
+              console.log(isLoggedIn)
+            }}>
+            {isLoggedIn ? "<Test> Logout" : "<Test> Login" }
+          </CustomBtn>
+      </div>
   )
 }
 
