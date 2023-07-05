@@ -1,8 +1,9 @@
-/* @import 'tailwindcss/tailwind.css'; */
+@import 'tailwindcss/tailwind.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @import "@catppuccin/palette/style"; */
 
 /* :root {
   --max-width: 1100px;
