@@ -4,9 +4,9 @@ import { messages } from '../seeds/seeds_messages'
 
 const prisma = new PrismaClient()
 
-async function seedFeeding {
-    async seedUsers();
-    async seedMessages();
+async function seedFeeding() {
+    await seedUsers();
+    await seedMessages();
 }
 
 async function seedUsers() {
