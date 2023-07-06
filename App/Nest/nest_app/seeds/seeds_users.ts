@@ -1,28 +1,28 @@
 // database product seed
 export const users = [
     {
-        login: "dfburain",
-        username: "dfburain",
+        login: "dfbusrain",
+        username: "dfbsurain",
         avatar: "profil.jpg",
     },
     {
-        login: "fmjaune",
-        username: "fmjaune",
+        login: "fmjsaune",
+        username: "fmsjaune",
         avatar: "profil.jpg",
     },
     {
-        login: "frchateau",
-        username: "rchfateau",
+        login: "frchsateau",
+        username: "rchfsateau",
         avatar: "profil.jpg",
     },
     {
-        login: "emafcron",
-        username: "emfacron",
+        login: "emafcsron",
+        username: "emfsacron",
         avatar: "profil.jpg",
     },
     {
-        login: "oskfour",
-        username: "dofckermetue",
+        login: "oskfsour",
+        username: "dofsckermetue",
         avatar: "profil.jpg",
     },
   ];
