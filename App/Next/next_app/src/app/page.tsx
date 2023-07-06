@@ -19,7 +19,7 @@ export default function Home() {
         </div>
       </main>
     </div>
-  )
+  ) 
 }
 
 // import Image from 'next/image'

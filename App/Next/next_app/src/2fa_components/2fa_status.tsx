@@ -1,6 +1,7 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import { json } from "stream/consumers";
+import axios from "axios";
 
 // async function toFetch() {
 //     const canva = await fetch("http://localhost:4000/2fa/turn-on/1");
@@ -19,11 +20,9 @@ const Enable2FAComponent = () => {
 
 	const handleClick = async () => {
 	  try {
-		const response = await fetch('http://localhost:4000/2fa/turn-on/dburain', { method: 'POST' });
-		console.error('response brut:', JSON.stringify(response));
-		const data = await response.json();
-		const receivedImageUrl = data.imageUrl;
-		setImageUrl(receivedImageUrl);
+		const res = await fetch('http://localhost:4000/2fa/turn-on/emacron', { method: 'POST' });
+		const data = await res.json();
+		setImageUrl((await data).imageUrl);
 	  } catch (error) {
 		console.error('Error retrieving image URL:', error);
 	  }
