@@ -34,4 +34,4 @@ npm install qrcode
 (npx prisma studio&)
 
 echo "Starting backend"
-npm run start
+npm run start:dev

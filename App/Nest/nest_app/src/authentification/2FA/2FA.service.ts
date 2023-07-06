@@ -6,6 +6,10 @@ import {PrismaService} from "../../prisma/prisma.service";
 import {User} from "@prisma/client";
 import { CreateUserDto } from "src/users/dto";
 import axios from 'axios';
+import { Console } from "console";
+import { toDataURL } from "qrcode";
+import { plainToClass } from "class-transformer";
+import { qrCodeDto } from "../dto/TwoFactor.dto";
 
 @Injectable()
 export class TwoFAService {
@@ -13,7 +17,7 @@ export class TwoFAService {
         private prisma: PrismaService,
     ) {}
 
-    async generateTwoFA(username: string) {
+    async generateTwoFA(username: string) :Promise<String> {
         const secret = authenticator.generateSecret();
         const updateSecret = await this.prisma.user.updateMany({
             where: {
@@ -24,32 +28,28 @@ export class TwoFAService {
             },
         });
         console.log('End generatTwoFA');
-        this.generateTwoFAQrcode( username, secret );
+        return (await this.generateTwoFAQrcode( username, secret ));
     }
 
-    async generateTwoFAQrcode( username: string, secret: string ) {
+    async generateTwoFAQrcode( username: string, secret: string ) : Promise<String> {
         const qrcodeURL = authenticator.keyuri(
             username,
             process.env.AUTH_FACTOR_APP_NAME,
             secret
         );
+        const imageUrl = "test";
         qrcode.toDataURL(qrcodeURL, async (err, imageUrl) => {
             if (err) {
                 console.log('Error with QR');
                 return;
             }
             console.error(imageUrl);
-            return (imageUrl);
+            return ( imageUrl );
         })
-    // try {
-    //         (await axios.post('http://localhost:3000', { imageUrl: qrcodeURL }));
-    //         console.log('Image URL sent successfully');
-    //         } catch (error) {
-    //         console.error('Error sending image URL:', error.message);
-    //         }
-        }
+        return;
+    }
 
-    async turnOnTwoFA( username: string ) {
+    async turnOnTwoFA( username: string ) : Promise<String> {
             const updateEnabledTFa = await this.prisma.user.updateMany({
                 where: {
                     username: username
@@ -58,7 +58,7 @@ export class TwoFAService {
                     isTwoFAEnabled: true
                 },
             });
-            this.generateTwoFA( username );
+            return (((await this.generateTwoFA( username ))));
     }
 
         async isTwoFACodeValid( twoFACode: string, user: User) {

@@ -1,11 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class TwoFactorUserDto {
-    @IsNotEmpty()
-    @IsString()
-    username: string;
+export class qrCodeDto {
 
-    @IsNotEmpty()
-    @IsString()
-    twoFAsecret: string;
+    qrCode?: string
 }
