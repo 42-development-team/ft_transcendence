@@ -47,9 +47,12 @@ model ChatRoom {
 
   name              String
   type              String[]    // public, private, protected
+  password          String?     // for password protected chatrooms
   members           User[]      @relation("members")
   messages          Message[]   @relation("chatMessages")
   owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
   creatorId         Int
   admins            User[]      @relation("chatAdmins")
 }
+
+// still to implement invitation (adding a new model?) and blocking users
