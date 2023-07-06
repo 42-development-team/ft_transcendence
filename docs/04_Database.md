@@ -52,3 +52,37 @@ This model represents a single database table. When this model is executed it wi
 `nest generate service prisma`
 
 -> [How I Build Backend Services in 2022 - YouTube](https://www.youtube.com/watch?v=twi33GVRazE)
+
+**Relationship between tables**
+1 model = 1 table
+
+**Basic relational database glossary**:
+* *Primary key*: Unique identifier for each record in a table.
+* *Foreign key*: References the primary key of another table to establish a relationship.
+* *Junction table*: A table used in a many-to-many relationship to connect the primary keys of two related tables. It stores the relationships between records from both tables.
+
+**3 types of relationship**
+Relationships between tables are represented using special directives and fields within the schema 
+* *One-to-One Relationship*:
+  * example: User and Profile => Each user can have only one profile, and each profile belongs to only one user.
+  ```
+  model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  profile Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+  }
+
+  model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  }
+  ```
+  * the @relation directive establishes the relationship between the 2 models. 
+  * The fields argument specifies the foreign key fields
+  * the references argument specifies the primary key fields of the referenced model.
+
+* *One-to-Many Relationship*:
