@@ -11,26 +11,39 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   
-  login           String    @unique
-  username        String?   @unique
+  login           String      @unique
+  username        String?     @unique
   avatar          String? 
 
-  messagesSent    Message[] @relation("SentMessages") // one (user) to many (messages)
-  messageReceived Message[] @relation("ReceivedMessages") // one (user) to many (messages)
+  messagesSent    Message[]   @relation("SentMessages") // one (user) to many (messages)
+  messageReceived Message[]   @relation("ReceivedMessages") // one (user) to many (messages)
+  chatRoom        ChatRoom[]  @relation("members")  
 } 
 
 model Message {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   content         String
-  sender          User      @relation("SentMessages", fields: [senderId], references: [id])
+  sender          User        @relation("SentMessages", fields: [senderId], references: [id])
   senderId        Int
-  receiver        User?     @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
-  receiverId      Int
+  receiver        User?       @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
+  receiverId      Int?
+  chatRoom        ChatRoom?   @relation("chatMessages", fields: [chatRoomId], references: [id])
+  chatRoomId      int?
+}
+
+model ChatRoom {
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  name            String
+  members         User[]      @relation("members")
+  messages        Message[]   @relation("chatMessages")
 }
