@@ -86,3 +86,22 @@ Relationships between tables are represented using special directives and fields
   * the references argument specifies the primary key fields of the referenced model.
 
 * *One-to-Many Relationship*:
+  * example: User and Post => Each user can have multiple posts, but each post belongs to only one user. 
+  ```
+  model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  posts Post[]
+  }
+
+  model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  }
+  ```
+  * the User model has an array field posts representing the one-to-many relationship with the Post model
+  * The @relation directive is used to establish the relationship (as in the one-to-one relationship)
