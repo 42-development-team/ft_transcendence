@@ -45,6 +45,7 @@ model ChatRoom {
   updatedAt         DateTime    @updatedAt
 
   name              String
+  type              String[]    // public, private, protected
   members           User[]      @relation("members")
   messages          Message[]   @relation("chatMessages")
   owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
