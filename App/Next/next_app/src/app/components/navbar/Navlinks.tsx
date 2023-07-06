@@ -8,7 +8,7 @@ const NavLinks = () => {
 
     return (
         isLoggedIn ?
-        (<div className="px-2 text-xl transition-all">
+        (<div className="flex items-center gap-8 px-8 text-xl transition-all">
             <Link href="/profile" className="text-mauve hover:text-pink">Profile</Link>
         </div>) : <></>
     )

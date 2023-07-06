@@ -4,6 +4,3 @@
 @tailwind components;
 @tailwind utilities;
 
-.transition-one:hover div:last-child {
-  width: 100%;
-}
