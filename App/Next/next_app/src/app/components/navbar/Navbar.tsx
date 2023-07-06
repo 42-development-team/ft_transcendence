@@ -5,8 +5,8 @@ import NavLinks from "@/components/navbar/Navlinks";
 
 const Navbar = () => {
     return (
-        <nav className="fixed h-14 bg-base w-full flex flex-nowrap justify-between items-center p-4 mb-2">
-        {/* <nav className="flex items-center flex-wrap justify-between bg-base p-1"> */}
+        // <nav className="fixed h-14 bg-base w-full flex flex-wrap justify-between items-center p-4 mb-2">
+        <nav className="flex h-14 w-full items-center flex-wrap justify-between bg-base p-4 mb-2">
             <Logo />
             <NavLinks />
         </nav>
