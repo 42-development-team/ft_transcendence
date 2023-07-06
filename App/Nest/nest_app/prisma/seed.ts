@@ -27,25 +27,6 @@ async function seedMessages() {
     }
 }
 
-// async function seedMessages() {
-//     for (let message of messages) {
-//         const { sender, receiver, ...messageData } = message;
-//         const senderUser = await prisma.user.findUnique({
-//             where: { login: sender.connect.login },
-//         });
-//         const receiverUser = await prisma.user.findUnique({
-//             where: { login: receiver.connect.login },
-//         });
-//         await prisma.message.create({
-//             data: {
-//                 ...messageData,
-//                 senderId: senderUser.id,
-//                 receiverId: receiverUser.id,
-//             },
-//         });
-//     }
-// }
-
 async function seedChatRooms() {
     for (let chatRoom of chatRooms) {
       await prisma.chatRoom.create({
