@@ -84,6 +84,7 @@ Relationships between tables are represented using special directives and fields
   * the @relation directive establishes the relationship between the 2 models. 
   * The fields argument specifies the foreign key fields
   * the references argument specifies the primary key fields of the referenced model.
+  * NB : the value of the profileId field in the User table matchs the value of the id field in the corresponding Profile table
 
 * *One-to-Many Relationship*:
   * example: User and Post => Each user can have multiple posts, but each post belongs to only one user. 
@@ -105,3 +106,24 @@ Relationships between tables are represented using special directives and fields
   ```
   * the User model has an array field posts representing the one-to-many relationship with the Post model
   * The @relation directive is used to establish the relationship (as in the one-to-one relationship)
+* Many-to-Many Relationship
+  * example: User and Group => multiple users can belong to multiple groups
+  ```
+  model User {
+  id     Int     @id @default(autoincrement())
+  name   String
+  email  String  @unique
+  groups Group[] @relation("UserToGroup", references: [id])
+  }
+
+  model Group {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[] @relation("UserToGroup")
+  }
+  ```
+  * To represent a many-to-many relationship between two tables, you can use an intermediate table to join them
+  * In Prisma an intermediate table is not explicitly defined in the schema,but it's automatically created behind the scenes.
+  * The @relation directive is used to establish the relationship between the tables
+  * the reference can be defined either in the User model (as groups Group[] @relation("UserToGroup", references: [id])) or in the Group model (users User[] @relation("GroupToUser", references: [id])), depending on where the focus is set in the App.
+  * NB : the @relation directive is used to establish the relationship between two models, and it requires a unique same name in both the sides of the relationship, that represents the name of the relationship itself and is arbitrary chosen.
