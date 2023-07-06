@@ -23,6 +23,7 @@ model User {
   messageReceived   Message[]   @relation("ReceivedMessages") // one (user) to many (messages)
   chatRoom          ChatRoom[]  @relation("members")
   chatRoomsCreated  ChatRoom[]  @relation("chatCreated")
+  chatRoomsAdmin    ChatRoom[]  @relation("chatAdmins")
 } 
 
 model Message {
@@ -50,4 +51,5 @@ model ChatRoom {
   messages          Message[]   @relation("chatMessages")
   owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
   creatorId         Int
+  admins            User[]      @relation("chatAdmins")
 }
