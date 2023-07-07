@@ -11,6 +11,6 @@ import { IsNotEmpty, IsString, IsNumber, MaxLength } from 'class-validator';
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(65_000) //This can help enforce constraints and ensure that the uploaded file path or URL doesn't inadvertently exceed a reasonable length.
+  @MaxLength(65_000)
   avatar:     string;
  }
