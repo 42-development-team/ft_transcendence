@@ -50,6 +50,5 @@ const ChatMessagesBox = React.forwardRef<HTMLDivElement, {messages: MessageModel
         </div>
     )
 })
-// https://blog.bitsrc.io/building-a-scrollable-chat-box-with-react-b3848a4459fc
 
 export default ChatBar;
