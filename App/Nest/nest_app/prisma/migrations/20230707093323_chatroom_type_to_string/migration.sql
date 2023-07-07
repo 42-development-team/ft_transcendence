@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ChatRoom" ALTER COLUMN "type" SET NOT NULL,
+ALTER COLUMN "type" SET DATA TYPE TEXT;
