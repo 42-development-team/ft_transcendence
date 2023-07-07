@@ -51,4 +51,9 @@ export class TwoFAService {
                 secret: user.twoFAsecret,
             });
         }
+
+        async isTwoFAEnabled( user: User ) : Promise<boolean> {
+            const isEnabled = user.isTwoFAEnabled;
+            return isEnabled;
+        }
 }

@@ -22,13 +22,22 @@ export class TwoFAController {
         @Res() res: Response,
         @Param ('username') username: string,
         ) {
-        const qrCodeUrl = await this.twoFAService.generateTwoFA(username);
+        const qrCodeUrl = await this.twoFAService.generateTwoFA(username); // change username to User module, receive in Request (how)
         const base64Qrcode = await qrcode.toDataURL(qrCodeUrl);
         res.send({
 			contentType: 'image/png',
 			base64Qrcode,
 		});
     }
+    
+    // @Get('/verify/:username')
+    // async verifyTwoFA (
+    //     @Res() res: Response,
+    //     @Req() req: Request,
+    //     @Param('username') username: string,
+    // ) {
+    //     return (this.twoFAService.isTwoFACodeValid( req.code, req.user ));
+    // }
     // @Post('auth') ==> TODO: auth signin + disable
     // @Post('turn-off')
 }
