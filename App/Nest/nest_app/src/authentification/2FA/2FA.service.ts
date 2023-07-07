@@ -46,7 +46,7 @@ export class TwoFAService {
             console.error(imageUrl);
             return ( imageUrl );
         })
-        return;
+        return ;
     }
 
     async turnOnTwoFA( username: string ) : Promise<String> {

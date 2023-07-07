@@ -17,10 +17,18 @@ function enable2FA() {
 
 async function handleClick() {
 	try {
-	  const rep = await fetch('http://localhost:4000/2fa/turn-on/emacron');
-	//   console.dir(rep.text);
-	  console.log(rep.text.toString);
-	//   setImageUrl(rep.json());
+		fetch('http://localhost:4000/users/1')
+		.then((res) => {
+		  res.json(),
+		  console.log(res)
+		})
+		.then((data) => {
+		  console.log(data)
+		})
+	//   const rep = await fetch('http://localhost:4000/2fa/turn-on/emacron');
+	// //   console.dir(rep.text);
+	//   console.log(rep.text.toString);
+	// //   setImageUrl(rep.json());
 	} catch (error) {
 	  console.error('Error retrieving image URL:', error);
 	}
@@ -29,15 +37,7 @@ async function handleClick() {
 const Enable2FAComponent = () => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
-	useEffect(() => {
-		fetch('http://localhost:4000/2fa/turn-on/emacron')
-		  .then((res) => {
-			res.json()
-		  })
-		  .then((data) => {
-			console.log(data)
-		  })
-	  }, [handleClick])
+	useEffect(() => {	handleClick  })
 	return (
 		<div>
 			<button onClick={handleClick}>Enable 2FA</button>
