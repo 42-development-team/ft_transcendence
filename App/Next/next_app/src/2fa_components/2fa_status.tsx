@@ -1,48 +1,43 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import { json } from "stream/consumers";
-import axios from "axios";
 import Image from "next/image";
 
-// async function toFetch() {
-//     const canva = await fetch("http://localhost:4000/2fa/turn-on/1");
-//     const dataFormat = await canva.json();
-//     console.log(dataFormat);
-//     return (dataFormat);
-// }
+const Enable2FAComponent = () => {
+  const [imageUrl, setImageUrl] = useState<string>('');
 
-function enable2FA() {
-	console.log("Enable 2FA");
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/2fa/turn-on/dburain');
+        const data = await response.json();
+        setImageUrl(data.ImageUrl);
+        console.log(data);
+      } catch (error) {
+        console.error('Error retrieving image URL:', error);
+      }
+    };
 
-async function handleClick() {
-	try {
-		fetch('http://localhost:4000/users/1')
-		.then((res) => {
-		  res.json(),
-		  console.log(res)
-		})
-		.then((data) => {
-		  console.log(data)
-		})
-	//   const rep = await fetch('http://localhost:4000/2fa/turn-on/emacron');
-	// //   console.dir(rep.text);
-	//   console.log(rep.text.toString);
-	// //   setImageUrl(rep.json());
-	} catch (error) {
-	  console.error('Error retrieving image URL:', error);
-	}
+    fetchData();
+  }, []);
+
+  const handleClick = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/2fa/turn-on/dburain');
+      const data = await response.json();
+      setImageUrl(data.base64Qrcode);
+      console.log(data);
+    } catch (error) {
+      console.error('Error retrieving image URL:', error);
+    }
   };
 
-const Enable2FAComponent = () => {
+  return (
+    <div>
+      <button onClick={handleClick}>Enable 2FA</button>
+      {imageUrl !== '' && <img src={imageUrl} height="300" width="300" alt="QR Code" />}
+    </div>
+  );
+};
 
-	const [imageUrl, setImageUrl] = useState<string>('');
-	useEffect(() => {	handleClick  })
-	return (
-		<div>
-			<button onClick={handleClick}>Enable 2FA</button>
-			{imageUrl != '' && <Image src={imageUrl} height="300" width="300" alt="QR Code"/>}
-		</div>
-	)
-}
 export default Enable2FAComponent;

@@ -10,6 +10,7 @@ import { stringify } from 'querystring';
 import { HttpCode } from '@nestjs/common';
 import { Http2ServerResponse } from 'http2';
 import { qrCodeDto } from '../dto/TwoFactor.dto';
+import * as qrcode from 'qrcode'
 
 @ApiTags("TwoFA")
 @Controller('2fa')
@@ -17,19 +18,16 @@ export class TwoFAController {
     constructor (private twoFAService: TwoFAService) {}
 
     @Get('/turn-on/:username')
-    // @HttpCode(204)
-    // @Redirect('http://localhost:4000/2fa/turn-on/dburain', 450)
     async turnOnTwoFa (
-        @Body() qrCodeUrl: qrCodeDto,
-        @Req() req: Request,
         @Res() res: Response,
         @Param ('username') username: string,
-        )  : Promise<String> {
-        const data = await this.twoFAService.turnOnTwoFA( username );
-        // res.send('Created');
-        console.log(data)
-        res.send(data);
-        return data;
+        ) {
+        const qrCodeUrl = await this.twoFAService.generateTwoFA(username);
+        const base64Qrcode = await qrcode.toDataURL(qrCodeUrl);
+        res.send({
+			contentType: 'image/png',
+			base64Qrcode,
+		});
     }
     // @Post('auth') ==> TODO: auth signin + disable
     // @Post('turn-off')

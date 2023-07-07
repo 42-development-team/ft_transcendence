@@ -10,6 +10,8 @@ import { Console } from "console";
 import { toDataURL } from "qrcode";
 import { plainToClass } from "class-transformer";
 import { qrCodeDto } from "../dto/TwoFactor.dto";
+import { toFileStream } from 'qrcode';
+import { Response } from "express";
 
 @Injectable()
 export class TwoFAService {
@@ -17,7 +19,7 @@ export class TwoFAService {
         private prisma: PrismaService,
     ) {}
 
-    async generateTwoFA(username: string) :Promise<String> {
+    public async generateTwoFA( username: string ) {
         const secret = authenticator.generateSecret();
         const updateSecret = await this.prisma.user.updateMany({
             where: {
@@ -27,38 +29,20 @@ export class TwoFAService {
                 twoFAsecret: secret
             },
         });
-        console.log('End generatTwoFA');
-        return (await this.generateTwoFAQrcode( username, secret ));
-    }
-
-    async generateTwoFAQrcode( username: string, secret: string ) : Promise<String> {
         const qrcodeURL = authenticator.keyuri(
             username,
             process.env.AUTH_FACTOR_APP_NAME,
             secret
         );
-        const imageUrl = "test";
-        qrcode.toDataURL(qrcodeURL, async (err, imageUrl) => {
-            if (err) {
-                console.log('Error with QR');
-                return;
-            }
-            console.error(imageUrl);
-            return ( imageUrl );
-        })
-        return ;
-    }
-
-    async turnOnTwoFA( username: string ) : Promise<String> {
-            const updateEnabledTFa = await this.prisma.user.updateMany({
-                where: {
-                    username: username
-                },
-                data: {
-                    isTwoFAEnabled: true
-                },
-            });
-            return (((await this.generateTwoFA( username ))));
+        const updateEnabledTFa = await this.prisma.user.updateMany({
+            where: {
+                username: username
+            },
+            data: {
+                isTwoFAEnabled: true
+            },
+        });
+        return qrcodeURL;
     }
 
         async isTwoFACodeValid( twoFACode: string, user: User) {
