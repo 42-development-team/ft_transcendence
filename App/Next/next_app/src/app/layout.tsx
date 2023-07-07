@@ -16,10 +16,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-mantle text-text min-h-screen flex flex-col">
+      <body className="flex flex-col">
       <LoggedInContextProvider>
         <Navbar/>
-        <div className='flex flex-col flex-auto items-stretch'>
+        {/* <div className='flex flex-col flex-auto items-stretch'> */}
+        <div className='flex-auto grid place-items-center'>
           {children}
         </div>
       </LoggedInContextProvider>

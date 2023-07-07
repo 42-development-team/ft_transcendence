@@ -7,7 +7,7 @@ export default function FirstLogin() {
         <div className="flex flex-col items-center justify-center">
             <div className="m-4 pt-4">
                 <p className="font-bold text-center">Choose your username</p>
-                <input type="text" className="m-2 bg-base border-red  border-0  w-64 h-8 "/>
+                <input type="text" className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"/>
             </div>
                 
             <div className="m-4 flex-auto">
@@ -28,12 +28,6 @@ export default function FirstLogin() {
                         className="w-4 h-4 mr-2  accent-mauve before:accent-lavender unchecked-checkbox"/>
                     Activate Two-Factor
                 </label>
-                <style jsx>{`
-                    .unchecked-checkbox:checked {
-                        @apply bg-blue-500;
-                    }
-                `}</style>
-
             </div>
             <CustomBtn onClick={() => console.log("Validate!")}>
                 Validate
