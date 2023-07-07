@@ -1,20 +1,16 @@
 import { IsNotEmpty, IsString, IsNumber, MaxLength } from 'class-validator';
  
  export class CreateUserDto {
-   @IsNotEmpty()
-   @IsNumber()
-   id:         number;
+  @IsNotEmpty()
+  @IsString()
+  login:      string;
 
-   @IsNotEmpty()
-   @IsString()
-   login:      string;
+  @IsNotEmpty()
+  @IsString()
+  username:   string;
 
-   @IsNotEmpty()
-   @IsString()
-   username:   string;
-
-   @IsNotEmpty()
-   @IsString()
-   @MaxLength(65_000) //This can help enforce constraints and ensure that the uploaded file path or URL doesn't inadvertently exceed a reasonable length.
-   avatar:     string;
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(65_000) //This can help enforce constraints and ensure that the uploaded file path or URL doesn't inadvertently exceed a reasonable length.
+  avatar:     string;
  }
