@@ -15,9 +15,8 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto): Promise<User> {
         const user = await this.prisma.user.create({
             data: {
+                login: createUserDto.login,
                 username: createUserDto.username,
-                email: createUserDto.email,
-                password: createUserDto.password,
                 avatar: createUserDto.avatar,
                 twoFAsecret: createUserDto.twoFAsecret,
             }
@@ -59,14 +58,6 @@ export class UsersService {
         const updatedUser = await this.prisma.user.update({
             where: { id },
             data: { username: updatedUsername },
-        });
-        return updatedUser;
-    }
-
-    async updateEmail(id: number, updatedEmail: string): Promise<CreateUserDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { id },
-            data: { email: updatedEmail },
         });
         return updatedUser;
     }

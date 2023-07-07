@@ -1,34 +1,28 @@
-// database product seed
 export const users = [
     {
+        login: "dburain",
         username: "dburain",
-        email: "dburain",
-        password: "password",
         avatar: "profil.jpg",
         twoFAsecret: "facticeSecret",
     },
     {
+        login: "mjaune",
         username: "mjaune",
-        email: "mjaune",
-        password: "password",
         avatar: "profil.jpg",
     },
     {
+        login: "rchateau",
         username: "rchateau",
-        email: "rchateau",
-        password: "password",
         avatar: "profil.jpg",
     },
     {
+        login: "emacron",
         username: "emacron",
-        email: "emacron",
-        password: "password",
         avatar: "profil.jpg",
     },
     {
+        login: "oskour",
         username: "dockermetue",
-        email: "oskour",
-        password: "password",
         avatar: "profil.jpg",
     },
   ];

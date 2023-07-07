@@ -12,11 +12,11 @@ import {isStrongPassword} from "../../../custom_decorators/isStrongPassword.deco
 
    @IsNotEmpty()
    @IsString()
-   username:   string;
+   login:      string;
 
    @IsNotEmpty()
    @IsString()
-   email:      string;
+   username:   string;
 
    @IsNotEmpty()
    @IsString()

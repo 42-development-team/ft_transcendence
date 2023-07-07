@@ -1,119 +1,22 @@
+"use client";
+
 import './globals.css';
-import Head from 'next/head';
-import { FaBeer, FaRegEnvelope } from 'react-icons/fa';
-import { MdLockOutline } from 'react-icons/md';
-import LoginComponent from '../log_components/login'
+import {useLoggedInContext} from "@/context/LoggedInContextProvider";
+import CustomBtn from "@/components/CustomBtn";
+import LoginComponent from "@/components/Login";
 import Enable2FAComponent from '@/2fa_components/2fa_status';
 
 export default function Home() {
+  const {isLoggedIn, login, logout} = useLoggedInContext();
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
-      <Head>
-        <title>Transcendence</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <div>
-          <Enable2FAComponent />
-        </div>
-      </main>
-    </div>
-  ) 
+      <div className="flex flex-col flex-auto items-center justify-center">
+          <LoginComponent />
+          <CustomBtn onClick={ () => {
+              isLoggedIn ? logout() : login();
+              console.log(`Log status: ${isLoggedIn}`)
+            }}>
+            {isLoggedIn ? "<Test> Logout" : "<Test> Login" }
+          </CustomBtn>
+      </div>
+  )
 }
-
-// import Image from 'next/image'
-// import styles from './page.module.css'
-
-// export default function Home() {
-//   return (
-//     <main className={styles.main}>
-//       <div className={styles.description}>
-//         <p>
-//           Get started by editing&nbsp;
-//           <code className={styles.code}>src/app/page.tsx</code>
-//         </p>
-//         <div>
-//           <a
-//             href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             By{' '}
-//             <Image
-//               src="/vercel.svg"
-//               alt="Vercel Logo"
-//               className={styles.vercelLogo}
-//               width={100}
-//               height={24}
-//               priority
-//             />
-//           </a>
-//         </div>
-//       </div>
-
-//       <div className={styles.center}>
-//         <Image
-//           className={styles.logo}
-//           src="/next.svg"
-//           alt="Next.js Logo"
-//           width={180}
-//           height={37}
-//           priority
-//         />
-//       </div>
-
-//       <div className={styles.grid}>
-//         <a
-//           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           className={styles.card}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <h2>
-//             Docs <span>-&gt;</span>
-//           </h2>
-//           <p>Find in-depth information about Next.js features and API.</p>
-//         </a>
-
-//         <a
-//           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           className={styles.card}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <h2>
-//             Learn <span>-&gt;</span>
-//           </h2>
-//           <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-//         </a>
-
-//         <a
-//           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           className={styles.card}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <h2>
-//             Templates <span>-&gt;</span>
-//           </h2>
-//           <p>Explore the Next.js 13 playground.</p>
-//         </a>
-
-//         <a
-//           href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           className={styles.card}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <h2>
-//             Deploy <span>-&gt;</span>
-//           </h2>
-//           <p>
-//             Instantly deploy your Next.js site to a shareable URL with Vercel.
-//           </p>
-//         </a>
-//       </div>
-//     </main>
-//   )
-// }
