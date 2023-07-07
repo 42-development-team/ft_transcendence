@@ -6,7 +6,7 @@ import { useLoggedInContext } from '@/context/LoggedInContextProvider';
 
 const Navbar = () => {
     return (
-        <nav className="flex items-center flex-wrap justify-between bg-base p-1">
+        <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
             <Logo />
             <NavLinks />
         </nav>

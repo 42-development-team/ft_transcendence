@@ -4,3 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    body {
+        @apply bg-mantle text-text font-transcendence min-h-screen;
+    }
+}
+
+.button-mauve {
+    @apply bg-mauve hover:bg-pink drop-shadow-xl rounded text-base font-bold text-sm p-2;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: bg-red;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

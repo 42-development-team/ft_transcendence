@@ -12,7 +12,7 @@ export default function Home() {
           <LoginComponent />
           <CustomBtn onClick={ () => {
               isLoggedIn ? logout() : login();
-              console.log(isLoggedIn)
+              console.log(`Log status: ${isLoggedIn}`)
             }}>
             {isLoggedIn ? "<Test> Logout" : "<Test> Login" }
           </CustomBtn>
