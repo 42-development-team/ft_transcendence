@@ -4,7 +4,6 @@ import { MessageModel } from "../utils/models";
 export default function useChatLiveScrolling<T extends HTMLElement>(
     messages: MessageModel[]
 ) {
-    const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(true);
     const chatMessageBoxRef = useRef<T | null>(null);
 
     const scrollNewMessages = useCallback(() => {
@@ -12,14 +11,11 @@ export default function useChatLiveScrolling<T extends HTMLElement>(
     }, [])
 
     useEffect(() => {
-        if (isLiveModeEnabled) {
             scrollNewMessages()
-        }
-    }, [messages, isLiveModeEnabled, scrollNewMessages])
+    }, [messages, scrollNewMessages])
 
     return {
         chatMessageBoxRef,
-        isLiveModeEnabled,
         scrollNewMessages,
     }
 }

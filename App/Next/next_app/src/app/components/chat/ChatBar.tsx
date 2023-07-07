@@ -18,7 +18,7 @@ const ChatBar = () => {
     const [isChatOpen, setChatOpen] = useState(false);
     const {messages, send} = useChatMessages();
 
-    const {chatMessageBoxRef, isLiveModeEnabled} = useChatScrolling<HTMLDivElement>(messages)
+    const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
 
     return (
         <div className='flex h-full'>
