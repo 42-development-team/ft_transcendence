@@ -28,6 +28,7 @@
   "devDependencies": {
     "@catppuccin/palette": "^0.1.8",
     "@catppuccin/tailwindcss": "^0.1.6",
+    "@faker-js/faker": "^8.0.2",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",
     "postcss": "^8.4.25",

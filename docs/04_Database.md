@@ -52,3 +52,78 @@ This model represents a single database table. When this model is executed it wi
 `nest generate service prisma`
 
 -> [How I Build Backend Services in 2022 - YouTube](https://www.youtube.com/watch?v=twi33GVRazE)
+
+**Relationship between tables**
+1 model = 1 table
+
+**Basic relational database glossary**:
+* *Primary key*: Unique identifier for each record in a table.
+* *Foreign key*: References the primary key of another table to establish a relationship.
+* *Junction table*: A table used in a many-to-many relationship to connect the primary keys of two related tables. It stores the relationships between records from both tables.
+
+**3 types of relationship**
+Relationships between tables are represented using special directives and fields within the schema 
+* *One-to-One Relationship*:
+  * example: User and Profile => Each user can have only one profile, and each profile belongs to only one user.
+  ```
+  model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  profile Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+  }
+
+  model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  }
+  ```
+  * the @relation directive establishes the relationship between the 2 models. 
+  * The fields argument specifies the foreign key fields
+  * the references argument specifies the primary key fields of the referenced model.
+  * NB : the value of the profileId field in the User table matchs the value of the id field in the corresponding Profile table
+
+* *One-to-Many Relationship*:
+  * example: User and Post => Each user can have multiple posts, but each post belongs to only one user. 
+  ```
+  model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  posts Post[]
+  }
+
+  model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  }
+  ```
+  * the User model has an array field posts representing the one-to-many relationship with the Post model
+  * The @relation directive is used to establish the relationship (as in the one-to-one relationship)
+* Many-to-Many Relationship
+  * example: User and Group => multiple users can belong to multiple groups
+  ```
+  model User {
+  id     Int     @id @default(autoincrement())
+  name   String
+  email  String  @unique
+  groups Group[] @relation("UserToGroup", references: [id])
+  }
+
+  model Group {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[] @relation("UserToGroup")
+  }
+  ```
+  * To represent a many-to-many relationship between two tables, you can use an intermediate table to join them
+  * In Prisma an intermediate table is not explicitly defined in the schema,but it's automatically created behind the scenes.
+  * The @relation directive is used to establish the relationship between the tables
+  * the reference can be defined either in the User model (as groups Group[] @relation("UserToGroup", references: [id])) or in the Group model (users User[] @relation("GroupToUser", references: [id])), depending on where the focus is set in the App.
+  * NB : the @relation directive is used to establish the relationship between two models, and it requires a unique same name in both the sides of the relationship, that represents the name of the relationship itself and is arbitrary chosen.

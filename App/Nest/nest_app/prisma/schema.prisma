@@ -11,26 +11,48 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
   
-  login           String    @unique
-  username        String?   @unique
-  avatar          String? 
+  login             String      @unique
+  username          String?     @unique
+  avatar            String? 
 
-  messagesSent    Message[] @relation("SentMessages") // one (user) to many (messages)
-  messageReceived Message[] @relation("ReceivedMessages") // one (user) to many (messages)
+  messagesSent      Message[]   @relation("SentMessages") // one (user) to many (messages)
+  messageReceived   Message[]   @relation("ReceivedMessages") // one (user) to many (messages)
+  chatRoom          ChatRoom[]  @relation("members")
+  chatRoomsCreated  ChatRoom[]  @relation("chatCreated")
+  chatRoomsAdmin    ChatRoom[]  @relation("chatAdmins")
 } 
 
 model Message {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
-  content         String
-  sender          User      @relation("SentMessages", fields: [senderId], references: [id])
-  senderId        Int
-  receiver        User?     @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
-  receiverId      Int
+  content           String
+  sender            User        @relation("SentMessages", fields: [senderId], references: [id])
+  senderId          Int
+  receiver          User?       @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
+  receiverId        Int?
+  chatRoom          ChatRoom?   @relation("chatMessages", fields: [chatRoomId], references: [id])
+  chatRoomId        Int?
 }
+
+model ChatRoom {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  name              String
+  type              String[]    // public, private, protected
+  password          String?     // for password protected chatrooms
+  members           User[]      @relation("members")
+  messages          Message[]   @relation("chatMessages")
+  owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
+  creatorId         Int
+  admins            User[]      @relation("chatAdmins")
+}
+
+// still to implement invitation (adding a new model?) and blocking users
