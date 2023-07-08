@@ -9,11 +9,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from 'src/chatroom/chatroom.controller';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
-import { SocketModule } from '@nestjs/platform-socket.io';
+// import { SocketModule } from '@nestjs/platform-socket.io';
 
 
 @Module({
-  imports: [UsersModule, PrismaModule, AuthModule, SocketModule],
+  imports: [UsersModule, PrismaModule, AuthModule],
   controllers: [AppController, UsersController, ChatroomController],
   providers: [AppService, UsersService, ChatroomService, PrismaService],
 })
