@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -90,4 +90,23 @@ export class UsersService {
             where: { id },
         });
     }
+
+    /* Retreiving or creating a user when authenticating*/
+
+    async createOrFindUser(username: string): Promise<CreateUserDto & { id?: number }> {
+        let user = await this.getUserFromUsername(username);
+
+        if (!user) {
+            const createUserDto: CreateUserDto = {
+            login: username,
+            username: username,
+            avatar: '',
+            };
+
+            user = await this.createUser(createUserDto);
+        }
+
+        return user;
+    }
+
 }
