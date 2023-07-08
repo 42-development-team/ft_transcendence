@@ -3,7 +3,8 @@ FROM node:20-alpine3.17
 WORKDIR /app
 
 RUN npm install --save @nestjs/core @nestjs/common @nestjs/swagger @nestjs/passport \
-    @prisma/client typescript class-transformer class-validator 
+    @prisma/client typescript class-transformer class-validator @nestjs/websockets @nestjs/platform-socket.io \
+    && npm install --save-dev @types/socket.io
 RUN npm install -g @nestjs/cli
 
 EXPOSE 4000
