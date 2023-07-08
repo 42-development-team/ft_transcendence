@@ -23,20 +23,6 @@ export class UsersService {
         return user;
     }
 
-    async createOrFindUser(userLogin: string): Promise<User> {
-        const user = await this.getUserFromUsername(userLogin);
-        if (!user) {
-            const userCreate = await this.prisma.user.create({
-                data: {
-                    login: userLogin,
-                    username: userLogin,
-                    avatar: "avatar",
-                }
-            })
-            return userCreate;
-        }
-        return user;
-    }
     /* R(ead) */
 
     async getAllUsers(): Promise<CreateUserDto[]> {
