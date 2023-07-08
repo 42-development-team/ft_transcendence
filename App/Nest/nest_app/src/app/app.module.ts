@@ -8,11 +8,17 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from 'src/chatroom/chatroom.controller';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { SocketModule } from '@nestjs/platform-socket.io';
 
 
 @Module({
   imports: [SocketModule],
+=======
+
+@Module({
+  imports: [],
+>>>>>>> FT-86-implement-backend-logic-to-creating-chat-rooms-managing-participants-and-joining-rooms
 =======
 
 @Module({
