@@ -30,4 +30,4 @@ npx prisma migrate reset -f
 (npx prisma studio&)
 
 echo "Starting backend"
-npm run start
+npm run start:dev
