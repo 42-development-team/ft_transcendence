@@ -23,7 +23,6 @@ describe('UsersController', () => {
   describe('create', () => {
     it('should create a new user', async () => {
       const createUserDto: CreateUserDto = {
-        id: 1,
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
@@ -46,7 +45,6 @@ describe('UsersController', () => {
       };
 
       const updatedUserDto: CreateUserDto = {
-        id: 1,
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
@@ -70,14 +68,12 @@ describe('UsersController', () => {
   describe('getAllUsers', () => {
     it('should return an array of users', async () => {
       const userDto1: CreateUserDto = {
-        id: 1,
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
       };
 
       const userDto2: CreateUserDto = {
-        id: 1,
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
