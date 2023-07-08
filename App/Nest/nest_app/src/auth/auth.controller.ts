@@ -1,5 +1,5 @@
 import { Controller, Get, Body, Req, Res, Post, UseGuards, Query, Header } from '@nestjs/common';
-import { Request, Response } from 'express';
+// import { Request, Response } from 'express';
 import { FortryTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
@@ -29,7 +29,7 @@ export class AuthController {
 
         // set the token as Header in the response object 
         // res.set('Header', token);
-        res.headers['authorization'] = token;
+        // res.headers['authorization'] = token;
         // res.json(req.user);
     }
 
