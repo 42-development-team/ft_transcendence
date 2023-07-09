@@ -12,6 +12,7 @@ import { plainToClass } from "class-transformer";
 import { qrCodeDto } from "../dto/TwoFactor.dto";
 import { toFileStream } from 'qrcode';
 import { Response } from "express";
+import { isAbsolute } from "path";
 
 @Injectable()
 export class TwoFAService {
@@ -37,12 +38,13 @@ export class TwoFAService {
         return qrcodeURL;
     }
 
-    async isTwoFACodeValid( req: Request, res: Response, username: string) {
+    async isTwoFACodeValid( code: string, res: Response, username: string) {
+        console.log("code:" + code + ", reponse:" + res + ", username:" + username);
         const user = await this.prisma.user.findUnique({
             where: {username: username},
         });
         const isValid = authenticator.verify({
-            token: req,
+            token: code,
             secret: user.twoFAsecret,
         });
         if (isValid) {
@@ -54,8 +56,8 @@ export class TwoFAService {
                     isTwoFAEnabled: true
                 },
             });
-            res.send( isValid );
         }
+        return isValid;
     }
 
     async isTwoFAEnabled( res: Response, username: string ) {
@@ -64,5 +66,17 @@ export class TwoFAService {
         });
         const isEnabled = user.isTwoFAEnabled;
         res.send(isEnabled);
+    }
+
+    async turnOff( username :string ) {
+        await this.prisma.user.updateMany ({
+            where: {
+                username: username
+            },
+            data: {
+                isTwoFAEnabled: false,
+                twoFAsecret: "",
+            },
+        });
     }
 }

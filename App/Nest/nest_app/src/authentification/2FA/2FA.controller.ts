@@ -40,13 +40,23 @@ export class TwoFAController {
         await this.twoFAService.isTwoFAEnabled( res, username );
     }
 
-    @Get('/verifyTwoFA/:username')
+    @Post('/verifyTwoFA/:username')
     async verifyTwoFA (
         @Res() res: Response,
         @Req() req: Request,
+        @Body() code : qrCodeDto,
         @Param('username') username: string,
     ) {
-        await this.twoFAService.isTwoFACodeValid( req, res, username );
+        const isValid: boolean = await this.twoFAService.isTwoFACodeValid( code.code, res, username );
+        return res.send(isValid);
+    }
+
+    @Get('/turn-off/:username')
+    async turnOffTwoFA (
+        @Res() res: Response,
+        @Param ('username') username: string,
+    ) {
+        this.twoFAService.turnOff( username );
     }
     // @Post('auth') ==> TODO: auth signin + disable
     // @Post('turn-off')
