@@ -29,7 +29,7 @@ export class AuthController {
 
         // set the token as Header in the response object 
         // res.set('Header', token);
-        res.header['authorization'] = token;
+        res.headers['authorization'] = token;
         // res.json(req.user);
     }
 
