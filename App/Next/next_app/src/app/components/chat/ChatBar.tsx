@@ -1,12 +1,12 @@
 "use client";
 import SendMessageForm from './SendMessageForm';
 import useChatMessages from '@/app/hooks/useChatMessages';
-import ChatMessage from './ChatMessage';
-import { MessageModel } from '@/app/utils/models';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import React from 'react';
 import ChannelList from './channel/ChannelList';
 import { useChatContext } from '@/app/context/ChatContextProvider';
+import ChatMessagesBox from './ChatMessageBox';
+import useChannels from '@/app/hooks/useChannels';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
@@ -14,13 +14,13 @@ import { useChatContext } from '@/app/context/ChatContextProvider';
 const ChatBar = () => {
     const {isChatOpen} = useChatContext();
     const {messages, send} = useChatMessages();
+    const {channels, createNewChannel} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
 
     return (
         <div className='flex h-full'>
-            {/* {Todo: isolate chaetBar on ist own component} */}
             <div className="w-16 bg-base h-full shadow-inner flex flex-col justify-start items-center">
-                <ChannelList />
+                <ChannelList channels={channels} onNewChannel={createNewChannel} />
             </div>
             {isChatOpen && 
             <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
@@ -32,15 +32,5 @@ const ChatBar = () => {
     )
 }
 
-const ChatMessagesBox = React.forwardRef<HTMLDivElement, {messages: MessageModel[]}> (({ messages }, ref ) => {
-    const MessageList = messages.map((message) => (
-        <ChatMessage key={message.id} className='mb-1' message={message} />
-    ))
-    return (
-        <div ref={ref} className='overflow-auto h-[84vh]'>
-            {MessageList}
-        </div>
-    )
-})
 
 export default ChatBar;

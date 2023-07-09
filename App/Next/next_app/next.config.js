@@ -11,6 +11,12 @@ module.exports = {
                 port: '',
                 pathname: '/free-icon/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'avatars.githubusercontent.com',
+                port: '',
+                pathname: '/u/**',
+            },
         ]
     },
 } 

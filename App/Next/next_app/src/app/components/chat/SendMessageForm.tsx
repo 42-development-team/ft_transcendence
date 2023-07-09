@@ -25,7 +25,9 @@ const SendMessageForm = ({ onSend, className }: SendMessageFormProps) => {
         <form className={className} onSubmit={handleSubmit}>
             <input
                 type="text"
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => {
+                    setMessage(e.target.value);
+                }}
                 value={message}
                 className=" w-[42vh] p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
                 placeholder="Send a chat message"
