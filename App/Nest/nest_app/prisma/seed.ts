@@ -30,7 +30,7 @@ async function seedMessages() {
 async function seedChatRooms() {
     for (let chatRoom of chatRooms) {
       await prisma.chatRoom.create({
-        data: chatRoom as Prisma.ChatRoomCreateInput, // Explicitly define the type
+        data: chatRoom,
       });
     }
   }

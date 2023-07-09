@@ -1,7 +1,7 @@
 export const chatRooms = [
     {
       name: "Public Room 1",
-      type: ["public"],
+      type: "public",
       password: null, // No password set
       members: {
         connect: [
@@ -20,7 +20,7 @@ export const chatRooms = [
     },
     {
       name: "Private Room 1",
-      type: ["private"],
+      type: "private",
       password: "password123",
       members: {
         connect: [
