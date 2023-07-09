@@ -15,7 +15,9 @@ import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
   imports: [UsersModule, PrismaModule, AuthModule],
-  controllers: [AppController, UsersController, ChatroomController],
-  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway],
+  // controllers: [AppController, UsersController, ChatroomController],
+  controllers: [AppController, ChatroomController],
+  providers: [AppService, ChatroomService, SocketGateway],
+  // providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway],
 })
 export class AppModule {}
