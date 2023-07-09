@@ -4,7 +4,6 @@ import './globals.css';
 import {useLoggedInContext} from "@/context/LoggedInContextProvider";
 import CustomBtn from "@/components/CustomBtn";
 import LoginComponent from "@/components/Login";
-import Enable2FAComponent from '@/2fa_components/2fa_status';
 
 export default function Home() {
   const {isLoggedIn, login, logout} = useLoggedInContext();

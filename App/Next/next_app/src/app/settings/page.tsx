@@ -1,10 +1,10 @@
 "use client";
-import Enable2FAComponent from "@/components/2fa_status";
+import Manage2FAComponent from '@/components/'
 export default function Settings() {
     // const {isLoggedIn, login, logout} = useLoggedInContext();
     return (
         <div className="flex flex-col flex-auto items-center justify-center">
-            <Enable2FAComponent></Enable2FAComponent>
+            <Manage2FAComponent></Manage2FAComponent>
         </div>
     )
   }
