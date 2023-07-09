@@ -14,10 +14,10 @@ export class CreateChatroomDto {
     @IsString()
     password?: string;
 
-    // @IsNotEmpty()
-    // owner: number;
+    @IsNotEmpty()
+    owner: number;
 
-    // @IsNotEmpty()
-    // @IsArray()
-    // admins: number[];
+    @IsNotEmpty()
+    @IsArray()
+    admins: number[];
 }

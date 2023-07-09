@@ -3,22 +3,28 @@ import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { User } from '@prisma/client'
+import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 
 @ApiTags('ChatRoom') 
 @Controller('chatroom')
 export class ChatroomController {
-  constructor(private chatroomService: ChatroomService) {}
+  constructor(
+    private chatroomService: ChatroomService,
+    private socketGateway: SocketGateway,
+    ) {}
 
   @Post()
   create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any) {
     const user: User = req.user;
 
-    // createChatroomDto.owner = user.id; 
-    // createChatroomDto.admins = [user.id];
+    createChatroomDto.owner = user.id; 
+    createChatroomDto.admins = [user.id];
 
-    return this.chatroomService.createChatRoom(createChatroomDto);
-    
+    const newChatRoom = this.chatroomService.createChatRoom(createChatroomDto, user.id);
+
+    this.socketGateway.server.emit("NewChatRoom", newChatRoom);
+    return newChatRoom;
   }
 
 
