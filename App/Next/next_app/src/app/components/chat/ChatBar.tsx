@@ -33,8 +33,7 @@ const ChatBar = () => {
                 <ChannelList />
             </div>
             {isChatOpen && 
-                // <div className='w-full max-w-[45t0px] flex flex-col px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <div className='w-full max-w-[45t0px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+            <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
                 <ChatMessagesBox ref={chatMessageBoxRef} messages={messages}/>
                 <SendMessageForm onSend={send} className='mt-6 flex flex-row flex-auto justify-between' />
             </div>
