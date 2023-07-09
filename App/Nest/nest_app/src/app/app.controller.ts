@@ -18,6 +18,7 @@ export class AppController {
   getUsers(){
     return this.prisma.user.findMany();
   }
+
   // getUsers(): Promise<any> {
   //   return this.appService.getUsers();
   // }

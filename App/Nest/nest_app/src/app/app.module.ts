@@ -10,12 +10,13 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { SocketGateway } from '../sockets/socket.gateway';
-
+import { TwoFAController } from 'src/authentification/2FA/2FA.controller';
+import { TwoFAService } from 'src/authentification/2FA/2FA.service';
 
 
 @Module({
   imports: [UsersModule, PrismaModule, AuthModule],
-  controllers: [AppController, UsersController, ChatroomController],
-  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway],
+  controllers: [AppController, UsersController, ChatroomController,TwoFAController],
+  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService],
 })
 export class AppModule {}
