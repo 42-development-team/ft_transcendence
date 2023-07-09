@@ -9,14 +9,26 @@ import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ChatroomService {
-//   constructor(
-//     private readonly prisma: PrismaService,
-// ) {}
+  constructor(
+    private prisma: PrismaService,
+) {}
 
     /* C(reate) */
 
-  async createChatRoom(createChatroomDto: CreateChatroomDto) {
-    //
+  async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
+    const { name, type, password } = createChatroomDto;
+
+    const createdChatroom = await this.prisma.chatRoom.create({
+      data: {
+        name,
+        type,
+        password,
+        owner: { connect: { id: ownerId } },
+        admins: { connect: [{ id: ownerId }] },
+      },
+    });
+
+    return createdChatroom;
   }
 
   findAll() {
