@@ -7,14 +7,15 @@ import { UsersController } from '../users/users.controller';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
-import { ChatroomController } from 'src/chatroom/chatroom.controller';
-import { ChatroomService } from 'src/chatroom/chatroom.service';
-// import { SocketModule } from '@nestjs/platform-socket.io';
+import { ChatroomController } from '../chatroom/chatroom.controller';
+import { ChatroomService } from '../chatroom/chatroom.service';
+import { SocketGateway } from '../sockets/socket.gateway';
+
 
 
 @Module({
   imports: [UsersModule, PrismaModule, AuthModule],
   controllers: [AppController, UsersController, ChatroomController],
-  providers: [AppService, UsersService, ChatroomService, PrismaService],
+  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway],
 })
 export class AppModule {}
