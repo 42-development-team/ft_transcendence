@@ -1,5 +1,5 @@
 "use client";
-import Manage2FAComponent from '@/components/'
+import Manage2FAComponent from "../components/2fa_management";
 export default function Settings() {
     // const {isLoggedIn, login, logout} = useLoggedInContext();
     return (

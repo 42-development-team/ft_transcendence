@@ -17,14 +17,14 @@ import { User } from '@prisma/client';
 @ApiTags("TwoFA")
 @Controller('2fa')
 export class TwoFAController {
-    constructor (private twoFAService: TwoFAService, private prisma: PrismaService) {}
+    constructor (private twoFAService: TwoFAService, private prisma: PrismaService) {} //for now, a wrong username is a crash, waiting to know how we get user from next
 
     @Get('/turn-on/:username')
     async turnOnTwoFa (
         @Res() res: Response,
         @Param ('username') username: string,
         ) {
-        const qrCodeUrl = await this.twoFAService.generateTwoFA(username); // change username to User module, receive in Request (how)
+        const qrCodeUrl = await this.twoFAService.generateTwoFA(username);
         const base64Qrcode = await qrcode.toDataURL(qrCodeUrl);
         res.send({
 			contentType: 'image/png',
@@ -58,6 +58,4 @@ export class TwoFAController {
     ) {
         this.twoFAService.turnOff( username );
     }
-    // @Post('auth') ==> TODO: auth signin + disable
-    // @Post('turn-off')
 }

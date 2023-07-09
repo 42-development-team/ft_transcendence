@@ -1,6 +1,7 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import CustomBtn from "./CustomBtn";
+import '../globals.css'
 
 const Manage2FAComponent = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -49,6 +50,8 @@ const Manage2FAComponent = () => {
 	const handleDisableClick = async () => {
 		try {
 			setDisplayBox(true);
+			setImageUrl('');
+
 		}
 		catch(error) {
 			console.error('Error in handleDisableClick', error);
@@ -69,19 +72,40 @@ const Manage2FAComponent = () => {
 	const handleSubmit = async () => {
 		const isValid = await isTwoFAValid();
 		if (!isValid)
-			return ; //display error message
+			{
+				setIsVisible(true);
+				setMessage("Wrong code");
+				return ;
+			}
 		if (isActive) {
 			turnOff();
 			setIsActive(false);
 			setImageUrl('');
-			setDisplayBox(false); //set message ok
+			setDisplayBox(false);
+			setMessage("Two Factor Auth disabled");
+			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
-			setDisplayBox(false); //set message ok
+			setDisplayBox(false);
+			setMessage("Two Factor Auth enabled");
+			setIsVisible(true);
 		}
 	}
 
+
+	const [isVisible, setIsVisible] = useState(false);
+	const [message, setMessage] = useState('');
+	useEffect(() => {
+	  if (isVisible) {
+		const timer = setTimeout(() => {
+		  setIsVisible(false);
+		}, 1500);
+
+		return () => clearTimeout(timer);
+	  }
+	}, [isVisible]);
+  
 	return (
 		<div>
 			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
@@ -95,6 +119,9 @@ const Manage2FAComponent = () => {
 				onChange={handleInputChange}/>
 			</div> }
 			<CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn>
+			<div className=" bg-gradient-to-tr from-blue text-base">
+				{isVisible && <p>{message}</p>}
+	  		</div>
 		</div>
 	);
 };
