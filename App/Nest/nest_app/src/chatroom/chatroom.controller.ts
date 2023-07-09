@@ -5,6 +5,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
+import { PrismaService } from '../prisma/prisma.service';
 
 @ApiTags('ChatRoom') 
 @Controller('chatroom')

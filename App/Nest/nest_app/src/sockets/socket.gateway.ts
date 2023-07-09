@@ -1,7 +1,9 @@
 import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Message } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 @WebSocketGateway()
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer()
