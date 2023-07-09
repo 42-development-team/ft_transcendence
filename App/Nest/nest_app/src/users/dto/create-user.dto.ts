@@ -1,21 +1,13 @@
-import { Exclude } from 'class-transformer';
-/* By using @Exclude(), sensitive data is not included when converting the UserDto instance 
-to plain objects or JSON.
-This helps protect sensitive information from unintentional exposure or transmission. */
-import { IsNotEmpty, IsString, IsNumber, MaxLength, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsBoolean } from 'class-validator';
  
  export class CreateUserDto {
-   @IsNotEmpty()
-   @IsNumber()
-   id:         number;
-
    @IsNotEmpty()
    @IsString()
    login:      string;
 
    @IsNotEmpty()
    @IsString()
-   username:   string;
+   username?:   string;
 
    @IsNotEmpty()
    @IsString()
@@ -27,4 +19,6 @@ import { IsNotEmpty, IsString, IsNumber, MaxLength, IsBoolean } from 'class-vali
    
    @IsBoolean()
    isTwoFAEnabled: Boolean;
+   @MaxLength(65_000) 
+   avatar?:     string;
  }
