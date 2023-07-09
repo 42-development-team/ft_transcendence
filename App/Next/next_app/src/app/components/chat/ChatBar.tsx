@@ -1,8 +1,4 @@
 "use client";
-import Image from 'next/image';
-import expandImg from "../../../../public/collapse-right-svgrepo-com.svg"
-import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
-import { useState } from 'react';
 import SendMessageForm from './SendMessageForm';
 import useChatMessages from '@/app/hooks/useChatMessages';
 import ChatMessage from './ChatMessage';
@@ -10,26 +6,20 @@ import { MessageModel } from '@/app/utils/models';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import React from 'react';
 import ChannelList from './channel/ChannelList';
+import { useChatContext } from '@/app/context/ChatContextProvider';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
 const ChatBar = () => {
-
-    const [isChatOpen, setChatOpen] = useState(false);
+    const {isChatOpen} = useChatContext();
     const {messages, send} = useChatMessages();
-
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
 
     return (
         <div className='flex h-full'>
             {/* {Todo: isolate chaetBar on ist own component} */}
-            <div className="w-16 bg-base shadow-inner flex flex-col justify-start items-center">
-                <button onClick={() => {
-                    setChatOpen(!isChatOpen);
-                }}>
-                    <Image src={isChatOpen ? collapseImg : expandImg} height={36} width={36} alt="Collapse" className='m-1 transition-all' />
-                </button>
+            <div className="w-16 bg-base h-full shadow-inner flex flex-col justify-start items-center">
                 <ChannelList />
             </div>
             {isChatOpen && 
