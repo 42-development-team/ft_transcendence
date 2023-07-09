@@ -88,6 +88,8 @@ export class UsersService {
             login: username,
             username: username,
             avatar: '',
+            isTwoFAEnabled: false,
+            twoFAsecret: "",
             };
 
             user = await this.createUser(createUserDto);
