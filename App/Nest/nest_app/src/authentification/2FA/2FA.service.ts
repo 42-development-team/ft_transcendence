@@ -37,9 +37,12 @@ export class TwoFAService {
         return qrcodeURL;
     }
 
-    async isTwoFACodeValid( twoFACode: string, user: User) {
+    async isTwoFACodeValid( req: Request, res: Response, username: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {username: username},
+        });
         const isValid = authenticator.verify({
-            token: twoFACode,
+            token: req,
             secret: user.twoFAsecret,
         });
         if (isValid) {
@@ -51,12 +54,15 @@ export class TwoFAService {
                     isTwoFAEnabled: true
                 },
             });
-            return (isValid);
+            res.send( isValid );
         }
     }
 
-    async isTwoFAEnabled( user: User ) : Promise<boolean> {
+    async isTwoFAEnabled( res: Response, username: string ) {
+        const user = await this.prisma.user.findUnique({
+            where: {username: username},
+        });
         const isEnabled = user.isTwoFAEnabled;
-        return isEnabled;
+        res.send(isEnabled);
     }
 }

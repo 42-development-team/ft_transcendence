@@ -10,12 +10,14 @@ import { stringify } from 'querystring';
 import { HttpCode } from '@nestjs/common';
 import { Http2ServerResponse } from 'http2';
 import { qrCodeDto } from '../dto/TwoFactor.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 import * as qrcode from 'qrcode'
+import { User } from '@prisma/client';
 
 @ApiTags("TwoFA")
 @Controller('2fa')
 export class TwoFAController {
-    constructor (private twoFAService: TwoFAService) {}
+    constructor (private twoFAService: TwoFAService, private prisma: PrismaService) {}
 
     @Get('/turn-on/:username')
     async turnOnTwoFa (
@@ -30,14 +32,22 @@ export class TwoFAController {
 		});
     }
     
-    // @Get('/verify/:username')
-    // async verifyTwoFA (
-    //     @Res() res: Response,
-    //     @Req() req: Request,
-    //     @Param('username') username: string,
-    // ) {
-    //     return (this.twoFAService.isTwoFACodeValid( req.code, req.user ));
-    // }
+    @Get('/isTwoFAActive/:username')
+    async isActive (
+        @Param ('username') username: string,
+        @Res() res: Response,
+    ) {
+        await this.twoFAService.isTwoFAEnabled( res, username );
+    }
+
+    @Get('/verifyTwoFA/:username')
+    async verifyTwoFA (
+        @Res() res: Response,
+        @Req() req: Request,
+        @Param('username') username: string,
+    ) {
+        await this.twoFAService.isTwoFACodeValid( req, res, username );
+    }
     // @Post('auth') ==> TODO: auth signin + disable
     // @Post('turn-off')
 }
