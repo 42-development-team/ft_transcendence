@@ -34,26 +34,29 @@ export class TwoFAService {
             process.env.AUTH_FACTOR_APP_NAME,
             secret
         );
-        const updateEnabledTFa = await this.prisma.user.updateMany({
-            where: {
-                username: username
-            },
-            data: {
-                isTwoFAEnabled: true
-            },
-        });
         return qrcodeURL;
     }
 
-        async isTwoFACodeValid( twoFACode: string, user: User) {
-            return authenticator.verify({
-                token: twoFACode,
-                secret: user.twoFAsecret,
+    async isTwoFACodeValid( twoFACode: string, user: User) {
+        const isValid = authenticator.verify({
+            token: twoFACode,
+            secret: user.twoFAsecret,
+        });
+        if (isValid) {
+            await this.prisma.user.updateMany({
+                where: {
+                    username: user.username
+                },
+                data: {
+                    isTwoFAEnabled: true
+                },
             });
+            return (isValid);
         }
+    }
 
-        async isTwoFAEnabled( user: User ) : Promise<boolean> {
-            const isEnabled = user.isTwoFAEnabled;
-            return isEnabled;
-        }
+    async isTwoFAEnabled( user: User ) : Promise<boolean> {
+        const isEnabled = user.isTwoFAEnabled;
+        return isEnabled;
+    }
 }
