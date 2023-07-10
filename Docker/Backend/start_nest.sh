@@ -28,6 +28,10 @@ npm install cors
 echo "Prisma migrate reset"
 npx prisma migrate reset -f
 
+#2FA
+npm install otplib
+npm i --save-dev @types/qrcode
+
 # Allow to access and edit database in the browser via port 5555
 #npx prisma generate
 #npx prisma migrate dev
@@ -35,4 +39,4 @@ npx prisma migrate reset -f
 (npx prisma studio&)
 
 echo "Starting backend"
-npm run start
+npm run start:dev

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from '@prisma/client'
+import { CreateUserDto } from './dto';
+import { Prisma, User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -15,10 +15,10 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto): Promise<User> {
         const user = await this.prisma.user.create({
             data: {
+                login: createUserDto.login,
                 username: createUserDto.username,
-                email: createUserDto.email,
-                password: createUserDto.password,
                 avatar: createUserDto.avatar,
+                twoFAsecret: createUserDto.twoFAsecret,
             }
         });
         return user;
@@ -44,12 +44,17 @@ export class UsersService {
     }
 
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
-        const user = await this.prisma.user.findUnique({
-            where: { username },
-            rejectOnNotFound: true,
-        });
-        const userDto = plainToClass(CreateUserDto, user);
-        return userDto;
+        try {
+
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { username },
+            });
+            const userDto = plainToClass(CreateUserDto, user);
+            return userDto;
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     }
 
     /* U(pdate) */
@@ -58,14 +63,6 @@ export class UsersService {
         const updatedUser = await this.prisma.user.update({
             where: { id },
             data: { username: updatedUsername },
-        });
-        return updatedUser;
-    }
-
-    async updateEmail(id: number, updatedEmail: string): Promise<CreateUserDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { id },
-            data: { email: updatedEmail },
         });
         return updatedUser;
     }
@@ -85,4 +82,25 @@ export class UsersService {
             where: { id },
         });
     }
+
+    /* Retreiving or creating a user when authenticating*/
+
+    async createOrFindUser(username: string): Promise<CreateUserDto & { id?: number }> {
+        let user = await this.getUserFromUsername(username);
+
+        if (!user) {
+            const createUserDto: CreateUserDto = {
+            login: username,
+            username: username,
+            avatar: '',
+            isTwoFAEnabled: false,
+            twoFAsecret: "",
+            };
+
+            user = await this.createUser(createUserDto);
+        }
+
+        return user;
+    }
+
 }

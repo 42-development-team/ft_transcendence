@@ -29,8 +29,6 @@ async function bootstrap() {
       "preflightContinue": false,
       "optionsSuccessStatus": 204,
     })
-  SwaggerModule.setup('api', app, document);
   await app.listen(4000);
-
 }
 bootstrap();
