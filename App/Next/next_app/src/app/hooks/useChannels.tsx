@@ -17,15 +17,11 @@ export default function useChannels() {
     const appendNewChannel = useCallback(
         (newChannel: ChannelModel) => {
             console.error(`append a new channel : ${newChannel.id}`)
-            // const nextChannels: ChannelModel[] = [
-            //     ...channels,
-            //     newChannel
-            // ]
-            // console.error(`Length = ${channels.length}`)
-            // setChannels(channels => channels.concat(newChannel))
-            // channels.concat(newChannel);
-            setChannels(channels => channels.concat(newChannel));
-            console.error(`Length = ${channels.length}`)
+            const nextChannels: ChannelModel[] = [
+                ...channels,
+                newChannel
+            ]
+            setChannels(nextChannels);
         },
         [channels]
     )

@@ -14,13 +14,13 @@ import useChannels from '@/app/hooks/useChannels';
 const ChatBar = () => {
     const {isChatOpen} = useChatContext();
     const {messages, send} = useChatMessages();
-    const {channels, createNewChannel} = useChannels();
+    const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
 
     return (
         <div className='flex h-full'>
             <div className="w-16 bg-base h-full shadow-inner flex flex-col justify-start items-center">
-                <ChannelList channels={channels} onNewChannel={createNewChannel} />
+                <ChannelList channels={channels} />
             </div>
             {isChatOpen && 
             <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>

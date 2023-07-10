@@ -5,7 +5,6 @@ import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Channel from "@/components/chat/channel/Channel";
 import AddChannel from "./AddChannel";
 
-import testIcon from "../../../../../public/next.svg"
 import { useChatContext } from '@/app/context/ChatContextProvider';
 import { ChannelModel } from '@/app/utils/models';
 
@@ -25,21 +24,6 @@ const ChannelList = ( {channels} : {channels: ChannelModel[]}) => {
                 </button>
                 <li className="w-full bg-surface1 h-[2px] rounded-sm mb-4 mt-2"></li>
                 {channelsList}
-                {/* <Channel channelName={"test"} icon={testIcon2}/>
-                <Channel channelName={"A second channel"} icon={testIcon}/>
-                <Channel channelName={"A third channel"} icon={testIcon2}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/>
-                <Channel channelName={"I don't know what to call this one"} icon={testIcon}/> */}
                 <AddChannel />
             </ul>
         </div>

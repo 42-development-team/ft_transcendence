@@ -1,8 +1,6 @@
 import useChannels from '@/app/hooks/useChannels';
 import style from './Channel.module.css';
 
-// Todo: onClick event
-
 const AddChannel = () => {
     const {createNewChannel} = useChannels();
     return (

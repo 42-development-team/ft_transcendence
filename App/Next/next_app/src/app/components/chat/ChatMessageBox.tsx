@@ -5,7 +5,7 @@ import React from 'react';
 
 const ChatMessagesBox = React.forwardRef<HTMLDivElement, {messages: MessageModel[]}> (({ messages }, ref ) => {
     const MessageList = messages.map((message) => (
-        <ChatMessage key={message.id} className='mb-1' message={message} />
+        <ChatMessage key={message.id} message={message} />
     ))
     return (
         <div ref={ref} className='overflow-auto h-[84vh]'>
