@@ -4,7 +4,7 @@ import Channel from "@/components/chat/channel/Channel";
 import ShowFriends from '../ShowFriends';
 import CreateChannel from './CreateChannel';
 import Separator from './Separator';
-import JoinChannel from './JoinChannel ';
+import JoinChannel from './JoinChannel';
 
 const ChannelList = ( {channels} : {channels: ChannelModel[]}) => {
     const channelsList = channels.map((channel) => (
