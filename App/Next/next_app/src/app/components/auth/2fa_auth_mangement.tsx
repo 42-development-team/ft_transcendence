@@ -6,7 +6,6 @@ import '../../globals.css'
 const TwoFAAuthComponent = () => {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
-	const [displayBox, setDisplayBox] = useState<Boolean>(false);
 
 	const isTwoFAValid = async () => {
 
@@ -35,13 +34,11 @@ const TwoFAAuthComponent = () => {
 			}
 		if (isActive) {
 			setIsActive(false);
-			setDisplayBox(false);
 			setMessage("Error authentication");
 			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
-			setDisplayBox(false);
 			setMessage("Successfuly login");
 			setIsVisible(true);
 		}
@@ -62,7 +59,7 @@ const TwoFAAuthComponent = () => {
   
 	return (
 		<div>
-			{displayBox && <div className="m-4 pt-4">
+			{<div className="m-4 pt-4">
 				<p className="font-bold text-center">Enter 2FA Code</p>
 				<input type="text" 
 				className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"

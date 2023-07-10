@@ -21,7 +21,11 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            const token = await this.authService.login(req);
+            // const token = await this.authService.login(req);
+            // if (await this.authService.verifyJWT(token)) {
+            //     throw new Error('ERROR: Failed to verify JWT token');
+            // }
+            // await this.authService.redirectTwoFAVerify();
         }
         catch (error) {
             console.error(error.message);

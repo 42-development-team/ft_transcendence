@@ -17,8 +17,8 @@ export class AuthService {
     ) {}
 
     // to clean ! userId: number ??
-    async generateJWT(userId: string): Promise<string> {
-        return await this.jwtService.sign({sub: userId});
+    async generateJWT(userId: number): Promise<string> {
+        return this.jwtService.sign({sub: userId});
     }
 
     verifyJWT(token: string): any {
@@ -32,13 +32,22 @@ export class AuthService {
 
     async login(req: any): Promise<string> {
        console.log("==========REQ.USER===========");
-       console.log(req.user);
        try {
-           const jwtSigned = await this.generateJWT(req.user.id);
-           return jwtSigned;
+            console.error("req.user.id:", req.user.id);
+            const jwtSigned = await this.generateJWT(req.user.id);
+            return jwtSigned;
         }
         catch (error) {
             console.log(error.message);
         }
+    }
+
+    async redirectTwoFAVerify() {
+        try {
+            fetch('localhost:3000/auth/2fa');
+        } catch (error) {
+            console.error('Failed to fetch redirectTwoFAVerufy:', error);
+        }
+
     }
 }
