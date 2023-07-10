@@ -1,4 +1,4 @@
-import styles from './Channel.module.css';
+import styles from '../Chat.module.css';
 import Image from "next/image";
 import { useChatContext } from '@/app/context/ChatContextProvider';
 import { ChannelModel } from '@/app/utils/models';

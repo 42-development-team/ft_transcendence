@@ -1,5 +1,5 @@
 import useChannels from '@/app/hooks/useChannels';
-import style from './Channel.module.css';
+import style from '../Chat.module.css';
 
 const AddChannel = () => {
     const {createNewChannel} = useChannels();
