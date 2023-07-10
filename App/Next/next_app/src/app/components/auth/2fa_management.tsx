@@ -19,20 +19,20 @@ const Manage2FAComponent = () => {
 			throw new Error('Failed to fetch \'isTwoFAActive');
 		}
 		const data = await response.json();
-		console.error("isActive?:" + data);
 		setIsActive(data);
 	}
 
 	const isTwoFAValid = async () => {
-
 		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/dfbsurain', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
 		'Content-Type': 'application/json',
 		}});
+		if (!response.ok) {
+			throw new Error('Failed to fetch \'verifyTwoFA');
+		}
 		const data = await response.json();
-		console.log("isValid?: " + data);
 		return data;
 	}
 
@@ -40,29 +40,27 @@ const Manage2FAComponent = () => {
 		try {
 			setDisplayBox(true);
 			const response = await fetch('http://localhost:4000/2fa/turn-on/dfbsurain');
+			if (!response.ok) {
+				throw new Error('Failed to fetch \'turn-on');
+			}
 			const data = await response.json();
 			setImageUrl(data.base64Qrcode);
-		} catch (error)                                                                                                                                                                                                                                                                                                                                                                                                                 {
+		} catch (error) {                                                                                                                                                                                                                                                                                                                                                                                                           {
 			console.error('Error retrieving image URL:', error);
-		}
+		};
 	};
 
 	const handleDisableClick = async () => {
-		try {
-			setDisplayBox(true);
-			setImageUrl('');
-
-		}
-		catch(error) {
-			console.error('Error in handleDisableClick', error);
-		}
+		setDisplayBox(true);
+		setImageUrl('');
 	};
 
 	const turnOff = async () => {
 		const response = await fetch('http://localhost:4000/2fa/turn-off/dfbsurain');
+		if (!response.ok) {
+			throw new Error('Failed to fetch \'turn-off');
+		}
 		const data = await response.json();
-		if (data.ok)
-			return ;
 	}
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
