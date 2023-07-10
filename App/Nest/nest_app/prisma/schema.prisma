@@ -24,6 +24,8 @@ model User {
   chatRoom          ChatRoom[]  @relation("members")
   chatRoomsCreated  ChatRoom[]  @relation("chatCreated")
   chatRoomsAdmin    ChatRoom[]  @relation("chatAdmins")
+  twoFAsecret       String?
+  isTwoFAEnabled    Boolean    @default(false)
 } 
 
 model Message {
