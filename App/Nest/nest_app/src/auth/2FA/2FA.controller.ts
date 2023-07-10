@@ -1,18 +1,10 @@
-// import { TwoFactorUserDto } from '../dto/';
 import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
-import {HttpStatus, Put, UseGuards} from "@nestjs/common";
 import { Controller, Post, Body, Param, Req, Res, Get, Header, Redirect } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
 import { Request, Response } from 'express';
-import { CreateUserDto } from 'src/users/dto';
-import { stringify } from 'querystring';
-import { HttpCode } from '@nestjs/common';
-import { Http2ServerResponse } from 'http2';
-import { qrCodeDto } from '../dto/TwoFactor.dto';
+import { qrCodeDto } from './TwoFactor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as qrcode from 'qrcode'
-import { User } from '@prisma/client';
 
 @ApiTags("TwoFA")
 @Controller('2fa')

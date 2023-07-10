@@ -1,11 +1,11 @@
 "use client";
 import React, {useState, useEffect} from "react";
-import CustomBtn from "./CustomBtn";
-import '../globals.css'
+import CustomBtn from "../CustomBtn";
+import '../../globals.css'
 
 const Manage2FAComponent = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
-	const [isActive, setIsActive] = useState<boolean>(false); //init boolean with db
+	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
 
@@ -100,7 +100,7 @@ const Manage2FAComponent = () => {
 	  if (isVisible) {
 		const timer = setTimeout(() => {
 		  setIsVisible(false);
-		}, 1500);
+		}, 2100);
 
 		return () => clearTimeout(timer);
 	  }
@@ -110,7 +110,9 @@ const Manage2FAComponent = () => {
 		<div>
 			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
 			<CustomBtn id="TwoFADButton" onClick={handleDisableClick} disable={!isActive}>Disable 2FA</CustomBtn>
-			{imageUrl !== '' && <img src={imageUrl} height="300" width="300" alt="QR Code" />}
+			{imageUrl !== '' && <div>
+				<img src={imageUrl} height="300" width="300" alt="QR Code" />
+			</div> }
 			{displayBox && <div className="m-4 pt-4">
 				<p className="font-bold text-center">Enter 2FA Code</p>
 				<input type="text" 

@@ -10,8 +10,8 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { SocketGateway } from '../sockets/socket.gateway';
-import { TwoFAController } from 'src/authentification/2FA/2FA.controller';
-import { TwoFAService } from 'src/authentification/2FA/2FA.service';
+import { TwoFAController } from 'src/auth/2FA/2FA.controller';
+import { TwoFAService } from 'src/auth/2FA/2FA.service';
 
 
 @Module({
