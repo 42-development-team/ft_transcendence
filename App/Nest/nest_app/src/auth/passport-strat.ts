@@ -4,6 +4,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
+import { json } from 'body-parser';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
@@ -12,23 +14,28 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
         private usersService: UsersService,
         private jwtService: JwtService,
         // scope: 'public', // ?? but i can use cb function as return in validate
-        ) {
+    ) {
         super({
             clientID: process.env.TRANSCENDENCE_TOKEN,
             clientSecret: process.env.TRANSCENDENCE_SECRET,
-            callbackURL:process.env.REDIRECT_URI,
+            callbackURL: process.env.REDIRECT_URL,
         });
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: any, cb: VerifyCallback,): Promise<any> {
+    async validate(accessToken: string, refreshToken: string, profile: any, cb): Promise<any> {
 
-        return profile;
-        // return cb(null, profile);
-        // console.log(profile);
+        try {
+
+            // console.log(profile);
+            const user = this.usersService.createOrFindUser(profile.username);
+            this.authService.login(user);
+            // console.log("=========USER DB INFO=========");
+            // console.log(user);
+            return cb(null, user);
+            return profile;
+        }
+        catch (error){
+            console.error(error.message);
+        }
     }
-
-    // async login(user: any) {
-    //  const payload = this.authService.validateUser;
-    //  return {access_token: this.jwtService.sign(payload)};
-    // }
 }

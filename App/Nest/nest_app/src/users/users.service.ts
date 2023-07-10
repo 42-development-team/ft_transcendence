@@ -44,12 +44,17 @@ export class UsersService {
     }
 
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
-        const user = await this.prisma.user.findUnique({
-            where: { username },
-            rejectOnNotFound: true,
-        });
-        const userDto = plainToClass(CreateUserDto, user);
-        return userDto;
+        try {
+
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { username },
+            });
+            const userDto = plainToClass(CreateUserDto, user);
+            return userDto;
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     }
 
     /* U(pdate) */
