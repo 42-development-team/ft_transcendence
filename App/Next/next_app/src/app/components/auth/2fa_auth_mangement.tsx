@@ -8,20 +8,6 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
 
-	useEffect( () => {
-		isTwoFAActive();
-	}, [] );
-
-	const isTwoFAActive = async () => {
-		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/dfbsurain');
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'isTwoFAActive');
-		}
-		const data = await response.json();
-		console.error("isActive?:" + data);
-		setIsActive(data);
-	}
-
 	const isTwoFAValid = async () => {
 
 		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/dfbsurain', {
@@ -48,7 +34,6 @@ const TwoFAAuthComponent = () => {
 				return ;
 			}
 		if (isActive) {
-			turnOff();
 			setIsActive(false);
 			setDisplayBox(false);
 			setMessage("Error authentication");
