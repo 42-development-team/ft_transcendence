@@ -1,11 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+import { ChatRoom } from '@prisma/client';
+import { User } from '@prisma/client';
+import { plainToClass } from 'class-transformer';
+
 
 @Injectable()
 export class ChatroomService {
-  create(createChatroomDto: CreateChatroomDto) {
-    return 'This action adds a new chatroom';
+  constructor(
+    private prisma: PrismaService,
+) {}
+
+    /* C(reate) */
+
+  async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
+    const { name, type, password } = createChatroomDto;
+
+    const createdChatroom = await this.prisma.chatRoom.create({
+      data: {
+        name,
+        type,
+        password,
+        owner: { connect: { id: ownerId } },
+        admins: { connect: [{ id: ownerId }] },
+      },
+    });
+
+    return createdChatroom;
   }
 
   findAll() {
