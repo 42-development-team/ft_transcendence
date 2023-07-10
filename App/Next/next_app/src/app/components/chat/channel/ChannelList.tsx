@@ -1,10 +1,7 @@
 import style from '../Chat.module.css';
-import Image from 'next/image';
-import expandImg from "../../../../../public/collapse-right-svgrepo-com.svg"
 import Channel from "@/components/chat/channel/Channel";
 import AddChannel from "./AddChannel";
 
-import { useChatContext } from '@/app/context/ChatContextProvider';
 import { ChannelModel } from '@/app/utils/models';
 import ShowFriends from '../ShowFriends';
 
