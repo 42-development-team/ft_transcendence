@@ -4,7 +4,6 @@ import CustomBtn from "../CustomBtn";
 import '../../globals.css'
 
 const TwoFAAuthComponent = () => {
-	const [imageUrl, setImageUrl] = useState<string>('');
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
@@ -36,35 +35,6 @@ const TwoFAAuthComponent = () => {
 		return data;
 	}
 
-	const handleEnableClick = async () => {
-		try {
-			setDisplayBox(true);
-			const response = await fetch('http://localhost:4000/2fa/turn-on/dfbsurain');
-			const data = await response.json();
-			setImageUrl(data.base64Qrcode);
-		} catch (error)                                                                                                                                                                                                                                                                                                                                                                                                                 {
-			console.error('Error retrieving image URL:', error);
-		}
-	};
-
-	const handleDisableClick = async () => {
-		try {
-			setDisplayBox(true);
-			setImageUrl('');
-
-		}
-		catch(error) {
-			console.error('Error in handleDisableClick', error);
-		}
-	};
-
-	const turnOff = async () => {
-		const response = await fetch('http://localhost:4000/2fa/turn-off/dfbsurain');
-		const data = await response.json();
-		if (data.ok)
-			return ;
-	}
-
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
 	}
@@ -80,15 +50,14 @@ const TwoFAAuthComponent = () => {
 		if (isActive) {
 			turnOff();
 			setIsActive(false);
-			setImageUrl('');
 			setDisplayBox(false);
-			setMessage("Two Factor Auth disabled");
+			setMessage("Error authentication");
 			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
 			setDisplayBox(false);
-			setMessage("Two Factor Auth enabled");
+			setMessage("Successfuly login");
 			setIsVisible(true);
 		}
 	}
@@ -108,11 +77,6 @@ const TwoFAAuthComponent = () => {
   
 	return (
 		<div>
-			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
-			<CustomBtn id="TwoFADButton" onClick={handleDisableClick} disable={!isActive}>Disable 2FA</CustomBtn>
-			{imageUrl !== '' && <div>
-				<img src={imageUrl} height="300" width="300" alt="QR Code" />
-			</div> }
 			{displayBox && <div className="m-4 pt-4">
 				<p className="font-bold text-center">Enter 2FA Code</p>
 				<input type="text" 
