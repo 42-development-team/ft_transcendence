@@ -2,23 +2,23 @@
 import React, {useContext, createContext, useState} from "react";
 
 // Note: we also need username ? Replace "PROFILE" text by "username"
-type ChatContextType = {
+type ChatBarContextType = {
     isChatOpen: boolean;
     openChat: () => void;
     closeChat: () => void;
     toggleChatVisibility: () => void;
 }
 
-const ChatContextDefaultValues: ChatContextType = {
+const ChatBarContextDefaultValues: ChatBarContextType = {
     isChatOpen: false,
     openChat: () => {},
     closeChat: () => {},
     toggleChatVisibility: () => {},
 }
 
-const ChatContext = createContext<ChatContextType>(ChatContextDefaultValues);
+const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultValues);
 
-export const ChatContextProvider = ({children} : {children: React.ReactNode}) => {
+export const ChatBarContextProvider = ({children} : {children: React.ReactNode}) => {
     const [isChatOpen, setChatOpen] = useState(false);
 
     const openChat = () => {
@@ -33,10 +33,10 @@ export const ChatContextProvider = ({children} : {children: React.ReactNode}) =>
     }
 
     return (
-        <ChatContext.Provider value = {{isChatOpen, openChat, closeChat, toggleChatVisibility}}>
+        <ChatBarContext.Provider value = {{isChatOpen, openChat, closeChat, toggleChatVisibility}}>
             {children}
-        </ChatContext.Provider>
+        </ChatBarContext.Provider>
     )
 }
 
-export const useChatContext = () => useContext(ChatContext);
+export const useChatBarContext = () => useContext(ChatBarContext);

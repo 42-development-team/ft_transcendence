@@ -1,7 +1,7 @@
 import useChannels from '@/app/hooks/useChannels';
 import style from '../Chat.module.css';
 
-const AddChannel = () => {
+const CreateChannel = () => {
     const {createNewChannel} = useChannels();
     return (
         <li className={style.channelItem}>
@@ -15,4 +15,4 @@ const AddChannel = () => {
     );
 }
 
-export default AddChannel;
+export default CreateChannel;

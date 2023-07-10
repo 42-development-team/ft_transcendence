@@ -1,5 +1,5 @@
 "use client";
-import { useChatContext } from '@/app/context/ChatContextProvider';
+import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatMessage from './ChatMessage';
 import { MessageModel } from '@/app/utils/models';
 import Image from 'next/image';
@@ -7,7 +7,7 @@ import React from 'react';
 import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
 
 const ChatMessagesBox = React.forwardRef<HTMLDivElement, {messages: MessageModel[]}> (({ messages }, ref ) => {
-    const {closeChat} = useChatContext();
+    const {closeChat} = useChatBarContext();
     const MessageList = messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
