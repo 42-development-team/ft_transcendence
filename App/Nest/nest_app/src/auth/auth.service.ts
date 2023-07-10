@@ -16,8 +16,9 @@ export class AuthService {
 
     ) {}
 
-    generateJWT(userId: number): string {
-        return this.jwtService.sign({sub: userId});
+    // to clean ! userId: number ??
+    async generateJWT(userId: string): Promise<string> {
+        return await this.jwtService.sign({sub: userId});
     }
 
     verifyJWT(token: string): any {
@@ -30,7 +31,14 @@ export class AuthService {
     }
 
     async login(req: any): Promise<string> {
-        const user = await this.usersService.createOrFindUser(req.user.username);
-        return this.generateJWT(user.id);
+       console.log("==========REQ.USER===========");
+       console.log(req.user);
+       try {
+           const jwtSigned = await this.generateJWT(req.user.id);
+           return jwtSigned;
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     }
 }
