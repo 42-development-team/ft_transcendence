@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChannelModel } from "../utils/models";
 import { generateFakeChannel } from "../utils/helpers";
 
-const fakeChannels: ChannelModel[] = Array(6)
+const fakeChannels: ChannelModel[] = Array(20)
     .fill(null)
     .map(() => generateFakeChannel())
 

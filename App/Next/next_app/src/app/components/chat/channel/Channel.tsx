@@ -11,7 +11,7 @@ const Channel = ({channel :{name, icon}}: ChannelProps) => {
     const {openChat} = useChatContext();
     return (
         <li className={styles.channelItem}>
-            <button onClick={openChat} className='rounded-[inherit] w-[inherit] h-[inherit] fixed'>
+            <button onClick={openChat} className='rounded-[inherit] w-[inherit] h-[inherit] relative'>
                 <Image alt="Channel Icon" fill src={icon} 
                 sizes=" 100vw, 100vw"
                 className="rounded-[inherit]" />

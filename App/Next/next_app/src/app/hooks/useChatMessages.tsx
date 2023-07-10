@@ -9,7 +9,7 @@ const welcomeMessage: MessageModel = {
         rgbColor: 'darkorchid',
         username: 'ChatBot',
     },
-    content: 'Welcome to the Chat 👋',
+    content: '👋 Welcome to the Chat 👋',
 }
 
 const fakeMessages: MessageModel[] = Array(35)
