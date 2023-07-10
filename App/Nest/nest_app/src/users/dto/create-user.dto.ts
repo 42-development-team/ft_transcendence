@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsBoolean } from 'class-validator';
  
  export class CreateUserDto {
    @IsNotEmpty()
@@ -11,6 +11,13 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
    @IsNotEmpty()
    @IsString()
-   @MaxLength(65_000) 
+   @MaxLength(65_000) //This can help enforce constraints and ensure that the uploaded file path or URL doesn't inadvertently exceed a reasonable length.
    avatar?:     string;
+
+   @IsString()
+   twoFAsecret: string;
+   
+   @IsBoolean()
+   isTwoFAEnabled: Boolean;
+
  }

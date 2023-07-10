@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto';
 import { Prisma, User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
 
@@ -18,6 +18,7 @@ export class UsersService {
                 login: createUserDto.login,
                 username: createUserDto.username,
                 avatar: createUserDto.avatar,
+                twoFAsecret: createUserDto.twoFAsecret,
             }
         });
         return user;
@@ -92,6 +93,8 @@ export class UsersService {
             login: username,
             username: username,
             avatar: '',
+            isTwoFAEnabled: false,
+            twoFAsecret: "",
             };
 
             user = await this.createUser(createUserDto);

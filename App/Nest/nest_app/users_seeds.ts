@@ -3,6 +3,7 @@ export const users = [
         login: "dburain",
         username: "dburain",
         avatar: "profil.jpg",
+        twoFAsecret: "facticeSecret",
     },
     {
         login: "mjaune",
