@@ -1,0 +1,87 @@
+
+.navChannel {
+    @apply mb-2 mt-2 p-1 h-full w-16 flex flex-col justify-start items-center;
+    position: absolute;
+    overflow-x: visible;
+    overflow-y: scroll;
+    width: 100%;
+    pointer-events: none;
+    max-height: 92vh;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.navChannel::-webkit-scrollbar {
+    display: none;
+}
+
+.channelContainer {
+    @apply flex flex-col gap-4 p-1;
+    box-sizing: border-box;
+    position: absolute;
+    pointer-events:fill;
+    z-index: 2;
+}
+
+/* ChannelList */
+.channelItem {
+    @apply bg-surface0 w-12 h-12 text-sm font-semibold rounded-full;
+    position: relative;
+    transition: border-radius 128ms, background 128ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.channelItem:hover {
+    @apply bg-lavender cursor-pointer;
+    border-radius: 36%;
+    border-radius: 36%;
+}
+
+.channelItem:hover .channelName{
+    opacity: 100%;
+    transform: translateY(-50%) scale(1);
+    pointer-events: none;
+}
+
+.channelItem:hover .channelIcon{
+    color: var(--color-crust);
+}
+
+.channelName {
+    @apply bg-crust rounded-lg;
+    padding: 0.68rem 1.5rem;
+    position: absolute;
+    display: inline-block;
+    top: 50%;
+    left: 120%;
+    transform-origin: left;
+    width: max-content;
+    max-width: 256px;
+    transform: translateY(-50%) scale(0.96);
+    opacity: 0%;
+    transition: opacity 64ms, transform 128ms cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    pointer-events: none;
+    z-index: 10;
+}
+
+
+.channelName::before {
+    @apply bg-crust;
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    transform: translateY(-50%) rotate(45deg);
+    width: 24px;
+    height: 24px;
+    left: -4px;
+    top: 50%;
+    z-index: -1;
+}
+
+.channelIcon {
+    color: var(--color-mauve);
+    border-radius: inherit;
+    width: inherit;
+}

@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+:root {
+    --color-green: #a6e3a1;
+    --color-crust: #11111b;
+}
+
 @layer base {
     body {
         @apply bg-mantle text-text font-transcendence min-h-screen;
@@ -11,7 +17,7 @@
 }
 
 .button-mauve {
-    @apply bg-mauve hover:bg-pink drop-shadow-xl rounded text-base font-bold text-sm p-2;
+    @apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2;
 }
 
 ::-webkit-scrollbar {

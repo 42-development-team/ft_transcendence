@@ -1,3 +1,10 @@
+export interface ChannelModel {
+    id: string
+    name: string
+    messages?: MessageModel[]
+    icon: string
+}
+
 export interface MessageModel {
     id: string
     author: Author
