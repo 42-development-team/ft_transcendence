@@ -10,27 +10,26 @@ export class AuthController {
 
     constructor(private authService: AuthService) {}
 
-    // @UseGuards(FortyTwoAuthGuards)
-    // @Get('42')
-    // async fortyTwoLogin() {}
-
     @UseGuards(FortyTwoAuthGuards)
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
         // here I catch my profile user in req due to FortyTwoStrat used by the useGuards decorator
-        console.log(req.user);
+        
+        // console.log(req.user);
 
         // I have to create or find the user in db
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
-        const token = await this.authService.login(req);
-    
-        console.log(token);
+        try {
+            const token = await this.authService.login(req);
+        }
+        catch (error) {
+            console.error(error.message);
+        }
 
-        // set the token as Header in the response object 
-        // res.set('Header', token);
-        // res.headers['authorization'] = token;
-        // res.json(req.user);
+        // console.log(token);
+
+        // set the token as Header in the response object ?
     }
 
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
