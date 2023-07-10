@@ -52,10 +52,10 @@
 .channelName {
     @apply bg-crust rounded-lg;
     padding: 0.68rem 1.5rem;
-    position: relative;
+    position: absolute;
     display: inline-block;
     top: 50%;
-    left: 155%;
+    left: 120%;
     transform-origin: left;
     width: max-content;
     max-width: 256px;
