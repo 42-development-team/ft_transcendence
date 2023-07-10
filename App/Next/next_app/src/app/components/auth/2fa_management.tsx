@@ -45,15 +45,16 @@ const Manage2FAComponent = () => {
 			}
 			const data = await response.json();
 			setImageUrl(data.base64Qrcode);
-		} catch (error) {                                                                                                                                                                                                                                                                                                                                                                                                           {
+		}
+		catch (error) {
 			console.error('Error retrieving image URL:', error);
-		};
-	};
-
+		}
+	}
+	
 	const handleDisableClick = async () => {
 		setDisplayBox(true);
 		setImageUrl('');
-	};
+	}
 
 	const turnOff = async () => {
 		const response = await fetch('http://localhost:4000/2fa/turn-off/dfbsurain');
@@ -125,5 +126,6 @@ const Manage2FAComponent = () => {
 		</div>
 	);
 };
+
 
 export default Manage2FAComponent;
