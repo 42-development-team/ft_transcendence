@@ -22,11 +22,11 @@ const ChatBar = () => {
             <div className="w-16 bg-base h-full shadow-inner flex flex-col justify-start items-center">
                 <ChannelList channels={channels} />
             </div>
-            {isChatOpen && 
-            <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages}/>
-                <SendMessageForm onSend={send} className='mt-6 flex flex-row flex-auto justify-between' />
-            </div>
+            {isChatOpen &&
+                <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+                    <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
+                    <SendMessageForm onSend={send} className='mt-6 flex flex-row flex-auto justify-between' />
+                </div>
             }
         </div>
     )

@@ -29,9 +29,8 @@ const SendMessageForm = ({ onSend, className }: SendMessageFormProps) => {
                     setMessage(e.target.value);
                 }}
                 placeholder="Send a chat message" />
-            <button
-                className="button-mauve" type="submit">
-                    Chat
+            <button className="button-mauve" type="submit">
+                Chat
             </button>
         </form>
     )
