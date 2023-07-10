@@ -7,12 +7,13 @@ import ChannelList from './channel/ChannelList';
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatMessagesBox from './ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
+import FriendList from '../friends/FriendList';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
 const ChatBar = () => {
-    const {isChatOpen} = useChatBarContext();
+    const {isChatOpen, isFriendListOpen} = useChatBarContext();
     const {messages, send} = useChatMessages();
     const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
@@ -25,6 +26,9 @@ const ChatBar = () => {
                     <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
                     <SendMessageForm onSend={send} className='mt-6 flex flex-row flex-auto justify-between' />
                 </div>
+            }
+            {isFriendListOpen &&
+                <FriendList />
             }
         </div>
     )
