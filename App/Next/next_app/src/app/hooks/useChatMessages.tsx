@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { generateFakeMessage } from "../utils/helpers";
 import { MessageModel } from "../utils/models";
-import useChatConnection from "./useChatConnection";
-
-const MESSAGE_WINDOW = 30;
+// import useChatConnection from "./useChatConnection";
 
 const welcomeMessage: MessageModel = {
     id: 'welcome-message',
@@ -11,7 +9,7 @@ const welcomeMessage: MessageModel = {
         rgbColor: 'darkorchid',
         username: 'ChatBot',
     },
-    content: 'Welcome to the Chat 👋',
+    content: '👋 Welcome to the Chat 👋',
 }
 
 const fakeMessages: MessageModel[] = Array(35)
@@ -24,12 +22,12 @@ export default function useChatMessages() {
         ...fakeMessages
     ])
 
-    const socket = useChatConnection();
+    // const socket = useChatConnection();
 
     const appendNewMEssage = useCallback(
         (newMessage: MessageModel) => {
             const nextMessages: MessageModel[] = [
-                ...messages.slice(-MESSAGE_WINDOW),
+                ...messages,
                 newMessage,
             ]
             setMessages(nextMessages);
