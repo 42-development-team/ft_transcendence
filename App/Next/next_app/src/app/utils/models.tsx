@@ -16,3 +16,15 @@ export interface Author {
     rgbColor: string
     username: string
 }
+
+export enum FriendStatus {
+    Online = "Online",
+    Offline = "Offline",
+    InGame = "InGame",
+}
+
+export interface FriendModel {
+    username: string
+    // Todo: use an enum for status
+    status: FriendStatus
+}

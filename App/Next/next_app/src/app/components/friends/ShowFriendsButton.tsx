@@ -1,7 +1,7 @@
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import style from '../chat/Chat.module.css';
 
-const ShowFriends = () => {
+const ShowFriendsButton = () => {
     const {toggleFriendListVisibility} = useChatBarContext();
     return (
         <li className={style.channelItem}>
@@ -17,4 +17,4 @@ const ShowFriends = () => {
     );
 }
 
-export default ShowFriends;
+export default ShowFriendsButton;

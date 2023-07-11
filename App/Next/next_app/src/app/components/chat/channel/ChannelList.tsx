@@ -1,7 +1,7 @@
 import style from '../Chat.module.css';
 import { ChannelModel } from '@/app/utils/models';
 import Channel from "@/components/chat/channel/Channel";
-import ShowFriends from '../../friends/ShowFriends';
+import ShowFriends from '../../friends/ShowFriendsButton';
 import CreateChannel from './CreateChannel';
 import Separator from './Separator';
 import JoinChannel from './JoinChannel';
