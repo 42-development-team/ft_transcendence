@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { MessageModel } from './models'
+import { MessageModel, ChannelModel } from './models'
 
 export const generateFakeMessage = (): MessageModel => {
     return {
@@ -9,5 +9,13 @@ export const generateFakeMessage = (): MessageModel => {
             username: faker.internet.userName(),
         },
         content: faker.lorem.sentence(),
+    }
+}
+
+export const generateFakeChannel = (): ChannelModel => {
+    return {
+        id: faker.string.uuid(),
+        name: faker.internet.userName(),
+        icon: faker.image.avatarGitHub()
     }
 }

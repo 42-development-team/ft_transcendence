@@ -23,6 +23,7 @@ export const LoggedInContextProvider = ({children} : {children: React.ReactNode}
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
 
     const login = (newLogin: string) => {
+        // Todo: update user status
         setLoggedIn(true);
         setUniqueLogin("newLogin")
         console.log(`Now logged as ${newLogin}`)
@@ -30,6 +31,7 @@ export const LoggedInContextProvider = ({children} : {children: React.ReactNode}
 
     const logout = () => {
         setLoggedIn(false);
+        // Todo: update user status
         setUniqueLogin("");
     }
 
