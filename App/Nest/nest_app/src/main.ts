@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { AppService } from './app/app.service';
 import { UsersService } from './users/users.service';
-
+import { passport } from 'passport';
 // Swagger
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
@@ -24,11 +24,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   app.useGlobalPipes( new ValidationPipe() );
   SwaggerModule.setup('api', app, document);
-
+ 
   app.enableCors({
-    // origin: 'http://localhost:3000',
+    origin: '*',
+    methods: ['GET', 'POST'],
+    // headers: {"Access-Control-Allow-Origin": "*"},
     // credentials: true,
+    // origin: 'http://localhost:3000',
+    // allowedHeaders: "Content-Type, Authorization",
   });
+
   await app.listen(4000);
 }
 bootstrap();

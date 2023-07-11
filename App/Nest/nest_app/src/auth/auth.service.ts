@@ -17,7 +17,7 @@ export class AuthService {
     ) {}
 
     // to clean ! userId: number ??
-    async generateJWT(userId: string): Promise<string> {
+    async generateJWT(userId: number): Promise<string> {
         return await this.jwtService.sign({sub: userId});
     }
 
