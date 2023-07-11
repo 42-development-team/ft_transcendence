@@ -24,7 +24,8 @@ export enum FriendStatus {
 }
 
 export interface FriendModel {
+    id: string
     username: string
-    // Todo: use an enum for status
     status: FriendStatus
+    avatar: string
 }

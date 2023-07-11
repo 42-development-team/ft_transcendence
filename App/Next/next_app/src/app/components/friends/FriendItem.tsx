@@ -1,13 +1,30 @@
-import { FriendModel } from "@/app/utils/models";
+import { FriendModel, FriendStatus } from "@/app/utils/models";
+import Image from "next/image";
 
 type FriendProps = {
     friend: FriendModel
 }
 
-const FriendItem = ({friend: {username, status}} : FriendProps) => {
+const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
-        <div>
-            <h1>FriendItem</h1>
+        <div className="flex flex-grow relative items-center mt-2 mb-2 hover:bg-surface2 rounded py-1 px-2">
+            <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
+                <Image alt="Channel Icon" src={avatar}
+                    height={32} width={32}
+                    className="w-[inherit] rounded-[inherit]" />
+                <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
+                    {status == FriendStatus.Online && 
+                        <div className=" w-3 h-3 bg-green rounded-full"></div>
+                    }
+                    {status == FriendStatus.Offline && 
+                        <div className=" w-3 h-3 bg-overlay0 rounded-full"></div>
+                    }
+                    {status == FriendStatus.InGame && 
+                        <div className=" w-3 h-3 bg-blue rounded-full"></div>
+                    }
+                </div>
+            </div>
+            <h1 className="font-semibold cursor-pointer">{username}</h1>
         </div>
     )
 }

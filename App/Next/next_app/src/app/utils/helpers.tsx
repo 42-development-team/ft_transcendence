@@ -20,9 +20,11 @@ export const generateFakeChannel = (): ChannelModel => {
     }
 }
 
-export const generateFakeFriends = (): FriendModel => {
+export const generateFakeFriend = (): FriendModel => {
     return {
+        id: faker.string.uuid(),
         username: faker.internet.userName(),
-        status: faker.helpers.arrayElement(Object.values(FriendStatus))
+        status: faker.helpers.arrayElement(Object.values(FriendStatus)),
+        avatar: faker.image.avatarGitHub()
     }
 }
