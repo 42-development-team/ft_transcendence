@@ -1,5 +1,5 @@
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import style from './Chat.module.css';
+import style from '../chat/Chat.module.css';
 
 const ShowFriends = () => {
     const {toggleFriendListVisibility} = useChatBarContext();
