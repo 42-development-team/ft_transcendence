@@ -5,6 +5,14 @@ type FriendProps = {
     friend: FriendModel
 }
 
+function getColor(status: FriendStatus) {
+    switch (status) {
+        case FriendStatus.Online: return "bg-green";
+        case FriendStatus.Offline: return "bg-overlay0";
+        case FriendStatus.InGame: return "bg-blue";
+    }
+}
+
 const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
         <div className="flex flex-grow relative items-center mt-2 mb-2 hover:bg-surface2 rounded py-1 px-2">
@@ -13,15 +21,7 @@ const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
                     height={32} width={32}
                     className="w-[inherit] rounded-[inherit]" />
                 <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
-                    {status == FriendStatus.Online && 
-                        <div className=" w-3 h-3 bg-green rounded-full"></div>
-                    }
-                    {status == FriendStatus.Offline && 
-                        <div className=" w-3 h-3 bg-overlay0 rounded-full"></div>
-                    }
-                    {status == FriendStatus.InGame && 
-                        <div className=" w-3 h-3 bg-blue rounded-full"></div>
-                    }
+                    <div className={`w-3 h-3 rounded-full ${getColor(status)}`}></div>
                 </div>
             </div>
             <h1 className="font-semibold cursor-pointer">{username}</h1>
