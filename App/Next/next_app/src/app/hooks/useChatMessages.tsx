@@ -12,7 +12,7 @@ const welcomeMessage: MessageModel = {
     content: '👋 Welcome to the Chat 👋',
 }
 
-const fakeMessages: MessageModel[] = Array(3)
+const fakeMessages: MessageModel[] = Array(20)
     .fill(null)
     .map(() => generateFakeMessage())
 

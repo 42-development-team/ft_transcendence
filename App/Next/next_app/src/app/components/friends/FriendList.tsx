@@ -22,7 +22,7 @@ const FriendList = ({friends}: {friends: FriendModel[]}) => {
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>
-            <div className='overflow-auto h-[80vh]'>
+            <div className='overflow-auto h-[86vh]'>
                 {friendsList}
             </div>
         </div>

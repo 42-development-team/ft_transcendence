@@ -13,7 +13,7 @@ const ChatMessage = ({message: {author, content}}: MessageProps) => {
     )
 
     return (
-        <div className={" text-sm py-1 px-2 rounded hover:bg-surface2 leading-6 mb-1"}>
+        <div className={" text-sm py-1 px-2 rounded hover:bg-surface2 leading-6 mb-1 mr-2"}>
             <div className="inline-flex items-baseline">
                 {Author}
             </div>

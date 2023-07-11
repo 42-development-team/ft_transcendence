@@ -15,7 +15,7 @@ function getColor(status: FriendStatus) {
 
 const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
-        <div className="flex flex-grow relative items-center mt-2 mb-2 hover:bg-surface2 rounded py-1 px-2">
+        <div className="flex flex-grow relative items-center mt-2 mb-2 hover:bg-surface2 rounded py-1 px-2 mr-2">
             <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
                 <Image alt="Channel Icon" src={avatar}
                     height={32} width={32}
