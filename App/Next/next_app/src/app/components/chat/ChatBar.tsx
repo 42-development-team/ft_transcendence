@@ -8,6 +8,7 @@ import ChatMessagesBox from './chatbox/ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
 import FriendList from '../friends/FriendList';
 import useFriends from '@/app/hooks/useFriends';
+import ChatParticipants from './chatbox/ChatParticipants';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
@@ -25,7 +26,7 @@ const ChatBar = () => {
             <ChatSideBar channels={channels} />
             {/* Main Panel */}
             {isChatOpen &&
-                    <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
+                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
             }
             {isFriendListOpen &&
                 <FriendList friends={friends} />
