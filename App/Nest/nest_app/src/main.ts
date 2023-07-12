@@ -23,6 +23,7 @@ async function bootstrap() {
     .build()
   const document = SwaggerModule.createDocument(app, config);
   app.useGlobalPipes( new ValidationPipe() );
+  SwaggerModule.setup('api', app, document);
   app.enableCors({ //Default option, same as 'app.enableCors(), to change later if necessary
       "origin": "*",
       "methods": ['GET','HEAD','PUT','PATCH','POST','DELETE'],
