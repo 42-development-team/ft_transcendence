@@ -1,3 +1,10 @@
+export interface ChannelModel {
+    id: string
+    name: string
+    messages?: MessageModel[]
+    icon: string
+}
+
 export interface MessageModel {
     id: string
     author: Author
@@ -8,4 +15,17 @@ export interface MessageModel {
 export interface Author {
     rgbColor: string
     username: string
+}
+
+export enum FriendStatus {
+    Online = "Online",
+    Offline = "Offline",
+    InGame = "InGame",
+}
+
+export interface FriendModel {
+    id: string
+    username: string
+    status: FriendStatus
+    avatar: string
 }

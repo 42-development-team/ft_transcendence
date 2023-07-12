@@ -5,7 +5,7 @@ type MessageProps = {
     message: MessageModel
 } & React.ComponentPropsWithRef<'div'>
 
-const ChatMessage = ({message: {author, content}, className}: MessageProps) => {
+const ChatMessage = ({message: {author, content}}: MessageProps) => {
     const Author = (
         <span className="font-semibold" style={{color: author.rgbColor}}>
             {author.username}
@@ -13,7 +13,7 @@ const ChatMessage = ({message: {author, content}, className}: MessageProps) => {
     )
 
     return (
-        <div className={" text-sm py-1 px-2 rounded hover:bg-surface2 leading-6 ${className}"}>
+        <div className={" text-sm py-1 px-2 rounded hover:bg-surface1 leading-6 mb-1 mr-2"}>
             <div className="inline-flex items-baseline">
                 {Author}
             </div>
