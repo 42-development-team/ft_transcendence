@@ -35,9 +35,11 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         if (isFriendListOpen) {
             setFriendListOpen(false);
         }
+        setChatParticipantOpen(false);
     }
     const closeChat = () => {
         setChatOpen(false);
+        setChatParticipantOpen(false);
     }
 
     const toggleChatVisibility = () => {
@@ -51,6 +53,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setFriendListOpen(!isFriendListOpen);
         if (isChatOpen) {
             setChatOpen(false);
+            setChatParticipantOpen(false);
         }
     }
 

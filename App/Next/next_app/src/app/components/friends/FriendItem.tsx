@@ -32,6 +32,7 @@ const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
             </div>
 
             {/* Friend Actions */}
+            {/* Todo: use the same style as discord (...) with pop up menu */}
             <div className="flex justify-between gap-2">
                 <button onClick={() => console.log('Invite to game')} className="hover:bg-surface0 rounded-md">
                     <Image src={playImg} height={36} width={36} alt="Invite to game" className='transition-all p-1' />
