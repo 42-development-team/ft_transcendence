@@ -14,7 +14,7 @@ export class AuthController {
 
     @Get('42')
     @UseGuards(FortyTwoAuthGuards)
-    async redir(@Req() req: any) {}
+    async redir() {}
 
     @UseGuards(FortyTwoAuthGuards)
     @Get('42/callback')
@@ -27,15 +27,10 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            console.log("/auth/42/callback");
-
             const token = await this.authService.login(req);
-            console.log("TOOOOOOKEEEEN");
-            // console.log(token);
             res.status(200).json(req.user);
         }
         catch (error) {
-            console.log("Error /auth/42/callback");
             console.error(error.message);
         }
     }
