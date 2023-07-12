@@ -14,6 +14,17 @@ const ChatParticipants = () => {
             <ChatParticipantsHeader />
             <div className=' overflow-auto h-[84vh]'>
                 {/* {MessageList} */}
+
+                {/* Todo: create a compoenent for categories headers */}
+                <div className='flex items-center justify-around py-2 my-2'>
+                    <span className=' font-bold text-sm'>Admin</span>
+                </div>
+                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>Participants</span>
+                </div>
+                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>Banned</span>
+                </div>
             </div>
         </div>
     )
@@ -29,7 +40,7 @@ const ChatParticipantsHeader = () => {
                     <path d="M8 11H8.009M11.991 11H12M15.991 11H16" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg> 
             </button>
-            <span className='font-semibold align-middle pt-2 pr-2'>
+            <span className='font-semibold align-middle pt-2'>
                 Community
                 {/* Note: Put channel name in header ? */}
             </span>
