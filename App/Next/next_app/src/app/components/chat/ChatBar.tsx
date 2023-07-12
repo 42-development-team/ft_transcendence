@@ -2,9 +2,9 @@
 import useChatMessages from '@/app/hooks/useChatMessages';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import React from 'react';
-import ChatSideBar from './channel/ChatSideBar';
+import ChatSideBar from './ChatSideBar';
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import ChatMessagesBox from './ChatMessageBox';
+import ChatMessagesBox from './chatbox/ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
 import FriendList from '../friends/FriendList';
 import useFriends from '@/app/hooks/useFriends';
@@ -23,6 +23,7 @@ const ChatBar = () => {
         <div className='flex h-full'>
             {/* Chat Side Bar */}
             <ChatSideBar channels={channels} />
+            {/* Main Panel */}
             {isChatOpen &&
                     <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
             }

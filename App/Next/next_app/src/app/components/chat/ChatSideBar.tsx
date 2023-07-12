@@ -1,10 +1,10 @@
-import style from '../Chat.module.css';
+import style from './Chat.module.css';
 import { ChannelModel } from '@/app/utils/models';
 import Channel from "@/components/chat/channel/Channel";
-import ShowFriends from '../../friends/ShowFriendsButton';
-import CreateChannel from './CreateChannel';
-import Separator from './Separator';
-import JoinChannel from './JoinChannel';
+import ShowFriends from '../friends/ShowFriendsButton';
+import CreateChannel from './channel/CreateChannel';
+import Separator from './channel/Separator';
+import JoinChannel from './channel/JoinChannel';
 
 // Todo: rename to sideBar or chatSideBar
 const ChatSideBar = ( {channels} : {channels: ChannelModel[]}) => {

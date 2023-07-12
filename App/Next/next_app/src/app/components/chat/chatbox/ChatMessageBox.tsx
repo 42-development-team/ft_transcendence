@@ -4,7 +4,7 @@ import ChatMessage from './ChatMessage';
 import { MessageModel } from '@/app/utils/models';
 import Image from 'next/image';
 import React from 'react';
-import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
+import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import SendMessageForm from './SendMessageForm';
 import useChatMessages from '@/app/hooks/useChatMessages';
 
