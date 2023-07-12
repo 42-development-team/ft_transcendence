@@ -8,14 +8,15 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const isTwoFAValid = async () => {
-
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/dfbsurain', {
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
 		'Content-Type': 'application/json',
 		}});
 		const data = await response.json();
+		if (data)
+			window.location.href = "http://localhost:3000/home";
 		console.log("isValid?: " + data);
 		return data;
 	}

@@ -7,6 +7,7 @@ import { FortyTwoStrategy } from './passport-strat';
 import { JwtStrategy } from './jwt-strat';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
+import { PrismaClient } from '@prisma/client';
 
 @Module({
     imports: [

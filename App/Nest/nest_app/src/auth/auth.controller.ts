@@ -1,16 +1,18 @@
-import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FortyTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
 import { FortyTwoStrategy } from './passport-strat';
+import { ApiTags } from '@nestjs/swagger';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const URL: string = process.env.INTRA42_URL; 
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private prisma: PrismaService) {}
 
     @Get('42')
     @UseGuards(FortyTwoAuthGuards)
@@ -28,7 +30,21 @@ export class AuthController {
         // inject the jwt token in the client cookies
         try {
             const token = await this.authService.login(req);
-            res.status(200).json(req.user);
+            const isVerify = this.authService.verifyJWT(token);
+            const userDB = await this.prisma.user.findUnique({
+                where: { username: req.user.username },
+            });
+            console.log(userDB);
+            if (isVerify && userDB.isTwoFAEnabled) {
+                console.log('token verified');
+                res.redirect('http://localhost:3000/auth/2fa');
+                return ;
+            }
+            else if (isVerify) {
+                res.redirect('http://localhost:3000/settings');
+                return ;
+            }
+            res.send('error');
         }
         catch (error) {
             console.error(error.message);

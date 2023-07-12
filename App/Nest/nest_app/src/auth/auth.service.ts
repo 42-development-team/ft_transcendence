@@ -31,12 +31,11 @@ export class AuthService {
 
     async login(req: any): Promise<string> {
        try {
-            console.error("req.user.id:", req.user.id);
             const jwtSigned = await this.generateJWT(req.user.id);
             return jwtSigned;
         }
         catch (error) {
-            console.log(error.message);
+            console.log("login error:" + error.message);
         }
     }
 

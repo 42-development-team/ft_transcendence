@@ -14,7 +14,7 @@ const Manage2FAComponent = () => {
 	}, [] );
 
 	const isTwoFAActive = async () => {
-		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/dfbsurain');
+		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/aucaland');
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'isTwoFAActive');
 		}
@@ -23,7 +23,7 @@ const Manage2FAComponent = () => {
 	}
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/dfbsurain', {
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
@@ -39,7 +39,7 @@ const Manage2FAComponent = () => {
 	const handleEnableClick = async () => {
 		try {
 			setDisplayBox(true);
-			const response = await fetch('http://localhost:4000/2fa/turn-on/dfbsurain');
+			const response = await fetch('http://localhost:4000/2fa/turn-on/aucaland');
 			if (!response.ok) {
 				throw new Error('Failed to fetch \'turn-on');
 			}
@@ -57,7 +57,7 @@ const Manage2FAComponent = () => {
 	}
 
 	const turnOff = async () => {
-		const response = await fetch('http://localhost:4000/2fa/turn-off/dfbsurain');
+		const response = await fetch('http://localhost:4000/2fa/turn-off/aucaland');
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'turn-off');
 		}

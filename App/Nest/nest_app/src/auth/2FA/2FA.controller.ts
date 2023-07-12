@@ -43,6 +43,20 @@ export class TwoFAController {
         return res.send(isValid);
     }
 
+    // @Post('/verifyTwoFARedirect/:username')
+    // async verifyTwoFARedirect (
+    //     @Res() res: Response,
+    //     @Req() req: Request,
+    //     @Body() code : qrCodeDto,
+    //     @Param('username') username: string,
+    // ) {
+    //     const isValid: boolean = await this.twoFAService.isTwoFACodeValid( code.code, res, username );
+    //     if (isValid)
+    //         res.redirect('http://localhost:3000/home');
+    //     else
+    //         return res.send(isValid);
+    // }
+
     @Get('/turn-off/:username')
     async turnOffTwoFA (
         @Res() res: Response,
