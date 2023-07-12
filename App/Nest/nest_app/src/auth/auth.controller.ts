@@ -1,14 +1,20 @@
-import { Controller, Get, Body, Req, Res, Post, UseGuards, Query, Header } from '@nestjs/common';
-// import { Request, Response } from 'express';
+import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { FortyTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
 import { FortyTwoStrategy } from './passport-strat';
 
+const URL: string = process.env.INTRA42_URL; 
+
 @Controller('auth')
 export class AuthController {
 
     constructor(private authService: AuthService) {}
+
+    @Get('42')
+    @UseGuards(FortyTwoAuthGuards)
+    async redir() {}
 
     @UseGuards(FortyTwoAuthGuards)
     @Get('42/callback')
@@ -21,19 +27,12 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            // const token = await this.authService.login(req);
-            // if (await this.authService.verifyJWT(token)) {
-            //     throw new Error('ERROR: Failed to verify JWT token');
-            // }
-            // await this.authService.redirectTwoFAVerify();
+            const token = await this.authService.login(req);
+            res.status(200).json(req.user);
         }
         catch (error) {
             console.error(error.message);
         }
-
-        // console.log(token);
-
-        // set the token as Header in the response object ?
     }
 
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,

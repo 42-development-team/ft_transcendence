@@ -8,13 +8,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 import { ValidationPipe } from '@nestjs/common';
 
-
-// const URL: string = process.env.LOCAL_IP + ":" + process.env.FRONT_PORT;
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: true
-  });
+  const app = await NestFactory.create(AppModule);
   const appService = app.get(AppService);
 
   const config = new DocumentBuilder()
@@ -25,10 +20,8 @@ async function bootstrap() {
   app.useGlobalPipes( new ValidationPipe() );
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({
-    // origin: 'http://localhost:3000',
-    // credentials: true,
-  });
+  app.enableCors();
+
   await app.listen(4000);
 }
 bootstrap();

@@ -16,9 +16,8 @@ export class AuthService {
 
     ) {}
 
-    // to clean ! userId: number ??
     async generateJWT(userId: number): Promise<string> {
-        return this.jwtService.sign({sub: userId});
+        return await this.jwtService.sign({sub: userId});
     }
 
     verifyJWT(token: string): any {
@@ -31,7 +30,6 @@ export class AuthService {
     }
 
     async login(req: any): Promise<string> {
-       console.log("==========REQ.USER===========");
        try {
             console.error("req.user.id:", req.user.id);
             const jwtSigned = await this.generateJWT(req.user.id);

@@ -10,7 +10,7 @@ export default function Home() {
   return (
       <div className="flex flex-col flex-auto items-center justify-center">
           <LoginComponent />
-          <CustomBtn onClick={ () => {
+          <CustomBtn id="" disable={false} onClick={ () => {
               isLoggedIn ? logout() : login("toto");
               console.log(`Log status: ${isLoggedIn}`)
             }}>
