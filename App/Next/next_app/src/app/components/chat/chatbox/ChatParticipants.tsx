@@ -10,7 +10,7 @@ const ChatParticipants = () => {
     //     <ChatMessage key={message.id} message={message} />
     // ))
     return (
-        <div className='w-full min-w-[250px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatParticipantsHeader />
             <div className=' overflow-auto h-[84vh]'>
                 {/* {MessageList} */}

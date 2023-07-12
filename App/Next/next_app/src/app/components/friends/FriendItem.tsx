@@ -28,7 +28,7 @@ const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
                         <div className={`w-3 h-3 rounded-full ${getColor(status)}`}></div>
                     </div>
                 </div>
-                <h1 className="font-semibold text-md">{username}</h1>
+                <h1 className="font-semibold text-sm">{username}</h1>
             </div>
 
             {/* Friend Actions */}
