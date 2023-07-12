@@ -3,8 +3,6 @@ import { Request, Response } from 'express';
 import { FortyTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
-import { FortyTwoStrategy } from './passport-strat';
-import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 const URL: string = process.env.INTRA42_URL; 
@@ -37,11 +35,11 @@ export class AuthController {
             console.log(userDB);
             if (isVerify && userDB.isTwoFAEnabled) {
                 console.log('token verified');
-                res.status(200).redirect('http://localhost:3000/auth/2fa');
+                res.status(200).redirect('http://localhost:3000/auth/2fa');//redirect when 2fa is enabled
                 return ;
             }
             else if (isVerify) {
-                res.status(200).redirect('http://localhost:3000/settings');
+                res.status(200).redirect('http://localhost:3000/settings');//redirect in settings if 2fa is not enable, todo: enable 2fa if box checked at first login, if not redirect on home page => create a task for that
                 return ;
             }
             res.status(401).send('error unvalid token');

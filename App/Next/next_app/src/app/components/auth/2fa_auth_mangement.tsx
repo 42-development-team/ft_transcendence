@@ -8,7 +8,7 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', { //TODO: replace 'aucaland' by current user => create task for that
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
@@ -30,17 +30,17 @@ const TwoFAAuthComponent = () => {
 		if (!isValid)
 			{
 				setIsVisible(true);
-				setMessage("Wrong code");
+				setMessage("Error: code doesn't match");
 				return ;
 			}
 		if (isActive) {
 			setIsActive(false);
-			setMessage("Error authentication");
+			setMessage("Error: authentication failed");
 			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
-			setMessage("Successfuly login");
+			setMessage("Successfuly logged-in");
 			setIsVisible(true);
 		}
 	}
