@@ -37,16 +37,17 @@ export class AuthController {
             console.log(userDB);
             if (isVerify && userDB.isTwoFAEnabled) {
                 console.log('token verified');
-                res.redirect('http://localhost:3000/auth/2fa');
+                res.status(200).redirect('http://localhost:3000/auth/2fa');
                 return ;
             }
             else if (isVerify) {
-                res.redirect('http://localhost:3000/settings');
+                res.status(200).redirect('http://localhost:3000/settings');
                 return ;
             }
-            res.send('error');
+            res.status(401).send('error unvalid token');
         }
         catch (error) {
+            res.status(401).send(error.message);
             console.error(error.message);
         }
     }
