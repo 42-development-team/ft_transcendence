@@ -6,7 +6,6 @@ import CreateChannel from './channel/CreateChannel';
 import Separator from './channel/Separator';
 import JoinChannel from './channel/JoinChannel';
 
-// Todo: rename to sideBar or chatSideBar
 const ChatSideBar = ( {channels} : {channels: ChannelModel[]}) => {
     const channelsList = channels.map((channel) => (
         <Channel key={channel.id} channel={channel}/>

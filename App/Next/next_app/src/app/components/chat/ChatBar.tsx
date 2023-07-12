@@ -14,7 +14,7 @@ import ChatParticipants from './chatbox/ChatParticipants';
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
 const ChatBar = () => {
-    const {isChatOpen, isFriendListOpen} = useChatBarContext();
+    const {isChatOpen, isFriendListOpen, isChatParticipantOpen} = useChatBarContext();
     const {messages} = useChatMessages();
     const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
@@ -22,11 +22,13 @@ const ChatBar = () => {
 
     return (
         <div className='flex h-full'>
-            {/* Chat Side Bar */}
             <ChatSideBar channels={channels} />
             {/* Main Panel */}
-            {isChatOpen &&
+            {isChatOpen && !isChatParticipantOpen &&
                 <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
+            }
+            {isChatOpen && isChatParticipantOpen &&
+                <ChatParticipants />
             }
             {isFriendListOpen &&
                 <FriendList friends={friends} />
