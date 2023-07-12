@@ -28,11 +28,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
 
             // console.log(profile);
             const user = this.usersService.createOrFindUser(profile.username);
-            this.authService.login(user);
-            // console.log("=========USER DB INFO=========");
-            // console.log(user);
+            // this.authService.login(user);
             return cb(null, user);
-            return profile;
         }
         catch (error){
             console.error(error.message);
