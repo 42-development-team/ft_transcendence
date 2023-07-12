@@ -17,24 +17,27 @@ function getColor(status: FriendStatus) {
 
 const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
-        <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface2 rounded py-1 px-2 mr-2">
+        <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center">
                 <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
-                    <Image alt="Channel Icon" src={avatar}
-                        height={32} width={32}
+                    <Image alt="Channel Icon" src={avatar} height={32} width={32}
                         className="w-[inherit] rounded-[inherit]" />
+
+                        {/* Status Icon */}
                     <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getColor(status)}`}></div>
                     </div>
                 </div>
-                <h1 className="font-semibold cursor-pointer">{username}</h1>
+                <h1 className="font-semibold text-md">{username}</h1>
             </div>
-            <div className="flex justify-between gap-3">
-                <button onClick={() => console.log('Invite to game')}>
-                    <Image src={playImg} height={28} width={28} alt="Invite to game" className='transition-all' />
+
+            {/* Friend Actions */}
+            <div className="flex justify-between gap-2">
+                <button onClick={() => console.log('Invite to game')} className="hover:bg-surface0 rounded-md">
+                    <Image src={playImg} height={36} width={36} alt="Invite to game" className='transition-all p-1' />
                 </button>
-                <button onClick={() => console.log('remove friend')}>
-                    <Image src={removeFriendImg} height={38} width={38} alt="Invite to game" className='transition-all hover:bg-red' />
+                <button onClick={() => console.log('Remove friend')} className="hover:bg-surface0 rounded-md">
+                    <Image src={removeFriendImg} height={36} width={36} alt="Remove Friend" className='transition-all hover:red' />
                 </button>
             </div>
         </div>
