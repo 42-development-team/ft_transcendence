@@ -31,11 +31,20 @@ export class AuthService {
 
     async login(req: any): Promise<string> {
        try {
-           const jwtSigned = await this.generateJWT(req.user.id);
-           return jwtSigned;
+            const jwtSigned = await this.generateJWT(req.user.id);
+            return jwtSigned;
         }
         catch (error) {
-            console.log(error.message);
+            console.log("login error:" + error.message);
         }
+    }
+
+    async redirectTwoFAVerify() {
+        try {
+            fetch('localhost:3000/auth/2fa');
+        } catch (error) {
+            console.error('Failed to fetch redirectTwoFAVerufy:', error);
+        }
+
     }
 }
