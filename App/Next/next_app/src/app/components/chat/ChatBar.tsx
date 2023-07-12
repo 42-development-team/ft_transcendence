@@ -2,7 +2,7 @@
 import useChatMessages from '@/app/hooks/useChatMessages';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import React from 'react';
-import ChannelList from './channel/ChannelList';
+import ChatSideBar from './channel/ChatSideBar';
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatMessagesBox from './ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
@@ -21,7 +21,8 @@ const ChatBar = () => {
 
     return (
         <div className='flex h-full'>
-            <ChannelList channels={channels} />
+            {/* Chat Side Bar */}
+            <ChatSideBar channels={channels} />
             {isChatOpen &&
                     <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
             }
