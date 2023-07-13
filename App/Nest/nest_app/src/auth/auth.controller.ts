@@ -1,14 +1,20 @@
-import { Controller, Get, Body, Req, Res, Post, UseGuards, Query, Header } from '@nestjs/common';
-// import { Request, Response } from 'express';
+import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { FortyTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
-import { FortyTwoStrategy } from './passport-strat';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+const URL: string = process.env.INTRA42_URL; 
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private prisma: PrismaService) {}
+
+    @Get('42')
+    @UseGuards(FortyTwoAuthGuards)
+    async redir() {}
 
     @UseGuards(FortyTwoAuthGuards)
     @Get('42/callback')
@@ -22,14 +28,26 @@ export class AuthController {
         // inject the jwt token in the client cookies
         try {
             const token = await this.authService.login(req);
+            const isVerify = this.authService.verifyJWT(token);
+            const userDB = await this.prisma.user.findUnique({
+                where: { username: req.user.username },
+            });
+            console.log(userDB);
+            if (isVerify && userDB.isTwoFAEnabled) {
+                console.log('token verified');
+                res.status(200).redirect('http://localhost:3000/auth/2fa');//redirect when 2fa is enabled
+                return ;
+            }
+            else if (isVerify) {
+                res.status(200).redirect('http://localhost:3000/settings');//redirect in settings if 2fa is not enable, todo: enable 2fa if box checked at first login, if not redirect on home page => create a task for that
+                return ;
+            }
+            res.status(401).send('error unvalid token');
         }
         catch (error) {
+            res.status(401).send(error.message);
             console.error(error.message);
         }
-
-        // console.log(token);
-
-        // set the token as Header in the response object ?
     }
 
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,

@@ -6,7 +6,6 @@ import { PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './passport-strat';
 import { JwtStrategy } from './jwt-strat';
 import { JwtModule } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
 
 @Module({
     imports: [

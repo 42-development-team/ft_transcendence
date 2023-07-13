@@ -1,16 +1,15 @@
 "use client";
 import CustomBtn from "@/components/CustomBtn";
+// import { useRouter } from 'next/router';
 
-//
-// must be async ?
 function SignIn() {
-	console.log("Try to Sign");
+	window.open("http://127.0.0.1:4000/auth/42");
 }
 
 const LoginComponent = () => {
 	return (
 		<div>
-			<CustomBtn onClick={SignIn} >
+			<CustomBtn id='' disable={false} onClick={SignIn} >
 				Sign With 42
 			</CustomBtn>
 		</div>
