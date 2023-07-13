@@ -48,14 +48,14 @@ export class AuthService {
         });
         if (!isVerifyUser)
             throw new UnauthorizedException('User not verified');
-        if (userDB.isTwoFAEnabled) {
-            console.log('token verified');
-            res.status(200).redirect('http://localhost:3000/auth/2fa');
-        }
+        if (userDB.isFirstLogin)
+            res.status(200).redirect('http://localhost:3000/firstLogin/2fa');
         else {
-            if (userDB.isFirstLogin)
-                
-            res.status(200).redirect('http://localhost:3000/settings');
+            if (userDB.isTwoFAEnabled) {
+                console.log('token verified');
+                res.status(200).redirect('http://localhost:3000/auth/2fa');
+            }
+            res.status(200).redirect('http://localhost:3000/home');
         }
     }
 }
