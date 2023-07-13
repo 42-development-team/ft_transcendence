@@ -1,10 +1,10 @@
-import { FriendModel } from "@/app/utils/models";
+import { UserModel } from "@/app/utils/models";
 import FriendItem from "./FriendItem";
 import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 
-const FriendList = ({friends}: {friends: FriendModel[]}) => {
+const FriendList = ({friends}: {friends: UserModel[]}) => {
 
     const {toggleFriendListVisibility} = useChatBarContext();
 

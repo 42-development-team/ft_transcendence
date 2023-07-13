@@ -17,15 +17,15 @@ export interface Author {
     username: string
 }
 
-export enum FriendStatus {
+export enum UserStatus {
     Online = "Online",
     Offline = "Offline",
     InGame = "InGame",
 }
 
-export interface FriendModel {
+export interface UserModel {
     id: string
     username: string
-    status: FriendStatus
+    status: UserStatus
     avatar: string
 }

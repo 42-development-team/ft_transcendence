@@ -1,16 +1,16 @@
-import { FriendModel, FriendStatus } from "@/app/utils/models";
+import { UserModel, UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import { useState } from 'react';
 
 type FriendProps = {
-    friend: FriendModel
+    friend: UserModel
 }
 
-function getColor(status: FriendStatus) {
+function getColor(status: UserStatus) {
     switch (status) {
-        case FriendStatus.Online: return "bg-green";
-        case FriendStatus.Offline: return "bg-overlay0";
-        case FriendStatus.InGame: return "bg-blue";
+        case UserStatus.Online: return "bg-green";
+        case UserStatus.Offline: return "bg-overlay0";
+        case UserStatus.InGame: return "bg-blue";
     }
 }
 
@@ -65,41 +65,13 @@ const ChatMemberItem = ({friend: {username, status, avatar}} : FriendProps) => {
                     <Image alt="Channel Icon" src={avatar} height={32} width={32}
                         className="w-[inherit] rounded-[inherit]" />
 
-                    <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
+                    <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getColor(status)}`}></div>
                     </div>
                 </div>
                 <h1 className="text-sm font-medium pl-[0.15rem]">{username}</h1>
             </div>
-
-            {/* Actions */}
             <DropDownMenu />
-
-            {/* <div id="dropdownDotsHorizontal" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-                    </li>
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-                    </li>
-                </ul>
-                <div className="py-2">
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Separated link</a>
-                </div>
-</div> */}
-            {/* Todo: use the same style as discord (...) with pop up menu */}
-            {/* <div className="flex justify-between gap-2">
-                <button onClick={() => console.log('Invite to game')} className="hover:bg-surface0 rounded-md">
-                    <Image src={playImg} height={36} width={36} alt="Invite to game" className='transition-all p-1' />
-                </button>
-                <button onClick={() => console.log('Remove friend')} className="hover:bg-surface0 rounded-md">
-                    <Image src={removeFriendImg} height={36} width={36} alt="Remove Friend" className='transition-all hover:red' />
-                </button>
-            </div> */}
         </div>
     )
 }

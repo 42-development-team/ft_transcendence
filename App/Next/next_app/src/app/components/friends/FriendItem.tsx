@@ -1,17 +1,17 @@
-import { FriendModel, FriendStatus } from "@/app/utils/models";
+import { UserModel, UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import removeFriendImg from "../../../../public/cross-svgrepo-com.svg"
 import playImg from "../../../../public/sword-fill-svgrepo-com.svg"
 
 type FriendProps = {
-    friend: FriendModel
+    friend: UserModel
 }
 
-function getColor(status: FriendStatus) {
+function getColor(status: UserStatus) {
     switch (status) {
-        case FriendStatus.Online: return "bg-green";
-        case FriendStatus.Offline: return "bg-overlay0";
-        case FriendStatus.InGame: return "bg-blue";
+        case UserStatus.Online: return "bg-green";
+        case UserStatus.Offline: return "bg-overlay0";
+        case UserStatus.InGame: return "bg-blue";
     }
 }
 
