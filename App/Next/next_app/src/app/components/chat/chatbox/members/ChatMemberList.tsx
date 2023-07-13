@@ -2,36 +2,39 @@
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import Image from 'next/image';
 import React from 'react';
-import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
-import style from '../Chat.module.css';
+import collapseImg from "../../../../../../public/collapse-left-svgrepo-com.svg"
+import style from '../../Chat.module.css';
 
-const ChatParticipants = () => {
+const ChatMemberList = () => {
     // const MessageList = messages.map((message) => (
     //     <ChatMessage key={message.id} message={message} />
     // ))
     return (
         <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChatParticipantsHeader />
+            <ChatMemberListHeader />
             <div className=' overflow-auto h-[84vh]'>
                 {/* {MessageList} */}
 
                 {/* Todo: create a compoenent for categories headers */}
                 <div className='flex items-center justify-around py-2 my-2'>
-                    <span className=' font-bold text-sm'>Admin</span>
+                    <span className=' font-bold text-sm'>👑 Owner</span>
                 </div>
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
-                    <span className='font-semibold text-sm'>Participants</span>
+                    <span className='font-semibold text-sm'>🛡️ Admin</span>
+                </div>
+                <div className='flex items-center justify-evenly py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>👪 Members</span>
                 </div>
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
-                    <span className='font-semibold text-sm'>Banned</span>
+                    <span className='font-semibold text-sm'>🚫 Banned</span>
                 </div>
             </div>
         </div>
     )
 }
 
-const ChatParticipantsHeader = () => {
-    const {closeChat, toggleChatParticipantVisibility} = useChatBarContext();
+const ChatMemberListHeader = () => {
+    const {closeChat, toggleChatMembersVisibility: toggleChatParticipantVisibility} = useChatBarContext();
     return (
         <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
             <button onClick={toggleChatParticipantVisibility} >
@@ -51,4 +54,4 @@ const ChatParticipantsHeader = () => {
     )
 }
 
-export default ChatParticipants;
+export default ChatMemberList;

@@ -8,13 +8,13 @@ import ChatMessagesBox from './chatbox/ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
 import FriendList from '../friends/FriendList';
 import useFriends from '@/app/hooks/useFriends';
-import ChatParticipants from './chatbox/ChatParticipants';
+import ChatMemberList from './chatbox/members/ChatMemberList';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
 const ChatBar = () => {
-    const {isChatOpen, isFriendListOpen, isChatParticipantOpen} = useChatBarContext();
+    const {isChatOpen, isFriendListOpen, isChatMembersOpen} = useChatBarContext();
     const {messages} = useChatMessages();
     const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
@@ -24,11 +24,11 @@ const ChatBar = () => {
         <div className='flex h-full'>
             <ChatSideBar channels={channels} />
             {/* Main Panel */}
-            {isChatOpen && !isChatParticipantOpen &&
+            {isChatOpen && !isChatMembersOpen &&
                 <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
             }
-            {isChatOpen && isChatParticipantOpen &&
-                <ChatParticipants />
+            {isChatOpen && isChatMembersOpen &&
+                <ChatMemberList />
             }
             {isFriendListOpen &&
                 <FriendList friends={friends} />

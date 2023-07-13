@@ -8,8 +8,8 @@ type ChatBarContextType = {
     toggleChatVisibility: () => void;
     isFriendListOpen: boolean;
     toggleFriendListVisibility: () => void;
-    isChatParticipantOpen: boolean;
-    toggleChatParticipantVisibility: () => void;
+    isChatMembersOpen: boolean;
+    toggleChatMembersVisibility: () => void;
 }
 
 const ChatBarContextDefaultValues: ChatBarContextType = {
@@ -19,8 +19,8 @@ const ChatBarContextDefaultValues: ChatBarContextType = {
     toggleChatVisibility: () => {},
     isFriendListOpen: false,
     toggleFriendListVisibility: () => {},
-    isChatParticipantOpen: false,
-    toggleChatParticipantVisibility: () => {},
+    isChatMembersOpen: false,
+    toggleChatMembersVisibility: () => {},
 }
 
 const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultValues);
@@ -28,18 +28,18 @@ const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultVa
 export const ChatBarContextProvider = ({children} : {children: React.ReactNode}) => {
     const [isChatOpen, setChatOpen] = useState(false);
     const [isFriendListOpen, setFriendListOpen] = useState(false);
-    const [isChatParticipantOpen, setChatParticipantOpen] = useState(false);
+    const [isChatMembersOpen, setChatMembersOpen] = useState(false);
 
     const openChat = () => {
         setChatOpen(true);
         if (isFriendListOpen) {
             setFriendListOpen(false);
         }
-        setChatParticipantOpen(false);
+        setChatMembersOpen(false);
     }
     const closeChat = () => {
         setChatOpen(false);
-        setChatParticipantOpen(false);
+        setChatMembersOpen(false);
     }
 
     const toggleChatVisibility = () => {
@@ -53,17 +53,17 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setFriendListOpen(!isFriendListOpen);
         if (isChatOpen) {
             setChatOpen(false);
-            setChatParticipantOpen(false);
+            setChatMembersOpen(false);
         }
     }
 
-    const toggleChatParticipantVisibility = () => {
-        setChatParticipantOpen(!isChatParticipantOpen);
+    const toggleChatMembersVisibility = () => {
+        setChatMembersOpen(!isChatMembersOpen);
     }
 
     return (
         <ChatBarContext.Provider value = {
-            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatParticipantOpen, toggleChatParticipantVisibility}
+            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen: isChatMembersOpen, toggleChatMembersVisibility: toggleChatMembersVisibility}
             }>
             {children}
         </ChatBarContext.Provider>

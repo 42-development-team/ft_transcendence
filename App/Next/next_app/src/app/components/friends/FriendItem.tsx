@@ -15,6 +15,7 @@ function getColor(status: FriendStatus) {
     }
 }
 
+// Todo: reduce font size and font weight
 const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">

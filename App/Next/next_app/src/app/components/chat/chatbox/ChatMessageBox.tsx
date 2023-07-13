@@ -28,7 +28,7 @@ const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[]}> (
 
 // Todo: merge with ChatParticipantsHeader
 const ChatMessageBoxHeader = () => {
-    const {closeChat, toggleChatParticipantVisibility} = useChatBarContext();
+    const {closeChat, toggleChatMembersVisibility: toggleChatParticipantVisibility} = useChatBarContext();
     return (
         <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
             <button onClick={toggleChatParticipantVisibility} >

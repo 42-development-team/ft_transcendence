@@ -7,7 +7,7 @@ import Image from "next/image"
 
 // Todo: pass context to childrens instead of using it everywhere
 const Navbar = () => {
-    const {isLoggedIn} = useLoggedInContext();  
+    const {isLoggedIn} = useLoggedInContext();
     return (
         <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
             <Logo />
