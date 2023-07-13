@@ -90,11 +90,11 @@ export class UsersService {
 
         if (!user) {
             const createUserDto: CreateUserDto = {
-            login: username,
-            username: username,
-            avatar: '',
-            isTwoFAEnabled: false,
-            twoFAsecret: "",
+                login: username,
+                username: username,
+                avatar: '',
+                isTwoFAEnabled: false,
+                twoFAsecret: "",
             };
 
             user = await this.createUser(createUserDto);

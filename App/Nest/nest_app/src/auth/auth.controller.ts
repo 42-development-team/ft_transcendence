@@ -39,10 +39,13 @@ export class AuthController {
                 return ;
             }
             else if (isVerify) {
-                res.status(200).redirect('http://localhost:3000/settings');//redirect in settings if 2fa is not enable, todo: enable 2fa if box checked at first login, if not redirect on home page => create a task for that
+                res.status(200).redirect('http://localhost:3000/settings');
+                
+                //redirect in settings if 2fa is not enable, todo: enable 2fa if box checked at first login, 
+                // if not redirect on home page => create a task for that
                 return ;
             }
-            res.status(401).send('error unvalid token');
+            res.status(401).send('error invalid token');
         }
         catch (error) {
             res.status(401).send(error.message);
