@@ -4,12 +4,9 @@ import { UsersService } from 'src/users/users.service';
 import { Response, Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtPayload } from './types/jwtPayload.type';
+import { Tokens } from './types/token.type';
 
-
-// how to validate user in our case ?
-interface FortyTwoUser {
-    id: number,
-}
 
 @Injectable()
 export class AuthService {
@@ -17,12 +14,7 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
-
     ) {}
-
-    async generateJWT(userId: number): Promise<string> {
-        return await this.jwtService.sign({sub: userId});
-    }
 
     async verifyJWT(token: string): Promise<any> {
         try {
@@ -33,10 +25,11 @@ export class AuthService {
         }
     }
 
-    async login(user: any): Promise<string> {
+    async logIn(user: any): Promise<Tokens> {
        try {
-           const jwtSigned = await this.generateJWT(user.id);
-           return jwtSigned;
+           const tokens = await this.getToken(user.id, user.username);
+
+           return tokens;
         }
         catch (error) {
             console.log("Error:" + error.message);
@@ -67,6 +60,31 @@ export class AuthService {
                 where: { username: user.username },
                 data: { isFirstLogin: false },
             });
+        }
+    }
+
+    async getToken(userId: number, login: string): Promise<Tokens> {
+        const jwtPayload: JwtPayload = {
+            sub: userId,
+            login: login,
+        }
+
+        try {
+            const [at, rt] = await Promise.all([
+                this.jwtService.signAsync(jwtPayload, {
+                secret: process.env.JWT_SECRET,
+                expiresIn: '30m',
+                }),
+                this.jwtService.signAsync(jwtPayload, {
+                secret: process.env.JWT_SECRET,
+                expiresIn: '7d',
+                })
+            ]);
+
+            return {access_token: at, refresh_token: rt};
+        }
+        catch (error) {
+            console.log(error.message);
         }
     }
 }
