@@ -35,7 +35,7 @@ export class AuthService {
             return jwtSigned;
         }
         catch (error) {
-            console.log("login error:" + error.message);
+            console.log("Error:" + error.message);
         }
     }
 
@@ -43,7 +43,7 @@ export class AuthService {
         try {
             fetch('localhost:3000/auth/2fa');
         } catch (error) {
-            console.error('Failed to fetch redirectTwoFAVerufy:', error);
+            console.error('Error: Failed to fetch redirectTwoFAVerufy:', error);
         }
 
     }
