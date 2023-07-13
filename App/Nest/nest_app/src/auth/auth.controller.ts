@@ -1,16 +1,16 @@
-import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FortyTwoAuthGuards } from './42-auth.guards';
 import { JwtAuthGuard } from './jwt-auth.guards';
 import { AuthService } from './auth.service';
-import { FortyTwoStrategy } from './passport-strat';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const URL: string = process.env.INTRA42_URL; 
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private prisma: PrismaService) {}
 
     @Get('42')
     @UseGuards(FortyTwoAuthGuards)
@@ -28,11 +28,13 @@ export class AuthController {
         // inject the jwt token in the client cookies
         try {
             const token = await this.authService.login(req.user);
-            // res.header 
-            res.status(200); //.json(req.user);
+            const isVerify = this.authService.verifyJWT(token);
+            await this.authService.redirectTwoFA(req, res, isVerify);
+            await this.authService.changeLoginBooleanStatus(req.user);
         }
         catch (error) {
-            console.error(error.message);
+            // res.status(401).send(error.message);
+            console.error("Error: callback error:" + error.message);
         }
     }
 

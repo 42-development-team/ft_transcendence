@@ -20,4 +20,7 @@ import { IsNotEmpty, IsString, MaxLength, IsBoolean } from 'class-validator';
    @IsBoolean()
    isTwoFAEnabled: Boolean;
 
+   @IsBoolean()
+   isFirstLogin: Boolean;
+
  }
