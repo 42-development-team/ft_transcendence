@@ -8,7 +8,7 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', { //TODO: replace 'aucaland' by current user => create task for that
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
