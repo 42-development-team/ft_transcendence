@@ -6,18 +6,8 @@ import { redirect } from "next/dist/server/api-utils";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
-	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
-
-	const isTwoFAActive = async () => {
-		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/aucaland'); //TODO: replace 'aucaland' by current user => create task for that
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'isTwoFAActive');
-		}
-		const data = await response.json();
-		setIsActive(data);
-	}
 
 	const isTwoFAValid = async () => {
 		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
@@ -48,7 +38,7 @@ const Manage2FAFirstLogin = () => {
 		}
 	}
 	
-	const handleDisableClick = async () => {
+	const handleLaterClick = async () => {
 		window.location.href = "http://localhost:3000/home";
 	}
 
@@ -67,25 +57,16 @@ const Manage2FAFirstLogin = () => {
 	const handleSubmit = async () => {
 		const isValid = await isTwoFAValid();
 		if (!isValid)
-			{
-				setIsVisible(true);
-				setMessage("Wrong code");
-				return ;
-			}
-		if (isActive) {
-			turnOff();
-			setIsActive(false);
-			setImageUrl('');
-			setDisplayBox(false);
-			setMessage("Two Factor Auth disabled");
+		{
 			setIsVisible(true);
+			setMessage("Wrong code");
+			return ;
 		}
-		else {
-			setIsActive(true);
-			setDisplayBox(false);
-			setMessage("Two Factor Auth enabled");
-			setIsVisible(true);
-		}
+		turnOff();
+		setImageUrl('');
+		setDisplayBox(false);
+		setMessage("Two Factor Auth enabled");
+		setIsVisible(true);
 	}
 
 
@@ -103,19 +84,24 @@ const Manage2FAFirstLogin = () => {
   
 	return (
 		<div>
-			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
-			<CustomBtn id="TwoFADButton" onClick={handleDisableClick} disable={!isActive}>Later</CustomBtn>
+			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={false}>Enable 2FA</CustomBtn>
+			<CustomBtn id="TwoFADButton" onClick={handleLaterClick} disable={false}>Later</CustomBtn>
 			{imageUrl !== '' && <div>
 				<img src={imageUrl} height="300" width="300" alt="QR Code" />
 			</div> }
-			{displayBox && <div className="m-4 pt-4">
-				<p className="font-bold text-center">Enter 2FA Code</p>
-				<input type="text" 
-				className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
-				value={inputValue}
-				onChange={handleInputChange}/>
-			</div> }
-			<CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn>
+			{
+				displayBox && 
+				<div className="m-4 pt-4">
+					<p className="font-bold text-center">Enter 2FA Code</p>
+					<input type="text" 
+					className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
+					value={inputValue}
+					onChange={handleInputChange}/>
+				</div>
+			}
+			{
+				displayBox && <CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn>
+			}
 			<div className=" bg-gradient-to-tr from-blue text-base">
 				{isVisible && <p>{message}</p>}
 	  		</div>
