@@ -57,6 +57,20 @@ export class UsersService {
         }
     }
 
+    async getUserFromLogin(login: string): Promise<CreateUserDto> {
+        try {
+
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { login },
+            });
+            const userDto = plainToClass(CreateUserDto, user);
+            return userDto;
+        }
+        catch (error) {
+            console.log(error.message);
+        }
+    }
+
     /* U(pdate) */
 
     async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {
@@ -85,21 +99,21 @@ export class UsersService {
 
     /* Retreiving or creating a user when authenticating*/
 
-    async createOrFindUser(username: string): Promise<CreateUserDto & { id?: number }> {
-        let user = await this.getUserFromUsername(username);
+    async createOrFindUser(login: string): Promise<CreateUserDto & { id?: number }> {
+        let user = await this.getUserFromLogin(login);
 
         if (!user) {
             const createUserDto: CreateUserDto = {
-            login: username,
-            username: username,
+            login: login,
+            username: login,
             avatar: '',
             isTwoFAEnabled: false,
             twoFAsecret: "",
             };
 
-            user = await this.createUser(createUserDto);
+            user = await this.createUser(createUserDto) as CreateUserDto;
         }
-
+        // console.log("user: ", user);
         return user;
     }
 
