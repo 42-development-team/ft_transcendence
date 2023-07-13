@@ -29,23 +29,7 @@ export class AuthController {
         try {
             const token = await this.authService.login(req);
             const isVerify = this.authService.verifyJWT(token);
-            const userDB = await this.prisma.user.findUnique({
-                where: { username: req.user.username },
-            });
-            console.log(userDB);
-            if (isVerify && userDB.isTwoFAEnabled) {
-                console.log('token verified');
-                res.status(200).redirect('http://localhost:3000/auth/2fa');//redirect when 2fa is enabled
-                return ;
-            }
-            else if (isVerify) {
-                res.status(200).redirect('http://localhost:3000/settings');
-                
-                //redirect in settings if 2fa is not enable, todo: enable 2fa if box checked at first login, 
-                // if not redirect on home page => create a task for that
-                return ;
-            }
-            res.status(401).send('error invalid token');
+            await this.authService.redirectTwoFA(req, res, isVerify);
         }
         catch (error) {
             res.status(401).send(error.message);

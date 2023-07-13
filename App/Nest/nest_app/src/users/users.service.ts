@@ -109,6 +109,7 @@ export class UsersService {
             avatar: '',
             isTwoFAEnabled: false,
             twoFAsecret: "",
+            isFirstLogin: true,
             };
 
             user = await this.createUser(createUserDto) as CreateUserDto;
