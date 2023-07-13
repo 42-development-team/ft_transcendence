@@ -30,10 +30,11 @@ export class AuthController {
             const token = await this.authService.login(req);
             const isVerify = this.authService.verifyJWT(token);
             await this.authService.redirectTwoFA(req, res, isVerify);
+            await this.authService.changeLoginBooleanStatus(req.user);
         }
         catch (error) {
-            res.status(401).send(error.message);
-            console.error(error.message);
+            // res.status(401).send(error.message);
+            console.error("Error: callback error:" + error.message);
         }
     }
 

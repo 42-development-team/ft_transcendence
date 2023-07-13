@@ -5,6 +5,7 @@ import { Response, Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+
 // how to validate user in our case ?
 interface FortyTwoUser {
     id: number,
@@ -49,13 +50,23 @@ export class AuthService {
         if (!isVerifyUser)
             throw new UnauthorizedException('User not verified');
         if (userDB.isFirstLogin)
-            res.status(200).redirect('http://localhost:3000/firstLogin/2fa');
+            res.status(200).redirect('http://localhost:3000/firstLogin/');
         else {
             if (userDB.isTwoFAEnabled) {
                 console.log('token verified');
                 res.status(200).redirect('http://localhost:3000/auth/2fa');
             }
-            res.status(200).redirect('http://localhost:3000/home');
+            else
+                res.status(200).redirect('http://localhost:3000/home');
+        }
+    }
+
+    async changeLoginBooleanStatus(user: any) {
+        if (user.isFirstLogin) {
+            await this.prisma.user.update({
+                where: { username: user.username },
+                data: { isFirstLogin: false },
+            });
         }
     }
 }
