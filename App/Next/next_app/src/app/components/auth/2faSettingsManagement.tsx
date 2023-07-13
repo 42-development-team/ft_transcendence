@@ -2,8 +2,9 @@
 import React, {useState, useEffect} from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
+import OtpInput from "./otpInput";
 
-const Manage2FAComponent = () => {
+const TwoFASettingsManagement = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
@@ -104,22 +105,25 @@ const Manage2FAComponent = () => {
 		return () => clearTimeout(timer);
 	  }
 	}, [isVisible]);
-  
+
 	return (
-		<div>
-			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
-			<CustomBtn id="TwoFADButton" onClick={handleDisableClick} disable={!isActive}>Disable 2FA</CustomBtn>
-			{imageUrl !== '' && <div>
-				<img src={imageUrl} height="300" width="300" alt="QR Code" />
+		<div className="flex-auto flex flex-col border-2 rounded bg-base shadow-[0_35px_60px_-10px_rgba(0,0,0,0.6)]">
+			<div className="flex justify-center mt-2">
+				<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={isActive}>Enable 2FA</CustomBtn>
+				<CustomBtn id="TwoFADButton" onClick={handleDisableClick} disable={!isActive}>Disable 2FA</CustomBtn>
+			</div>
+			{imageUrl !== '' && <div className=" flex justify-center">
+				<img className=" rounded shadow-[0_30px_60px_-10px_rgba(0,0,0,0.69)]" src={imageUrl} height="150" width="150" alt="QR Code" />
 			</div> }
-			{displayBox && <div className="m-4 pt-4">
+			{/* {displayBox && <div className="m-4 pt-4">
 				<p className="font-bold text-center">Enter 2FA Code</p>
 				<input type="text" 
 				className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
 				value={inputValue}
 				onChange={handleInputChange}/>
-			</div> }
-			<CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn>
+			</div> } */}
+			{ displayBox && <OtpInput></OtpInput>}
+			{/* <CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn> */}
 			<div className=" bg-gradient-to-tr from-blue text-base">
 				{isVisible && <p>{message}</p>}
 	  		</div>
@@ -128,4 +132,4 @@ const Manage2FAComponent = () => {
 };
 
 
-export default Manage2FAComponent;
+export default TwoFASettingsManagement;
