@@ -27,8 +27,9 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            const token = await this.authService.login(req);
-            res.status(200).json(req.user);
+            const token = await this.authService.login(req.user);
+            // res.header 
+            res.status(200); //.json(req.user);
         }
         catch (error) {
             console.error(error.message);
@@ -40,8 +41,7 @@ export class AuthController {
     */
     @UseGuards(JwtAuthGuard)
     @Get('profile')
-    getProfile(@Res() res) {
-        res.json('success');
-        // return req.user;
+    getProfile(@Req() req) {
+        return req.user;
     }
 }

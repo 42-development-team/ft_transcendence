@@ -20,18 +20,18 @@ export class AuthService {
         return await this.jwtService.sign({sub: userId});
     }
 
-    verifyJWT(token: string): any {
+    async verifyJWT(token: string): Promise<any> {
         try {
-            return this.jwtService.verify(token);
+            return await this.jwtService.verifyAsync(token);
         }
         catch {
             return null;
         }
     }
 
-    async login(req: any): Promise<string> {
+    async login(user: any): Promise<string> {
        try {
-           const jwtSigned = await this.generateJWT(req.user.id);
+           const jwtSigned = await this.generateJWT(user.id);
            return jwtSigned;
         }
         catch (error) {
