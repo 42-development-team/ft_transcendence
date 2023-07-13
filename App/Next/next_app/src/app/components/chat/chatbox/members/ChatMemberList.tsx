@@ -4,11 +4,14 @@ import Image from 'next/image';
 import React from 'react';
 import collapseImg from "../../../../../../public/collapse-left-svgrepo-com.svg"
 import style from '../../Chat.module.css';
+import ChatMemberItem from './ChatMemberItem';
+import { generateFakeFriend } from '@/app/utils/helpers';
 
 const ChatMemberList = () => {
     // const MessageList = messages.map((message) => (
     //     <ChatMessage key={message.id} message={message} />
     // ))
+
     return (
         <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatMemberListHeader />
@@ -19,15 +22,19 @@ const ChatMemberList = () => {
                 <div className='flex items-center justify-around py-2 my-2'>
                     <span className=' font-bold text-sm'>👑 Owner</span>
                 </div>
+                <ChatMemberItem friend={generateFakeFriend()}/>
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>🛡️ Admin</span>
                 </div>
+                <ChatMemberItem friend={generateFakeFriend()}/>
                 <div className='flex items-center justify-evenly py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>👪 Members</span>
                 </div>
+                <ChatMemberItem friend={generateFakeFriend()}/>
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>🚫 Banned</span>
                 </div>
+                <ChatMemberItem friend={generateFakeFriend()}/>
             </div>
         </div>
     )
