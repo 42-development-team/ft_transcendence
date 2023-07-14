@@ -1,7 +1,7 @@
-import { useState, useRef} from 'react';
+import { useState, useRef, ReactNode} from 'react';
 import { clickOutsideHandler } from '@/app/hooks/clickOutsideHandler';
 
-const DropDownMenu = () => {
+const DropDownMenu = ({children}: {children: ReactNode}) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -19,23 +19,7 @@ const DropDownMenu = () => {
             </button>
             {isOpen && (
                 <div className="absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
-                    <div className="py-1" aria-orientation="vertical" >
-                        <button onClick={() => console.log('Play')}
-                            className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                            Invite to play</button>
-                        <button onClick={() => console.log('View Profile')}
-                            className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                            View profile</button>
-                        <button onClick={() => console.log('Kick')}
-                            className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                            Kick</button>
-                        <button onClick={() => console.log('Mute')}
-                            className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                            Mute</button>
-                        <button onClick={() => console.log('Ban')}
-                            className="text-left w-full block px-4 py-2 text-sm hover:bg-red hover:text-mantle rounded-md">
-                            Ban</button>
-                    </div>
+                    {children}
                 </div>
             )}
    </div>)
