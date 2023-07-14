@@ -4,8 +4,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { json } from 'body-parser';
-import { throwError } from 'rxjs';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {

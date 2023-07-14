@@ -1,5 +1,5 @@
 "use client";
-import TwoFAAuthComponent from "../../components/auth/2fa_auth_mangement";
+import TwoFAAuthComponent from "../../components/auth/2faAuthManagement";
 export default function TwoFAAuth() {
     // const {isLoggedIn, login, logout} = useLoggedInContext();
     return (
