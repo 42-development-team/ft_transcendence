@@ -1,10 +1,10 @@
-import { FriendModel } from "@/app/utils/models";
+import { UserModel } from "@/app/utils/models";
 import FriendItem from "./FriendItem";
 import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 
-const FriendList = ({friends}: {friends: FriendModel[]}) => {
+const FriendList = ({friends}: {friends: UserModel[]}) => {
 
     const {toggleFriendListVisibility} = useChatBarContext();
 
@@ -13,7 +13,7 @@ const FriendList = ({friends}: {friends: FriendModel[]}) => {
     ))
     
     return (
-        <div className='w-full min-w-[350px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Friend List
