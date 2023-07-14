@@ -1,16 +1,11 @@
-import { useState, useRef } from 'react';
-
+import { useState, useRef} from 'react';
+import { clickOutsideHandler } from '@/app/hooks/clickOutsideHandler';
 
 const DropDownMenu = () => {
-    const wrapperRef = useRef(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const closeOpenMenus = (event : any) => {
-        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-            setIsOpen(false);
-        }
-    }
-    document.addEventListener('mousedown', closeOpenMenus);
+    clickOutsideHandler({ref: wrapperRef, handler: () => setIsOpen(false)});
 
     return (
         <div ref={wrapperRef} className="relative inline-block text-left">
