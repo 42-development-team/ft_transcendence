@@ -12,10 +12,11 @@ const ChatMemberList = () => {
     //     <ChatMessage key={message.id} message={message} />
     // ))
 
+
     return (
-        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='w-full h-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatMemberListHeader />
-            <div className=' overflow-auto h-[84vh]'>
+            <div className=' overflow-auto h-[86vh]'>
                 {/* {MessageList} */}
 
                 {/* Todo: create a compoenent for categories headers */}
@@ -30,6 +31,17 @@ const ChatMemberList = () => {
                 <div className='flex items-center justify-evenly py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>👪 Members</span>
                 </div>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem friend={generateFakeFriend()}/>
                 <ChatMemberItem friend={generateFakeFriend()}/>
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>🚫 Banned</span>

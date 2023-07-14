@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 
 const DropDownMenu = () => {
+    const wrapperRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
+
+    const closeOpenMenus = (event : any) => {
+        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+            setIsOpen(false);
+        }
+    }
+    document.addEventListener('mousedown', closeOpenMenus);
+
     return (
-        <div className="relative inline-block text-left">
+        <div ref={wrapperRef} className="relative inline-block text-left">
             <button
                 type="button"
                 className="inline-flex justify-center w-full rounded-full px-2 py-2 bg-base"

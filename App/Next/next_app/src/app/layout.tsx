@@ -17,12 +17,12 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="flex flex-col">
+      <body className="flex flex-col h-screen">
         <LoggedInContextProvider>
           <ChatBarContextProvider>
             <Navbar />
             {/* <div className='flex flex-col flex-auto items-stretch'> */}
-            <div className='flex-auto grid place-items-center'>
+            <div className='flex-auto grid place-items-center h-full'>
               {children}
             </div>
           </ChatBarContextProvider>
