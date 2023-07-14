@@ -1,18 +1,10 @@
 import DropDownMenu from "@/app/components/DropDownMenu";
-import { UserModel, UserStatus } from "@/app/utils/models";
+import { UserModel } from "@/app/utils/models";
 import Image from "next/image";
+import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type FriendProps = {
     friend: UserModel
-}
-
-// Todo: use the same function as in FriendItem.tsx
-function getStatusColor(status: UserStatus) {
-    switch (status) {
-        case UserStatus.Online: return "bg-green";
-        case UserStatus.Offline: return "bg-overlay0";
-        case UserStatus.InGame: return "bg-blue";
-    }
 }
 
 const ChatMemberActions = () => {
