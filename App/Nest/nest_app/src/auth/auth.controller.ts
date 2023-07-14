@@ -1,7 +1,7 @@
 import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { FortyTwoAuthGuards } from './42-auth.guards';
-import { JwtAuthGuard } from './jwt-auth.guards';
+import { FortyTwoAuthGuards } from './guards/42-auth.guards';
+import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
@@ -35,6 +35,7 @@ export class AuthController {
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
 
+            console.log(jwt);
             return jwt;
         }
         catch (error) {
