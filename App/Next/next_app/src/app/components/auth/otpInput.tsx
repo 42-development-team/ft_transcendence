@@ -43,15 +43,15 @@ const OtpInput = ({ parentCallback } : any) => {
     }, [activeOtpIndex]);
 
         return (
-            <div className="my-2 mb-4 mx-8 mt-4 flex justify-center items-center space-x-2 ">
+            <div className={`my-2 mb-4 mx-8 mt-4 flex justify-center items-center space-x-2`}>
                 {otp.map((_, index) => {
                     return (
                         <React.Fragment key={index}>
                         <input
                         ref={index === activeOtpIndex ? inputRef : null}
                             type="number"
-                            className="w-12 h-12 border-2 rounded bg-transparent outline-none text-center font-semibold text-xl
-                            border-gray-4-- focus:border-gray-700 focus:text-gray-700 text-gray-400 transition spin-button"
+                            className={` w-12 h-12 border-2 rounded bg-transparent outline-none text-center font-semibold text-xl
+                            border-gray-4-- focus:border-gray-700 focus:text-gray-700 text-gray-400 animate-pulse`}
                             onChange={handleOnChange}
                             onKeyDown={(e) => handleOnKeyDown(e, index)}
                             value={otp[index]}
