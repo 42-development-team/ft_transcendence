@@ -1,6 +1,7 @@
 import { UserModel } from "@/app/utils/models";
 import Image from "next/image";
-import DropDownMenu from "../DropDownMenu";
+import DropDownMenu from "../dropdown/DropDownMenu";
+import {DropDownAction, DropDownActionRed} from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type FriendProps = {
@@ -10,15 +11,15 @@ type FriendProps = {
 const FriendActions = () => {
     return (
         <div aria-orientation="vertical" >
-            <button onClick={() => console.log('Play')}
-                className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                Invite to play</button>
-            <button onClick={() => console.log('View Profile')}
-                className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
-                View profile</button>
-            <button onClick={() => console.log('Remove Friend')}
-                className="text-left w-full block px-4 py-2 text-sm hover:bg-red hover:text-mantle hover:font-semibold rounded-md">
-                Remove Friend</button>
+            <DropDownAction onClick={() => console.log('Play')}>
+                Invite to play
+            </DropDownAction>
+            <DropDownAction onClick={() => console.log('View Profile')}>
+                View profile
+            </DropDownAction>
+            <DropDownActionRed onClick={() => console.log('Remove Friend')}>
+                Remove Friend 
+            </DropDownActionRed>
         </div>
     )
 }
