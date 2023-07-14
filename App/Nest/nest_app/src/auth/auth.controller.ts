@@ -35,7 +35,7 @@ export class AuthController {
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
 
-            console.log(jwt);
+            // console.log(jwt);
             return jwt;
         }
         catch (error) {

@@ -1,12 +1,14 @@
 import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Post, Body, Param, Req, Res, Get, Header, Redirect } from '@nestjs/common';
+import { Controller, Post, Body, Param, Req, Res, Get, Header, Redirect, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { qrCodeDto } from './TwoFactor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as qrcode from 'qrcode'
+import { Public } from 'src/auth/public.routes';
 
 @ApiTags("TwoFA")
+@Public()
 @Controller('2fa')
 export class TwoFAController {
     constructor (private twoFAService: TwoFAService, private prisma: PrismaService) {} //for now, a wrong username is a crash, waiting to know how we get user from next
