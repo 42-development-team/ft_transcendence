@@ -9,7 +9,7 @@ type FriendProps = {
 
 const ChatMemberActions = () => {
     return (
-        <div className="py-1" aria-orientation="vertical" >
+        <div aria-orientation="vertical" >
             <button onClick={() => console.log('Play')}
                 className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
                 Invite to play</button>
