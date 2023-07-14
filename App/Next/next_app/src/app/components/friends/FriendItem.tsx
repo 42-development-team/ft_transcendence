@@ -15,7 +15,6 @@ function getColor(status: UserStatus) {
     }
 }
 
-// Todo: reduce font size and font weight
 const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
@@ -29,7 +28,7 @@ const FriendItem = ({friend: {username, status, avatar}} : FriendProps) => {
                         <div className={`w-3 h-3 rounded-full ${getColor(status)}`}></div>
                     </div>
                 </div>
-                <h1 className="font-semibold text-sm">{username}</h1>
+                <h1 className="font-medium text-sm">{username}</h1>
             </div>
 
             {/* Friend Actions */}
