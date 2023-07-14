@@ -16,14 +16,14 @@ export class AuthController {
     @UseGuards(FortyTwoAuthGuards)
     @Get('logIn')
     async redir() {}
-    
+
     @Public()
     @UseGuards(FortyTwoAuthGuards)
     @HttpCode(HttpStatus.CREATED)
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
         // here I catch my profile user in req due to FortyTwoStrat used by the useGuards decorator
-        
+
         // I have to create or find the user in db
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
