@@ -46,7 +46,7 @@ const ChatMemberList = () => {
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>🚫 Banned</span>
                 </div>
-                <ChatMemberItem friend={generateFakeFriend()}/>
+                <ChatMemberItem  friend={generateFakeFriend()}/>
             </div>
         </div>
     )
