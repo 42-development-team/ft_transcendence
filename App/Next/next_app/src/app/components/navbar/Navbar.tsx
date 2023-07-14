@@ -7,7 +7,7 @@ import Image from "next/image"
 
 // Todo: pass context to childrens instead of using it everywhere
 const Navbar = () => {
-    const {isLoggedIn} = useLoggedInContext();  
+    const {isLoggedIn} = useLoggedInContext();
     return (
         <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
             <Logo />
@@ -34,6 +34,7 @@ const NavLinks = () => {
         <div className="flex items-center gap-8 px-6 text-lg transition-all">
             <Link href="/profile" className="text-mauve hover:text-pink pt-2">Profile</Link>
             <Link href="/settings" className="text-mauve hover:text-pink pt-2">Settings</Link>
+            {/* Todo: delete JWT token -> localStorage? */}
             <button onClick={logout}>
                 <Image src={LogoutIcon} width={32} height={32} alt="logout"/>
             </button>

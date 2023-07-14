@@ -26,7 +26,7 @@ const TwoFASettingsManagement = () => {
 	const isTwoFAValid = async () => {
 		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
 			method: 'POST',
-			body: JSON.stringify({code: inputValue}),
+		body: JSON.stringify({code: inputValue}),
 			headers: {
 		'Content-Type': 'application/json',
 		}});
