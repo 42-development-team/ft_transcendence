@@ -46,6 +46,8 @@ export class AuthController {
             }
             res.cookie("jwt", jwt.access_token, cookieOptions);
 
+            // res.setHeader('Authorization', 'Bearer ' + jwt.access_token);
+            // res.set('Authorization', 'Bearer ' + jwt.access_token);
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
 
@@ -60,10 +62,9 @@ export class AuthController {
         validate the JWT, and assign the user property to the Request object
     */
 
-    // @Public();
     @Get('profile')
     getProfile(@Req() req) {
-        console.log("/profile");
-        return req.user;
+        console.log(req.user);
+        // return req.user;
     }
 }
