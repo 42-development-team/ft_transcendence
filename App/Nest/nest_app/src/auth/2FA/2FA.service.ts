@@ -28,7 +28,7 @@ export class TwoFAService {
     }
 
     async isTwoFACodeValid( code: string, res: Response, username: string) {
-        console.log("code:" + code + ", reponse:" + res + ", username:" + username);
+        // console.log("code:" + code + ", reponse:" + res + ", username:" + username);
         const user = await this.prisma.user.findUnique({
             where: {username: username},
         });

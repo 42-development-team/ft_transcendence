@@ -47,7 +47,7 @@ export class AuthController {
             const isVerify = await this.authService.verifyJWT(jwt.refresh_token);
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
-
+            return jwt;
         }
         catch (error) {
             // res.status(401).send(error.message);
