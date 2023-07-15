@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
-import OtpInput from "./otpInput";
+import OtpInput from "./OtpInput";
+import QrCodeDisplay from "./QrCodeDisplay";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -56,10 +57,6 @@ const Manage2FAFirstLogin = () => {
 		}
 	}
 
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(event.target.value);
-	}
-
 	const handleRefreshClick = () => {
 		handleEnableClick();
 	}
@@ -99,22 +96,15 @@ const Manage2FAFirstLogin = () => {
 				onClick={handleEnableClick} 
 				disable={enableActive}>{enableMessage}
 			</CustomBtn>
-			<CustomBtn 
+			<CustomBtn
 				id="Cancel2FA" 
 				onClick={handleCancelClick} 
 				disable={cancelActive}>Cancel
 			</CustomBtn>
-			{
-				imageUrl !== '' &&  displayBox && 
-				<div className=" flex justify-center">
-					<img className=" rounded shadow-[0_30px_60px_-10px_rgba(0,0,0,0.69)] border-2 border-surface0" 
-					placeholder={'/home/aurel/Documents/ft_transcendence/App/Next/next_app/public/logout-svgrepo-com.svg'} 
-					src={imageUrl} 
-					height="150" 
-					width="150" 
-					alt="QR Code" />
-				</div> 
-			}
+			<QrCodeDisplay
+				imageUrl={imageUrl} 
+				displayBox={displayBox}>
+			</QrCodeDisplay>
 			{
 				imageUrl && 
 				<CustomBtn 

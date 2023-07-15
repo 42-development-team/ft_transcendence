@@ -1,8 +1,9 @@
 "use client";
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
-import OtpInput from "./otpInput";
+import OtpInput from "./OtpInput";
+import QrCodeDisplay from "./QrCodeDisplay";
 
 const TwoFASettingsManagement = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -109,7 +110,8 @@ const TwoFASettingsManagement = () => {
 	return (
 		<div className="flex-auto flex flex-col border-2 rounded bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
 			<div className="flex justify-center mt-2">
-				<CustomBtn id="TwoFAEButton" 
+				<CustomBtn 
+					id="TwoFAEButton" 
 					onClick={handleEnableClick} 
 					disable={isActive}>Enable 2FA
 				</CustomBtn>
@@ -119,17 +121,10 @@ const TwoFASettingsManagement = () => {
 					disable={!isActive}>Disable 2FA
 				</CustomBtn>
 			</div>
-			{
-				imageUrl !== '' &&  displayBox && 
-				<div className=" flex justify-center">
-					<img className=" rounded shadow-[0_30px_60px_-10px_rgba(0,0,0,0.69)] border-2 border-surface0" 
-					placeholder={'/home/aurel/Documents/ft_transcendence/App/Next/next_app/public/logout-svgrepo-com.svg'} 
-					src={imageUrl} 
-					height="150" 
-					width="150" 
-					alt="QR Code" />
-				</div> 
-			}
+			<QrCodeDisplay 
+				imageUrl={imageUrl} 
+				displayBox={displayBox}>
+			</QrCodeDisplay>
 			{ 
 				displayBox && 
 				<OtpInput parentCallback={handleCallback}></OtpInput>
@@ -141,7 +136,10 @@ const TwoFASettingsManagement = () => {
 				onClick={handleSubmit}>Submit</CustomBtn> 
 			}
 			<div className=" bg-gradient-to-tr from-blue text-base">
-				{isVisible && <p>{message}</p>}
+				{
+					isVisible && 
+					<p>{message}</p>
+				}
 	  		</div>
 		</div>
 	);
