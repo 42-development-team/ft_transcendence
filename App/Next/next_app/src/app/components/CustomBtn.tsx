@@ -5,7 +5,7 @@ const CustomBtn = (
             onClick, id="", 
             color="bg-mauve", 
             disable=false,
-            style: {backgroundImage="", backgroundRepeat="", backgroundPosition="", backgroundSize=""} = {},
+            anim=true,
         } 
             : 
         {
@@ -13,14 +13,8 @@ const CustomBtn = (
             onClick: () => void, 
             id: string, 
             color: string, 
-            style?: 
-            {
-                backgroundImage?: string;
-                backgroundRepeat?: string;
-                backgroundPosition?: string;
-                backgroundSize?: string;
-            },
-            disable: boolean
+            disable: boolean,
+            anim: boolean
         }
     ) => {
     return (
@@ -29,7 +23,7 @@ const CustomBtn = (
             id={id}
             disabled={disable}
             style={{opacity: disable? 0.5 : 1}}
-            className={`font-bold text-sm rounded-lg text-base ${color} hover:bg-pink drop-shadow-xl m-4 p-3`}
+            className={` ${anim && 'focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${color} hover:bg-pink drop-shadow-xl m-4 p-3`}
             // className={`${color} m-4 p-3`} 
             onClick={onClick}>
             {children}

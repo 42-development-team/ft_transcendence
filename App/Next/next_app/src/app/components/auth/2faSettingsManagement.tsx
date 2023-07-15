@@ -24,7 +24,7 @@ const TwoFASettingsManagement = () => {
 		if (isVisible) {
 		  const timer = setTimeout(() => {
 			setIsVisible(false);
-		  }, 2100);
+		  }, 2600);
   
 		  return () => clearTimeout(timer);
 		}
@@ -86,7 +86,7 @@ const TwoFASettingsManagement = () => {
 		}
 	}
 
-	const handleCallback = (childData: string) =>{ //set the code value from child 'OtpInput'
+	const handleCallback = (childData: string) =>{
 		setInputValue(childData);
 		console.log("childData: " + childData);
 	}
@@ -97,6 +97,7 @@ const TwoFASettingsManagement = () => {
 				{
 					!isActive &&
 					<CustomBtn
+						anim={true}
 						color={colorClick}
 						id="TwoFAEButton" 
 						onClick={handleEnableClick} 
@@ -108,6 +109,7 @@ const TwoFASettingsManagement = () => {
 				{
 					isActive &&
 					<CustomBtn
+						anim={true}
 						color={colorClick}
 						id="TwoFADButton" 
 						onClick={handleDisableClick} 
@@ -125,21 +127,22 @@ const TwoFASettingsManagement = () => {
 				displayBox && 
 				<OtpInput parentCallback={handleCallback}></OtpInput>
 			}
+			<div className=" text-center text-red-700">
+				{
+					isVisible && 
+					<p>{message}</p>
+				}
+	  		</div>
 			{ 
 				displayBox &&
 				<CustomBtn
+					anim={true}
 					color="bg-mauve"
 					id="codeSubmit" 
 					disable={false} 
 					onClick={handleSubmit}>Submit
 				</CustomBtn> 
 			}
-			<div className=" bg-gradient-to-tr from-blue text-base">
-				{
-					isVisible && 
-					<p>{message}</p>
-				}
-	  		</div>
 		</div>
 	);
 };

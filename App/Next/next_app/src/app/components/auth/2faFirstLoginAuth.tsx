@@ -6,7 +6,8 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
-import svgImage from '../../../../public/collapse-left-svgrepo-com.svg';
+import refreshImage from '../../../../public/refresh-icon-10834.svg';
+import Image from "next/image";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -24,7 +25,7 @@ const Manage2FAFirstLogin = () => {
 		if (isVisible) {
 			const timer = setTimeout(() => {
 				setIsVisible(false);
-			}, 2100);
+			}, 2600);
 
 			return () => clearTimeout(timer);
 		}
@@ -73,17 +74,11 @@ const Manage2FAFirstLogin = () => {
 		console.log("childData: " + childData);
 	}
 
-	const buttonStyle = {
-		backgroundImage: `url(${svgImage})`,
-		backgroundRepeat: "no-repeat",
-		backgroundPosition: "center",
-		backgroundSize: "cover",
-	}
-
 	return (
-		<div className="border-2 border-surface2 rounded-md p-4">
-			<div className="flex justify-center">
-				<CustomBtn 
+		<div className=" flex flex-auto flex-col bg-base border-2 shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] rounded-md p-4">
+			<div className="flex justify-center mt-2">
+				<CustomBtn
+					anim={true}
 					color={colorClick}
 					id="TwoFAEButton" 
 					onClick={handleEnableClick} 
@@ -92,27 +87,36 @@ const Manage2FAFirstLogin = () => {
 					{enableMessage}
 				</CustomBtn>
 				<CustomBtn
+					anim={true}
 					color={colorClickCancel}
 					id="Cancel2FA" 
 					onClick={handleCancelClick} 
 					disable={cancelActive}>Cancel
 				</CustomBtn>
 			</div>
-			<div className="flex flex-evenly justify-center">
-				<QrCodeDisplay
-					imageUrl={imageUrl} 
-					displayBox={displayBox}>
-				</QrCodeDisplay>
-				<div className="flex-col flex justify-center">
+			<div className="flex flex-row justify-center ">
+				<div className=" ml-12 flex-shrink self-center">
+					<QrCodeDisplay
+						imageUrl={imageUrl} 
+						displayBox={displayBox}>
+					</QrCodeDisplay>
+				</div>
+				<div className="self-center mt-2 duration-500">
 					{
 						imageUrl && 
-						<CustomBtn
-							style={buttonStyle}
+						<button
+							className="active:animate-spin  1s origin-[50%_50%]"
 							color="bg-mauve"
 							id="Refresh2FA" 
 							onClick={handleRefreshClick} 
-							disable={cancelActive}>
-						</CustomBtn>
+							disabled={cancelActive}>
+							<Image src={refreshImage} 
+								alt="refresh"
+								width={30}
+								height={30}
+								className="m-2 rounded-[inherit]"  
+							/>
+						</button>
 					}
 				</div>
 			</div>
@@ -125,10 +129,17 @@ const Manage2FAFirstLogin = () => {
 						}
 					</div>
 				}
-			<div className="flex flex-col items-center">
+			<div className=" text-red-700 text-center">
+				{
+					isVisible && 
+					<p>{message}</p>
+				}
+			</div>
+			<div className=" active:duration-500 flex flex-col items-center">
 				{ 
 					displayBox &&
 					<CustomBtn
+						anim={true}
 						color="bg-mauve"
 						id="codeSubmit" 
 						disable={false} 
@@ -136,12 +147,6 @@ const Manage2FAFirstLogin = () => {
 					>
 						Submit
 					</CustomBtn> 
-				}
-			</div>
-			<div className=" bg-gradient-to-tr from-blue text-base">
-				{
-					isVisible && 
-					<p>{message}</p>
 				}
 			</div>
 		</div>
