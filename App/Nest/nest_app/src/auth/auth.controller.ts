@@ -5,6 +5,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
+import { UnauthorizedException } from '@nestjs/common';
 
 
 @Controller('auth')
@@ -34,20 +35,7 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            const jwt = await this.authService.login(req.user);
-
-            
-            const cookieOptions = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                secure: false, // if httpS => true
-                httpOnly: true,
-            }
-            res.cookie("jwt", jwt.access_token, cookieOptions);
-            
-            const isVerify = await this.authService.verifyJWT(jwt.refresh_token);
-            await this.authService.redirectTwoFA(req, res, isVerify);
-            await this.authService.changeLoginBooleanStatus(req.user);
-            return jwt;
+            await this.authService.redirectTwoFA(req, res);
         }
         catch (error) {
             // res.status(401).send(error.message);
@@ -58,6 +46,23 @@ export class AuthController {
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
         validate the JWT, and assign the user property to the Request object
     */
+
+    @Public()
+    @Get('jwt')
+    async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
+        try {
+                const jwt = await this.authService.getJwt(req, res);
+                const cookieOptions = {
+                    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                    secure: false, // if httpS => true
+                    httpOnly: true,
+                }
+                res.cookie("jwt", jwt.access_token, cookieOptions);
+        }
+        catch (error) {
+            console.log("Error: " + error.message);
+        }
+    }
 
     @Get('profile')
     getProfile(@Req() req) {
