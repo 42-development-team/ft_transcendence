@@ -1,5 +1,5 @@
 "use client";
-import React, {FC, useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import '../../globals.css'
 
 interface OtpInputProps {
@@ -9,8 +9,6 @@ interface OtpInputProps {
 let currentOtpIndex: number = 0;
 
 const OtpInput = ({ parentCallback } : any) => {
-
-    
     const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
     const [activeOtpIndex, setActiveOtpIndex] = useState<number>(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -18,17 +16,20 @@ const OtpInput = ({ parentCallback } : any) => {
     const handleOnChange = ({target}: React.ChangeEvent<HTMLInputElement>):void => {
         const { value } = target
         const newOTP : string[] = [...otp];
+
         newOTP[currentOtpIndex] = value.substring(value.length - 1);
-        
-        if (!value) setActiveOtpIndex(currentOtpIndex - 1);
-        else setActiveOtpIndex(currentOtpIndex + 1);
+        if (!value) 
+            setActiveOtpIndex(currentOtpIndex - 1);
+        else if (value < '0' || value > '9') 
+            return;
+        else 
+            setActiveOtpIndex(currentOtpIndex + 1);
         setOtp(newOTP);
 
         const concatenatedString = newOTP.reduce((accumulator, currentValue) => accumulator + currentValue, '');
         if (currentOtpIndex === 5)
-            parentCallback(concatenatedString);
-        // if (currentOtpIndex === 5)
-        //     props.parentCallback(sum)
+            parentCallback(concatenatedString); //send string to parent component
+
     }
 
     const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -49,9 +50,9 @@ const OtpInput = ({ parentCallback } : any) => {
                         <React.Fragment key={index}>
                         <input
                         ref={index === activeOtpIndex ? inputRef : null}
-                            type="number"
-                            className={` w-12 h-12 border-2 rounded bg-transparent outline-none text-center font-semibold text-xl
-                            border-gray-4-- focus:border-gray-700 focus:text-gray-700 text-gray-400 animate-pulse`}
+                            inputMode="numeric"
+                            className={`  w-12 h-12 border-2 rounded bg-transparent outline-none text-center font-semibold text-xl
+                            border-gray-4-- focus:border-gray-700 focus:text-gray-700 text-gray-400 focus-visible:animate-pulse `}
                             onChange={handleOnChange}
                             onKeyDown={(e) => handleOnKeyDown(e, index)}
                             value={otp[index]}
