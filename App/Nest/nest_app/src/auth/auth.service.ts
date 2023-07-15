@@ -25,7 +25,7 @@ export class AuthService {
         }
     }
 
-    async logIn(user: any): Promise<Tokens> {
+    async login(user: any): Promise<Tokens> {
        try {
            const tokens = await this.getToken(user.id, user.username);
 

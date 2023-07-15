@@ -13,29 +13,40 @@ export class AuthController {
     constructor(private authService: AuthService, private prisma: PrismaService) {}
 
     @Public()
+    @Get('test')
+    test(@Res() res: Response) {
+        res.redirect("http://localhost:4000/auth/login");
+    }
+
+    @Public()
     @UseGuards(FortyTwoAuthGuards)
-    @Get('logIn')
+    @Get('login')
     async redir() {}
-    
+
     @Public()
     @UseGuards(FortyTwoAuthGuards)
     @HttpCode(HttpStatus.CREATED)
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
         // here I catch my profile user in req due to FortyTwoStrat used by the useGuards decorator
-        
+
         // I have to create or find the user in db
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            const jwt = await this.authService.logIn(req.user);
+            const jwt = await this.authService.login(req.user);
 
+            
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false, // if httpS => true
+                httpOnly: true,
+            }
+            res.cookie("jwt", jwt.access_token, cookieOptions);
+            
             const isVerify = await this.authService.verifyJWT(jwt.refresh_token);
-
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
-
-            // console.log(jwt);
             return jwt;
         }
         catch (error) {
@@ -48,10 +59,9 @@ export class AuthController {
         validate the JWT, and assign the user property to the Request object
     */
 
-    // @Public();
     @Get('profile')
     getProfile(@Req() req) {
-        console.log("/profile");
+        console.log(req.user);
         return req.user;
     }
 }
