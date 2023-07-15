@@ -67,14 +67,11 @@ export class AuthService {
         if (req && req.cookies) {
             userId = req.cookies['userId'];
         }
-        console.log("userId: " + userId);
         if (userId) {
             userId = parseInt(userId);
-            console.log("userId.tonumber: " + userId)
             const userDB = await this.prisma.user.findUniqueOrThrow({
                 where: { id: userId },
             });
-            console.log("USERDB.username:" + userDB.username);
             const jwt = await this.login(userDB);
             return jwt;
         }
