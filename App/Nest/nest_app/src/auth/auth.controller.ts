@@ -14,7 +14,6 @@ export class AuthController {
 
     @Public()
     @Get('test')
-    // @Redirect("http://localhost:4000/auth/logIn");
     test(@Res() res: Response) {
         res.redirect("http://localhost:4000/auth/login");
     }
@@ -35,19 +34,17 @@ export class AuthController {
         // get a sign token from jwt.sign method
         // inject the jwt token in the client cookies
         try {
-            const jwt = await this.authService.logIn(req.user);
+            const jwt = await this.authService.login(req.user);
 
-            const isVerify = await this.authService.verifyJWT(jwt.refresh_token);
-
+            
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false, // if httpS => true
                 httpOnly: true,
             }
             res.cookie("jwt", jwt.access_token, cookieOptions);
-
-            // res.setHeader('Authorization', 'Bearer ' + jwt.access_token);
-            // res.set('Authorization', 'Bearer ' + jwt.access_token);
+            
+            const isVerify = await this.authService.verifyJWT(jwt.refresh_token);
             await this.authService.redirectTwoFA(req, res, isVerify);
             await this.authService.changeLoginBooleanStatus(req.user);
 
@@ -65,6 +62,6 @@ export class AuthController {
     @Get('profile')
     getProfile(@Req() req) {
         console.log(req.user);
-        // return req.user;
+        return req.user;
     }
 }
