@@ -8,7 +8,7 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
-	
+
 	useEffect(() => {
 	  if (isVisible) {
 		const timer = setTimeout(() => {
@@ -68,7 +68,8 @@ const TwoFAAuthComponent = () => {
 					onChange={handleInputChange}/>
 				</div> 
 			}
-			<CustomBtn 
+			<CustomBtn
+				color="bg-yellow"
 				id="codeSubmit" 
 				disable={false} 
 				onClick={handleSubmit}>Submit

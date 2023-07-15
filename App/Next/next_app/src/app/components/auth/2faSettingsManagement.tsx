@@ -14,6 +14,7 @@ const TwoFASettingsManagement = () => {
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
+	const [colorClick, setColor] = useState<string>('bg-mauve');
 
 	useEffect( () => { //on first load
 		isTwoFAActive();
@@ -36,16 +37,19 @@ const TwoFASettingsManagement = () => {
 		}
 		const data = await response.json();
 		setIsActive(data);
+		console.log(isActive);
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
 		generateTwoFA('http://localhost:4000/2fa/turn-on/aucaland', setImageUrl);
 		setDisplayBox(true);
+		setColor('bg-red');
 	}
 	
-	const handleDisableClick = async () => {
+	const handleDisableClick = () => {
 		setDisplayBox(true);
 		setImageUrl('');
+		setColor('bg-red');
 	}
 
 	const turnOff = async () => {
@@ -71,12 +75,14 @@ const TwoFASettingsManagement = () => {
 			setDisplayBox(false);
 			setMessage("Two Factor Auth disabled");
 			setIsVisible(true);
+			setColor('bg-mauve');
 		}
 		else {
 			setIsActive(true);
 			setDisplayBox(false);
 			setMessage("Two Factor Auth enabled");
 			setIsVisible(true);
+			setColor('bg-mauve');
 		}
 	}
 
@@ -88,16 +94,28 @@ const TwoFASettingsManagement = () => {
 	return (
 		<div className="flex-auto flex flex-col border-2 rounded bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
 			<div className="flex justify-center mt-2">
-				<CustomBtn 
-					id="TwoFAEButton" 
-					onClick={handleEnableClick} 
-					disable={isActive}>Enable 2FA
-				</CustomBtn>
-				<CustomBtn 
-					id="TwoFADButton" 
-					onClick={handleDisableClick} 
-					disable={!isActive}>Disable 2FA
-				</CustomBtn>
+				{
+					!isActive &&
+					<CustomBtn
+						color={colorClick}
+						id="TwoFAEButton" 
+						onClick={handleEnableClick} 
+						disable={isActive}
+					>
+						Enable 2FA
+					</CustomBtn>
+				}
+				{
+					isActive &&
+					<CustomBtn
+						color={colorClick}
+						id="TwoFADButton" 
+						onClick={handleDisableClick} 
+						disable={!isActive}
+					>
+						Disable 2FA
+					</CustomBtn>
+				}
 			</div>
 			<QrCodeDisplay 
 				imageUrl={imageUrl} 
@@ -109,9 +127,12 @@ const TwoFASettingsManagement = () => {
 			}
 			{ 
 				displayBox &&
-				<CustomBtn id="codeSubmit" 
-				disable={false} 
-				onClick={handleSubmit}>Submit</CustomBtn> 
+				<CustomBtn
+					color="bg-mauve"
+					id="codeSubmit" 
+					disable={false} 
+					onClick={handleSubmit}>Submit
+				</CustomBtn> 
 			}
 			<div className=" bg-gradient-to-tr from-blue text-base">
 				{

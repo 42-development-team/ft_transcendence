@@ -6,6 +6,7 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
+import svgImage from '../../../../public/collapse-left-svgrepo-com.svg';
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -16,6 +17,8 @@ const Manage2FAFirstLogin = () => {
 	const [enableActive, setEnableActive] = useState<boolean>(false);
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
+	const [colorClick, setColor] = useState<string>('bg-mauve');
+	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 
 	useEffect(() => {
 		if (isVisible) {
@@ -32,6 +35,8 @@ const Manage2FAFirstLogin = () => {
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
+		setColor('bg-red');
+		setColorCancel('bg-mauve');
 	}
 
 	const handleRefreshClick = () => {
@@ -45,6 +50,8 @@ const Manage2FAFirstLogin = () => {
 		setEnableMessage('Enable 2FA');
 		setCancelActive(true);
 		setEnableActive(false);
+		setColorCancel('bg-red');
+		setColor('bg-mauve');
 	}
 
 	const handleSubmit = async () => {
@@ -66,44 +73,71 @@ const Manage2FAFirstLogin = () => {
 		console.log("childData: " + childData);
 	}
 
+	const buttonStyle = {
+		backgroundImage: `url(${svgImage})`,
+		backgroundRepeat: "no-repeat",
+		backgroundPosition: "center",
+		backgroundSize: "cover",
+	}
+
 	return (
 		<div className="border-2 border-surface2 rounded-md p-4">
-			<CustomBtn 
-				id="TwoFAEButton" 
-				onClick={handleEnableClick} 
-				disable={enableActive}>{enableMessage}
-			</CustomBtn>
-			<CustomBtn
-				id="Cancel2FA" 
-				onClick={handleCancelClick} 
-				disable={cancelActive}>Cancel
-			</CustomBtn>
-			<QrCodeDisplay
-				imageUrl={imageUrl} 
-				displayBox={displayBox}>
-			</QrCodeDisplay>
-			{
-				imageUrl && 
+			<div className="flex justify-center">
 				<CustomBtn 
+					color={colorClick}
+					id="TwoFAEButton" 
+					onClick={handleEnableClick} 
+					disable={enableActive}
+				>
+					{enableMessage}
+				</CustomBtn>
+				<CustomBtn
+					color={colorClickCancel}
 					id="Cancel2FA" 
-					onClick={handleRefreshClick} 
-					disable={cancelActive}>Refresh
-				</CustomBtn>}
-			{
-				displayBox &&
-				<div className="flex flex-row items-center">
-					{ 
-						displayBox && 
-						<OtpInput parentCallback={handleCallback}></OtpInput>
-					}
-					{ 
-						displayBox &&
-						<CustomBtn id="codeSubmit" 
-						disable={false} 
-						onClick={handleSubmit}>Submit</CustomBtn> 
+					onClick={handleCancelClick} 
+					disable={cancelActive}>Cancel
+				</CustomBtn>
+			</div>
+			<div className="flex flex-evenly justify-center">
+				<QrCodeDisplay
+					imageUrl={imageUrl} 
+					displayBox={displayBox}>
+				</QrCodeDisplay>
+				<div className="flex-col flex justify-center">
+					{
+						imageUrl && 
+						<CustomBtn
+							style={buttonStyle}
+							color="bg-mauve"
+							id="Refresh2FA" 
+							onClick={handleRefreshClick} 
+							disable={cancelActive}>
+						</CustomBtn>
 					}
 				</div>
-			}
+			</div>
+				{
+					displayBox &&
+					<div className="flex flex-row items-center">
+						{ 
+							displayBox && 
+							<OtpInput parentCallback={handleCallback}></OtpInput>
+						}
+					</div>
+				}
+			<div className="flex flex-col items-center">
+				{ 
+					displayBox &&
+					<CustomBtn
+						color="bg-mauve"
+						id="codeSubmit" 
+						disable={false} 
+						onClick={handleSubmit}
+					>
+						Submit
+					</CustomBtn> 
+				}
+			</div>
 			<div className=" bg-gradient-to-tr from-blue text-base">
 				{
 					isVisible && 
