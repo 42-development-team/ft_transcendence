@@ -4,6 +4,8 @@ import CustomBtn from "../CustomBtn";
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
+import isTwoFAValid from "./utilsFunction/isTwoFAValid";
+import generateTwoFA from "./utilsFunction/generateTwoFA";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -25,36 +27,11 @@ const Manage2FAFirstLogin = () => {
 		}
 	}, [isVisible]);
 
-	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
-			method: 'POST',
-			body: JSON.stringify({ code: inputValue }),
-			headers: {
-				'Content-Type': 'application/json',
-			}
-		});
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'verifyTwoFA');
-		}
-		const data = await response.json();
-		return data;
-	}
-
 	const handleEnableClick = async () => {
-		try {
-			setCancelActive(false);
-			setEnableActive(true);
-			setDisplayBox(true);
-			const response = await fetch('http://localhost:4000/2fa/turn-on/aucaland');
-			if (!response.ok) {
-				throw new Error('Failed to fetch \'turn-on');
-			}
-			const data = await response.json();
-			setImageUrl(data.base64Qrcode);
-		}
-		catch (error) {
-			console.error('Error retrieving image URL:', error);
-		}
+		generateTwoFA('http://localhost:4000/2fa/turn-on/aucaland', setImageUrl);
+		setCancelActive(false);
+		setEnableActive(true);
+		setDisplayBox(true);
 	}
 
 	const handleRefreshClick = () => {
@@ -71,7 +48,7 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid();
+		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/aucaland');
 		if (!isValid) {
 			setIsVisible(true);
 			setMessage("Wrong code");
