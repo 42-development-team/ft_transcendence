@@ -49,7 +49,7 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setImageUrl('');
 		setInputValue('');
-		setEnableMessage('Enable 2FA');
+		setEnableMessage('Enable 2FA ?');
 		setCancelActive(true);
 		setEnableActive(false);
 		setColorCancel('bg-red');
@@ -63,11 +63,11 @@ const Manage2FAFirstLogin = () => {
 			setMessage("Wrong code");
 			return;
 		}
-		const response = await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 		setImageUrl('');
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
+		await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 		window.location.href = "http://localhost:3000/home";
 	}
 

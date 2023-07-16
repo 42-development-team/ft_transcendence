@@ -49,7 +49,8 @@ export class AuthService {
             res.status(200).cookie("userId", req.user.id).redirect("http://localhost:3000/auth/2fa");
         }
         else {
-            res.status(200).redirect('http://localhost:3000/home');
+            const {jwt, cookieOptions} = await this.getJwt(req, res);
+            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect("http://localhost:3000/home");
         }
     }
 
@@ -73,7 +74,12 @@ export class AuthService {
                 where: { id: userId },
             });
             const jwt = await this.login(userDB);
-            return jwt;
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false, // if httpS => true
+                httpOnly: true,
+            }
+            return {jwt, cookieOptions};
         }
         return null;
     }

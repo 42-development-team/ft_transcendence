@@ -57,7 +57,6 @@ const TwoFASettingsManagement = () => {
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'turn-off');
 		}
-		const data = await response.json();
 	}
 
 	const handleSubmit = async () => {

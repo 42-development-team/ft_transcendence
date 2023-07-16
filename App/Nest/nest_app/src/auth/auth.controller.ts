@@ -51,13 +51,8 @@ export class AuthController {
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
-                const jwt = await this.authService.getJwt(pars, res);
-                const cookieOptions = {
-                    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                    secure: false, // if httpS => true
-                    httpOnly: true,
-                }
-                res.cookie("jwt", jwt.access_token, cookieOptions);
+            const {jwt, cookieOptions} = await this.authService.getJwt(req, res);
+            res.cookie("jwt", jwt.access_token, cookieOptions);//if try .redirect => cors problem..
         }
         catch (error) {
             console.log("Error: " + error.message);

@@ -30,7 +30,7 @@ const TwoFAAuthComponent = () => {
 		const data = await response.json();
 		if (data)
 		{
-			const response = await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
+			await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 			window.location.href = "http://localhost:3000/home";
 		}
 		console.log("isValid?: " + data);
