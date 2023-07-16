@@ -1,6 +1,6 @@
 import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Post, Body, Param, Req, Res, Get, Header, Redirect, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Param, Req, Res, Get, Delete } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { qrCodeDto } from './TwoFactor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -34,10 +34,17 @@ export class TwoFAController {
         await this.twoFAService.isTwoFAEnabled( res, username );
     }
 
+    @Public()
+    @Get('/TwoFAAuthRedirect/')
+    async TwoFAAuthRedirect (
+        @Res() res: Response,
+    ) : Promise<any> {
+        res.redirect("http://localhost:3000/firstLogin");
+    }
+
     @Post('/verifyTwoFA/:username')
     async verifyTwoFA (
         @Res() res: Response,
-        @Req() req: Request,
         @Body() code : qrCodeDto,
         @Param('username') username: string,
     ) {
@@ -45,21 +52,7 @@ export class TwoFAController {
         return res.send(isValid);
     }
 
-    // @Post('/verifyTwoFARedirect/:username')
-    // async verifyTwoFARedirect (
-    //     @Res() res: Response,
-    //     @Req() req: Request,
-    //     @Body() code : qrCodeDto,
-    //     @Param('username') username: string,
-    // ) {
-    //     const isValid: boolean = await this.twoFAService.isTwoFACodeValid( code.code, res, username );
-    //     if (isValid)
-    //         res.redirect('http://localhost:3000/home');
-    //     else
-    //         return res.send(isValid);
-    // }
-
-    @Get('/turn-off/:username')
+    @Delete('/turn-off/:username')
     async turnOffTwoFA (
         @Res() res: Response,
         @Param ('username') username: string,

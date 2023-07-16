@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Strategy, VerifyCallback } from 'passport-42';
+import { Injectable } from '@nestjs/common';
+import { Strategy } from 'passport-42';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';

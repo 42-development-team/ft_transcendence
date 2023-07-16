@@ -8,6 +8,7 @@ import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
+import { request } from "http";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -48,7 +49,7 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setImageUrl('');
 		setInputValue('');
-		setEnableMessage('Enable 2FA');
+		setEnableMessage('Enable 2FA ?');
 		setCancelActive(true);
 		setEnableActive(false);
 		setColorCancel('bg-red');
@@ -66,6 +67,7 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
+		await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 		window.location.href = "http://localhost:3000/home";
 	}
 
