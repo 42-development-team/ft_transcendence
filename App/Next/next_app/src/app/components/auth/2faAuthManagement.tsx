@@ -21,7 +21,7 @@ const TwoFAAuthComponent = () => {
 	}, [isVisible]);
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/mdegraeu', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
