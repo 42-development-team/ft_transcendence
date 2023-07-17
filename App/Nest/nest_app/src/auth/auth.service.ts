@@ -28,7 +28,6 @@ export class AuthService {
     async login(user: any): Promise<Tokens> {
        try {
            const tokens = await this.getToken(user.id, user.username);
-
            return tokens;
         }
         catch (error) {
@@ -45,31 +44,52 @@ export class AuthService {
         res.clearCookie('jwt', cookieOptions);
     }
 
-    async redirectTwoFA( req: any, res: Response, isVerifyUser: Boolean) {
-        const userDB = await this.prisma.user.findUnique({
+
+    async redirectTwoFA(req: any, res: Response) {
+        const userDB = await this.prisma.user.findUniqueOrThrow({
             where: { username: req.user.username },
         });
-        if (!isVerifyUser)
-            throw new UnauthorizedException('User not verified');
-        if (userDB.isFirstLogin)
-            res.status(200).redirect('http://localhost:3000/firstLogin/');
+        if (userDB.isFirstLogin) {
+            res.status(200).cookie("userId", req.user.id).redirect('http://localhost:3000/firstLogin/');
+            this.changeLoginBooleanStatus(userDB);
+        }
+        else if (userDB.isTwoFAEnabled) {
+            res.status(200).cookie("userId", req.user.id).redirect("http://localhost:3000/auth/2fa");
+        }
         else {
-            if (userDB.isTwoFAEnabled) {
-                console.log('token verified');
-                res.status(200).redirect('http://localhost:3000/auth/2fa');
-            }
-            else
-                res.status(200).redirect('http://localhost:3000/home');
+            const {jwt, cookieOptions} = await this.getJwt(req, res);
+            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect("http://localhost:3000/home");
         }
     }
 
     async changeLoginBooleanStatus(user: any) {
         if (user.isFirstLogin) {
-            await this.prisma.user.update({
+            await this.prisma.user.updateMany({
                 where: { username: user.username },
                 data: { isFirstLogin: false },
             });
         }
+    }
+
+    async getJwt(req: any, res: Response) {
+        let userId = null;
+        if (req && req.cookies) {
+            userId = req.cookies['userId'];
+        }
+        if (userId) {
+            userId = parseInt(userId);
+            const userDB = await this.prisma.user.findUniqueOrThrow({
+                where: { id: userId },
+            });
+            const jwt = await this.login(userDB);
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false, // if httpS => true
+                httpOnly: true,
+            }
+            return {jwt, cookieOptions};
+        }
+        return null;
     }
 
     async getToken(userId: number, login: string): Promise<Tokens> {

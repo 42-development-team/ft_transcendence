@@ -2,6 +2,13 @@
 import React, { useState, useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
+import OtpInput from "./OtpInput";
+import QrCodeDisplay from "./QrCodeDisplay";
+import isTwoFAValid from "./utilsFunction/isTwoFAValid";
+import generateTwoFA from "./utilsFunction/generateTwoFA";
+import refreshImage from '../../../../public/refresh-icon-10834.svg';
+import Image from "next/image";
+import { request } from "http";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -10,41 +17,28 @@ const Manage2FAFirstLogin = () => {
 	const [enableMessage, setEnableMessage] = useState<string>('Enable 2FA');
 	const [cancelActive, setCancelActive] = useState<boolean>(true);
 	const [enableActive, setEnableActive] = useState<boolean>(false);
+	const [isVisible, setIsVisible] = useState(false);
+	const [message, setMessage] = useState('');
+	const [colorClick, setColor] = useState<string>('bg-mauve');
+	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 
-	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
-			method: 'POST',
-			body: JSON.stringify({ code: inputValue }),
-			headers: {
-				'Content-Type': 'application/json',
-			}
-		});
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'verifyTwoFA');
+	useEffect(() => {
+		if (isVisible) {
+			const timer = setTimeout(() => {
+				setIsVisible(false);
+			}, 2600);
+
+			return () => clearTimeout(timer);
 		}
-		const data = await response.json();
-		return data;
-	}
+	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		try {
-			setCancelActive(false);
-			setEnableActive(true);
-			setDisplayBox(true);
-			const response = await fetch('http://localhost:4000/2fa/turn-on/aucaland');
-			if (!response.ok) {
-				throw new Error('Failed to fetch \'turn-on');
-			}
-			const data = await response.json();
-			setImageUrl(data.base64Qrcode);
-		}
-		catch (error) {
-			console.error('Error retrieving image URL:', error);
-		}
-	}
-
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(event.target.value);
+		generateTwoFA('http://localhost:4000/2fa/turn-on/aucaland', setImageUrl);
+		setCancelActive(false);
+		setEnableActive(true);
+		setDisplayBox(true);
+		setColor('bg-red');
+		setColorCancel('bg-mauve');
 	}
 
 	const handleRefreshClick = () => {
@@ -55,13 +49,15 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setImageUrl('');
 		setInputValue('');
-		setEnableMessage('Enable 2FA');
+		setEnableMessage('Enable 2FA ?');
 		setCancelActive(true);
 		setEnableActive(false);
+		setColorCancel('bg-red');
+		setColor('bg-mauve');
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid();
+		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/aucaland');
 		if (!isValid) {
 			setIsVisible(true);
 			setMessage("Wrong code");
@@ -71,46 +67,89 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
+		await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 		window.location.href = "http://localhost:3000/home";
 	}
 
-
-	const [isVisible, setIsVisible] = useState(false);
-	const [message, setMessage] = useState('');
-	useEffect(() => {
-		if (isVisible) {
-			const timer = setTimeout(() => {
-				setIsVisible(false);
-			}, 2100);
-
-			return () => clearTimeout(timer);
-		}
-	}, [isVisible]);
+	const handleCallback = (childData: string) =>{ //set the code value from child 'OtpInput'
+		setInputValue(childData);
+		console.log("childData: " + childData);
+	}
 
 	return (
-		<div className="border-2 border-surface2 rounded-md p-4">
-			<CustomBtn id="TwoFAEButton" onClick={handleEnableClick} disable={enableActive}>{enableMessage}</CustomBtn>
-			<CustomBtn id="Cancel2FA" onClick={handleCancelClick} disable={cancelActive}>Cancel</CustomBtn>
-			{imageUrl !== '' && <div>
-				<img src={imageUrl} height="300" width="300" alt="QR Code" />
-			</div>}
-			{imageUrl && <CustomBtn id="Cancel2FA" onClick={handleRefreshClick} disable={cancelActive}>Refresh</CustomBtn>}
-			{
-				displayBox &&
-				<div className="flex flex-row items-center">
-					<div className="m-4">
-						<input type="text"
-							className=" bg-base border-red  border-0  w-64 h-8 focus:outline-none"
-							placeholder="Enter 2FA Code"
-							value={inputValue}
-							onChange={handleInputChange} />
-					</div>
-					<CustomBtn id="codeSubmit" disable={false} onClick={handleSubmit}>Submit</CustomBtn>
+		<div className=" flex flex-auto flex-col bg-base border-2 shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] rounded-md p-4">
+			<div className="flex justify-center mt-2">
+				<CustomBtn
+					anim={true}
+					color={colorClick}
+					id="TwoFAEButton" 
+					onClick={handleEnableClick} 
+					disable={enableActive}
+				>
+					{enableMessage}
+				</CustomBtn>
+				<CustomBtn
+					anim={true}
+					color={colorClickCancel}
+					id="Cancel2FA" 
+					onClick={handleCancelClick} 
+					disable={cancelActive}>Cancel
+				</CustomBtn>
+			</div>
+			<div className="flex flex-row justify-center ">
+				<div className=" ml-12 flex-shrink self-center">
+					<QrCodeDisplay
+						imageUrl={imageUrl} 
+						displayBox={displayBox}>
+					</QrCodeDisplay>
 				</div>
-			}
-
-			<div className=" bg-gradient-to-tr from-blue text-base">
-				{isVisible && <p>{message}</p>}
+				<div className="self-center mt-2 duration-500">
+					{
+						imageUrl && 
+						<button
+							className="active:animate-spin  1s origin-[50%_50%]"
+							color="bg-mauve"
+							id="Refresh2FA" 
+							onClick={handleRefreshClick} 
+							disabled={cancelActive}>
+							<Image src={refreshImage} 
+								alt="refresh"
+								width={30}
+								height={30}
+								className="m-2 rounded-[inherit]"  
+							/>
+						</button>
+					}
+				</div>
+			</div>
+				{
+					displayBox &&
+					<div className="flex flex-row items-center">
+						{ 
+							displayBox && 
+							<OtpInput parentCallback={handleCallback}></OtpInput>
+						}
+					</div>
+				}
+			<div className=" text-red-700 text-center">
+				{
+					isVisible && 
+					<p>{message}</p>
+				}
+			</div>
+			<div className=" active:duration-500 flex flex-col items-center">
+				{ 
+					displayBox &&
+					<CustomBtn
+						anim={true}
+						color="bg-mauve"
+						id="codeSubmit" 
+						disable={false} 
+						onClick={handleSubmit}
+					>
+						Submit
+					</CustomBtn> 
+				}
 			</div>
 		</div>
 	);
