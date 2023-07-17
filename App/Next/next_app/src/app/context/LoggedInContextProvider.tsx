@@ -1,5 +1,5 @@
 "use client";
-import React, {useContext, createContext, useState} from "react";
+import {useContext, createContext, useState} from "react";
 
 // Note: we also need username ? Replace "PROFILE" text by "username"
 type LoggedInContextType = {
@@ -25,7 +25,7 @@ export const LoggedInContextProvider = ({children} : {children: React.ReactNode}
     const login = (newLogin: string) => {
         // Todo: update user status
         setLoggedIn(true);
-        setUniqueLogin("newLogin")
+        setUniqueLogin(newLogin)
         console.log(`Now logged as ${newLogin}`)
     }
 
@@ -42,9 +42,9 @@ export const LoggedInContextProvider = ({children} : {children: React.ReactNode}
     }
 
     return (
-        <LoggedInContext.Provider value = {{isLoggedIn, login, logout, uniqueLogin}}>
-            {children}
-        </LoggedInContext.Provider>
+            <LoggedInContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin }}>
+                {children}
+            </LoggedInContext.Provider>
     )
 }
 
