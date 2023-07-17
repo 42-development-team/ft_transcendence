@@ -31,7 +31,7 @@ const TwoFASettingsManagement = () => {
 	  }, [isVisible]);
 	
 	const isTwoFAActive = async () => {
-		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/mdegraeu'); //TODO: replace 'aucaland' by current user => create task for that
+		const response = await fetch('http://localhost:4000/2fa/isTwoFAActive/cpalusze'); //TODO: replace 'aucaland' by current user => create task for that
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'isTwoFAActive');
 		}
@@ -41,7 +41,7 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
-		generateTwoFA('http://localhost:4000/2fa/turn-on/mdegraeu', setImageUrl);
+		generateTwoFA('http://localhost:4000/2fa/turn-on/cpaluszse', setImageUrl);
 		setDisplayBox(true);
 		setColor('bg-red');
 	}
@@ -53,14 +53,14 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const turnOff = async () => {
-		const response = await fetch('http://localhost:4000/2fa/turn-off/mdegraeu');
+		const response = await fetch('http://localhost:4000/2fa/turn-off/cpalusze');
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'turn-off');
 		}
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/mdegraeu');
+		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/cpalusze');
 		if (!isValid)
 		{
 			setIsVisible(true);
