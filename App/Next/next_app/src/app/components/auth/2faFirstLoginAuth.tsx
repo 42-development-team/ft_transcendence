@@ -21,6 +21,7 @@ const Manage2FAFirstLogin = () => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
+	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	useEffect(() => {
 		if (isVisible) {
@@ -60,9 +61,12 @@ const Manage2FAFirstLogin = () => {
 		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/aucaland');
 		if (!isValid) {
 			setIsVisible(true);
+			setColorText('text-red-700');
 			setMessage("Wrong code");
+			console.log("isValid?false: " + isValid);
 			return;
 		}
+		setColorText('text-green-400');
 		setImageUrl('');
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
@@ -131,12 +135,9 @@ const Manage2FAFirstLogin = () => {
 						}
 					</div>
 				}
-			<div className=" text-red-700 text-center">
-				{
-					isVisible && 
-					<p>{message}</p>
-				}
-			</div>
+				<div className={` ${colorText} text-center`}>
+					{isVisible && <p>{message}</p>}
+				</div>
 			<div className=" active:duration-500 flex flex-col items-center">
 				{ 
 					displayBox &&
