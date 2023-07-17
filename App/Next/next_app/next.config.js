@@ -3,6 +3,11 @@ const nextConfig = {}
 
 module.exports = {
     nextConfig,
+    env: {
+        IP: process.env.LOCAL_IP,
+        BACK_PORT: process.env.BACK_PORT,
+        FRONT_PORT: process.env.FRONT_PORT,
+    },
     images: {
         remotePatterns: [
             {

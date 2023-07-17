@@ -9,6 +9,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 import { ValidationPipe } from '@nestjs/common';
 
+const baseFrontUrl: string = `http://${process.env.IP}:${process.env.BACK_FRONT}` as string;
+const baseBackUrl: string = `http://${process.env.IP}:${process.env.BACK_BACK}` as string;
+
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const appService = app.get(AppService);
@@ -24,7 +28,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ["http://localhost:3000", "http://localhost:4000"],
+    // origin: ["http://localhost:3000", "http://localhost:4000"],
+    origin: [baseFrontUrl, baseBackUrl],
     credentials: true,
   });
 

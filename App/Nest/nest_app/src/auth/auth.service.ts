@@ -7,6 +7,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './types/jwtPayload.type';
 import { Tokens } from './types/token.type';
 
+const baseUrl: string = `http://${process.env.IP}:${process.env.BACK_FRONT}` as string;
+const firstLoginUrl: string = baseUrl + '/firstLogin/';
+const twoFaUrl: string = baseUrl + '/auth/2fa';
+const homeUrl: string = baseUrl + '/home/';
 
 @Injectable()
 export class AuthService {
@@ -50,15 +54,15 @@ export class AuthService {
             where: { username: req.user.username },
         });
         if (userDB.isFirstLogin) {
-            res.status(200).cookie("userId", req.user.id).redirect('http://localhost:3000/firstLogin/');
+            res.status(200).cookie("userId", req.user.id).redirect(firstLoginUrl);
             this.changeLoginBooleanStatus(userDB);
         }
         else if (userDB.isTwoFAEnabled) {
-            res.status(200).cookie("userId", req.user.id).redirect("http://localhost:3000/auth/2fa");
+            res.status(200).cookie("userId", req.user.id).redirect(twoFaUrl);
         }
         else {
             const {jwt, cookieOptions} = await this.getJwt(req, res);
-            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect("http://localhost:3000/home");
+            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(homeUrl);
         }
     }
 
