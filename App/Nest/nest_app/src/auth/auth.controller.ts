@@ -43,10 +43,7 @@ export class AuthController {
         res.redirect('http://localhost:3000');
         // this.authService.logout(res);
     }
-    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
-        validate the JWT, and assign the user property to the Request object
-    */
-
+    
     @Public()
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
@@ -58,7 +55,10 @@ export class AuthController {
             console.log("Error: " + error.message);
         }
     }
-
+    
+    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
+        validate the JWT, and assign the user property to the Request object
+    */
     @Get('profile')
     getProfile(@Req() req) {
         console.log(req.user);
