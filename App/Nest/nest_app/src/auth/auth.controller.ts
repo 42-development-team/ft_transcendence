@@ -13,12 +13,6 @@ export class AuthController {
     constructor(private authService: AuthService, private prisma: PrismaService) {}
 
     @Public()
-    @Get('test')
-    test(@Res() res: Response) {
-        res.redirect("http://localhost:4000/auth/login");
-    }
-
-    @Public()
     @UseGuards(FortyTwoAuthGuards)
     @Get('login')
     async redir() {}
@@ -55,10 +49,15 @@ export class AuthController {
         }
     }
 
+    @Get('logout')
+    async logout(@Res() res: Response) {
+        res.clearCookie("jwt");
+        res.redirect('http://localhost:3000');
+        // this.authService.logout(res);
+    }
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
         validate the JWT, and assign the user property to the Request object
     */
-
     @Get('profile')
     getProfile(@Req() req) {
         console.log(req.user);
