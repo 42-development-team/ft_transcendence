@@ -12,11 +12,12 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { TwoFAController } from 'src/auth/2FA/2FA.controller';
 import { TwoFAService } from 'src/auth/2FA/2FA.service';
+import { FirstLoginController } from 'src/auth/firstLogin/firstLogin.controller';
 
 
 @Module({
   imports: [UsersModule, PrismaModule, AuthModule],
-  controllers: [AppController, UsersController, ChatroomController,TwoFAController],
+  controllers: [AppController, UsersController, ChatroomController,TwoFAController, FirstLoginController],
   providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService],
 })
 export class AppModule {}

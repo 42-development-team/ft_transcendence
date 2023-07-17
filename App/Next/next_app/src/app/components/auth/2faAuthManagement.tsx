@@ -10,23 +10,16 @@ const TwoFAAuthComponent = () => {
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
 
-	useEffect(() => {
-	  if (isVisible) {
-		const timer = setTimeout(() => {
-		  setIsVisible(false);
-		}, 2600);
 
-		return () => clearTimeout(timer);
-	  }
-	}, [isVisible]);
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/mdegraeu', {
+		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
-		'Content-Type': 'application/json',
-		}});
+				'Content-Type': 'application/json',
+			}
+		});
 		const data = await response.json();
 		if (data)
 		{
