@@ -35,6 +35,14 @@ export class AuthService {
         }
     }
 
+    async logout(res: Response) {
+        const cookieOptions = {
+            // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+            secure: false,
+            httpOnly: true,
+        }
+        res.clearCookie('jwt', cookieOptions);
+    }
 
 
     async redirectTwoFA(req: any, res: Response) {

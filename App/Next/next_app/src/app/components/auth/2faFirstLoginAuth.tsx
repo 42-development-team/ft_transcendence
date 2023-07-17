@@ -33,7 +33,7 @@ const Manage2FAFirstLogin = () => {
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA('http://localhost:4000/2fa/turn-on/aucaland', setImageUrl);
+		generateTwoFA('http://localhost:4000/2fa/turn-on/mdegraeu', setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -57,7 +57,7 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/aucaland');
+		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/mdegraeu');
 		if (!isValid) {
 			setIsVisible(true);
 			setMessage("Wrong code");
