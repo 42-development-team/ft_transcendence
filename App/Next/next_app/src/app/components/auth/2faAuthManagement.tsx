@@ -9,8 +9,7 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
-
-
+	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	const isTwoFAValid = async () => {
 		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/aucaland', {
@@ -26,7 +25,6 @@ const TwoFAAuthComponent = () => {
 			await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
 			window.location.href = "http://localhost:3000/home";
 		}
-		console.log("isValid?: " + data);
 		return data;
 	}
 
@@ -35,20 +33,23 @@ const TwoFAAuthComponent = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid();
+		const isValid: boolean = await isTwoFAValid();
 		if (!isValid)
 			{
 				setIsVisible(true);
+				setColorText('text-red-700');
 				setMessage("Error: code doesn't match");
 				return ;
 			}
 		if (isActive) {
 			setIsActive(false);
+			setColorText('text-red-700');
 			setMessage("Error: authentication failed");
 			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
+			setColorText('text-green-400');
 			setMessage("Successfuly logged-in");
 			setIsVisible(true);
 		}
@@ -69,9 +70,9 @@ const TwoFAAuthComponent = () => {
 					}
 				</div>
 			}
-			<div className=" text-red-700 text-center">
+			<div className={` ${colorText} text-center`}>
 				{isVisible && <p>{message}</p>}
-	  		</div>
+			</div>
 			<CustomBtn
 				anim={true}
 				color="bg-mauve"

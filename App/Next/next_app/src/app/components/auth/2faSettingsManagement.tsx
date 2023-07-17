@@ -15,6 +15,7 @@ const TwoFASettingsManagement = () => {
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
+	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	useEffect( () => { //on first load
 		isTwoFAActive();
@@ -64,6 +65,7 @@ const TwoFASettingsManagement = () => {
 		if (!isValid)
 		{
 			setIsVisible(true);
+			setColorText('text-red-700');
 			setMessage("Wrong code");
 			return ;
 		}
@@ -75,6 +77,7 @@ const TwoFASettingsManagement = () => {
 			setMessage("Two Factor Auth disabled");
 			setIsVisible(true);
 			setColor('bg-mauve');
+			setColorText('text-green-700');
 		}
 		else {
 			setIsActive(true);
@@ -82,6 +85,7 @@ const TwoFASettingsManagement = () => {
 			setMessage("Two Factor Auth enabled");
 			setIsVisible(true);
 			setColor('bg-mauve');
+			setColorText('text-green-700');
 		}
 	}
 
@@ -126,7 +130,7 @@ const TwoFASettingsManagement = () => {
 				displayBox && 
 				<OtpInput parentCallback={handleCallback}></OtpInput>
 			}
-			<div className=" text-center text-red-700">
+			<div className={` ${colorText} text-center`}>
 				{
 					isVisible && 
 					<p>{message}</p>
