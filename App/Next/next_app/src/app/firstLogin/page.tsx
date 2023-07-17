@@ -3,6 +3,15 @@ import Image from 'next/image';
 import CustomBtn from "@/components/CustomBtn";
 import Manage2FAFirstLogin from "@/components/auth/2faFirstLoginAuth";
 
+const redirectToHome = () => {
+    window.location.href = "http://localhost:3000/home";
+}
+
+const handleClick = () => {
+    console.log("Validate!");
+    redirectToHome();
+}
+
 export default function FirstLogin() {
     return (
         <div className="flex flex-col items-center justify-center">
@@ -24,7 +33,7 @@ export default function FirstLogin() {
             <div className="flex flex-col flex-auto items-center justify-center">
                 <Manage2FAFirstLogin></Manage2FAFirstLogin>
             </div>
-            <CustomBtn onClick={() => console.log("Validate!")}>
+            <CustomBtn onClick={handleClick}>
                 Validate
             </CustomBtn>
         </div>
