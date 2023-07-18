@@ -6,12 +6,17 @@ import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService, private prisma: PrismaService) {}
+    constructor(
+        private configService: ConfigService,
+        private authService: AuthService,
+        private prisma: PrismaService
+    ) {}
 
     @Public()
     @UseGuards(FortyTwoAuthGuards)
@@ -37,10 +42,22 @@ export class AuthController {
         }
     }
 
+    @HttpCode(HttpStatus.OK)
     @Get('logout')
     async logout(@Res() res: Response) {
-        res.clearCookie("jwt");
-        res.redirect(global.frontUrl);
+        try {
+
+            const cookieOptions = {
+                // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false,
+                httpOnly: true,
+            }
+            res.clearCookie("jwt", cookieOptions);
+            res.redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
+        }
+        catch (error) {
+            console.log(error.message);
+        }
         // this.authService.logout(res);
     }
     
