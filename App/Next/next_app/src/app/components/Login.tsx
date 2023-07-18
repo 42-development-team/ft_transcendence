@@ -7,11 +7,8 @@ function LoginComponent() {
 	return (
 		<div>
 			<a href={url}>Sign With 42</a>
-			{/* <CustomBtn id="" disable={false} onClick={SignIn}>
-			  Sign With 42
-			</CustomBtn> */}
 		</div>
-	 )
+	)
 }
 
 export default LoginComponent;

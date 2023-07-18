@@ -47,10 +47,11 @@ export class AuthService {
 
     async redirectTwoFA(req: any, res: Response) {
         const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
-
+        
         const userDB = await this.prisma.user.findUniqueOrThrow({
             where: { username: req.user.username },
         });
+        console.log(frontUrl);
         if (userDB.isFirstLogin) {
             res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin/`);
             this.changeLoginBooleanStatus(userDB);
@@ -60,7 +61,8 @@ export class AuthService {
         }
         else {
             const {jwt, cookieOptions} = await this.getJwt(req, res);
-            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(`${frontUrl}/home/`);
+            res.status(200).cookie("jwt", jwt.access_token, cookieOptions);
+            res.redirect(`${frontUrl}/home/`);
         }
     }
 
