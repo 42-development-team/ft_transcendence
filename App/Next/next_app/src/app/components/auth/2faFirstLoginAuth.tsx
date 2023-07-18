@@ -10,6 +10,7 @@ import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 
 const Manage2FAFirstLogin = () => {
+
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
@@ -33,7 +34,7 @@ const Manage2FAFirstLogin = () => {
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA('http://localhost:4000/2fa/turn-on/aucaland', setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/mdegraeu`, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -57,7 +58,7 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/aucaland');
+		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`);
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');
@@ -69,8 +70,8 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
-		await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
-		window.location.href = "http://localhost:3000/home";
+		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
+		window.location.href = `${process.env.FRONT_URL}/home`;
 	}
 
 	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'

@@ -4,9 +4,11 @@ import CustomBtn from "@/components/CustomBtn";
 
 function LoginComponent() {
 
+	const url: string = `${process.env.BACK_URL}/auth/login`;
+
 	return (
 		<div>
-			<a href="http://localhost:4000/auth/login">Sign With 42</a>
+			<a href={url}>Sign With 42</a>
 			{/* <CustomBtn id="" disable={false} onClick={SignIn}>
 			  Sign With 42
 			</CustomBtn> */}

@@ -34,7 +34,7 @@ export const LoggedInContextProvider = ({children} : {children: React.ReactNode}
         // Todo: update user status
         setUniqueLogin("");
         try {
-            await fetch("http://localhost:4000/auth/logout", {credentials:"include"});
+            await fetch(`${process.env.BACK_URL}/auth/logout`, {credentials:"include"});
         }
         catch(error) {
             console.log("error fetching logout");

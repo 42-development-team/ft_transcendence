@@ -3,14 +3,16 @@ import { AppModule } from './app/app.module';
 import { AppService } from './app/app.service';
 import { UsersService } from './users/users.service';
 import * as cookieParser from 'cookie-parser';
-
+import { ConfigService } from '@nestjs/config';
 // Swagger
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 import { ValidationPipe } from '@nestjs/common';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
   const appService = app.get(AppService);
 
   const config = new DocumentBuilder()
@@ -24,7 +26,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ["http://localhost:3000", "http://localhost:4000"],
+    origin: [`http://${configService.get<string>('ip')}:${configService.get<string>('frontPort')}`,
+      `http://${configService.get<string>('ip')}:${configService.get<string>('backPort')}`],
     credentials: true,
   });
 
