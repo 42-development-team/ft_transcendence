@@ -1,5 +1,5 @@
-"use client";
 import TwoFASettingsManagement from "../components/auth/2faSettingsManagement";
+
 export default function Settings() {
     // const {isLoggedIn, login, logout} = useLoggedInContext();
     return (
