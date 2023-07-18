@@ -10,15 +10,19 @@ import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { APP_GUARD } from '@nestjs/core';
 import { TwoFAController } from './2FA/2FA.controller';
 import { TwoFAModule } from './2FA/2FA.module';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
     imports: [
         UsersModule,
         PassportModule,
         TwoFAModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '7d' },
+        JwtModule.registerAsync({
+            inject: [ConfigService],
+            useFactory: async(configService: ConfigService) => ({
+                secret: configService.get<string>('jwtSecret'),
+                signOptions: { expiresIn: '7d' },
+            }),
         })
     ],
     controllers: [AuthController],

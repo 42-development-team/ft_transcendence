@@ -12,10 +12,15 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { TwoFAController } from 'src/auth/2FA/2FA.controller';
 import { TwoFAService } from 'src/auth/2FA/2FA.service';
-
+import { ConfigModule } from '@nestjs/config';
+import { config } from '../config/config';
 
 @Module({
-  imports: [UsersModule, PrismaModule, AuthModule],
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+    load: [config],
+  }),
+  UsersModule, PrismaModule, AuthModule],
   controllers: [AppController, UsersController, ChatroomController,TwoFAController],
   providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService],
 })

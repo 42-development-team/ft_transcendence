@@ -4,18 +4,20 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
 import { UsersService } from 'src/users/users.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     constructor(
+        private configService: ConfigService,
         private authService: AuthService,
         private usersService: UsersService,
         private jwtService: JwtService,
     ) {
         super({
-            clientID: process.env.TRANSCENDENCE_TOKEN,
-            clientSecret: process.env.TRANSCENDENCE_SECRET,
-            callbackURL: process.env.REDIRECT_URL,
+            clientID: configService.get<string>('transcendenceToken'),
+            clientSecret: configService.get<string>('transcendenceSecret'),
+            callbackURL: configService.get<string>('redirectUri'),
         });
     }
 

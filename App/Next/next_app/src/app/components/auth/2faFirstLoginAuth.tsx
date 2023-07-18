@@ -8,9 +8,9 @@ import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
-import { request } from "http";
 
 const Manage2FAFirstLogin = () => {
+
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
@@ -21,6 +21,7 @@ const Manage2FAFirstLogin = () => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
+	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	useEffect(() => {
 		if (isVisible) {
@@ -33,7 +34,7 @@ const Manage2FAFirstLogin = () => {
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA('http://localhost:4000/2fa/turn-on/cpalusze', setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/cpalusze`, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -57,23 +58,34 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, 'http://localhost:4000/2fa/verifyTwoFA/cpalusze');
+		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/cpalusze`);
 		if (!isValid) {
 			setIsVisible(true);
-			setMessage("Wrong code");
+			setColorText('text-red-700');
+			setMessage("Error: code doesn't match");
 			return;
 		}
+		setColorText('text-green-400');
 		setImageUrl('');
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
-		await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
-		window.location.href = "http://localhost:3000/home";
+		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
+		window.location.href = `${process.env.FRONT_URL}/home`;
 	}
 
-	const handleCallback = (childData: string) =>{ //set the code value from child 'OtpInput'
+	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'
 		setInputValue(childData);
-		console.log("childData: " + childData);
+	}
+
+	const handleCallbackEnter = () => {
+		handleSubmit();
+	}
+
+	const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLButtonElement>) => {
+		if (key === 'Enter') {
+			handleSubmit();
+		}
 	}
 
 	return (
@@ -127,28 +139,24 @@ const Manage2FAFirstLogin = () => {
 					<div className="flex flex-row items-center">
 						{ 
 							displayBox && 
-							<OtpInput parentCallback={handleCallback}></OtpInput>
+							<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
 						}
 					</div>
 				}
-			<div className=" text-red-700 text-center">
-				{
-					isVisible && 
-					<p>{message}</p>
-				}
-			</div>
+				<div className={` ${colorText} text-center`}>
+					{isVisible && <p>{message}</p>}
+				</div>
 			<div className=" active:duration-500 flex flex-col items-center">
 				{ 
 					displayBox &&
-					<CustomBtn
-						anim={true}
-						color="bg-mauve"
-						id="codeSubmit" 
-						disable={false} 
+					<button
+						className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
+						id="codeSubmit"
+						onKeyDown={(e) => handleOnKeyDown(e)}
 						onClick={handleSubmit}
 					>
 						Submit
-					</CustomBtn> 
+					</button> 
 				}
 			</div>
 		</div>

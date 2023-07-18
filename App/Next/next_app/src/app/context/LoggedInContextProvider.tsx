@@ -35,7 +35,7 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
 
 
     const fetchProfile = async () => {
-        const response = await fetch("http://localhost:4000/auth/profile", { credentials: "include" });
+        const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
         await response.json().then((data) => {
             let newLogin: string = data.login as string;
             setUniqueLogin(newLogin);
@@ -56,7 +56,7 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
 
     const logout = async () => {
         console.log("logout");
-        await fetch("http://localhost:4000/auth/logout", { credentials: "include" }).catch((error) => {
+        await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
             console.log("error fetching profile: " + error.message);
         });
         setLoggedIn(false);

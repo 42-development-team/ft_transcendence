@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig = {}
+
+module.exports = {
+    nextConfig,
+    env: {
+        FRONT_URL: process.env.NEXT_PUBLIC_URL_FRONT,
+        BACK_URL: process.env.NEXT_PUBLIC_URL_BACK,
+    },
     images: {
         remotePatterns: [
             {

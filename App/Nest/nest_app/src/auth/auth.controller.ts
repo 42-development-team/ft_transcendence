@@ -6,12 +6,17 @@ import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService, private prisma: PrismaService) {}
+    constructor(
+        private configService: ConfigService,
+        private authService: AuthService,
+        private prisma: PrismaService
+    ) {}
 
     @Public()
     @UseGuards(FortyTwoAuthGuards)
@@ -37,15 +42,13 @@ export class AuthController {
         }
     }
 
+    @HttpCode(HttpStatus.OK)
     @Get('logout')
     async logout(@Res() res: Response) {
         res.clearCookie("jwt");
         res.send();
     }
-    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
-        validate the JWT, and assign the user property to the Request object
-    */
-
+    
     @Public()
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
@@ -57,7 +60,10 @@ export class AuthController {
             console.log("Error: " + error.message);
         }
     }
-
+    
+    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
+        validate the JWT, and assign the user property to the Request object
+    */
     @Get('profile')
     getProfile(@Req() req) {
         console.log(req.user);

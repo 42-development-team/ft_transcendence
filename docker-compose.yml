@@ -6,6 +6,8 @@ services:
       context: ./Docker/Frontend
     image: front
     container_name: front
+    env_file:
+      - ./.env
     depends_on:
       - back
     env_file:
@@ -25,22 +27,8 @@ services:
     container_name: back
     depends_on:
       - database
-    environment:
-    - FRONT_PORT=${FRONT_PORT}
-    - BACK_PORT=${BACK_PORT}
-    - DB_PORT=${DB_PORT}
-    - POSTGRES_USER=${POSTGRES_USER}
-    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    - POSTGRES_DB=${POSTGRES_DB}
-    - URL_ARGUMENTS=sslmode=prefer
-    - DATABASE_CONTAINER_NAME=${DATABASE_CONTAINER_NAME}
-    - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_CONTAINER_NAME}:${DB_PORT}/${POSTGRES_DB}?schema=public
-    - LOCAL_IP=${LOCAL_IP}
-    - JWT_SECRET=${JWT_SECRET}
-    - TRANSCENDENCE_TOKEN=${TRANSCENDENCE_TOKEN}
-    - TRANSCENDENCE_SECRET=${TRANSCENDENCE_SECRET}
-    - REDIRECT_URL=${REDIRECT_URL}
-
+    env_file:
+      - ./.env
     volumes:
       - back_vol:/app
     ports: 
