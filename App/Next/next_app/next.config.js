@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = {
-    nextConfig,
+const nextConfig = {
     images: {
         remotePatterns: [
             {
@@ -19,4 +16,9 @@ module.exports = {
             },
         ]
     },
-} 
+    devIndicators: {
+        buildActivityPosition: 'bottom-right',
+    }
+}
+
+module.exports = nextConfig
