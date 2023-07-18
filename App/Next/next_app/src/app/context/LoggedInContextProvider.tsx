@@ -55,13 +55,14 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
     }
 
     const logout = async () => {
+        console.log("logout");
+        await fetch("http://localhost:4000/auth/logout", { credentials: "include" }).catch((error) => {
+            console.log("error fetching profile: " + error.message);
+        });
         setLoggedIn(false);
         // Todo: update user status
         setUniqueLogin("");
         setUserId("");
-        await fetch("http://localhost:4000/auth/logout", { credentials: "include" }).catch((error) => {
-            console.log("error fetching profile: " + error.message);
-        });
     }
 
     return (

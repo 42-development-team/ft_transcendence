@@ -40,8 +40,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Res() res: Response) {
         res.clearCookie("jwt");
-        res.redirect('http://localhost:3000');
-        // this.authService.logout(res);
+        res.send();
     }
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
         validate the JWT, and assign the user property to the Request object

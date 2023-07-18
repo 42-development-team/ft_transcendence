@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useLoggedInContext } from "../context/LoggedInContextProvider";
 
 export default function Home() {
-    const {login, userId} = useLoggedInContext();
+    const {login} = useLoggedInContext();
     useEffect(() => {
         login();
     }, []);
@@ -14,7 +14,6 @@ export default function Home() {
             <div className="w-full p-4 h-full">
                 <a > You should land here after successful login </a>
             </div>
-            <p>userId = {userId}</p>
         </div>
     )
 }
