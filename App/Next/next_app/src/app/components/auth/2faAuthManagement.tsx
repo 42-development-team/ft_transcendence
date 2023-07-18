@@ -9,31 +9,22 @@ const TwoFAAuthComponent = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
-
-	useEffect(() => {
-	  if (isVisible) {
-		const timer = setTimeout(() => {
-		  setIsVisible(false);
-		}, 2600);
-
-		return () => clearTimeout(timer);
-	  }
-	}, [isVisible]);
+	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	const isTwoFAValid = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`, {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
-		'Content-Type': 'application/json',
-		}});
+				'Content-Type': 'application/json',
+			}
+		});
 		const data = await response.json();
 		if (data)
 		{
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
 			window.location.href = `${process.env.FRONT_URL}/home`;
 		}
-		console.log("isValid?: " + data);
 		return data;
 	}
 
@@ -42,28 +33,40 @@ const TwoFAAuthComponent = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid();
+		const isValid: boolean = await isTwoFAValid();
 		if (!isValid)
 			{
 				setIsVisible(true);
+				setColorText('text-red-700');
 				setMessage("Error: code doesn't match");
 				return ;
 			}
 		if (isActive) {
 			setIsActive(false);
+			setColorText('text-red-700');
 			setMessage("Error: authentication failed");
 			setIsVisible(true);
 		}
 		else {
 			setIsActive(true);
+			setColorText('text-green-400');
 			setMessage("Successfuly logged-in");
 			setIsVisible(true);
 		}
 	}
   
-	const handleCallback = (childData: string) =>{
+	const handleCallbackData = (childData: string) =>{
 		setInputValue(childData);
-		console.log("childData: " + childData);
+	}
+
+	const handleCallbackEnter = () => {
+		handleSubmit();
+	}
+
+	const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLButtonElement>) => {
+		if (key === 'Enter') {
+			handleSubmit();
+		}
 	}
 
 	return (
@@ -72,20 +75,21 @@ const TwoFAAuthComponent = () => {
 				<div className=" text-center">
 					Enter 2FA Code :
 					{ 
-						<OtpInput parentCallback={handleCallback}></OtpInput>
+						<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
 					}
 				</div>
 			}
-			<div className=" text-red-700 text-center">
+			<div className={` ${colorText} text-center`}>
 				{isVisible && <p>{message}</p>}
-	  		</div>
-			<CustomBtn
-				anim={true}
-				color="bg-mauve"
-				id="codeSubmit" 
-				disable={false} 
-				onClick={handleSubmit}>Submit
-			</CustomBtn>
+			</div>
+			<button
+				className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
+				id="codeSubmit"
+				onKeyDown={(e) => handleOnKeyDown(e)}
+				onClick={handleSubmit}
+			>
+				Submit
+			</button> 
 		</div>
 	);
 };

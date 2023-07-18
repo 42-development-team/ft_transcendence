@@ -3,12 +3,13 @@ import React, {useState, useEffect, useRef} from "react";
 import '../../globals.css'
 
 interface OtpInputProps {
-    parentCallback: (concatString: string) => void;
+    parentCallbackData: (concatString: string) => void;
+    parentCallbackEnter: () => void;
 }
 
 let currentOtpIndex: number = 0;
 
-const OtpInput = ({ parentCallback } : any) => {
+const OtpInput = ( { parentCallbackData, parentCallbackEnter } : any ) => {
     const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
     const [activeOtpIndex, setActiveOtpIndex] = useState<number>(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -28,7 +29,7 @@ const OtpInput = ({ parentCallback } : any) => {
 
         const concatenatedString = newOTP.reduce((accumulator, currentValue) => accumulator + currentValue, '');
         if (currentOtpIndex === 5)
-            parentCallback(concatenatedString); //send string to parent component
+            parentCallbackData(concatenatedString); //send string to parent component
 
     }
 
@@ -36,6 +37,9 @@ const OtpInput = ({ parentCallback } : any) => {
         currentOtpIndex = index;
         if (key === 'Backspace' ) {
             setActiveOtpIndex(currentOtpIndex - 1);
+        }
+        else if (key === 'Enter' && index === 5) {
+            parentCallbackEnter();
         }
     }   
 

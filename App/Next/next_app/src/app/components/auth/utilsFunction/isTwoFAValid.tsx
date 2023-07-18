@@ -1,6 +1,6 @@
 
 
-const isTwoFAValid = async (inputValue: string, url: string) => {
+const isTwoFAValid = async (inputValue: string, url: string) : Promise<boolean> => {
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ code: inputValue }),
