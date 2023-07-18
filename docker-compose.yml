@@ -8,6 +8,8 @@ services:
     container_name: front
     depends_on:
       - back
+    env_file:
+      - .env
     volumes:
       - front_vol:/app
     ports: 

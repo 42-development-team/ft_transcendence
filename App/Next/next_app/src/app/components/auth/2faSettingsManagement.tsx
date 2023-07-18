@@ -41,7 +41,7 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
-		generateTwoFA('http://localhost:4000/2fa/turn-on/cpaluszse', setImageUrl);
+		generateTwoFA('http://localhost:4000/2fa/turn-on/cpalusze', setImageUrl);
 		setDisplayBox(true);
 		setColor('bg-red');
 	}
