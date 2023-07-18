@@ -38,7 +38,6 @@ const TwoFASettingsManagement = () => {
 		}
 		const data = await response.json();
 		setIsActive(data);
-		console.log(isActive);
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
@@ -66,7 +65,7 @@ const TwoFASettingsManagement = () => {
 		{
 			setIsVisible(true);
 			setColorText('text-red-700');
-			setMessage("Wrong code");
+			setMessage("Error: code doesn't match");
 			return ;
 		}
 		if (isActive) {
@@ -91,7 +90,16 @@ const TwoFASettingsManagement = () => {
 
 	const handleCallback = (childData: string) =>{
 		setInputValue(childData);
-		console.log("childData: " + childData);
+	}
+
+	const handleCallbackEnter = () => {
+		handleSubmit();
+	}
+
+	const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLButtonElement>) => {
+		if (key === 'Enter') {
+			handleSubmit();
+		}
 	}
 
 	return (
@@ -128,7 +136,7 @@ const TwoFASettingsManagement = () => {
 			</QrCodeDisplay>
 			{ 
 				displayBox && 
-				<OtpInput parentCallback={handleCallback}></OtpInput>
+				<OtpInput parentCallbackData={handleCallback} parentCallbackEnter={handleCallbackEnter}></OtpInput>
 			}
 			<div className={` ${colorText} text-center`}>
 				{
@@ -138,17 +146,15 @@ const TwoFASettingsManagement = () => {
 	  		</div>
 			{ 
 				displayBox &&
-				<CustomBtn
-					anim={true}
-					color="bg-mauve"
-					id="codeSubmit" 
-					disable={false} 
+				<button
+					className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
+					id="codeSubmit"
+					onKeyDown={(e) => handleOnKeyDown(e)}
 					onClick={handleSubmit}>Submit
-				</CustomBtn> 
+				</button> 
 			}
 		</div>
 	);
 };
-
 
 export default TwoFASettingsManagement;

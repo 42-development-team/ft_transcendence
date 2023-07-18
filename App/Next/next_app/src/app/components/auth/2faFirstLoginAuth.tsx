@@ -8,7 +8,6 @@ import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
-import { request } from "http";
 
 const Manage2FAFirstLogin = () => {
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -62,8 +61,7 @@ const Manage2FAFirstLogin = () => {
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');
-			setMessage("Wrong code");
-			console.log("isValid?false: " + isValid);
+			setMessage("Error: code doesn't match");
 			return;
 		}
 		setColorText('text-green-400');
@@ -75,9 +73,18 @@ const Manage2FAFirstLogin = () => {
 		window.location.href = "http://localhost:3000/home";
 	}
 
-	const handleCallback = (childData: string) =>{ //set the code value from child 'OtpInput'
+	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'
 		setInputValue(childData);
-		console.log("childData: " + childData);
+	}
+
+	const handleCallbackEnter = () => {
+		handleSubmit();
+	}
+
+	const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLButtonElement>) => {
+		if (key === 'Enter') {
+			handleSubmit();
+		}
 	}
 
 	return (
@@ -131,7 +138,7 @@ const Manage2FAFirstLogin = () => {
 					<div className="flex flex-row items-center">
 						{ 
 							displayBox && 
-							<OtpInput parentCallback={handleCallback}></OtpInput>
+							<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
 						}
 					</div>
 				}
@@ -141,15 +148,14 @@ const Manage2FAFirstLogin = () => {
 			<div className=" active:duration-500 flex flex-col items-center">
 				{ 
 					displayBox &&
-					<CustomBtn
-						anim={true}
-						color="bg-mauve"
-						id="codeSubmit" 
-						disable={false} 
+					<button
+						className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
+						id="codeSubmit"
+						onKeyDown={(e) => handleOnKeyDown(e)}
 						onClick={handleSubmit}
 					>
 						Submit
-					</CustomBtn> 
+					</button> 
 				}
 			</div>
 		</div>
