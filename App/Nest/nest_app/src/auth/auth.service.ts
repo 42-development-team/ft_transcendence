@@ -2,19 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { Response, Request } from 'express';
-import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './types/jwtPayload.type';
 import { Tokens } from './types/token.type';
-
-const baseUrl: string = `http://${process.env.IP}:${process.env.BACK_FRONT}` as string;
-const firstLoginUrl: string = baseUrl + '/firstLogin/';
-const twoFaUrl: string = baseUrl + '/auth/2fa';
-const homeUrl: string = baseUrl + '/home/';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
     constructor(
+        private configService: ConfigService,
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
@@ -50,19 +46,21 @@ export class AuthService {
 
 
     async redirectTwoFA(req: any, res: Response) {
+        const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
+
         const userDB = await this.prisma.user.findUniqueOrThrow({
             where: { username: req.user.username },
         });
         if (userDB.isFirstLogin) {
-            res.status(200).cookie("userId", req.user.id).redirect(firstLoginUrl);
+            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin/`);
             this.changeLoginBooleanStatus(userDB);
         }
         else if (userDB.isTwoFAEnabled) {
-            res.status(200).cookie("userId", req.user.id).redirect(twoFaUrl);
+            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/auth/2fa`);
         }
         else {
             const {jwt, cookieOptions} = await this.getJwt(req, res);
-            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(homeUrl);
+            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(`${frontUrl}/home/`);
         }
     }
 
@@ -105,11 +103,11 @@ export class AuthService {
         try {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
-                secret: process.env.JWT_SECRET,
+                secret: this.configService.get<string>('jwtService'),
                 expiresIn: '30m',
                 }),
                 this.jwtService.signAsync(jwtPayload, {
-                secret: process.env.JWT_SECRET,
+                secret: this.configService.get<string>('jwtService'),
                 expiresIn: '7d',
                 })
             ]);

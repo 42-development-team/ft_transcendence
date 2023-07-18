@@ -4,8 +4,7 @@ import CustomBtn from "@/components/CustomBtn";
 
 function LoginComponent() {
 
-	const baseUrl: string = `http://${process.env.IP}:${process.env.BACK_PORT}` as string;
-	const url: string = baseUrl + '/auth/login';
+	const url: string = `${process.env.BACK_URL}/auth/login`;
 
 	return (
 		<div>

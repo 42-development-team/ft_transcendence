@@ -5,7 +5,10 @@ _GREEN			:=	\033[32m
 
 all: start
 
-build:
+setEnv:
+	sh ./setEnv.sh
+
+build: setEnv
 	mkdir -p ./App
 	mkdir -p ./App/Nest
 	mkdir -p ./App/Next

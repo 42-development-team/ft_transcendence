@@ -21,7 +21,7 @@ const TwoFAAuthComponent = () => {
 	}, [isVisible]);
 
 	const isTwoFAValid = async () => {
-		const response = await fetch('http://localhost:4000/2fa/verifyTwoFA/mdegraeu', {
+		const response = await fetch(`${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`, {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
@@ -30,8 +30,8 @@ const TwoFAAuthComponent = () => {
 		const data = await response.json();
 		if (data)
 		{
-			await fetch('http://localhost:4000/auth/jwt', {credentials: 'include'});
-			window.location.href = "http://localhost:3000/home";
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
+			window.location.href = `${process.env.FRONT_URL}/home`;
 		}
 		console.log("isValid?: " + data);
 		return data;

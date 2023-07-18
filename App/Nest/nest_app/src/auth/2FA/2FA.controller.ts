@@ -6,12 +6,17 @@ import { qrCodeDto } from './TwoFactor.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as qrcode from 'qrcode'
 import { Public } from 'src/auth/public.routes';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags("TwoFA")
 @Public()
 @Controller('2fa')
 export class TwoFAController {
-    constructor (private twoFAService: TwoFAService, private prisma: PrismaService) {} //for now, a wrong username is a crash, waiting to know how we get user from next
+    constructor (
+        private configService: ConfigService,
+        private twoFAService: TwoFAService,
+        private prisma: PrismaService,
+    ) {} //for now, a wrong username is a crash, waiting to know how we get user from next
 
     @Get('/turn-on/:username')
     async turnOnTwoFa (
@@ -39,7 +44,7 @@ export class TwoFAController {
     async TwoFAAuthRedirect (
         @Res() res: Response,
     ) : Promise<any> {
-        res.redirect("http://localhost:3000/firstLogin");
+        res.redirect(`http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}/firstLogin`);
     }
 
     @Post('/verifyTwoFA/:username')

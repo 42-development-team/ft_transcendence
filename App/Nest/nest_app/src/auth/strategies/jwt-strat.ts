@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
@@ -13,14 +14,14 @@ const cookieExtractor = req => {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
+    constructor(private configService: ConfigService) {
         super ({
             // custom method to extract jwt
             jwtFromRequest: cookieExtractor,
             // ensure that the jwt haven't expire (401 Unauthorized if it is expired)
             ignoreExpiration: false,
             // secret key to sign the token
-            secretOrKey: process.env.JWT_SECRET,
+            secretOrKey: configService.get<string>('jwtSecret'),
         });
     }
 

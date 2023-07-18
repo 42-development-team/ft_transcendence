@@ -40,7 +40,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Res() res: Response) {
         res.clearCookie("jwt");
-        res.redirect('http://localhost:3000');
+        res.redirect(global.frontUrl);
         // this.authService.logout(res);
     }
     

@@ -4,9 +4,8 @@ const nextConfig = {}
 module.exports = {
     nextConfig,
     env: {
-        IP: process.env.LOCAL_IP,
-        BACK_PORT: process.env.BACK_PORT,
-        FRONT_PORT: process.env.FRONT_PORT,
+        FRONT_URL: process.env.NEXT_PUBLIC_URL_FRONT,
+        BACK_URL: process.env.NEXT_PUBLIC_URL_BACK,
     },
     images: {
         remotePatterns: [
