@@ -12,7 +12,7 @@ export default function FirstLogin() {
     const [placeHolder, setPlaceHolder] = useState('');
 
     const getUserName = async () => {
-        const response = await fetch("http://localhost:4000/firstLogin/getUserName/aucaland", {
+        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUserName/aucaland`, {
             method: "GET",
         });
         const data = await response.json();
@@ -30,7 +30,7 @@ export default function FirstLogin() {
     const redirectToHome = () => {
         if (validateEnabled) {
             setMessage("Redirecting...");
-            window.location.href = "http://localhost:3000/home";
+            window.location.href = `${process.env.FRONT_URL}/home`;
         }
     }
 
@@ -39,7 +39,7 @@ export default function FirstLogin() {
     }
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        const response = await fetch("http://localhost:4000/firstLogin/doesUserNameExist", {
+        const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist`, {
             method: "POST",
             body: JSON.stringify({username: e.target.value}),
             headers: {
