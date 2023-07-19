@@ -53,7 +53,7 @@ export class AuthService {
         });
         console.log(frontUrl);
         if (userDB.isFirstLogin) {
-            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin/`);
+            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin`);
             this.changeLoginBooleanStatus(userDB);
         }
         else if (userDB.isTwoFAEnabled) {
@@ -62,7 +62,7 @@ export class AuthService {
         else {
             const {jwt, cookieOptions} = await this.getJwt(req, res);
             res.status(200).cookie("jwt", jwt.access_token, cookieOptions);
-            res.redirect(`${frontUrl}/home/`);
+            res.redirect(`${frontUrl}/home`);
         }
     }
 

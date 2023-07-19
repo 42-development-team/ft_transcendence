@@ -12,7 +12,7 @@ export default function FirstLogin() {
     const [placeHolder, setPlaceHolder] = useState('');
 
     const getUserName = async () => {
-        const response = await fetch("http://localhost:4000/firstLogin/getUserName/aucaland", {
+        const response = await fetch("http://localhost:4000/firstLogin/getUserName/cpalusze", {
             method: "GET",
         });
         const data = await response.json();
