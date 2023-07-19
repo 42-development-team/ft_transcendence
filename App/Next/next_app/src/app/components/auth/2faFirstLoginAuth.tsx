@@ -58,7 +58,7 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`);
+		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/aucaland`);
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');
