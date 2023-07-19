@@ -12,7 +12,7 @@ const TwoFAAuthComponent = () => {
 	const [colorText, setColorText] = useState<string>('text-red-700');
 
 	const isTwoFAValid = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`, {
+		const response = await fetch(`${process.env.BACK_URL}/2fa/verifyTwoFA/cpalusze`, {
 			method: 'POST',
 			body: JSON.stringify({code: inputValue}),
 			headers: {
