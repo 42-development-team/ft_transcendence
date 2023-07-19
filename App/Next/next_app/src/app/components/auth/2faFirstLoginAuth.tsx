@@ -34,7 +34,7 @@ const Manage2FAFirstLogin = () => {
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/cpalusze`, setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/aucaland`, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -58,7 +58,7 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/cpalusze`);
+		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/aucaland`);
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');

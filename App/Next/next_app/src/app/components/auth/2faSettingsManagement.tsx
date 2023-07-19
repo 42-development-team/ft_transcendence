@@ -33,7 +33,7 @@ const TwoFASettingsManagement = () => {
 	  }, [isVisible]);
 	
 	const isTwoFAActive = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/cpalusze`); //TODO: replace 'aucaland' by current user => create task for that
+		const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/aucaland`); //TODO: replace 'aucaland' by current user => create task for that
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'isTwoFAActive');
 		}
@@ -42,7 +42,8 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/cpalusze`, setImageUrl);
+		console.log(`${process.env.BACK_URL}/2fa/turn-on/aucaland`);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/aucaland`, setImageUrl);
 		setDisplayBox(true);
 		setColor('bg-red');
 	}
@@ -54,14 +55,14 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const turnOff = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/cpalusze`);
+		const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/aucaland`);
 		if (!response.ok) {
 			throw new Error('Failed to fetch \'turn-off');
 		}
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/cpalusze`);
+		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/aucaland`);
 		if (!isValid)
 		{
 			setIsVisible(true);

@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from '../public.routes';
-import { stringify } from 'querystring';
 
 @ApiTags('FirstLogin')
 @Public() //TODO: delete when auth is done
@@ -40,6 +39,7 @@ export class FirstLoginController {
 	async getUserByName(@Param('username') username: string): Promise<any> {
 		try {
 			const user = await this.userService.getUserFromUsername(username);
+			console.log(user.username)
 			return user;
 		} catch (error) {
 			return error;
