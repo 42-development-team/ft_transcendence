@@ -8,7 +8,7 @@ export default function FirstLogin() {
 
     const [message, setMessage] = useState('');
     const [isVisible, setIsVisible] = useState(false);
-    const [validateEnabled, setValidateEnabled] = useState(false);
+    const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder] = useState('');
 
     const getUserName = async () => {

@@ -22,7 +22,7 @@ import { FirstLoginController } from 'src/auth/firstLogin/firstLogin.controller'
     load: [config],
   }),
   UsersModule, PrismaModule, AuthModule],
-  controllers: [AppController, UsersController, ChatroomController,TwoFAController,FirstLoginController],
-  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService, firstLoginService],
+  controllers: [AppController, UsersController, ChatroomController,TwoFAController, FirstLoginController],
+  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService],
 })
 export class AppModule {}
