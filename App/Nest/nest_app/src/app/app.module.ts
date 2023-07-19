@@ -14,6 +14,7 @@ import { TwoFAController } from 'src/auth/2FA/2FA.controller';
 import { TwoFAService } from 'src/auth/2FA/2FA.service';
 import { ConfigModule } from '@nestjs/config';
 import { config } from '../config/config';
+import { FirstLoginController } from 'src/auth/firstLogin/firstLogin.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -21,7 +22,7 @@ import { config } from '../config/config';
     load: [config],
   }),
   UsersModule, PrismaModule, AuthModule],
-  controllers: [AppController, UsersController, ChatroomController,TwoFAController],
+  controllers: [AppController, UsersController, ChatroomController,TwoFAController, FirstLoginController],
   providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService],
 })
 export class AppModule {}
