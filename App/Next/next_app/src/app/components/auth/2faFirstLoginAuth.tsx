@@ -34,7 +34,7 @@ const Manage2FAFirstLogin = () => {
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/mdegraeu`, setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/aucaland`, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
