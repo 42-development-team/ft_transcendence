@@ -11,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { TwoFAController } from './2FA/2FA.controller';
 import { TwoFAModule } from './2FA/2FA.module';
 import { ConfigService } from '@nestjs/config';
+import { RefreshTokenStrategy } from './strategies/refresh-strat';
 
 @Module({
     imports: [
@@ -26,7 +27,7 @@ import { ConfigService } from '@nestjs/config';
         })
     ],
     controllers: [AuthController],
-    providers: [AuthService, FortyTwoStrategy, JwtStrategy,
+    providers: [AuthService, FortyTwoStrategy, RefreshTokenStrategy, JwtStrategy,
     {
         provide: APP_GUARD,
         useClass: JwtAuthGuard,

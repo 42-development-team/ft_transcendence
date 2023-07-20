@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { Response, Request } from 'express';
@@ -16,8 +16,8 @@ export class AuthService {
         private prisma: PrismaService,
     ) {}
 
-    async getJwt(req: any, res: Response) {
-        let userId: string = this.extractCookie(req, 'userId');
+    async getJwtFromIdCookie(req: any, res: Response) {
+        let userId: string = this.extractCookieByName(req, 'userId');
         if (userId) {
             const id = parseInt(userId);
             const userDB = await this.prisma.user.findUniqueOrThrow({
@@ -53,7 +53,6 @@ export class AuthService {
         res.clearCookie('jwt', cookieOptions);
     }
 
-
     async redirectTwoFA(req: any, res: Response) {
         const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
 
@@ -61,18 +60,26 @@ export class AuthService {
             where: { username: req.user.username },
         });
         if (userDB.isFirstLogin) {
-            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin/`);
+            res.status(200)
+            .cookie("userId", req.user.id)
+            .redirect(`${frontUrl}/firstLogin/`);
             this.changeLoginBooleanStatus(userDB);
         }
         else if (userDB.isTwoFAEnabled) {
-            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/auth/2fa`);
+            res.status(200)
+            .cookie("userId", req.user.id)
+            .redirect(`${frontUrl}/auth/2fa`);
         }
         else {
-            const {jwt, cookieOptions} = await this.getJwt(req, res);
-            res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(`${frontUrl}/home/`);
+            const {jwt, cookieOptions} = await this.getJwtFromIdCookie(req, res);
+            res.status(200)
+            .clearCookie("userId", cookieOptions)
+            .cookie("jwt", jwt.access_token, cookieOptions)
+            .cookie("rt", jwt.refresh_token, cookieOptions)
+            .redirect(`${frontUrl}/home/`);
         }
     }
-    
+
     async changeLoginBooleanStatus(user: any) {
         if (user.isFirstLogin) {
             await this.prisma.user.updateMany({
@@ -112,11 +119,27 @@ export class AuthService {
     //     // user = payload.sub + payload.login
     // }
 
-    extractCookie(req: any, cookieName: string): string {
+    extractCookieByName(req: any, cookieName: string): string {
         let value: string = null;
         if (req && req.cookies) {
             value = req.cookies[cookieName];
         }
         return value;
+    }
+
+    async verifyRefreshToken(req: any, res: Response) {
+        try {
+            // get refresh token
+            const token = this.extractCookieByName(req, 'rt');
+            if (!token) throw UnauthorizedException;
+
+            const secret = this.configService.get<string>('jwtRefrehSecret');
+            // await verifier le refresh token
+            return await this.jwtService.verifyAsync(token, {secret});
+
+        }
+        catch(error) {
+            console.log("Generate Tokens Error:", error.message);
+        }
     }
 }
