@@ -1,24 +1,17 @@
 "use client";
 import Image from 'next/image';
 import CustomBtn from "@/components/CustomBtn";
-import Manage2FAFirstLogin from "@/components/auth/2faFirstLoginAuth";
+import FirstLogin2faComponent from "@/components/auth/FirstLogin2fa";
 import { ChangeEvent, useState, useEffect } from 'react';
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-const LoginComponent = ({userId}: {userId: RequestCookie}) => {
+const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
 
     const [message, setMessage] = useState('');
     const [isVisible, setIsVisible] = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder] = useState('');
-
-    const getUserName = async (userId: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUserName/${userId}`, {
-            method: "GET",
-        });
-        const data = await response.json();
-        setPlaceHolder(data.username);
-    }
+    const [inputValue, setInputValue] = useState('');
 
     useEffect(() => { //how async this
         try {
@@ -28,6 +21,14 @@ const LoginComponent = ({userId}: {userId: RequestCookie}) => {
         }
     }, []);
 
+    const getUserName = async (userId: string) => {
+        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUserName/${userId}`, {
+            method: "GET",
+        });
+        const data = await response.json();
+        setPlaceHolder(data.username);
+    }
+
     const redirectToHome = () => {
         if (validateEnabled) {
             setMessage("Redirecting...");
@@ -35,19 +36,26 @@ const LoginComponent = ({userId}: {userId: RequestCookie}) => {
         }
     }
 
-    const handleClick = () => {
-        //TODO: set username
-        redirectToHome();
+    const handleClick = async () => {
+        try {
+            await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
+                method: "PUT",
+                body: JSON.stringify({username: inputValue, userId: userId.value}),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            redirectToHome();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist`, {
-                method: "POST",
-                body: JSON.stringify({username: e.target.value}),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            setInputValue(e.target.value);
+            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist/${inputValue}`, {
+                method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
             const isUsernameSameAsCurrent = e.target.value === userId.value;
@@ -111,7 +119,7 @@ const LoginComponent = ({userId}: {userId: RequestCookie}) => {
                 />
             </div>
             <div className="flex flex-col flex-auto items-center justify-center">
-                <Manage2FAFirstLogin userId={userId}></Manage2FAFirstLogin>
+                <FirstLogin2faComponent userId={userId}></FirstLogin2faComponent>
             </div>
             <CustomBtn disable={!validateEnabled} onClick={handleClick}>
                 Validate
@@ -120,4 +128,4 @@ const LoginComponent = ({userId}: {userId: RequestCookie}) => {
     )
 }
 
-export default LoginComponent;
+export default FirstLoginPageComponent;

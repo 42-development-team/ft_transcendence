@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
-import LoginComponent from '@/components/auth/FirstLoginComponent'
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { useRouter } from 'next/navigation'
+import FirstLoginPageComponent from '../components/auth/FirstLoginPage';
 
 export default function FirstLogin() {
 
@@ -13,6 +13,6 @@ export default function FirstLogin() {
         return ;
     }
     return (
-        <LoginComponent userId={userId}/>
+        <FirstLoginPageComponent userId={userId}/>
     )
 }

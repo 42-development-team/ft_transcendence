@@ -6,9 +6,9 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
 
-const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
+const Settings2faComponent = () => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [isActive, setIsActive] = useState<boolean>(false);
@@ -18,7 +18,8 @@ const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-
+	const {userId} = useLoggedInContext();
+	
 	useEffect( () => { //on first load
 		isTwoFAActive();
 	}, [] );
@@ -45,7 +46,7 @@ const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
 		try {
-			generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
+			generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
 			setDisplayBox(true);
 			setColor('bg-red');
 		} catch (error) {
@@ -71,7 +72,7 @@ const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/${userId}`);
+		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/${userId}`);
 		if (!isValid)
 		{
 			setIsVisible(true);
@@ -168,4 +169,4 @@ const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
 	);
 };
 
-export default TwoFASettingsManagement;
+export default Settings2faComponent;

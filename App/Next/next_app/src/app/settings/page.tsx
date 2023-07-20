@@ -1,19 +1,9 @@
-import TwoFASettingsManagement from "../components/auth/2faSettingsManagement";
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import { cookies } from 'next/headers'
-import { useRouter } from 'next/navigation'
+import Settings2faComponent from '../components/auth/Settings2fa';
 
 export default function Settings() {
-    const cookieStore = cookies();
-    const userId: RequestCookie | undefined = cookieStore.get('userId');
-    if (userId === undefined) {
-        const router = useRouter();
-        router.push('/');
-        return ;
-    }
     return (
         <div className="flex flex-col flex-auto justify-center ">
-            <TwoFASettingsManagement userId={userId}></TwoFASettingsManagement>
+            <Settings2faComponent></Settings2faComponent>
         </div>
     )
   }

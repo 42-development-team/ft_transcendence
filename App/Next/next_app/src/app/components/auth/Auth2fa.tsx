@@ -1,20 +1,16 @@
 "use client";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
-import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
  
-const TwoFAAuthComponent = ({userId}: {userId: RequestCookie}) => {
+const Auth2faComponent = ({userId}: {userId: RequestCookie}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-	// const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-	// 	setInputValue(event.target.value);
-	// }
 
 	const handleSubmit = async () => {
 		
@@ -80,4 +76,4 @@ const TwoFAAuthComponent = ({userId}: {userId: RequestCookie}) => {
 	);
 };
 
-export default TwoFAAuthComponent;
+export default Auth2faComponent;

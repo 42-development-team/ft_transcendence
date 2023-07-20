@@ -10,7 +10,7 @@ import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-const Manage2FAFirstLogin = ({userId}: {userId: RequestCookie}) => {
+const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -164,4 +164,4 @@ const Manage2FAFirstLogin = ({userId}: {userId: RequestCookie}) => {
 };
 
 
-export default Manage2FAFirstLogin;
+export default FirstLogin2faComponent;
