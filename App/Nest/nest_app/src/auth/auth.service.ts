@@ -16,18 +16,27 @@ export class AuthService {
         private prisma: PrismaService,
     ) {}
 
-    async verifyJWT(token: string): Promise<any> {
-        try {
-            return await this.jwtService.verifyAsync(token);
+    async getJwt(req: any, res: Response) {
+        let userId: string = this.extractCookie(req, 'userId');
+        if (userId) {
+            const id = parseInt(userId);
+            const userDB = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            const jwt = await this.getTokens(userDB);
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false, // if httpS => true
+                httpOnly: true,
+            }
+            return {jwt, cookieOptions};
         }
-        catch {
-            return null;
-        }
+        return null;
     }
 
-    async login(user: any): Promise<Tokens> {
+    async getTokens(user: any): Promise<Tokens> {
        try {
-           const tokens = await this.getToken(user.id, user.username);
+           const tokens: Tokens = await this.signTokens(user.id, user.username);
            return tokens;
         }
         catch (error) {
@@ -63,7 +72,7 @@ export class AuthService {
             res.status(200).cookie("jwt", jwt.access_token, cookieOptions).redirect(`${frontUrl}/home/`);
         }
     }
-
+    
     async changeLoginBooleanStatus(user: any) {
         if (user.isFirstLogin) {
             await this.prisma.user.updateMany({
@@ -73,28 +82,7 @@ export class AuthService {
         }
     }
 
-    async getJwt(req: any, res: Response) {
-        let userId = null;
-        if (req && req.cookies) {
-            userId = req.cookies['userId'];
-        }
-        if (userId) {
-            userId = parseInt(userId);
-            const userDB = await this.prisma.user.findUniqueOrThrow({
-                where: { id: userId },
-            });
-            const jwt = await this.login(userDB);
-            const cookieOptions = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                secure: false, // if httpS => true
-                httpOnly: true,
-            }
-            return {jwt, cookieOptions};
-        }
-        return null;
-    }
-
-    async getToken(userId: number, login: string): Promise<Tokens> {
+    async signTokens(userId: number, login: string): Promise<Tokens> {
         const jwtPayload: JwtPayload = {
             sub: userId,
             login: login,
@@ -103,11 +91,11 @@ export class AuthService {
         try {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
-                secret: this.configService.get<string>('jwtService'),
+                secret: this.configService.get<string>('jwtSecret'),
                 expiresIn: '30m',
                 }),
                 this.jwtService.signAsync(jwtPayload, {
-                secret: this.configService.get<string>('jwtService'),
+                secret: this.configService.get<string>('jwtRefreshSecret'),
                 expiresIn: '7d',
                 })
             ]);
@@ -117,5 +105,18 @@ export class AuthService {
         catch (error) {
             console.log(error.message);
         }
+    }
+
+    // async verifyRefreshToken(refreshToken): Promise<Tokens> {
+    //     this.jwtService.verifyAsync(refreshToken, this.configService.get('jwtRefreshSecret'))
+    //     // user = payload.sub + payload.login
+    // }
+
+    extractCookie(req: any, cookieName: string): string {
+        let value: string = null;
+        if (req && req.cookies) {
+            value = req.cookies[cookieName];
+        }
+        return value;
     }
 }
