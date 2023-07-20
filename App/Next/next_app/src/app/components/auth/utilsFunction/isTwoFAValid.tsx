@@ -1,18 +1,20 @@
 
 
-const isTwoFAValid = async (inputValue: string, url: string) : Promise<boolean> => {
-    const response = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ code: inputValue }),
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch \'verifyTwoFA');
+const isTwoFAValid = async (inputValue: string, userId: string, url: string) : Promise<boolean> => {
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify({ code: inputValue, userId: userId }),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+        return false;
     }
-    const data = await response.json();
-    return data;
 }
 
 export default isTwoFAValid;

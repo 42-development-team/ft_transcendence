@@ -3,13 +3,7 @@ import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
     let jwtCookie = request.cookies.get("jwt")?.value;
-    let userIdCookie = request.cookies.get("userId")?.value;
-
-    if (!jwtCookie && userIdCookie) {
-        // Le cas de merde
-        const response = NextResponse.next();
-        response.headers.set('userIdCookie', userIdCookie);
-    }
+    // let userIdCookie = request.cookies.get("userId")?.value;
 
     let verifiedJWT = jwtCookie && (await verifyJWT(jwtCookie).catch((error) => {
         console.log(error);

@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString } from "class-validator";
 
-export class qrCodeDto {
+export class TwoFADto {
     code?: string
+    userId?: string
 }

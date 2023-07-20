@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, Post, Param } from '@nestjs/common';
+import { Body, Controller, Get, Put, Post, Param, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,8 +13,8 @@ export class FirstLoginController {
 	@Post('/doesUserNameExist') //TODO: change this to GET method with request from front
 	async doesUserExistByUsername(@Body() username: JSON): Promise<boolean> {
 		try {
-			const usernameString = JSON.parse(JSON.stringify(username));
-			const userDB = await this.userService.getUserFromUsername(usernameString.username);
+			const usernameObject = JSON.parse(JSON.stringify(username));
+			const userDB = await this.userService.getUserFromUsername(usernameObject.username);
 			if (userDB.username) {
 				return true;
 			}
@@ -35,10 +35,10 @@ export class FirstLoginController {
 		}
 	}
 
-	@Get('/getUserName/:username')
-	async getUserByName(@Param('username') username: string): Promise<any> {
-		try {
-			const user = await this.userService.getUserFromUsername(username);
+	@Get('/getUserName/:userId')
+	async getUserByName(@Param('userId') userId: string): Promise<any> {
+		try {;
+			const user = await this.userService.getUserFromId(Number(userId));
 			console.log(user.username)
 			return user;
 		} catch (error) {

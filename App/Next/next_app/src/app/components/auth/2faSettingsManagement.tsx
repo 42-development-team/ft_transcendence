@@ -6,8 +6,9 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-const TwoFASettingsManagement = () => {
+const TwoFASettingsManagement = ({userId}: {userId: RequestCookie}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [isActive, setIsActive] = useState<boolean>(false);
@@ -33,19 +34,23 @@ const TwoFASettingsManagement = () => {
 	  }, [isVisible]);
 	
 	const isTwoFAActive = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/aucaland`); //TODO: replace 'aucaland' by current user => create task for that
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'isTwoFAActive');
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userId}`);
+			const data = await response.json();
+			setIsActive(data);
+		} catch (error) {
+			console.log(error);
 		}
-		const data = await response.json();
-		setIsActive(data);
 	}
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
-		console.log(`${process.env.BACK_URL}/2fa/turn-on/aucaland`);
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/aucaland`, setImageUrl);
-		setDisplayBox(true);
-		setColor('bg-red');
+		try {
+			generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
+			setDisplayBox(true);
+			setColor('bg-red');
+		} catch (error) {
+			console.log(error);
+		}
 	}
 	
 	const handleDisableClick = () => {
@@ -55,14 +60,18 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const turnOff = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/aucaland`);
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'turn-off');
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/`, {
+				method: "POST",
+				body: JSON.stringify({userId: userId}),
+			});
+		} catch (error) {
+			console.log(error);
 		}
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/aucaland`);
+		const isValid = await isTwoFAValid(inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/${userId}`);
 		if (!isValid)
 		{
 			setIsVisible(true);
