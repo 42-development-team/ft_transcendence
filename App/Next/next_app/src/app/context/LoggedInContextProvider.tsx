@@ -41,6 +41,7 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
             setUniqueLogin(newLogin);
             let newUserId: string = data.sub as string;
             setUserId(newUserId);
+            console.log("newUserId=" + newUserId);
         }).catch((error) => {
             throw new Error("Error fetching profile: " + error.message);
         });

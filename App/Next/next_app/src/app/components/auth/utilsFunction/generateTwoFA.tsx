@@ -2,7 +2,6 @@
 const generateTwoFA = async (url: string, userId: string, setImageUrl = (data: any) => {}) => {
     console.log(url);
     try {
-        console.log("userId: " + JSON.stringify({userId: userId}));
         const response = await fetch(url, {
             method: "PUT",
             body: JSON.stringify({code: "test", userId: userId}),

@@ -21,7 +21,6 @@ export class TwoFAController {
         @Res() res: Response,
         @Body() twoFADto: TwoFADto,
     ) {
-        console.log(twoFADto.userId);
         const qrCodeUrl = await this.twoFAService.generateTwoFA(Number(twoFADto.userId));
         const base64Qrcode = await qrcode.toDataURL(qrCodeUrl);
         res.send({
@@ -59,7 +58,6 @@ export class TwoFAController {
         @Body() twoFADto: TwoFADto,
     ) {
         const userIdNumber = Number(twoFADto.userId);
-        console.log(userIdNumber);
         await this.twoFAService.turnOff( userIdNumber );
     }
 }

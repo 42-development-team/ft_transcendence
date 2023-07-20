@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from '../public.routes';
+import { FirstLoginDto } from './firstLoginDto';
 
 @ApiTags('FirstLogin')
 @Public() //TODO: delete when auth is done
@@ -23,9 +24,11 @@ export class FirstLoginController {
 	}
 
 	@Put('/updateUsername')
-	async updateUsername(@Body() newUsername: string, userId: string): Promise<any> {
+	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
 		try {
-			this.userService.updateUsername(Number(userId), newUsername);
+			console.log('newUsername: ' + updateData.newUsername);
+			console.log('userId: ' + updateData.userId);
+			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
 		} catch (error) {
 			return error;
 		}

@@ -36,6 +36,7 @@ const Settings2faComponent = () => {
 	
 	const isTwoFAActive = async () => {
 		try {
+			console.log("userIDinSettingIsTwoFAACtive:" + userId);
 			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userId}`);
 			const data = await response.json();
 			setIsActive(data);
@@ -46,7 +47,7 @@ const Settings2faComponent = () => {
 
 	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
 		try {
-			generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
+			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
 			setDisplayBox(true);
 			setColor('bg-red');
 		} catch (error) {
@@ -63,8 +64,11 @@ const Settings2faComponent = () => {
 	const turnOff = async () => {
 		try {
 			const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/`, {
-				method: "POST",
+				method: "DELETE",
 				body: JSON.stringify({userId: userId}),
+				headers: {
+					'Content-Type': 'application/json',
+				}
 			});
 		} catch (error) {
 			console.log(error);
@@ -72,7 +76,7 @@ const Settings2faComponent = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/${userId}`);
+		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
 			setIsVisible(true);
@@ -81,7 +85,7 @@ const Settings2faComponent = () => {
 			return ;
 		}
 		if (isActive) {
-			turnOff();
+			await turnOff();
 			setIsActive(false);
 			setImageUrl('');
 			setDisplayBox(false);

@@ -48,21 +48,22 @@ export class AuthService {
     async redirectTwoFA(req: any, res: Response) {
         const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
         
-        const userDB = await this.prisma.user.findUniqueOrThrow({
-            where: { username: req.user.username },
-        });
-        console.log(frontUrl);
-        if (userDB.isFirstLogin) {
-            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin`);
-            this.changeLoginBooleanStatus(userDB);
-        }
-        else if (userDB.isTwoFAEnabled) {
-            res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/auth/2fa`);
-        }
-        else {
-            const {jwt, cookieOptions} = await this.getJwt(req, res);
-            res.status(200).cookie("jwt", jwt.access_token, cookieOptions);
-            res.redirect(`${frontUrl}/home`);
+        try {
+            const userDB = await this.usersService.getUserFromLogin(req.user.login);
+            if (userDB.isFirstLogin) {
+                res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/firstLogin`);
+                this.changeLoginBooleanStatus(userDB);
+            }
+            else if (userDB.isTwoFAEnabled) {
+                res.status(200).cookie("userId", req.user.id).redirect(`${frontUrl}/auth/2fa`);
+            }
+            else {
+                const {jwt, cookieOptions} = await this.getJwt(req, res);
+                res.status(200).cookie("jwt", jwt.access_token, cookieOptions);
+                res.redirect(`${frontUrl}/home`);
+            }
+        } catch (error) {
+            console.log("Error: " + error.message);
         }
     }
 

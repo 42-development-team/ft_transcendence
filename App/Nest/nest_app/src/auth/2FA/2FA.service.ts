@@ -12,12 +12,13 @@ export class TwoFAService {
 
     async updateTwoFASecret( userId: number, secret: string ) {
         try {
-            const updateSecret = await this.prisma.user.updateMany({
+            await this.prisma.user.update({
                 where: {
                     id: userId
                 },
                 data: {
-                    twoFAsecret: secret
+                    twoFAsecret: secret,
+                    isTwoFAEnabled: false,
                 },
             });
         } catch (error) {
@@ -74,7 +75,7 @@ export class TwoFAService {
         try {
             await this.updateTwoFASecret(userId, null);
         } catch (error) {
-            throw new UnauthorizedException();
+            throw new Error("Error while turning off 2FA");
         }
     }
 }

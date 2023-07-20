@@ -27,6 +27,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
         });
         const data = await response.json();
         setPlaceHolder(data.username);
+        setInputValue(data.username);
     }
 
     const redirectToHome = () => {
@@ -38,13 +39,14 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
 
     const handleClick = async () => {
         try {
-            await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
+                await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
                 method: "PUT",
-                body: JSON.stringify({username: inputValue, userId: userId.value}),
+                body: JSON.stringify({newUsername: inputValue, userId: userId.value}),
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
+            await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
             redirectToHome();
         } catch (error) {
             console.log(error);
@@ -58,7 +60,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
-            const isUsernameSameAsCurrent = e.target.value === userId.value;
+            const isUsernameSameAsCurrent = e.target.value === placeHolder;
             console.log("response: " + isUserAlreadyTaken);
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
                 setMessage("Username already taken");
@@ -72,6 +74,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
             }
             if (e.target.value === "") {
                 setValidateEnabled(true);
+                setInputValue(placeHolder);
                 setIsVisible(false);
             }
             else if (e.target.value.length < 3) {
