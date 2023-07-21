@@ -44,7 +44,6 @@ export class UsersService {
 
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {
-
             const user = await this.prisma.user.findUniqueOrThrow({
                 where: { username },
             });

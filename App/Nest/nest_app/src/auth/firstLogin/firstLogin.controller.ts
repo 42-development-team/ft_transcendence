@@ -11,15 +11,18 @@ import { FirstLoginDto } from './firstLoginDto';
 export class FirstLoginController {
 	constructor(private userService: UsersService, private prisma: PrismaService) {}
 
-	@Post('/doesUserNameExist/:username')
-	async doesUserExistByUsername(@Param() username: string): Promise<boolean> {
+	@Get('/doesUserNameExist/:username')
+	async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
 		try {
 			const userDB = await this.userService.getUserFromUsername(username);
-			if (userDB.username) {
+			if (userDB) {
+				console.log('user exists');
 				return true;
 			}
+			else
+				return false;
 		} catch (error) {
-			return false;
+			throw new Error("Error fetching user in first login: " + error);
 		}
 	}
 
@@ -34,7 +37,7 @@ export class FirstLoginController {
 		}
 	}
 
-	@Get('/getUserName/:userId')
+	@Get('/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
 		try {;
 			const user = await this.userService.getUserFromId(Number(userId));

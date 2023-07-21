@@ -11,9 +11,9 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
     const [isVisible, setIsVisible] = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder] = useState('');
-    const [inputValue, setInputValue] = useState('');
+    let inputUserName: string;
 
-    useEffect(() => { //how async this
+    useEffect(() => {
         try {
             getUserName(userId.value);
         } catch (error) {
@@ -22,12 +22,12 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
     }, []);
 
     const getUserName = async (userId: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUserName/${userId}`, {
+        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUser/${userId}`, {
             method: "GET",
         });
         const data = await response.json();
         setPlaceHolder(data.username);
-        setInputValue(data.username);
+        inputUserName = data.username;
     }
 
     const redirectToHome = () => {
@@ -41,7 +41,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
         try {
                 await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
                 method: "PUT",
-                body: JSON.stringify({newUsername: inputValue, userId: userId.value}),
+                body: JSON.stringify({newUsername: inputUserName, userId: userId.value}),
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -55,12 +55,25 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
-            setInputValue(e.target.value);
-            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist/${inputValue}`, {
+            inputUserName = e.target.value;
+            console.log("inputValue-AfterSet: " + inputUserName);
+            if (e.target.value === "") {
+                setValidateEnabled(true);
+                inputUserName = placeHolder;
+                setIsVisible(false);
+                return ;
+            }
+            else if (inputUserName.length < 3 || inputUserName.length > 15) {
+                setMessage("Username must be at least 3 characters long, and at most 15 characters long");
+                setValidateEnabled(false);
+                setIsVisible(true);
+                return ;
+            }
+            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
-            const isUsernameSameAsCurrent = e.target.value === placeHolder;
+            const isUsernameSameAsCurrent = inputUserName === placeHolder;
             console.log("response: " + isUserAlreadyTaken);
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
                 setMessage("Username already taken");
@@ -71,16 +84,6 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
                 setMessage("Username available");
                 setIsVisible(true);
                 setValidateEnabled(true);
-            }
-            if (e.target.value === "") {
-                setValidateEnabled(true);
-                setInputValue(placeHolder);
-                setIsVisible(false);
-            }
-            else if (e.target.value.length < 3) {
-                setMessage("Username must be at least 3 characters long");
-                setValidateEnabled(false);
-                setIsVisible(true);
             }
         } catch (error) { 
             console.log(error);
