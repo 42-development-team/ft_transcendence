@@ -1,46 +1,26 @@
 "use client";
-import React, {useState, useEffect} from "react";
-import CustomBtn from "../CustomBtn";
+import React, {useState} from "react";
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import '../../globals.css'
-import OtpInput
- from "./OtpInput";
-const TwoFAAuthComponent = () => {
+import OtpInput from "./OtpInput";
+import isTwoFAValid from "./utilsFunction/isTwoFAValid";
+ 
+const Auth2faComponent = ({userId}: {userId: RequestCookie}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [message, setMessage] = useState('');
 	const [colorText, setColorText] = useState<string>('text-red-700');
 
-	const isTwoFAValid = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/verifyTwoFA/aucaland`, {
-			method: 'POST',
-			body: JSON.stringify({code: inputValue}),
-			headers: {
-				'Content-Type': 'application/json',
-			}
-		});
-		const data = await response.json();
-		if (data)
-		{
-			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
-			window.location.href = `${process.env.FRONT_URL}/home`;
-		}
-		return data;
-	}
-
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(event.target.value);
-	}
-
 	const handleSubmit = async () => {
-		const isValid: boolean = await isTwoFAValid();
-		if (!isValid)
-			{
-				setIsVisible(true);
-				setColorText('text-red-700');
-				setMessage("Error: code doesn't match");
-				return ;
-			}
+		
+		const isValid = await isTwoFAValid( inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
+		if (!isValid){
+			setIsVisible(true);
+			setColorText('text-red-700');
+			setMessage("Error: code doesn't match");
+			return ;
+		}
 		if (isActive) {
 			setIsActive(false);
 			setColorText('text-red-700');
@@ -48,6 +28,8 @@ const TwoFAAuthComponent = () => {
 			setIsVisible(true);
 		}
 		else {
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
+			window.location.href = `${process.env.FRONT_URL}/home`;
 			setIsActive(true);
 			setColorText('text-green-400');
 			setMessage("Successfuly logged-in");
@@ -94,4 +76,4 @@ const TwoFAAuthComponent = () => {
 	);
 };
 
-export default TwoFAAuthComponent;
+export default Auth2faComponent;

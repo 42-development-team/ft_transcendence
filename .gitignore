@@ -2,3 +2,5 @@
 .idea
 .nfs*
 gitkraken-amd64.rpm
+Makefile
+.gitignore

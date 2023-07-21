@@ -1,9 +1,8 @@
-import { PrismaService } from "src/prisma/prisma.service";
+import { UsersService } from "src/users/users.service";
 
 
 export class FirstLoginService {
     constructor(
-        private prisma: PrismaService,
+        private userService: UsersService,
     ) {}
-	 
-	}
+    }
