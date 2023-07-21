@@ -2,7 +2,7 @@ import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Controller, Post, Body, Param, Res, Get, Delete, Put } from '@nestjs/common';
 import { Response } from 'express';
-import { TwoFADto } from './TwoFactor.dto';
+import { TwoFADto } from './dto/TwoFactor.dto';
 import * as qrcode from 'qrcode'
 import { Public } from 'src/auth/public.routes';
 import { ConfigService } from '@nestjs/config';

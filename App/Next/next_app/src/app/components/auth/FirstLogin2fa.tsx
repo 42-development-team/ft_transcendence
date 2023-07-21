@@ -58,6 +58,7 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 	}
 
 	const handleSubmit = async () => {
+		setEnableActive(true);
 		const isValid = await isTwoFAValid(inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
 		if (!isValid) {
 			setIsVisible(true);
@@ -70,8 +71,8 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
+		setCancelActive(true);
 		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
-		window.location.href = `${process.env.FRONT_URL}/home`;
 	}
 
 	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'

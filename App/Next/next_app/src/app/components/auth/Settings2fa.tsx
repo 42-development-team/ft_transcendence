@@ -21,13 +21,14 @@ const Settings2faComponent = () => {
 	const {userId} = useLoggedInContext();
 	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
+	if ( localStorage.getItem('userId') ) {
+		userIdStorage = localStorage.getItem('userId');
+	}
+
 	useEffect( () => {//on first load
 		if ( userId ) {
 			userIdStorage = userId;
 			localStorage.setItem('userId', userId);
-		}
-		if ( localStorage.getItem('userId') ) {
-			userIdStorage = localStorage.getItem('userId');
 		}
 		isTwoFAActive();
 	}, [] );
@@ -43,7 +44,6 @@ const Settings2faComponent = () => {
 	
 	const isTwoFAActive = async () => {
 		try {
-			console.log("userIDinSettingIsTwoFAACtive:" + userIdStorage);
 			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userIdStorage}`);
 			const data = await response.json();
 			setIsActive(data);
@@ -52,7 +52,7 @@ const Settings2faComponent = () => {
 		}
 	}
 
-	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
+	const handleEnableClick = async () => { //TODO: send alert to child OtpInput when twoFA refreshed (and del old input value)
 		try {
 			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userIdStorage as string, setImageUrl);
 			setDisplayBox(true);
@@ -83,6 +83,7 @@ const Settings2faComponent = () => {
 	}
 
 	const handleSubmit = async () => {
+		setIsActive(false);
 		const isValid = await isTwoFAValid(inputValue, userIdStorage as string, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
