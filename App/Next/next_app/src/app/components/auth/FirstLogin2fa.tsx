@@ -4,11 +4,13 @@ import CustomBtn from "../CustomBtn";
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
-import isTwoFAValid from "./utilsFunction/isTwoFAValid";
-import generateTwoFA from "./utilsFunction/generateTwoFA";
+import isTwoFAValid from "./utils/isTwoFAValid";
+import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import { useEffectTimer } from "@/app/components/auth/utils/useEffectTimer";
+import { handleEnableClick } from "@/app/components/auth/utils/handleEnableClick";
 
 const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 
@@ -24,26 +26,11 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
 	
-	useEffect(() => {
-		if (isVisible) {
-			const timer = setTimeout(() => {
-				setIsVisible(false);
-			}, 2600);
-			return () => clearTimeout(timer);
-		}
-	}, [isVisible]);
-
-	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
-		setCancelActive(false);
-		setEnableActive(true);
-		setDisplayBox(true);
-		setColor('bg-red');
-		setColorCancel('bg-mauve');
-	}
+	useEffectTimer(isVisible, 2600, setIsVisible);
 
 	const handleRefreshClick = () => {
-		handleEnableClick();
+		handleEnableClick(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, 
+			setImageUrl, setCancelActive, setEnableActive, setDisplayBox, setColor, setColorCancel);
 	}
 
 	const handleCancelClick = async () => {

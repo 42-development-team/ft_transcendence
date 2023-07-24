@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import '../../globals.css'
 import OtpInput from "./OtpInput";
-import isTwoFAValid from "./utilsFunction/isTwoFAValid";
+import isTwoFAValid from "./utils/isTwoFAValid";
  
 const Auth2faComponent = ({userId}: {userId: RequestCookie}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
