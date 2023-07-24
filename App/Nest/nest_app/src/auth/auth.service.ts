@@ -15,40 +15,32 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
-        ) {}
+    ) {}
         
     async redirectTwoFA(req: any, res: Response) {
         const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
-        
-        console.log("redirect2FA");
+
         try {
             const userDB = await this.usersService.getUserFromLogin(req.user.login);
-            if (userDB)
-                var jwt = await this.getTokens(userDB, false);
-                const cookieOptions = {
-                    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                    secure: false,
-                    httpOnly: true,
-                }
-                
-                if (userDB.isFirstLogin) {
-                console.log("firstlogin");
-
+            var jwt = await this.getTokens(userDB, false);
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false,
+                httpOnly: true,
+            }
+            
+            if (userDB.isFirstLogin) {
                 res.status(200)
                 .cookie("jwt", jwt.access_token, cookieOptions)
                 .redirect(`${frontUrl}/firstLogin/`);
                 this.changeLoginBooleanStatus(userDB);
             }
             else if (userDB.isTwoFAEnabled) {
-                console.log("2fa enabled");
-
                 res.status(200)
                 .cookie("jwt", jwt.access_token, cookieOptions)
                 .redirect(`${frontUrl}/auth/2fa`);
             }
             else {
-                console.log("else");
-
                 jwt = await this.getTokens(userDB, true);
                 res.status(200)
                 .cookie("jwt", jwt.access_token, cookieOptions)
@@ -81,8 +73,7 @@ export class AuthService {
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
        try {
-        console.log("getTokens");
-        console.log(user);
+
            const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
            return tokens;
         }
@@ -92,9 +83,7 @@ export class AuthService {
     }
 
     async signTokens(userId: number, login: string, twoFactorAuthenticated: boolean): Promise<Tokens> {
-        console.log("signTokens");
-        console.log(userId);
-        console.log(login);
+
         const jwtPayload: JwtPayload = {
             sub: userId,
             login: login,
@@ -150,21 +139,3 @@ export class AuthService {
         return req.user.twoFactorAuthenticated;
     }
 }
-
-// async getJwtFromIdCookie(req: any, res: Response) {
-//     let userId: string = this.extractCookieByName(req, 'userId');
-//     if (userId) {
-//         const id = parseInt(userId);
-//         const userDB = await this.prisma.user.findUniqueOrThrow({
-//             where: { id: id },
-//         });
-//         const jwt = await this.getTokens(userDB, "30m", "7d");
-//         const cookieOptions = {
-//             expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-//             secure: false, // if httpS => true
-//             httpOnly: true,
-//         }
-//         return {jwt, cookieOptions};
-//     }
-//     return null;
-// }

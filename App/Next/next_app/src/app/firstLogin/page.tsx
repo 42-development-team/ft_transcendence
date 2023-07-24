@@ -14,13 +14,13 @@ function parseJwt(token: string) {
 export default function FirstLogin() {
 
     const cookieStore = cookies();
-    const jwt: RequestCookie | undefined = cookieStore.get('jwt'); // ==== NOT USER ID ANYMORE
+    const jwt: RequestCookie | undefined = cookieStore.get('jwt');
     if (jwt === undefined || jwt.value === null) {
         const router = useRouter();
         router.push('/');
         return ;
     }
-    console.log("firstLogin/page.tsx jwt", jwt);
+
     const payload = parseJwt(jwt.value);
     return (
         <FirstLoginPageComponent userId={payload.sub}/>
