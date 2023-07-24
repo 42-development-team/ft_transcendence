@@ -101,7 +101,8 @@ export class AuthController {
         return req.user;
     }
 
-    	@Get('firstLogin/doesUserNameExist/:username')
+    @Public()
+    @Get('firstLogin/doesUserNameExist/:username')
 	async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
 		try {
 			const userDB = await this.userService.getUserFromUsername(username);
@@ -116,6 +117,7 @@ export class AuthController {
 		}
 	}
 
+    @Public()
 	@Put('firstLogin/updateUsername')
 	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
 		try {
@@ -125,6 +127,7 @@ export class AuthController {
 		}
 	}
 
+    @Public()
 	@Get('firstLogin/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
 		try {;
