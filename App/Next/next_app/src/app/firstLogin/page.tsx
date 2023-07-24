@@ -3,6 +3,9 @@ import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { useRouter } from 'next/navigation'
 import FirstLoginPageComponent from '../components/auth/FirstLoginPage';
 
+const SETTINGS: number = 2;
+const FIRSTLOGIN: number = 1;
+
 export default function FirstLogin() {
 
     const cookieStore = cookies();
@@ -13,6 +16,6 @@ export default function FirstLogin() {
         return ;
     }
     return (
-        <FirstLoginPageComponent userId={userId}/>
+        <FirstLoginPageComponent userId={userId} whichPage={IRSTLOGIN}/>
     )
 }

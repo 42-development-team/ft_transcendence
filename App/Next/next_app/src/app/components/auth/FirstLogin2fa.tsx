@@ -9,10 +9,12 @@ import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import { useEffectTimer } from "@/app/components/auth/utils/useEffectTimer";
-import { handleEnableClick } from "@/app/components/auth/utils/handleEnableClick";
+import { useEffectTimer } from "./utils/useEffectTimer";
 
-const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
+const FIRSTLOGIN: number = 1;
+const SETTINGS: number = 2;
+
+const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}, {whichPage}: {whichPage: number}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -25,12 +27,21 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
+	const [disableMessage, setDisableMessage] = useState<string>('Disable 2FA');
 	
 	useEffectTimer(isVisible, 2600, setIsVisible);
 
+	const handleEnableClick = async () => {
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
+		setCancelActive(false);
+		setEnableActive(true);
+		setDisplayBox(true);
+		setColor('bg-red');
+		setColorCancel('bg-mauve');
+	}
+
 	const handleRefreshClick = () => {
-		handleEnableClick(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, 
-			setImageUrl, setCancelActive, setEnableActive, setDisplayBox, setColor, setColorCancel);
+		handleEnableClick();
 	}
 
 	const handleCancelClick = async () => {
@@ -62,6 +73,12 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
 	}
 
+		const handleDisableClick = () => {
+		setDisplayBox(true);
+		setImageUrl('');
+		setColor('bg-red');
+	}
+	
 	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'
 		setInputValue(childData);
 	}
@@ -79,15 +96,30 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 	return (
 		<div className=" flex flex-auto flex-col bg-base border-2 shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] rounded-md p-4">
 			<div className="flex justify-center mt-2">
-				<CustomBtn
-					anim={true}
-					color={colorClick}
-					id="TwoFAEButton" 
-					onClick={handleEnableClick} 
-					disable={enableActive}
-				>
-					{enableMessage}
-				</CustomBtn>
+				{
+					!enableActive &&
+					<CustomBtn
+						anim={true}
+						color={colorClick}
+						id="TwoFAEButton"
+						onClick={handleEnableClick}
+						disable={enableActive}
+					>
+						{enableMessage}
+					</CustomBtn>
+				}
+				{
+					enableActive &&
+					<CustomBtn
+						anim={true}
+						color={colorClick}
+						id="TwoFADButton"
+						onClick={handleDisableClick}
+						disable={!enableActive}
+					>
+						{disableMessage}
+					</CustomBtn>
+				}
 				<CustomBtn
 					anim={true}
 					color={colorClickCancel}
@@ -153,3 +185,4 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 
 
 export default FirstLogin2faComponent;
+

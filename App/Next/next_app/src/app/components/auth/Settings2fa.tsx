@@ -1,13 +1,12 @@
 "use client";
-import {useState, useEffect, Dispatch, SetStateAction} from "react";
+import {useState, useEffect} from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
-import isTwoFAValid from "./utils/isTwoFAValid";
-import generateTwoFA from "./utils/generateTwoFA";
+import isTwoFAValid from "./utilsFunction/isTwoFAValid";
+import generateTwoFA from "./utilsFunction/generateTwoFA";
 import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
-import { useEffectTimer } from "@/app/components/auth/utils/useEffectTimer";
 
 const Settings2faComponent = () => {
 
@@ -34,7 +33,14 @@ const Settings2faComponent = () => {
 		isTwoFAActive();
 	}, [] );
 
-	useEffectTimer(isVisible, 2600, setIsVisible);
+	useEffect(() => { //timer -> submit message
+		if (isVisible) {
+		  const timer = setTimeout(() => {
+			setIsVisible(false);
+		  }, 2600);
+		  return () => clearTimeout(timer);
+		}
+	  }, [isVisible]);
 	
 	const isTwoFAActive = async () => {
 		try {
@@ -175,4 +181,4 @@ const Settings2faComponent = () => {
 	);
 };
 
-
+export default Settings2faComponent;
