@@ -1,13 +1,9 @@
-import { cookies } from 'next/headers'
 import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import { cookies } from 'next/headers'
 import { useRouter } from 'next/navigation'
-import FirstLoginPageComponent from '../components/auth/FirstLoginPage';
+import Test2FA from "../../components/auth/test2FAComponent";
 
-const SETTINGS: number = 2;
-const FIRSTLOGIN: number = 1;
-
-export default function FirstLogin() {
-
+export default function TwoFAAuth() {
     const cookieStore = cookies();
     const userId: RequestCookie | undefined = cookieStore.get('userId');
     if (userId === undefined || userId.value === null) {
@@ -16,6 +12,8 @@ export default function FirstLogin() {
         return ;
     }
     return (
-        <FirstLoginPageComponent userId={userId} />
+        <div className="flex flex-col flex-auto items-center justify-center">
+            <Test2FA userId={userId}></Test2FA >
+        </div>
     )
 }

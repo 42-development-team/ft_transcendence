@@ -13,7 +13,7 @@ import { useEffectTimer } from "./utils/useEffectTimer";
 
 
 
-const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
+const Test2FA = ({userId}: {userId: RequestCookie}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -183,5 +183,5 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 };
 
 
-export default FirstLogin2faComponent;
+export default Test2FA;
 

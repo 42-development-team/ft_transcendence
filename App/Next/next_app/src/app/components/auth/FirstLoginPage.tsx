@@ -96,6 +96,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
             <div className="m-4 pt-4">
                 <p className="font-bold text-center">Choose your username</p>
                 <input
+                	id="username"
                     onChange={(e) => handleOnChange(e)}
                     placeholder={placeHolder}
                     inputMode='text'
