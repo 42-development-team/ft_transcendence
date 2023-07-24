@@ -47,7 +47,6 @@ export class AuthService {
 
     async logout(res: Response) {
         const cookieOptions = {
-            // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
             secure: false,
             httpOnly: true,
         }
@@ -125,17 +124,19 @@ export class AuthService {
             if (!token) throw UnauthorizedException;
             
             const secret = this.configService.get<string>('jwtRefrehSecret');
+            const isVerify = await this.jwtService.verifyAsync(token, {secret});
             
-            return await this.jwtService.verifyAsync(token, {secret});
+            console.log("isVerify:",isVerify);
+            return isVerify;
             
         }
         catch(error) {
-            console.log("Generate Tokens Error:", error.message);
+            console.log("Verify Refresh Token Error:", error.message);
         }
     }
 
     extractCookieByName(req: any, cookieName: string): string {
-        let value: string = null;
+        let value: string | null = null;
         if (req && req.cookies) {
             value = req.cookies[cookieName];
         }

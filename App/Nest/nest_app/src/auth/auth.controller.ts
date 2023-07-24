@@ -83,13 +83,15 @@ export class AuthController {
                 httpOnly: true,
             }
             const tokenObject: Tokens = await this.authService.getTokens(req.user);
-            res.clearCookie('jwt', cookieOptions).clearCookie('rt', cookieOptions);
+            res.clearCookie('jwt', cookieOptions)
+            .clearCookie('rt', cookieOptions);
+
             res.cookie('jwt', tokenObject.access_token, cookieOptions);
             res.cookie('rt', tokenObject.refresh_token, cookieOptions);
             res.send();
         }
         catch(error) {
-            console.log("Generate Tokens Error:", error.message);
+            console.log("Generate New Tokens Error:", error.message);
         }
     }
 
