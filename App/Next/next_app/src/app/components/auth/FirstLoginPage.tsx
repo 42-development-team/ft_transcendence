@@ -22,7 +22,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
     }, []);
 
     const getUserName = async (userId: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUser/${userId}`, {
+        const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
             method: "GET",
         });
         const data = await response.json();
@@ -39,7 +39,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
 
     const handleClick = async () => {
         try {
-                await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
+                await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
                 method: "PUT",
                 body: JSON.stringify({newUsername: inputUserName, userId: userId.value}),
                 headers: {
@@ -69,7 +69,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
                 setIsVisible(true);
                 return ;
             }
-            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist/${inputUserName}`, {
+            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
