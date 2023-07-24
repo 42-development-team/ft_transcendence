@@ -44,13 +44,20 @@ export class AuthController {
         }
     }
 
-    
-    @Public()
+    // @Public()
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
-            const {jwt, cookieOptions} = await this.authService.getJwtFromIdCookie(req, res);
-            res.clearCookie("userId")
+            console.log("auth/jwt");
+            console.log(req.user);
+
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false,
+                httpOnly: true,
+            }
+            const jwt = await this.authService.getTokens(req.user, true);
+            res.clearCookie("jwt")
             .cookie("jwt", jwt.access_token, cookieOptions)
             .cookie("rt", jwt.refresh_token, cookieOptions);
         }
@@ -68,7 +75,6 @@ export class AuthController {
         catch (error) {
             console.log(error.message);
         }
-        // this.authService.logout(res);
     }
 
     @Get('refresh')
@@ -82,7 +88,7 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
-            const tokenObject: Tokens = await this.authService.getTokens(req.user);
+            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.twoFactorAuthenticated);
             res.clearCookie('jwt', cookieOptions)
             .clearCookie('rt', cookieOptions);
 
@@ -98,9 +104,14 @@ export class AuthController {
     /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
         validate the JWT, and assign the user property to the Request object
     */
+
     @Get('profile')
     getProfile(@Req() req) {
-        console.log(req.user);
-        return req.user;
+        if (this.authService.isTwoFactorAuthenticated(req)) {
+            console.log(req.user);
+            return req.user;
+        }
+        else
+            console.log("You didn't validate 2fa process");
     }
 }
