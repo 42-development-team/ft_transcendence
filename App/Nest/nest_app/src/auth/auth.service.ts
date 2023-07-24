@@ -14,8 +14,44 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
-    ) {}
+        ) {}
+        
+    async redirectTwoFA(req: any, res: Response) {
+        const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
 
+        const userDB = await this.prisma.user.findUniqueOrThrow({
+            where: { username: req.user.username },
+        });
+        if (userDB.isFirstLogin) {
+            res.status(200)
+            .cookie("userId", req.user.id)
+            .redirect(`${frontUrl}/firstLogin/`);
+            this.changeLoginBooleanStatus(userDB);
+        }
+        else if (userDB.isTwoFAEnabled) {
+            res.status(200)
+            .cookie("userId", req.user.id)
+            .redirect(`${frontUrl}/auth/2fa`);
+        }
+        else {
+            const {jwt, cookieOptions} = await this.getJwtFromIdCookie(req, res);
+            res.status(200)
+            .clearCookie("userId", cookieOptions)
+            .cookie("jwt", jwt.access_token, cookieOptions)
+            .cookie("rt", jwt.refresh_token, cookieOptions)
+            .redirect(`${frontUrl}/home/`);
+        }
+    }
+
+    async logout(res: Response) {
+        const cookieOptions = {
+            // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+            secure: false,
+            httpOnly: true,
+        }
+        res.clearCookie('jwt', cookieOptions);
+    }
+    
     async getJwtFromIdCookie(req: any, res: Response) {
         let userId: string = this.extractCookieByName(req, 'userId');
         if (userId) {
@@ -41,42 +77,6 @@ export class AuthService {
         }
         catch (error) {
             console.log("Error:" + error.message);
-        }
-    }
-
-    async logout(res: Response) {
-        const cookieOptions = {
-            // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-            secure: false,
-            httpOnly: true,
-        }
-        res.clearCookie('jwt', cookieOptions);
-    }
-
-    async redirectTwoFA(req: any, res: Response) {
-        const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
-
-        const userDB = await this.prisma.user.findUniqueOrThrow({
-            where: { username: req.user.username },
-        });
-        if (userDB.isFirstLogin) {
-            res.status(200)
-            .cookie("userId", req.user.id)
-            .redirect(`${frontUrl}/firstLogin/`);
-            this.changeLoginBooleanStatus(userDB);
-        }
-        else if (userDB.isTwoFAEnabled) {
-            res.status(200)
-            .cookie("userId", req.user.id)
-            .redirect(`${frontUrl}/auth/2fa`);
-        }
-        else {
-            const {jwt, cookieOptions} = await this.getJwtFromIdCookie(req, res);
-            res.status(200)
-            .clearCookie("userId", cookieOptions)
-            .cookie("jwt", jwt.access_token, cookieOptions)
-            .cookie("rt", jwt.refresh_token, cookieOptions)
-            .redirect(`${frontUrl}/home/`);
         }
     }
 
@@ -114,10 +114,21 @@ export class AuthService {
         }
     }
 
-    // async verifyRefreshToken(refreshToken): Promise<Tokens> {
-    //     this.jwtService.verifyAsync(refreshToken, this.configService.get('jwtRefreshSecret'))
-    //     // user = payload.sub + payload.login
-    // }
+    async verifyRefreshToken(req: any, res: Response) {
+        try {
+            // get refresh token
+            const token = this.extractCookieByName(req, 'rt');
+            if (!token) throw UnauthorizedException;
+            
+            const secret = this.configService.get<string>('jwtRefrehSecret');
+            
+            return await this.jwtService.verifyAsync(token, {secret});
+            
+        }
+        catch(error) {
+            console.log("Generate Tokens Error:", error.message);
+        }
+    }
 
     extractCookieByName(req: any, cookieName: string): string {
         let value: string = null;
@@ -125,21 +136,5 @@ export class AuthService {
             value = req.cookies[cookieName];
         }
         return value;
-    }
-
-    async verifyRefreshToken(req: any, res: Response) {
-        try {
-            // get refresh token
-            const token = this.extractCookieByName(req, 'rt');
-            if (!token) throw UnauthorizedException;
-
-            const secret = this.configService.get<string>('jwtRefrehSecret');
-            // await verifier le refresh token
-            return await this.jwtService.verifyAsync(token, {secret});
-
-        }
-        catch(error) {
-            console.log("Generate Tokens Error:", error.message);
-        }
     }
 }
