@@ -1,23 +1,20 @@
-import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
-import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Tokens } from './types/token.type';
+import { UsersService } from 'src/users/users.service';
+import { FirstLoginDto } from './dto/firstLoginDto';
 
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
-        private configService: ConfigService,
         private authService: AuthService,
-        private jwtService: JwtService,
-        private prisma: PrismaService
+        private userService: UsersService,
     ) {}
 
     @Public()
@@ -103,4 +100,40 @@ export class AuthController {
         console.log(req.user);
         return req.user;
     }
+
+    @Public()
+    @Get('firstLogin/doesUserNameExist/:username')
+	async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
+		try {
+			const userDB = await this.userService.getUserFromUsername(username);
+			if (userDB) {
+				console.log('user exists');
+				return true;
+			}
+			else
+				return false;
+		} catch (error) {
+			throw new Error("Error fetching user in first login: " + error);
+		}
+	}
+
+    @Public()
+	@Put('firstLogin/updateUsername')
+	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+		try {
+			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
+		} catch (error) {
+			return error;
+		}
+	}
+
+    @Public()
+	@Get('firstLogin/getUser/:userId')
+	async getUserByName(@Param('userId') userId: string): Promise<any> {
+		try {;
+			return await this.userService.getUserFromId(Number(userId));
+		} catch (error) {
+			return error;
+		}
+	}
 }
