@@ -8,7 +8,7 @@ all: start
 setEnv:
 	sh ./setEnv.sh
 
-build: setEnv
+build:
 	mkdir -p ./App
 	mkdir -p ./App/Nest
 	mkdir -p ./App/Next

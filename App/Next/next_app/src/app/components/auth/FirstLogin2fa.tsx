@@ -8,8 +8,9 @@ import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-const Manage2FAFirstLogin = () => {
+const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -22,19 +23,18 @@ const Manage2FAFirstLogin = () => {
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-
+	
 	useEffect(() => {
 		if (isVisible) {
 			const timer = setTimeout(() => {
 				setIsVisible(false);
 			}, 2600);
-
 			return () => clearTimeout(timer);
 		}
 	}, [isVisible]);
 
 	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/mdegraeu`, setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -58,7 +58,8 @@ const Manage2FAFirstLogin = () => {
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`);
+		setEnableActive(true);
+		const isValid = await isTwoFAValid(inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');
@@ -70,8 +71,8 @@ const Manage2FAFirstLogin = () => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
+		setCancelActive(true);
 		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
-		window.location.href = `${process.env.FRONT_URL}/home`;
 	}
 
 	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'
@@ -164,4 +165,4 @@ const Manage2FAFirstLogin = () => {
 };
 
 
-export default Manage2FAFirstLogin;
+export default FirstLogin2faComponent;

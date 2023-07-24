@@ -63,15 +63,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Res() res: Response) {
         try {
-
-            const cookieOptions = {
-                // expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                secure: false,
-                httpOnly: true,
-            }
-            res.clearCookie("jwt", cookieOptions)
-            .clearCookie("rt", cookieOptions)
-            .redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
+            this.authService.logout(res);
         }
         catch (error) {
             console.log(error.message);

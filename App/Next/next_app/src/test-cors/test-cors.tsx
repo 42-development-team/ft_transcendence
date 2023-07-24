@@ -24,5 +24,3 @@ function Component() {
         </div>
     )
 }
-
-export default Component;

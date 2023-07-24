@@ -1,9 +1,8 @@
 import { TwoFAService } from './2FA.service';
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Post, Body, Param, Req, Res, Get, Delete } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { qrCodeDto } from './TwoFactor.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Controller, Post, Body, Param, Res, Get, Delete, Put } from '@nestjs/common';
+import { Response } from 'express';
+import { TwoFADto } from './dto/TwoFactor.dto';
 import * as qrcode from 'qrcode'
 import { Public } from 'src/auth/public.routes';
 import { ConfigService } from '@nestjs/config';
@@ -15,31 +14,29 @@ export class TwoFAController {
     constructor (
         private configService: ConfigService,
         private twoFAService: TwoFAService,
-        private prisma: PrismaService,
-    ) {} //for now, a wrong username is a crash, waiting to know how we get user from next
+    ) {}
 
-    @Get('/turn-on/:username')
+    @Put('/turn-on/')
     async turnOnTwoFa (
         @Res() res: Response,
-        @Param ('username') username: string,
-        ) {
-        const qrCodeUrl = await this.twoFAService.generateTwoFA(username);
+        @Body() twoFADto: TwoFADto,
+    ) {
+        const qrCodeUrl = await this.twoFAService.generateTwoFA(Number(twoFADto.userId));
         const base64Qrcode = await qrcode.toDataURL(qrCodeUrl);
         res.send({
-			contentType: 'image/png',
-			base64Qrcode,
-		});
+            contentType: 'image/png',
+            base64Qrcode,
+        });
     }
     
-    @Get('/isTwoFAActive/:username')
+    @Get('/isTwoFAActive/:userId')
     async isActive (
-        @Param ('username') username: string,
+        @Param ('userId') userId: string,
         @Res() res: Response,
     ) {
-        await this.twoFAService.isTwoFAEnabled( res, username );
+        await this.twoFAService.isTwoFAEnabled( res, Number(userId) );
     }
 
-    @Public()
     @Get('/TwoFAAuthRedirect/')
     async TwoFAAuthRedirect (
         @Res() res: Response,
@@ -47,21 +44,20 @@ export class TwoFAController {
         res.redirect(`http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}/firstLogin`);
     }
 
-    @Post('/verifyTwoFA/:username')
+    @Put('/verifyTwoFA/')
     async verifyTwoFA (
         @Res() res: Response,
-        @Body() code : qrCodeDto,
-        @Param('username') username: string,
+        @Body() twoFADto : TwoFADto,
     ) {
-        const isValid: boolean = await this.twoFAService.isTwoFACodeValid( code.code, res, username );
+        const isValid: boolean = await this.twoFAService.isTwoFACodeValid( twoFADto.code, Number(twoFADto.userId) );
         return res.send(isValid);
     }
 
-    @Delete('/turn-off/:username')
+    @Delete('/turn-off/')
     async turnOffTwoFA (
-        @Res() res: Response,
-        @Param ('username') username: string,
+        @Body() twoFADto: TwoFADto,
     ) {
-        this.twoFAService.turnOff( username );
+        const userIdNumber = Number(twoFADto.userId);
+        await this.twoFAService.turnOff( userIdNumber );
     }
 }

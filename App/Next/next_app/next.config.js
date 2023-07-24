@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = {
-    nextConfig,
+const nextConfig = {
     env: {
         FRONT_URL: process.env.NEXT_PUBLIC_URL_FRONT,
         BACK_URL: process.env.NEXT_PUBLIC_URL_BACK,
@@ -23,4 +20,10 @@ module.exports = {
             },
         ]
     },
-} 
+    devIndicators: {
+        buildActivityPosition: 'bottom-right',
+    }
+}
+
+
+module.exports = nextConfig

@@ -1,10 +1,10 @@
-"use client";
-import TwoFASettingsManagement from "../components/auth/2faSettingsManagement";
+import Settings2faComponent from '../components/auth/Settings2fa';
+
 export default function Settings() {
-    // const {isLoggedIn, login, logout} = useLoggedInContext();
+
     return (
         <div className="flex flex-col flex-auto justify-center ">
-            <TwoFASettingsManagement></TwoFASettingsManagement>
+            <Settings2faComponent ></Settings2faComponent>
         </div>
     )
   }

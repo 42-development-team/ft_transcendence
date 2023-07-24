@@ -1,11 +1,14 @@
 
-const generateTwoFA = async (url: string, setImageUrl = (data: any) => {}) => {
+const generateTwoFA = async (url: string, userId: string, setImageUrl = (data: any) => {}) => {
     console.log(url);
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Failed to fetch \'turn-on');
-        }
+        const response = await fetch(url, {
+            method: "PUT",
+            body: JSON.stringify({code: "test", userId: userId}),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
         const data = await response.json();
         setImageUrl(data.base64Qrcode);
     }

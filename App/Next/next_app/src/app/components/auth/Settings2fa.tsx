@@ -6,8 +6,9 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
+import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
 
-const TwoFASettingsManagement = () => {
+const Settings2faComponent = () => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [isActive, setIsActive] = useState<boolean>(false);
@@ -17,8 +18,18 @@ const TwoFASettingsManagement = () => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
+	const {userId} = useLoggedInContext();
+	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
-	useEffect( () => { //on first load
+	if ( localStorage.getItem('userId') ) {
+		userIdStorage = localStorage.getItem('userId');
+	}
+
+	useEffect( () => {//on first load
+		if ( userId ) {
+			userIdStorage = userId;
+			localStorage.setItem('userId', userId);
+		}
 		isTwoFAActive();
 	}, [] );
 
@@ -27,25 +38,28 @@ const TwoFASettingsManagement = () => {
 		  const timer = setTimeout(() => {
 			setIsVisible(false);
 		  }, 2600);
-  
 		  return () => clearTimeout(timer);
 		}
 	  }, [isVisible]);
 	
 	const isTwoFAActive = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/mdegraeu`); //TODO: replace 'aucaland' by current user => create task for that
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'isTwoFAActive');
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userIdStorage}`);
+			const data = await response.json();
+			setIsActive(data);
+		} catch (error) {
+			console.log(error);
 		}
-		const data = await response.json();
-		setIsActive(data);
 	}
 
-	const handleEnableClick = async () => { //TODO: maybe send alert to child OtpInput when twoFA refreshed (and del old enter value)
-		console.log(`${process.env.BACK_URL}/2fa/turn-on/mdegraeu`);
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/mdegraeu`, setImageUrl);
-		setDisplayBox(true);
-		setColor('bg-red');
+	const handleEnableClick = async () => { //TODO: send alert to child OtpInput when twoFA refreshed (and del old input value)
+		try {
+			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userIdStorage as string, setImageUrl);
+			setDisplayBox(true);
+			setColor('bg-red');
+		} catch (error) {
+			console.log(error);
+		}
 	}
 	
 	const handleDisableClick = () => {
@@ -55,14 +69,22 @@ const TwoFASettingsManagement = () => {
 	}
 
 	const turnOff = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/mdegraeu`);
-		if (!response.ok) {
-			throw new Error('Failed to fetch \'turn-off');
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/2fa/turn-off/`, {
+				method: "DELETE",
+				body: JSON.stringify({userId: userIdStorage as string}),
+				headers: {
+					'Content-Type': 'application/json',
+				}
+			});
+		} catch (error) {
+			console.log(error);
 		}
 	}
 
 	const handleSubmit = async () => {
-		const isValid = await isTwoFAValid(inputValue, `${process.env.BACK_URL}/2fa/verifyTwoFA/mdegraeu`);
+		setIsActive(false);
+		const isValid = await isTwoFAValid(inputValue, userIdStorage as string, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
 			setIsVisible(true);
@@ -71,7 +93,7 @@ const TwoFASettingsManagement = () => {
 			return ;
 		}
 		if (isActive) {
-			turnOff();
+			await turnOff();
 			setIsActive(false);
 			setImageUrl('');
 			setDisplayBox(false);
@@ -159,4 +181,4 @@ const TwoFASettingsManagement = () => {
 	);
 };
 
-export default TwoFASettingsManagement;
+export default Settings2faComponent;
