@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
     }
 
     if (verifiedJWT && verifiedJWT.exp && verifiedJWT.exp > currentTime) {
-        if (verifiedJWT.twoFactorAuthenticated) { // Keep it here ???
+        if (verifiedJWT.twoFactorAuthenticated) {
             if (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/firstLogin') {
                 console.log('JWT is already valid : Redirecting to /home');
                 return NextResponse.redirect(new URL('/home', request.url));

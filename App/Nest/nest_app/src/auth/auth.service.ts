@@ -1,12 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './types/jwtPayload.type';
 import { Tokens } from './types/token.type';
 import { ConfigService } from '@nestjs/config';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -118,7 +117,6 @@ export class AuthService {
             const secret = this.configService.get<string>('jwtRefrehSecret');
             const isVerify = await this.jwtService.verifyAsync(token, {secret});
             
-            console.log("isVerify:",isVerify);
             return isVerify;
             
         }

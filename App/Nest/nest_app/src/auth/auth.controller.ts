@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Tokens } from './types/token.type';
+import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
 
 
 @Controller('auth')
@@ -30,11 +31,6 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
-        // here I catch my profile user in req due to FortyTwoStrat used by the useGuards decorator
-
-        // I have to create or find the user in db
-        // get a sign token from jwt.sign method
-        // inject the jwt token in the client cookies
         try {
             await this.authService.redirectTwoFA(req, res);
         }
@@ -44,13 +40,9 @@ export class AuthController {
         }
     }
 
-    // @Public()
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
-            console.log("auth/jwt");
-            console.log(req.user);
-
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
@@ -65,7 +57,7 @@ export class AuthController {
             console.log("Error: " + error.message);
         }
     }
-    
+
     @HttpCode(HttpStatus.OK)
     @Get('logout')
     async logout(@Res() res: Response) {
@@ -101,14 +93,10 @@ export class AuthController {
         }
     }
 
-    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
-        validate the JWT, and assign the user property to the Request object
-    */
-
     @Get('profile')
     getProfile(@Req() req) {
         if (this.authService.isTwoFactorAuthenticated(req)) {
-            console.log(req.user);
+            // console.log(req.user);
             return req.user;
         }
         else
