@@ -6,7 +6,8 @@ import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
-
+import { UsersService } from 'src/users/users.service';
+import { FirstLoginDto } from './dto/firstLoginDto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +28,7 @@ export class AuthController {
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
         try {
+            console.log("TEST")
             await this.authService.redirectTwoFA(req, res);
         }
         catch (error) {

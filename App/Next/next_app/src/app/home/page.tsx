@@ -8,6 +8,7 @@ export default function Home() {
     useEffect(() => {
         login();
     }, []);
+    
     return (
         <div className="flex flex-auto w-full h-full">
             <ChatBar />

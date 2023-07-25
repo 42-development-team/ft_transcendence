@@ -103,7 +103,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 						{enableMessage}
 					</CustomBtn>
 				}
-				{
+				{/* {
 					enableActive &&
 					<CustomBtn
 						anim={true}
@@ -114,7 +114,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					>
 						{disableMessage}
 					</CustomBtn>
-				}
+				} */}
 				<CustomBtn
 					anim={true}
 					color={colorClickCancel}
