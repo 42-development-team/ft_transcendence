@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
 
 
