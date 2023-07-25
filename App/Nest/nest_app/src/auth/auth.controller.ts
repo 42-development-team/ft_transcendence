@@ -5,8 +5,7 @@ import { AuthService } from './auth.service';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
-import { UsersService } from 'src/users/users.service';
-import { FirstLoginDto } from './dto/firstLoginDto';
+import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
 
 
 @Controller('auth')
@@ -27,11 +26,6 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
-        // here I catch my profile user in req due to FortyTwoStrat used by the useGuards decorator
-
-        // I have to create or find the user in db
-        // get a sign token from jwt.sign method
-        // inject the jwt token in the client cookies
         try {
             await this.authService.redirectTwoFA(req, res);
         }
@@ -41,13 +35,16 @@ export class AuthController {
         }
     }
 
-    
-    @Public()
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
-            const {jwt, cookieOptions} = await this.authService.getJwtFromIdCookie(req, res);
-            res.clearCookie("userId")
+            const cookieOptions = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                secure: false,
+                httpOnly: true,
+            }
+            const jwt = await this.authService.getTokens(req.user, true);
+            res.clearCookie("jwt")
             .cookie("jwt", jwt.access_token, cookieOptions)
             .cookie("rt", jwt.refresh_token, cookieOptions);
         }
@@ -55,7 +52,7 @@ export class AuthController {
             console.log("Error: " + error.message);
         }
     }
-    
+
     @HttpCode(HttpStatus.OK)
     @Get('logout')
     async logout(@Res() res: Response) {
@@ -65,7 +62,6 @@ export class AuthController {
         catch (error) {
             console.log(error.message);
         }
-        // this.authService.logout(res);
     }
 
     @Get('refresh')
@@ -79,7 +75,7 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
-            const tokenObject: Tokens = await this.authService.getTokens(req.user);
+            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.twoFactorAuthenticated);
             res.clearCookie('jwt', cookieOptions)
             .clearCookie('rt', cookieOptions);
 
@@ -92,13 +88,14 @@ export class AuthController {
         }
     }
 
-    /* When our GET /profile route is hit, the Guard will automatically invoke our passport-jwt custom configured strategy,
-        validate the JWT, and assign the user property to the Request object
-    */
     @Get('profile')
     getProfile(@Req() req) {
-        console.log(req.user);
-        return req.user;
+        if (this.authService.isTwoFactorAuthenticated(req)) {
+            // console.log(req.user);
+            return req.user;
+        }
+        else
+            console.log("You didn't validate 2fa process");
     }
 
     @Public()

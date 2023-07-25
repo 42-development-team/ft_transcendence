@@ -8,12 +8,8 @@ import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import { useEffectTimer } from "./utils/useEffectTimer";
 
-
-
-const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
+const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -31,7 +27,7 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 	useEffectTimer(isVisible, 2600, setIsVisible);
 
 	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId.value, setImageUrl);
+		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -56,7 +52,7 @@ const FirstLogin2faComponent = ({userId}: {userId: RequestCookie}) => {
 
 	const handleSubmit = async () => {
 		setEnableActive(true);
-		const isValid = await isTwoFAValid(inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
+		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
 		if (!isValid) {
 			setIsVisible(true);
 			setColorText('text-red-700');

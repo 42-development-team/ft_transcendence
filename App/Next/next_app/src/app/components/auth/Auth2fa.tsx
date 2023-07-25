@@ -1,11 +1,10 @@
 "use client";
 import React, {useState} from "react";
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import isTwoFAValid from "./utils/isTwoFAValid";
  
-const Auth2faComponent = ({userId}: {userId: RequestCookie}) => {
+const Auth2faComponent = ({userId}: {userId: string}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
@@ -14,7 +13,7 @@ const Auth2faComponent = ({userId}: {userId: RequestCookie}) => {
 
 	const handleSubmit = async () => {
 		
-		const isValid = await isTwoFAValid( inputValue, userId.value, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
+		const isValid = await isTwoFAValid( inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
 		if (!isValid){
 			setIsVisible(true);
 			setColorText('text-red-700');
