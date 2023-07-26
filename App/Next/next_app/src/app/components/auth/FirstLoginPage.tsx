@@ -57,7 +57,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
             inputUserName = e.target.value;
-            console.log("inputValue-AfterSet: " + inputUserName);
             if (e.target.value === "") {
                 setValidateEnabled(true);
                 inputUserName = placeHolder;
@@ -70,12 +69,12 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                 setIsVisible(true);
                 return ;
             }
+            
             const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
             const isUsernameSameAsCurrent = inputUserName === placeHolder;
-            console.log("response: " + isUserAlreadyTaken);
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
                 setMessage("Username already taken");
                 setValidateEnabled(false);

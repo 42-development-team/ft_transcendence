@@ -9,6 +9,7 @@ import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 import { useEffectTimer } from "./utils/useEffectTimer";
+import SubmitBtn from "./SubmitBtn";
 
 const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 
@@ -28,7 +29,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 	useEffectTimer(isVisible, 2600, setIsVisible);
 
 	const handleEnableClick = async () => {
-		generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
+		await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
 		setCancelActive(false);
 		setEnableActive(true);
 		setDisplayBox(true);
@@ -68,12 +69,6 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 		setCancelActive(true);
 		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
 	}
-
-		const handleDisableClick = () => {
-		setDisplayBox(true);
-		setImageUrl('');
-		setColor('bg-red');
-	}
 	
 	const handleCallbackData = (childData: string) =>{ //set the code value from child 'OtpInput'
 		setInputValue(childData);
@@ -104,18 +99,6 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 						{enableMessage}
 					</CustomBtn>
 				}
-				{/* {
-					enableActive &&
-					<CustomBtn
-						anim={true}
-						color={colorClick}
-						id="TwoFADButton"
-						onClick={handleDisableClick}
-						disable={!enableActive}
-					>
-						{disableMessage}
-					</CustomBtn>
-				} */}
 				<CustomBtn
 					anim={true}
 					color={colorClickCancel}
@@ -163,17 +146,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					{isVisible && <p>{message}</p>}
 				</div>
 			<div className=" active:duration-500 flex flex-col items-center">
-				{ 
-					displayBox &&
-					<button
-						className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
-						id="codeSubmit"
-						onKeyDown={(e) => handleOnKeyDown(e)}
-						onClick={handleSubmit}
-					>
-						Submit
-					</button> 
-				}
+				<SubmitBtn displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}></SubmitBtn>
 			</div>
 		</div>
 	);

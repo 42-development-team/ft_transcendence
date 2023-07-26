@@ -28,7 +28,6 @@ export class AuthController {
     @Get('42/callback')
     async callback(@Req() req: any, @Res() res: Response) {
         try {
-            console.log("TEST")
             await this.authService.redirectTwoFA(req, res);
         }
         catch (error) {
