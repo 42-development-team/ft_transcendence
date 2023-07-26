@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { refreshToken } from "./app/utils/refreshJWT";
+import { headers } from "next/headers";
 
 const THREE_MINUTES = 60 * 3;
-const TWENTY_NINE_MINUTES = 30 * 60;
+const TWENTY_NINE_MINUTES = 1780;
+
+const refreshToken = async() => {
+    await fetch(`${process.env.BACK_URL}/auth/refresh/`, { credentials: 'include' }).catch((error) => {
+        console.log(error);
+    });
+}
 
 export async function middleware(request: NextRequest) {
     let jwtCookie = request.cookies.get("jwt")?.value;
+    let rtCookie = request.cookies.get("rt")?.value;
 
     let verifiedJWT = jwtCookie && (await verifyJWT(jwtCookie).catch((error) => {
         console.log(error);
@@ -22,8 +29,49 @@ export async function middleware(request: NextRequest) {
         console.log("deltatime: " + deltaTime);
 
         if (deltaTime < TWENTY_NINE_MINUTES)  {
-            console.log("JWT is expiring soon -> need to refresh !!")
-            await refreshToken();
+            console.log("JWT is expiring soon -> need to refresh !!");
+
+            // const browserCookies = request.headers.get('cookie');
+            // console.log(browserCookies);
+            // if (jwtCookie === undefined || rtCookie === undefined) {
+            //     return NextResponse.redirect(new URL('/', request.url)); 
+            // }
+            // let headers = new Headers({'jwt': jwtCookie, 'rt': rtCookie});
+
+            // await refreshToken();
+            // await fetch(`${process.env.BACK_URL}/auth/refresh/`, { credentials: 'include' })
+            // .catch((error) => {
+            //         console.log(error);
+            // });
+
+            await fetch(`${process.env.BACK_URL}/auth/refresh/`, 
+            { credentials: 'include', headers: request.headers })
+            .catch((error) => {
+                throw new Error("Error fetching profile: " + error.message);
+            }).then((response) => {
+                // Note: why 'jwt' and 'rt' are duplicated?
+                let jwt = response.headers.get('set-cookie')?.split(", ");
+                console.log(jwt);
+                // response.headers.forEach((value, key) => {
+                //     console.log(`${key} = ${value}`);
+                //     console.log("---");
+                // });
+                // // testHeaders = response.headers;
+               
+            //    resp.headers.set('test', 'test');
+            //    resp.cookies.set('truc', 'truc');
+            // //    console.log('truc');
+            //    resp.headers.set('test', 'test');
+               return NextResponse.redirect(new URL('/home', request.url)).headers.set('test', 'test');
+                // request.headers.set('test', response.headers.get('jwt') as string);
+                // request.headers.forEach((value, key) => {
+                //    if (response.headers.has(key)) {
+                //         request.headers.set(key, response.headers.get(key)?.toString() as string);
+                //    }
+                // });
+                // console.log(response.json());
+            });
+
         }
 
         if (deltaTime < 0 ) {
