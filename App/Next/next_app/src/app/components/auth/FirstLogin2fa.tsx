@@ -8,6 +8,7 @@ import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
+import { useEffectTimer } from "./utils/useEffectTimer";
 
 const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 

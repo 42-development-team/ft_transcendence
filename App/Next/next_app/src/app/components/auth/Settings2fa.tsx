@@ -4,8 +4,8 @@ import CustomBtn from "../CustomBtn";
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
-import isTwoFAValid from "./utilsFunction/isTwoFAValid";
-import generateTwoFA from "./utilsFunction/generateTwoFA";
+import isTwoFAValid from "./utils/isTwoFAValid";
+import generateTwoFA from "./utils/generateTwoFA";
 import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
 
 const Settings2faComponent = () => {
