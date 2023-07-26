@@ -41,7 +41,7 @@ export class AuthService {
                 .redirect(`${frontUrl}/home/`);
             }
         } catch (error) {
-            console.log("Error: " + error.message);
+            throw new Error('Redirect error');
         }
     }
 

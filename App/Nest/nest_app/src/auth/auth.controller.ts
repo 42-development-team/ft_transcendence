@@ -34,9 +34,11 @@ export class AuthController {
         // inject the jwt token in the client cookies
         try {
             await this.authService.redirectTwoFA(req, res);
+            // res.send({ message: 'Success'});
         }
         catch (error) {
             // res.status(401).send(error.message);
+            // res.status(500).send({ error: 'Internal Server Error' });
             console.error("Error: callback error:" + error.message);
         }
     }

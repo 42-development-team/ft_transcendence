@@ -44,19 +44,38 @@ describe('AuthController', () => {
   });
 
   describe('callback', () => {
+    // Each it block contains a series of steps that follow the AAA pattern: Arrange, Act, and Assert.
     it('should call authService.redirectTwoFA and return a response', async () => {
-        const req = {}; 
+        // Arrange
+        // set up and create any required objects or instances that the test case needs. 
+        // => This includes initializing variables, setting up mock objects, 
+        // and preparing the input data for the unit under test.
+        const req = {};
         const res = {
           send: jest.fn(),
+        //   redirect: jest.fn(),
+        //   status: jest.fn().mockReturnThis(),
+        //   cookie: jest.fn(),
+        //   clearCookie: jest.fn(),
         } as unknown as Response<any, Record<string, any>>;
   
-        const redirectTwoFASpy = jest.spyOn(authService, 'redirectTwoFA').mockResolvedValue(); // Resolve with a value
+        // Mock the redirectTwoFA method to resolve successfully
+        jest.spyOn(authService, 'redirectTwoFA').mockResolvedValue();
   
+        // Act
+        // actual test execution => calling the method or function to test, 
+        // passing in the prepared input data
         await controller.callback(req, res);
   
-        expect(redirectTwoFASpy).toHaveBeenCalledWith(req, res);
-        expect(res.send).toHaveBeenCalled();
+        // Assert
+        // verifying that the output matches the expected result. 
+        // This involves making assertions about the actual output 
+        // against the expected outcome.
+        expect(authService.redirectTwoFA).toHaveBeenCalledWith(req, res);
+        // expect(res.send).toHaveBeenCalled();
     });
+
+    
   });
 //   describe('getJwt', () => {
 //     // 

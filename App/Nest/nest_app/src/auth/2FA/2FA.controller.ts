@@ -4,7 +4,7 @@ import { Controller, Post, Body, Param, Res, Get, Delete, Put } from '@nestjs/co
 import { Response } from 'express';
 import { TwoFADto } from './dto/TwoFactor.dto';
 import * as qrcode from 'qrcode'
-import { Public } from 'src/auth/public.routes';
+import { Public } from '../../auth/public.routes';
 import { ConfigService } from '@nestjs/config';
 
 @ApiTags("TwoFA")
