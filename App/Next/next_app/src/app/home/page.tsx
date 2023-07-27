@@ -1,7 +1,7 @@
 "use client";
 import ChatBar from "@/components/chat/ChatBar"
 import { useEffect } from "react"
-import { useLoggedInContext } from "../context/LoggedInContextProvider";
+import { useAuthcontext } from "../context/AuthContext";
 
 const test = async() => {
     await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
@@ -10,7 +10,7 @@ const test = async() => {
 }
 
 export default function Home() {
-    const {login} = useLoggedInContext();
+    const {login} = useAuthcontext();
     useEffect(() => {
         login();
     }, []);

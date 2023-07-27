@@ -6,7 +6,7 @@ import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utilsFunction/isTwoFAValid";
 import generateTwoFA from "./utilsFunction/generateTwoFA";
-import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
+import { useAuthcontext } from "@/app/context/AuthContext";
 
 const Settings2faComponent = () => {
 
@@ -18,7 +18,7 @@ const Settings2faComponent = () => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-	const {userId} = useLoggedInContext();
+	const {userId} = useAuthcontext();
 	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
 	if ( localStorage.getItem('userId') ) {

@@ -2,7 +2,7 @@
 import { useContext, createContext, useState, useEffect } from "react";
 
 // Note: we also need username ? Replace "PROFILE" text by "username"
-type LoggedInContextType = {
+type AuthContextType = {
     isLoggedIn: boolean;
     login: () => void;
     logout: () => void;
@@ -10,7 +10,7 @@ type LoggedInContextType = {
     userId: string;
 }
 
-const LoggedInContextDefaultValues: LoggedInContextType = {
+const AuthContextDefaultValues: AuthContextType = {
     isLoggedIn: false,
     login: async () => { },
     logout: () => { },
@@ -18,9 +18,9 @@ const LoggedInContextDefaultValues: LoggedInContextType = {
     userId: "",
 }
 
-const LoggedInContext = createContext<LoggedInContextType>(LoggedInContextDefaultValues);
+const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
 
-export const LoggedInContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
@@ -37,7 +37,6 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
     const fetchProfile = async () => {
         const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
         await response.json().then((data) => {
-            console.log("fetch profile ok: " + data.login);
             let newLogin: string = data.login as string;
             setUniqueLogin(newLogin);
             let newUserId: string = data.sub as string;
@@ -67,10 +66,10 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
     }
 
     return (
-        <LoggedInContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId }}>
             {children}
-        </LoggedInContext.Provider>
+        </AuthContext.Provider>
     )
 }
 
-export const useLoggedInContext = () => useContext(LoggedInContext);
+export const useAuthcontext = () => useContext(AuthContext);
