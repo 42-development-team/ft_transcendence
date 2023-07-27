@@ -67,6 +67,7 @@ export class AuthService {
         }
         res.clearCookie("jwt", cookieOptions)
         .clearCookie("rt", cookieOptions)
+        .send();
     }    
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
