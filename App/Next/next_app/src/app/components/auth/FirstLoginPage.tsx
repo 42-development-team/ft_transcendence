@@ -10,6 +10,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const [isVisible, setIsVisible] = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder] = useState('');
+    const [waiting2fa, setWaiting2fa] = useState(true);
     let inputUserName: string;
 
     useEffect(() => {
@@ -21,7 +22,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     }, []);
 
     const getUserName = async (userId: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/firstLogin/getUser/${userId}`, {
+        const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
             method: "GET",
         });
         const data = await response.json();
@@ -38,7 +39,8 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 
     const handleClick = async () => {
         try {
-                await fetch(`${process.env.BACK_URL}/firstLogin/updateUsername/`, {
+                setWaiting2fa(false);
+                await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
                 method: "PUT",
                 body: JSON.stringify({newUsername: inputUserName, userId: userId}),
                 headers: {
@@ -68,7 +70,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                 setIsVisible(true);
                 return ;
             }
-            const response = await fetch(`${process.env.BACK_URL}/firstLogin/doesUserNameExist/${inputUserName}`, {
+            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
@@ -123,9 +125,12 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     className=" drop-shadow-xl"
                 />
             </div>
-            <div className="flex flex-col flex-auto items-center justify-center">
-                <FirstLogin2faComponent userId={userId}></FirstLogin2faComponent>
-            </div>
+            {
+                waiting2fa &&
+                <div className="flex flex-col flex-auto items-center justify-center">
+                    <FirstLogin2faComponent userId={userId}></FirstLogin2faComponent>
+                </div>
+            }
             <CustomBtn disable={!validateEnabled} onClick={handleClick}>
                 Validate
             </CustomBtn>
