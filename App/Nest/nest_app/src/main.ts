@@ -27,7 +27,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [`http://${configService.get<string>('ip')}:${configService.get<string>('frontPort')}`,
-      `http://${configService.get<string>('ip')}:${configService.get<string>('backPort')}`],
+      `http://${configService.get<string>('ip')}:${configService.get<string>('backPort')}`, `http://10.13.7.3:4000/auth/logout`],
     credentials: true,
   });
 

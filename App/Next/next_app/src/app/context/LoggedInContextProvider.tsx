@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/router";
 import { useContext, createContext, useState, useEffect } from "react";
 
 // Note: we also need username ? Replace "PROFILE" text by "username"
@@ -60,6 +61,7 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
         await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
             console.log("error fetching profile: " + error.message);
         });
+        window.location.href = `${process.env.FRONT_URL}/`;
         setLoggedIn(false);
         // Todo: update user status
         setUniqueLogin("");

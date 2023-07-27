@@ -66,8 +66,8 @@ export class AuthService {
             httpOnly: true,
         }
         res.clearCookie("jwt", cookieOptions)
-        .clearCookie("rt", cookieOptions)
-        .redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
+        .clearCookie("rt", cookieOptions).send();
+        // .redirect(`http://${ this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
     }    
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
