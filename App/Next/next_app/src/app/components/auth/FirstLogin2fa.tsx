@@ -146,7 +146,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					{isVisible && <p>{message}</p>}
 				</div>
 			<div className=" active:duration-500 flex flex-col items-center">
-				<SubmitBtn displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}></SubmitBtn>
+				<SubmitBtn displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}>Submit</SubmitBtn>
 			</div>
 		</div>
 	);
