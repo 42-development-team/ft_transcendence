@@ -33,7 +33,13 @@ const Submit2FA = (
 	}) =>
 {
 	return (
-		<div>
+		<div className="text-center">
+			{
+				displayBox &&
+				<div>
+				{children}
+				</div>
+			}
 			{
 				displayBox &&
 				<div className="flex flex-row items-center">

@@ -4,6 +4,7 @@ import '../../globals.css'
 import OtpInput from "./OtpInput";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import SubmitBtn from "./SubmitBtn";
+import Submit2FA from "./Submit2FA";
  
 const Auth2faComponent = ({userId}: {userId: string}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
@@ -52,19 +53,18 @@ const Auth2faComponent = ({userId}: {userId: string}) => {
 	}
 
 	return (
-		<div className="flex flex-col">
-			{
-				<div className=" text-center">
-					Enter 2FA Code :
-					{ 
-						<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
-					}
-				</div>
-			}
-			<div className={` ${colorText} text-center`}>
-				{isVisible && <p>{message}</p>}
-			</div>
-			<SubmitBtn handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit} displayBox={true}>Submit</SubmitBtn>
+		<div className="flex flex-col text-center">
+			Enter 2FA code:
+			<Submit2FA 
+				displayBox={true}
+				handleOnKeyDown={handleOnKeyDown}
+				handleSubmit={handleSubmit}
+				handleCallbackData={handleCallbackData}
+				handleCallbackEnter={handleCallbackEnter}
+				isVisible={isVisible}
+				message={message}
+				colorText={colorText}
+			/>	
 		</div>
 	);
 };

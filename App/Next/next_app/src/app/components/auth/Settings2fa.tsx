@@ -7,6 +7,7 @@ import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
 import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
+import Submit2FA from "./Submit2FA";
 
 const Settings2faComponent = () => {
 
@@ -158,25 +159,16 @@ const Settings2faComponent = () => {
 				imageUrl={imageUrl} 
 				displayBox={displayBox}>
 			</QrCodeDisplay>
-			{ 
-				displayBox && 
-				<OtpInput parentCallbackData={handleCallback} parentCallbackEnter={handleCallbackEnter}></OtpInput>
-			}
-			<div className={` ${colorText} text-center`}>
-				{
-					isVisible && 
-					<p>{message}</p>
-				}
-	  		</div>
-			{ 
-				displayBox &&
-				<button
-					className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
-					id="codeSubmit"
-					onKeyDown={(e) => handleOnKeyDown(e)}
-					onClick={handleSubmit}>Submit
-				</button> 
-			}
+				<Submit2FA 	
+					displayBox={displayBox}
+					handleOnKeyDown={handleOnKeyDown}
+					handleSubmit={handleSubmit}
+					handleCallbackData={handleCallback}
+					handleCallbackEnter={handleCallbackEnter}
+					isVisible={isVisible}
+					message={message}
+					colorText={colorText}
+				>Enter 2FA code:</Submit2FA>
 		</div>
 	);
 };
