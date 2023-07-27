@@ -2,15 +2,13 @@
 import React, { useState, useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
-import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
-import Image from "next/image";
 import { useEffectTimer } from "./utils/useEffectTimer";
-import SubmitBtn from "./SubmitBtn";
 import Submit2FA from "./Submit2FA";
+import ButtonAnimation from "./ButtonAnimation";
 
 const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 
@@ -109,30 +107,18 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center ">
-				<div className=" ml-12 flex-shrink self-center">
+				<div className=" ml-12 my-4 flex-shrink self-center">
 					<QrCodeDisplay
 						imageUrl={imageUrl} 
 						displayBox={displayBox}>
 					</QrCodeDisplay>
 				</div>
-				<div className="self-center mt-2 duration-500">
-					{
-						imageUrl && 
-						<button
-							className="active:animate-spin  1s origin-[50%_50%]"
-							color="bg-mauve"
-							id="Refresh2FA" 
-							onClick={handleRefreshClick} 
-							disabled={cancelActive}>
-							<Image src={refreshImage} 
-								alt="refresh"
-								width={30}
-								height={30}
-								className="m-2 rounded-[inherit]"  
-							/>
-						</button>
-					}
-				</div>
+				<ButtonAnimation
+					imageUrl={imageUrl}
+					handleRefreshClick={handleRefreshClick}
+					refreshImage={refreshImage}
+					cancelActive={cancelActive}
+				/>
 			</div>
 			<Submit2FA 
 				displayBox={displayBox}

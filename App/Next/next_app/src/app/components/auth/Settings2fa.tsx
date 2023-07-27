@@ -2,12 +2,14 @@
 import {useState, useEffect} from "react";
 import CustomBtn from "../CustomBtn";
 import '../../globals.css'
-import OtpInput from "./OtpInput";
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
 import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
 import Submit2FA from "./Submit2FA";
+import { useEffectTimer } from "./utils/useEffectTimer";
+import ButtonAnimation from "./ButtonAnimation";
+import refreshImage from '../../../../public/refresh-icon-10834.svg';
 
 const Settings2faComponent = () => {
 
@@ -20,6 +22,9 @@ const Settings2faComponent = () => {
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
 	const {userId} = useLoggedInContext();
+	const [cancelActive, setCancelActive] = useState<boolean>(true);
+	const [enableMessage, setEnableMessage] = useState<string>('Enable 2FA');
+	const [enableActive, setEnableActive] = useState<boolean>(false);
 	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
 	if ( localStorage.getItem('userId') ) {
@@ -34,14 +39,7 @@ const Settings2faComponent = () => {
 		isTwoFAActive();
 	}, [] );
 
-	useEffect(() => { //timer -> submit message
-		if (isVisible) {
-		  const timer = setTimeout(() => {
-			setIsVisible(false);
-		  }, 2600);
-		  return () => clearTimeout(timer);
-		}
-	  }, [isVisible]);
+	useEffectTimer(isVisible, 2600, setIsVisible);
 	
 	const isTwoFAActive = async () => {
 		try {
@@ -57,12 +55,28 @@ const Settings2faComponent = () => {
 		try {
 			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userIdStorage as string, setImageUrl);
 			setDisplayBox(true);
+			setCancelActive(false);
 			setColor('bg-red');
 		} catch (error) {
 			console.log(error);
 		}
 	}
 	
+	const handleCancelClick = async () => {
+		setDisplayBox(false);
+		setImageUrl('');
+		setInputValue('');
+		setEnableMessage('Enable 2FA ?');
+		setCancelActive(true);
+		setEnableActive(false);
+		setColorCancel('bg-red');
+		setColor('bg-mauve');
+	}
+
+	const handleRefreshClick = () => {
+		handleEnableClick();
+	}
+
 	const handleDisableClick = () => {
 		setDisplayBox(true);
 		setImageUrl('');
@@ -155,10 +169,20 @@ const Settings2faComponent = () => {
 					</CustomBtn>
 				}
 			</div>
-			<QrCodeDisplay 
-				imageUrl={imageUrl} 
-				displayBox={displayBox}>
-			</QrCodeDisplay>
+			<div className="flex flex-row justify-center">
+				<div className="ml-12 my-4 flex-shrink self-center">
+					<QrCodeDisplay
+						imageUrl={imageUrl}
+						displayBox={displayBox}>
+					</QrCodeDisplay>
+				</div>
+				<ButtonAnimation
+					imageUrl={imageUrl}
+					handleRefreshClick={handleRefreshClick}
+					refreshImage={refreshImage}
+					cancelActive={cancelActive}
+				/>
+			</div>
 				<Submit2FA 	
 					displayBox={displayBox}
 					handleOnKeyDown={handleOnKeyDown}

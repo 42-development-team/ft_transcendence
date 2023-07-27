@@ -1,9 +1,7 @@
 "use client";
 import React, {useState} from "react";
 import '../../globals.css'
-import OtpInput from "./OtpInput";
 import isTwoFAValid from "./utils/isTwoFAValid";
-import SubmitBtn from "./SubmitBtn";
 import Submit2FA from "./Submit2FA";
  
 const Auth2faComponent = ({userId}: {userId: string}) => {
@@ -53,8 +51,7 @@ const Auth2faComponent = ({userId}: {userId: string}) => {
 	}
 
 	return (
-		<div className="flex flex-col text-center">
-			Enter 2FA code:
+		<div className="flex flex-col">
 			<Submit2FA 
 				displayBox={true}
 				handleOnKeyDown={handleOnKeyDown}
@@ -64,7 +61,7 @@ const Auth2faComponent = ({userId}: {userId: string}) => {
 				isVisible={isVisible}
 				message={message}
 				colorText={colorText}
-			/>	
+			>Enter 2FA code:</Submit2FA>	
 		</div>
 	);
 };
