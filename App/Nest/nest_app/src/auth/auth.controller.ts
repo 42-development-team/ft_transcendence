@@ -1,13 +1,15 @@
-import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus, Put, Param} from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
-import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
 import { UsersService } from 'src/users/users.service';
-import { FirstLoginDto } from './dto/firstLoginDto';
+import {FirstLoginDto} from './dto/firstLoginDto';
+
+
+
 
 @Controller('auth')
 export class AuthController {
