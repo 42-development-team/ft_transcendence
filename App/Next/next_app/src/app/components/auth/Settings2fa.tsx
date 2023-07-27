@@ -45,7 +45,7 @@ const Settings2faComponent = () => {
 		try {
 			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userIdStorage}`);
 			const data = await response.json();
-			setIsActive(data);
+			setEnableActive(data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -98,7 +98,7 @@ const Settings2faComponent = () => {
 	}
 
 	const handleSubmit = async () => {
-		setIsActive(false);
+		setEnableActive(false);
 		const isValid = await isTwoFAValid(inputValue, userIdStorage as string, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
@@ -109,7 +109,7 @@ const Settings2faComponent = () => {
 		}
 		if (isActive) {
 			await turnOff();
-			setIsActive(false);
+			setEnableActive(false);
 			setImageUrl('');
 			setDisplayBox(false);
 			setMessage("Two Factor Auth disabled");
@@ -118,7 +118,7 @@ const Settings2faComponent = () => {
 			setColorText('text-green-700');
 		}
 		else {
-			setIsActive(true);
+			setEnableActive(true);
 			setDisplayBox(false);
 			setMessage("Two Factor Auth enabled");
 			setIsVisible(true);
@@ -145,7 +145,7 @@ const Settings2faComponent = () => {
 		<div className="flex-auto flex flex-col border-2 rounded bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
 			<div className="flex justify-center mt-2">
 				{
-					!isActive &&
+					!enableActive &&
 					<CustomBtn
 						anim={true}
 						color={colorClick}
@@ -157,7 +157,7 @@ const Settings2faComponent = () => {
 					</CustomBtn>
 				}
 				{
-					isActive &&
+					enableActive &&
 					<CustomBtn
 						anim={true}
 						color={colorClick}
