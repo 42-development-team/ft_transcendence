@@ -11,6 +11,8 @@ import { Tokens } from './types/token.type';
 import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
 
 
+
+
 @Controller('auth')
 export class AuthController {
 
@@ -102,4 +104,40 @@ export class AuthController {
         else
             console.log("You didn't validate 2fa process");
     }
+
+    @Public()
+    @Get('firstLogin/doesUserNameExist/:username')
+	async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
+		try {
+			const userDB = await this.userService.getUserFromUsername(username);
+			if (userDB) {
+				console.log('user exists');
+				return true;
+			}
+			else
+				return false;
+		} catch (error) {
+			throw new Error("Error fetching user in first login: " + error);
+		}
+	}
+
+    @Public()
+	@Put('firstLogin/updateUsername')
+	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+		try {
+			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
+		} catch (error) {
+			return error;
+		}
+	}
+
+    @Public()
+	@Get('firstLogin/getUser/:userId')
+	async getUserByName(@Param('userId') userId: string): Promise<any> {
+		try {;
+			return await this.userService.getUserFromId(Number(userId));
+		} catch (error) {
+			return error;
+		}
+	}
 }
