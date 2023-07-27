@@ -15,17 +15,18 @@ import isTwoFAActive from "./utils/isTwoFAActive";
 const Settings2faComponent = () => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
-	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
 	const [isVisible, setIsVisible] = useState(false);
+	const [enableBtnText, setEnableBtnText] = useState<string>('Enable 2FA ?')
+	const [cancelDisable, setCancelDisable] = useState<boolean>(true);
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
 	const {userId} = useLoggedInContext();
-	const [cancelActive, setCancelActive] = useState<boolean>(true);
-	const [enableMessage, setEnableMessage] = useState<string>('Enable 2FA');
-	const [enableActive, setEnableActive] = useState<boolean>(false);
+	const [activTwoFA, setActivTwoFA] = useState<boolean>(false);
+	const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
+	const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
 	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
@@ -38,15 +39,14 @@ const Settings2faComponent = () => {
 			userIdStorage = userId;
 			localStorage.setItem('userId', userId);
 		}
-		async () => {
-			try {
-				const data = await isTwoFAActive();
-				setEnableActive(data);
-			}
-			catch (error) {
-				console.log(error);
-			}
+		const fetchData = async () => {
+			const data = await isTwoFAActive(userIdStorage as string);
+			console.log(data);
+			setActivTwoFA(data);
+			setDisableBtnActivated(data);
+			setEnableBtnActivated(!data);
 		}
+		fetchData().catch(console.error);
 	}, [] );
 
 	useEffectTimer(isVisible, 2600, setIsVisible);
@@ -55,21 +55,24 @@ const Settings2faComponent = () => {
 		try {
 			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userIdStorage as string, setImageUrl);
 			setDisplayBox(true);
-			setCancelActive(false);
+			setCancelDisable(false);
+			setEnableBtnActivated(false);
 			setColor('bg-red');
 		} catch (error) {
 			console.log(error);
 		}
 	}
 	
-	const handleCancelClick = async () => {
+	const handleCancelClick = () => {
 		setDisplayBox(false);
 		setImageUrl('');
 		setInputValue('');
-		setEnableMessage('Enable 2FA ?');
-		setCancelActive(true);
-		setEnableActive(false);
-		setColorCancel('bg-red');
+		setCancelDisable(true);
+		if (activTwoFA)
+				setDisableBtnActivated(true);
+		else
+				setEnableBtnActivated(true);
+		setColorCancel('bg-mauve');
 		setColor('bg-mauve');
 	}
 
@@ -80,7 +83,10 @@ const Settings2faComponent = () => {
 	const handleDisableClick = () => {
 		setDisplayBox(true);
 		setImageUrl('');
+		setCancelDisable(false);
+		setDisableBtnActivated(false);
 		setColor('bg-red');
+		setColorCancel('bg-mauve');
 	}
 
 	const turnOff = async () => {
@@ -98,7 +104,8 @@ const Settings2faComponent = () => {
 	}
 
 	const handleSubmit = async () => {
-		setEnableActive(false);
+		setEnableBtnActivated(false);
+		setDisableBtnActivated(false);
 		const isValid = await isTwoFAValid(inputValue, userIdStorage as string, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
@@ -107,9 +114,16 @@ const Settings2faComponent = () => {
 			setMessage("Error: code doesn't match");
 			return ;
 		}
-		if (isActive) {
-			await turnOff();
-			setEnableActive(false);
+		if (activTwoFA) {
+			try {
+				await turnOff();
+			} catch (error) {
+				console.log(error);
+				return ;
+			}
+			setActivTwoFA(false);
+			setEnableBtnActivated(true);
+			setCancelDisable(true);
 			setImageUrl('');
 			setDisplayBox(false);
 			setMessage("Two Factor Auth disabled");
@@ -118,7 +132,10 @@ const Settings2faComponent = () => {
 			setColorText('text-green-700');
 		}
 		else {
-			setEnableActive(true);
+			setActivTwoFA(true);
+			setDisableBtnActivated(true);
+			setCancelDisable(true);
+			setImageUrl('');
 			setDisplayBox(false);
 			setMessage("Two Factor Auth enabled");
 			setIsVisible(true);
@@ -142,30 +159,30 @@ const Settings2faComponent = () => {
 	}
 
 	return (
-		<div className="flex-auto flex flex-col border-2 rounded bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
+		<div className="flex-auto flex flex-col border-2 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] p-4">
 			<div className="flex justify-center mt-2">
 				{
-					!enableActive &&
+					!activTwoFA &&
 					<CustomBtn
 						anim={true}
 						color={colorClick}
 						id="TwoFAEButton" 
 						onClick={handleEnableClick} 
-						disable={enableActive}
+						disable={!enableBtnActivated}
 					>
-						Enable 2FA
+						{enableBtnText}
 					</CustomBtn>
 				}
 				{
-					enableActive &&
+					activTwoFA &&
 					<CustomBtn
 						anim={true}
 						color={colorClick}
 						id="TwoFADButton" 
 						onClick={handleDisableClick} 
-						disable={!enableActive}
+						disable={!disableBtnActivated}
 					>
-						Disable 2FA
+						Disable 2FA ?
 					</CustomBtn>
 				}
 				<CustomBtn
@@ -173,11 +190,11 @@ const Settings2faComponent = () => {
 					color={colorClickCancel}
 					id="Cancel2FA"
 					onClick={handleCancelClick}
-					disable={cancelActive}>Cancel
+					disable={cancelDisable}>Cancel
 				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center">
-				<div className="ml-12 my-4 flex-shrink self-center">
+				<div className="ml-12 flex-shrink self-center">
 					<QrCodeDisplay
 						imageUrl={imageUrl}
 						displayBox={displayBox}>
@@ -187,7 +204,7 @@ const Settings2faComponent = () => {
 					imageUrl={imageUrl}
 					handleRefreshClick={handleRefreshClick}
 					refreshImage={refreshImage}
-					cancelActive={cancelActive}
+					cancelActive={cancelDisable}
 				/>
 			</div>
 				<Submit2FA 	

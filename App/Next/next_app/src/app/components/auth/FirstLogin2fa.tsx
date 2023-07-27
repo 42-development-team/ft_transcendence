@@ -15,22 +15,23 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
 	const [displayBox, setDisplayBox] = useState<Boolean>(false);
-	const [enableMessage, setEnableMessage] = useState<string>('Enable 2FA');
-	const [cancelActive, setCancelActive] = useState<boolean>(true);
-	const [enableActive, setEnableActive] = useState<boolean>(false);
 	const [isVisible, setIsVisible] = useState(false);
+	const [enableBtnText, setEnableBtnText] = useState<string>('Enable 2FA ?');
+	const [cancelDisable, setCancelDisable] = useState<boolean>(true);
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
-	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-	const [disableMessage, setDisableMessage] = useState<string>('Disable 2FA');
+	const [activTwoFA, setActivTwoFA] = useState<boolean>(false);
+	const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
+	const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
+	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	
 	useEffectTimer(isVisible, 2600, setIsVisible);
 
 	const handleEnableClick = async () => {
 		await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
-		setCancelActive(false);
-		setEnableActive(true);
+		setCancelDisable(false);
+		setEnableBtnActivated(false);
 		setDisplayBox(true);
 		setColor('bg-red');
 		setColorCancel('bg-mauve');
@@ -44,15 +45,17 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 		setDisplayBox(false);
 		setImageUrl('');
 		setInputValue('');
-		setEnableMessage('Enable 2FA ?');
-		setCancelActive(true);
-		setEnableActive(false);
+		setCancelDisable(true);
+		if (activTwoFA)
+			setDisableBtnActivated(true);
+		else
+			setEnableBtnActivated(true);
 		setColorCancel('bg-red');
 		setColor('bg-mauve');
 	}
 
 	const handleSubmit = async () => {
-		setEnableActive(true);
+		setActivTwoFA(true);
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/` );
 		if (!isValid) {
 			setIsVisible(true);
@@ -65,7 +68,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 		setDisplayBox(false);
 		setMessage("Two Factor Auth enabled");
 		setIsVisible(true);
-		setCancelActive(true);
+		setCancelDisable(true);
 		await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
 	}
 	
@@ -87,15 +90,15 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 		<div className=" flex flex-auto flex-col bg-base border-2 shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] rounded-md p-4">
 			<div className="flex justify-center mt-2">
 				{
-					!enableActive &&
+					!activTwoFA &&
 					<CustomBtn
 						anim={true}
 						color={colorClick}
 						id="TwoFAEButton"
 						onClick={handleEnableClick}
-						disable={enableActive}
+						disable={!enableBtnActivated}
 					>
-						{enableMessage}
+						{enableBtnText}
 					</CustomBtn>
 				}
 				<CustomBtn
@@ -103,11 +106,11 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					color={colorClickCancel}
 					id="Cancel2FA" 
 					onClick={handleCancelClick} 
-					disable={cancelActive}>Cancel
+					disable={cancelDisable}>Cancel
 				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center ">
-				<div className=" ml-12 my-4 flex-shrink self-center">
+				<div className=" ml-12 flex-shrink self-center">
 					<QrCodeDisplay
 						imageUrl={imageUrl} 
 						displayBox={displayBox}>
@@ -117,7 +120,7 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					imageUrl={imageUrl}
 					handleRefreshClick={handleRefreshClick}
 					refreshImage={refreshImage}
-					cancelActive={cancelActive}
+					cancelActive={cancelDisable}
 				/>
 			</div>
 			<Submit2FA 
