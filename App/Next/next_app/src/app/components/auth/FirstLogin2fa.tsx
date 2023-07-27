@@ -10,6 +10,7 @@ import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import Image from "next/image";
 import { useEffectTimer } from "./utils/useEffectTimer";
 import SubmitBtn from "./SubmitBtn";
+import Submit2FA from "./Submit2FA";
 
 const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 
@@ -133,21 +134,16 @@ const FirstLogin2faComponent = ({userId} : {userId: string}) => {
 					}
 				</div>
 			</div>
-				{
-					displayBox &&
-					<div className="flex flex-row items-center">
-						{ 
-							displayBox && 
-							<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
-						}
-					</div>
-				}
-				<div className={` ${colorText} text-center`}>
-					{isVisible && <p>{message}</p>}
-				</div>
-			<div className=" active:duration-500 flex flex-col items-center">
-				<SubmitBtn displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}>Submit</SubmitBtn>
-			</div>
+			<Submit2FA 
+				displayBox={displayBox}
+				handleOnKeyDown={handleOnKeyDown}
+				handleSubmit={handleSubmit}
+				handleCallbackData={handleCallbackData}
+				handleCallbackEnter={handleCallbackEnter}
+				isVisible={isVisible}
+				message={message}
+				colorText={colorText}
+			></Submit2FA>
 		</div>
 	);
 };

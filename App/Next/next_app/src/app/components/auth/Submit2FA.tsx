@@ -34,13 +34,15 @@ const Submit2FA = (
 {
 	return (
 		<div>
-			displayBox &&
-			<div className="flex flex-row items-center">
-				{
-					displayBox &&
-					<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
-				}
-			</div>
+			{
+				displayBox &&
+				<div className="flex flex-row items-center">
+					{
+						displayBox &&
+						<OtpInput parentCallbackData={handleCallbackData} parentCallbackEnter={handleCallbackEnter}></OtpInput>
+					}
+				</div>
+			}
 			<div className={` ${colorText} text-center`}>
 				{isVisible && <p>{message}</p>}
 			</div>
@@ -50,3 +52,5 @@ const Submit2FA = (
 		</div>
 	)
 }
+
+export default Submit2FA;
