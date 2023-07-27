@@ -10,6 +10,7 @@ import Submit2FA from "./Submit2FA";
 import { useEffectTimer } from "./utils/useEffectTimer";
 import ButtonAnimation from "./ButtonAnimation";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
+import isTwoFAActive from "./utils/isTwoFAActive";
 
 const Settings2faComponent = () => {
 
@@ -25,6 +26,7 @@ const Settings2faComponent = () => {
 	const [cancelActive, setCancelActive] = useState<boolean>(true);
 	const [enableMessage, setEnableMessage] = useState<string>('Enable 2FA');
 	const [enableActive, setEnableActive] = useState<boolean>(false);
+	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
 	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
 	if ( localStorage.getItem('userId') ) {
@@ -36,20 +38,18 @@ const Settings2faComponent = () => {
 			userIdStorage = userId;
 			localStorage.setItem('userId', userId);
 		}
-		isTwoFAActive();
+		async () => {
+			try {
+				const data = await isTwoFAActive();
+				setEnableActive(data);
+			}
+			catch (error) {
+				console.log(error);
+			}
+		}
 	}, [] );
 
 	useEffectTimer(isVisible, 2600, setIsVisible);
-	
-	const isTwoFAActive = async () => {
-		try {
-			const response = await fetch(`${process.env.BACK_URL}/2fa/isTwoFAActive/${userIdStorage}`);
-			const data = await response.json();
-			setEnableActive(data);
-		} catch (error) {
-			console.log(error);
-		}
-	}
 
 	const handleEnableClick = async () => { //TODO: send alert to child OtpInput when twoFA refreshed (and del old input value)
 		try {
@@ -151,7 +151,7 @@ const Settings2faComponent = () => {
 						color={colorClick}
 						id="TwoFAEButton" 
 						onClick={handleEnableClick} 
-						disable={isActive}
+						disable={enableActive}
 					>
 						Enable 2FA
 					</CustomBtn>
@@ -163,11 +163,18 @@ const Settings2faComponent = () => {
 						color={colorClick}
 						id="TwoFADButton" 
 						onClick={handleDisableClick} 
-						disable={!isActive}
+						disable={!enableActive}
 					>
 						Disable 2FA
 					</CustomBtn>
 				}
+				<CustomBtn
+					anim={true}
+					color={colorClickCancel}
+					id="Cancel2FA"
+					onClick={handleCancelClick}
+					disable={cancelActive}>Cancel
+				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center">
 				<div className="ml-12 my-4 flex-shrink self-center">
