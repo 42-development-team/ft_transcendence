@@ -8,3 +8,11 @@ export const GetCurrentUserId = createParamDecorator(
     return user.sub;
   },
 );
+
+export const GetAuthBoolean = createParamDecorator(
+  (_: undefined, context: ExecutionContext): boolean => {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user as JwtPayload;
+    return user.twoFactorAuthenticated;
+  },
+);

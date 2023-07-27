@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { useLoggedInContext } from '@/context/LoggedInContextProvider';
+import { useAuthcontext } from '@/app/context/AuthContext';
 import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
 import Image from "next/image"
 import {useRouter } from "next/navigation";
 
 // Todo: pass context to childrens instead of using it everywhere
 const Navbar = () => {
-    const {isLoggedIn} = useLoggedInContext();
+    const {isLoggedIn} = useAuthcontext();
     return (
         <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
             <Logo />
@@ -18,7 +18,7 @@ const Navbar = () => {
 };
 
 const Logo = () => {
-    const {isLoggedIn} = useLoggedInContext();
+    const {isLoggedIn} = useAuthcontext();
     return (
         <div className="flex w-fit items-center justify-center gap-2 p-2 pt-4
             font-bold text-mauve text-2xl">
@@ -30,7 +30,7 @@ const Logo = () => {
 }
 
 const NavLinks = () => {
-    const {logout} = useLoggedInContext();
+    const {logout} = useAuthcontext();
     const router = useRouter();
     return (
         <div className="flex items-center gap-8 px-6 text-lg transition-all">
