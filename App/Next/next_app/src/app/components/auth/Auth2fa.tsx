@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import '../../globals.css'
 import OtpInput from "./OtpInput";
 import isTwoFAValid from "./utils/isTwoFAValid";
+import SubmitBtn from "./SubmitBtn";
  
 const Auth2faComponent = ({userId}: {userId: string}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
@@ -63,14 +64,7 @@ const Auth2faComponent = ({userId}: {userId: string}) => {
 			<div className={` ${colorText} text-center`}>
 				{isVisible && <p>{message}</p>}
 			</div>
-			<button
-				className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-4 p-3`}
-				id="codeSubmit"
-				onKeyDown={(e) => handleOnKeyDown(e)}
-				onClick={handleSubmit}
-			>
-				Submit
-			</button> 
+			<SubmitBtn handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit} displayBox={true}>Submit</SubmitBtn>
 		</div>
 	);
 };
