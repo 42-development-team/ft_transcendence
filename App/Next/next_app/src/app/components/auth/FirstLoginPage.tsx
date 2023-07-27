@@ -3,9 +3,8 @@ import Image from 'next/image';
 import CustomBtn from "@/components/CustomBtn";
 import FirstLogin2faComponent from "@/components/auth/FirstLogin2fa";
 import { ChangeEvent, useState, useEffect } from 'react';
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
+const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 
     const [message, setMessage] = useState('');
     const [isVisible, setIsVisible] = useState(false);
@@ -16,7 +15,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
 
     useEffect(() => {
         try {
-            getUserName(userId.value);
+            getUserName(userId);
         } catch (error) {
             console.log(error);
         }
@@ -43,7 +42,7 @@ const FirstLoginPageComponent = ({userId}: {userId: RequestCookie}) => {
                 setWaiting2fa(false);
                 await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
                 method: "PUT",
-                body: JSON.stringify({newUsername: inputUserName, userId: userId.value}),
+                body: JSON.stringify({newUsername: inputUserName, userId: userId}),
                 headers: {
                     'Content-Type': 'application/json',
                 }
