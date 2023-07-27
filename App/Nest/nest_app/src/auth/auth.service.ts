@@ -14,8 +14,8 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
-    ) {}
-        
+    ) { }
+
     async redirectTwoFA(req: any, res: Response) {
         const frontUrl = `http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}` as string;
 
@@ -27,24 +27,24 @@ export class AuthService {
                 secure: false,
                 httpOnly: true,
             }
-            
+
             if (userDB.isFirstLogin) {
                 res.status(200)
-                .cookie("jwt", jwt.access_token, cookieOptions)
-                .redirect(`${frontUrl}/firstLogin/`);
+                    .cookie("jwt", jwt.access_token, cookieOptions)
+                    .redirect(`${frontUrl}/firstLogin/`);
                 this.changeLoginBooleanStatus(userDB);
             }
             else if (userDB.isTwoFAEnabled) {
                 res.status(200)
-                .cookie("jwt", jwt.access_token, cookieOptions)
-                .redirect(`${frontUrl}/auth/2fa`);
+                    .cookie("jwt", jwt.access_token, cookieOptions)
+                    .redirect(`${frontUrl}/auth/2fa`);
             }
             else {
                 jwt = await this.getTokens(userDB, true);
                 res.status(200)
-                .cookie("jwt", jwt.access_token, cookieOptions)
-                .cookie("rt", jwt.refresh_token, cookieOptions)
-                .redirect(`${frontUrl}/home/`);
+                    .cookie("jwt", jwt.access_token, cookieOptions)
+                    .cookie("rt", jwt.refresh_token, cookieOptions)
+                    .redirect(`${frontUrl}/home/`);
             }
         } catch (error) {
             console.log("Error: " + error.message);
@@ -66,15 +66,14 @@ export class AuthService {
             httpOnly: true,
         }
         res.clearCookie("jwt", cookieOptions)
-        .clearCookie("rt", cookieOptions)
-        .redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
-    }    
-    
-    async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
-       try {
+            .clearCookie("rt", cookieOptions)
+            .redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
+    }
 
-           const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
-           return tokens;
+    async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
+        try {
+            const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
+            return tokens;
         }
         catch (error) {
             console.log("Error:" + error.message);
@@ -93,15 +92,15 @@ export class AuthService {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtSecret'),
-                expiresIn: "30m",
-            }),
+                    expiresIn: "30m",
+                }),
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtRefreshSecret'),
-                expiresIn: "7d",
-            })
+                    expiresIn: "7d",
+                })
             ]);
-            
-            return {access_token: at, refresh_token: rt};
+
+            return { access_token: at, refresh_token: rt };
         }
         catch (error) {
             console.log(error.message);
@@ -113,14 +112,13 @@ export class AuthService {
             // get refresh token
             const token = this.extractCookieByName(req, 'rt');
             if (!token) throw UnauthorizedException;
-            
+
             const secret = this.configService.get<string>('jwtRefrehSecret');
-            const isVerify = await this.jwtService.verifyAsync(token, {secret});
-            
+            const isVerify = await this.jwtService.verifyAsync(token, { secret });
+
             return isVerify;
-            
         }
-        catch(error) {
+        catch (error) {
             console.log("Verify Refresh Token Error:", error.message);
         }
     }
@@ -132,7 +130,7 @@ export class AuthService {
         }
         return value;
     }
-    
+
     isTwoFactorAuthenticated(req: any): boolean {
         return req.user.twoFactorAuthenticated;
     }

@@ -4,10 +4,7 @@ import { useEffect } from "react"
 import { useLoggedInContext } from "../context/LoggedInContextProvider";
 
 const test = async() => {
-    const response = await fetch(`${process.env.BACK_URL}/auth/refresh/`, { credentials: 'include' });
-    await response.json().then((data) => {
-        console.log(data);
-    }).catch((error) => {
+    await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
         throw new Error("Error fetching profile: " + error.message);
     });
 }
@@ -26,6 +23,7 @@ export default function Home() {
             <button onClick={test}>
                 Refresh JWT
             </button>
+            <div className="m-4"></div>
         </div>
     )
 }

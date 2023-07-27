@@ -76,7 +76,7 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
-            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.twoFactorAuthenticated);
+            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.user.twoFactorAuthenticated);
             res.clearCookie('jwt', cookieOptions);
             res.clearCookie('rt', cookieOptions);
 

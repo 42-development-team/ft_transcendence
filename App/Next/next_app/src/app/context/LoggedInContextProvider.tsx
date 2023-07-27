@@ -37,11 +37,11 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
     const fetchProfile = async () => {
         const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
         await response.json().then((data) => {
+            console.log("fetch profile ok: " + data.login);
             let newLogin: string = data.login as string;
             setUniqueLogin(newLogin);
             let newUserId: string = data.sub as string;
             setUserId(newUserId);
-            console.log("newUserId=" + newUserId);
         }).catch((error) => {
             throw new Error("Error fetching profile: " + error.message);
         });
