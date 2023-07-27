@@ -61,7 +61,6 @@ export const LoggedInContextProvider = ({ children }: { children: React.ReactNod
         await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
             console.log("error fetching profile: " + error.message);
         });
-        window.location.href = `${process.env.FRONT_URL}/`;
         setLoggedIn(false);
         // Todo: update user status
         setUniqueLogin("");
