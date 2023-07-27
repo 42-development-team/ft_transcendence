@@ -96,3 +96,32 @@ This way, if someone have the access token fron another user it will not be allo
 Without the refresh token he can't have a new access token.
 
 It's important to use different secrets to sign the access and refresh tokens!!
+
+## What is 2FA
+
+- Two-factor authentication is an authentication method providing an additional level of security to user accounts. This system allows for the **unique identification of a user**, **reduces unauthorized access***, and **verifies that the person is indeed who they claim to be**. 
+Moreover, it decreases the possibility of a cyberattack on a weak password, for example.
+
+### How it Works
+
+- In general, two-factor authentication combines a password (**something the user knows**) and another element (**something the user possesses**) like a USB key, a fingerprint, or, in this case, a One-Time Password (OTP). 
+
+- An **OTP** is a temporary password of short duration (or single-use) that can be obtained through certain applications, SMS, or email. There are numerous algorithms that generate OTPs, but many of them use two inputs to do so: a **seed** and a **moving factor**.
+
+-The seed is a static variable created during the generation of a new account; it remains unchanged and is stored as a secret key until the account is deleted or regenerated. 
+On the other hand, the moving factor can change with each OTP request (*HOTP algorithm: HMAC-based One-time Password*) or change according to a time cycle (*TOTP: time-based OTP*).
+
+### What will we use ?
+
+- In this case, we will use TOTP, created from an authentication app like 'Google Authenticator' via a QR code.
+- Indeed HOTP is more susceptible to brute-force attacks due to its longer window than TOTP, TOTP sometimes suffers from a lag between password creation and use but is easier to implement.
+
+### What's the process ?
+
+User can **activate** the 2FA on his **first Loggin** and on his 'Settings' page application. However he can only desactivate it on the 'Settings' page.
+1. *Generation* of a QR code and registration of its secret key in the database.
+2. *Scanning the QR code* via a third-party application to register the OTP generation.
+3. *Validation of the QR code* on our app, by the 6-digit OTP password. 
+
+Once validated, it becomes impossible to modify the secret key or access the site without entering the OTP password to confirm the operation.
+OTP password is refreshed every 30 seconds.
