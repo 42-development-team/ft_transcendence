@@ -3,7 +3,7 @@ import Image from "next/image";
 const ButtonAnimation = (
 	{ 
 		imageUrl='', 
-		handleRefreshClick= ()=> {},
+		handleRefreshClick= () => {},
 		cancelActive=false,
 		refreshImage= ''
 	}

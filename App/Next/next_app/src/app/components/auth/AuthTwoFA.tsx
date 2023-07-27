@@ -2,14 +2,14 @@
 import React, {useState} from "react";
 import '../../globals.css'
 import isTwoFAValid from "./utils/isTwoFAValid";
-import Submit2FA from "./Submit2FA";
+import Submit2FA from "./SubmitTwoFA";
  
 const AuthTwoFA = ({userId}: {userId: string}) => {
-	const [isActive, setIsActive] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState('');
-	const [isVisible, setIsVisible] = useState(false);
-	const [message, setMessage] = useState('');
-	const [colorText, setColorText] = useState<string>('text-red-700');
+	const [isActive, setIsActive] 		= useState<boolean>(false);
+	const [inputValue, setInputValue] 	= useState('');
+	const [isVisible, setIsVisible] 	= useState(false);
+	const [message, setMessage] 		= useState('');
+	const [colorText, setColorText] 	= useState<string>('text-red-700');
 
 	const handleSubmit = async () => {
 		
@@ -22,17 +22,17 @@ const AuthTwoFA = ({userId}: {userId: string}) => {
 		}
 		if (isActive) {
 			setIsActive(false);
+			setIsVisible(true);
 			setColorText('text-red-700');
 			setMessage("Error: authentication failed");
-			setIsVisible(true);
 		}
 		else {
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
 			window.location.href = `${process.env.FRONT_URL}/home`;
 			setIsActive(true);
+			setIsVisible(true);
 			setColorText('text-green-400');
 			setMessage("Successfuly logged-in");
-			setIsVisible(true);
 		}
 	}
   

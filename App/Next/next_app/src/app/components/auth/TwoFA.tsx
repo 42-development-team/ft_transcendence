@@ -5,7 +5,7 @@ import '../../globals.css'
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
-import Submit2FA from "./Submit2FA";
+import Submit2FA from "./SubmitTwoFA";
 import { useEffectTimer } from "./utils/useEffectTimer";
 import ButtonAnimation from "./ButtonAnimation";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
@@ -13,20 +13,20 @@ import isTwoFAActive from "./utils/isTwoFAActive";
 
 const TwoFA = ({userId} : {userId : string}) => {
 
-	const [imageUrl, setImageUrl] = useState<string>('');
-	const [inputValue, setInputValue] = useState('');
-	const [displayBox, setDisplayBox] = useState<Boolean>(false);
-	const [isVisible, setIsVisible] = useState(false);
-	const [enableBtnText, setEnableBtnText] = useState<string>('Enable 2FA ?')
-	const [cancelDisable, setCancelDisable] = useState<boolean>(true);
-	const [message, setMessage] = useState('');
-	const [colorClick, setColor] = useState<string>('bg-mauve');
-	const [colorText, setColorText] = useState<string>('text-red-700');
-	const [activTwoFA, setActivTwoFA] = useState<boolean>(false);
-	const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
+	const [imageUrl, setImageUrl] 						= useState<string>('');
+	const [inputValue, setInputValue] 					= useState('');
+	const [displayBox, setDisplayBox] 					= useState<Boolean>(false);
+	const [isVisible, setIsVisible] 					= useState(false);
+	const [enableBtnText, setEnableBtnText] 			= useState<string>('Enable 2FA ?')
+	const [cancelDisable, setCancelDisable] 			= useState<boolean>(true);
+	const [message, setMessage] 						= useState('');
+	const [colorClick, setColor] 						= useState<string>('bg-mauve');
+	const [colorText, setColorText] 					= useState<string>('text-red-700');
+	const [activTwoFA, setActivTwoFA] 					= useState<boolean>(false);
+	const [enableBtnActivated, setEnableBtnActivated] 	= useState<boolean>(false);
 	const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
-	const [colorClickCancel	, setColorCancel] = useState<string>('bg-mauve');
-	let userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
+	const [colorClickCancel	, setColorCancel] 			= useState<string>('bg-mauve');
+	let	  userIdStorage: string | null ; //use of localstorage because all react components are reset when page is refreshed
 
 	if ( localStorage.getItem('userId') ) {
 		userIdStorage = localStorage.getItem('userId');
@@ -39,7 +39,7 @@ const TwoFA = ({userId} : {userId : string}) => {
 		}
 		const fetchData = async () => {
 			const data = await isTwoFAActive(userIdStorage as string);
-			console.log(data);
+
 			setActivTwoFA(data);
 			setDisableBtnActivated(data);
 			setEnableBtnActivated(!data);
@@ -62,14 +62,14 @@ const TwoFA = ({userId} : {userId : string}) => {
 	}
 	
 	const handleCancelClick = () => {
+		if (activTwoFA)
+		setDisableBtnActivated(true);
+		else
+			setEnableBtnActivated(true);
 		setDisplayBox(false);
+		setCancelDisable(true);
 		setImageUrl('');
 		setInputValue('');
-		setCancelDisable(true);
-		if (activTwoFA)
-				setDisableBtnActivated(true);
-		else
-				setEnableBtnActivated(true);
 		setColorCancel('bg-mauve');
 		setColor('bg-mauve');
 	}
@@ -80,9 +80,9 @@ const TwoFA = ({userId} : {userId : string}) => {
 
 	const handleDisableClick = () => {
 		setDisplayBox(true);
-		setImageUrl('');
 		setCancelDisable(false);
 		setDisableBtnActivated(false);
+		setImageUrl('');
 		setColor('bg-red');
 		setColorCancel('bg-mauve');
 	}
@@ -104,6 +104,7 @@ const TwoFA = ({userId} : {userId : string}) => {
 	const handleSubmit = async () => {
 		setEnableBtnActivated(false);
 		setDisableBtnActivated(false);
+
 		const isValid = await isTwoFAValid(inputValue, userIdStorage as string, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid)
 		{
@@ -112,6 +113,7 @@ const TwoFA = ({userId} : {userId : string}) => {
 			setMessage("Error: code doesn't match");
 			return ;
 		}
+
 		if (activTwoFA) {
 			try {
 				await turnOff();
@@ -119,28 +121,28 @@ const TwoFA = ({userId} : {userId : string}) => {
 				console.log(error);
 				return ;
 			}
-			setActivTwoFA(false);
 			setEnableBtnActivated(true);
 			setCancelDisable(true);
-			setImageUrl('');
-			setDisplayBox(false);
-			setMessage("Two Factor Auth disabled");
 			setIsVisible(true);
+			setActivTwoFA(false);
+			setDisplayBox(false);
+			setImageUrl('');
 			setColor('bg-mauve');
 			setColorText('text-green-700');
 			setEnableBtnText('Enable 2FA ?');
+			setMessage("Two Factor Auth disabled");
 		}
 		else {
 			setActivTwoFA(true);
 			setDisableBtnActivated(true);
-			setEnableBtnText('2FA enabled');
 			setCancelDisable(true);
-			setImageUrl('');
-			setDisplayBox(false);
-			setMessage("Two Factor Auth enabled");
 			setIsVisible(true);
+			setDisplayBox(false);
+			setImageUrl('');
 			setColor('bg-mauve');
 			setColorText('text-green-700');
+			setEnableBtnText('2FA enabled');
+			setMessage("Two Factor Auth enabled");
 		}
 	}
 

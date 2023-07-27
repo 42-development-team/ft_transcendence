@@ -26,6 +26,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             method: "GET",
         });
         const data = await response.json();
+        
         setPlaceHolder(data.username);
         inputUserName = data.username;
     }
@@ -75,15 +76,16 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             });
             const isUserAlreadyTaken = await response.json();
             const isUsernameSameAsCurrent = inputUserName === placeHolder;
+
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
-                setMessage("Username already taken");
                 setValidateEnabled(false);
                 setIsVisible(true);
+                setMessage("Username already taken");
             }
             else {
-                setMessage("Username available");
                 setIsVisible(true);
                 setValidateEnabled(true);
+                setMessage("Username available");
             }
         } catch (error) { 
             console.log(error);
