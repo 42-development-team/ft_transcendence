@@ -3,14 +3,8 @@ import ChatBar from "@/components/chat/ChatBar"
 import { useEffect } from "react"
 import { useAuthcontext } from "../context/AuthContext";
 
-const test = async() => {
-    await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
-        throw new Error("Error fetching profile: " + error.message);
-    });
-}
-
 export default function Home() {
-    const {login} = useAuthcontext();
+    const {login, refreshJWT} = useAuthcontext();
     useEffect(() => {
         login();
     }, []);
@@ -20,7 +14,7 @@ export default function Home() {
             <div className="w-full p-4 h-full">
                 <a > You should land here after successful login </a>
             </div>
-            <button onClick={test}>
+            <button onClick={refreshJWT}>
                 Refresh JWT
             </button>
             <div className="m-4"></div>

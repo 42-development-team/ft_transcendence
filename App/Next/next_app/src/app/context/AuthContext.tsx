@@ -8,6 +8,7 @@ type AuthContextType = {
     logout: () => void;
     uniqueLogin: string;
     userId: string;
+    refreshJWT: () => void;
 }
 
 const AuthContextDefaultValues: AuthContextType = {
@@ -16,6 +17,7 @@ const AuthContextDefaultValues: AuthContextType = {
     logout: () => { },
     uniqueLogin: "",
     userId: "",
+    refreshJWT: async () => { },
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
@@ -46,6 +48,13 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         });
     }
 
+    const refreshJWT = async () => {
+        console.log("refreshJWT");
+        await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
+            throw new Error("Error fetching profile: " + error.message);
+        });
+    }
+
     const login = async () => {
         // Todo: update user status
         setLoggedIn(true);
@@ -66,7 +75,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT }}>
             {children}
         </AuthContext.Provider>
     )
