@@ -1,14 +1,12 @@
-import { Controller, Get, Body, Req, Res, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus, Put, Param} from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Public } from './public.routes';
-import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Tokens } from './types/token.type';
-import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id.decorator';
+import { UsersService } from 'src/users/users.service';
+import {FirstLoginDto} from './dto/firstLoginDto';
 
 
 
@@ -17,10 +15,8 @@ import { GetAuthBoolean } from 'src/common/custom-decorators/get-current-user-id
 export class AuthController {
 
     constructor(
-        private configService: ConfigService,
         private authService: AuthService,
-        private jwtService: JwtService,
-        private prisma: PrismaService
+        private userService: UsersService,
     ) {}
 
     @Public()
