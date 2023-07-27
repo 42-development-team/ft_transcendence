@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 
 const useEffectTimer = (isVisible: boolean, delay: number, setIsVisible: React.Dispatch<React.SetStateAction<boolean>>) => {

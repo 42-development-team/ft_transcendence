@@ -4,7 +4,7 @@ import '../../globals.css'
 import isTwoFAValid from "./utils/isTwoFAValid";
 import Submit2FA from "./Submit2FA";
  
-const Auth2faComponent = ({userId}: {userId: string}) => {
+const AuthTwoFA = ({userId}: {userId: string}) => {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
@@ -66,4 +66,4 @@ const Auth2faComponent = ({userId}: {userId: string}) => {
 	);
 };
 
-export default Auth2faComponent;
+export default AuthTwoFA;

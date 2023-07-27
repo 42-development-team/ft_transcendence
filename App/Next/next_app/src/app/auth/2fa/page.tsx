@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation'
-import Auth2faComponent from "../../components/auth/Auth2fa";
+import AuthTwoFA from "../../components/auth/AuthTwoFA";
 import getJwt from '@/app/utils/getJwt';
 
 export default async function TwoFAAuth() {
@@ -13,7 +13,7 @@ export default async function TwoFAAuth() {
 
     return (
         <div className="flex flex-col flex-auto items-center justify-center">
-            <Auth2faComponent userId={payload.sub}></Auth2faComponent>
+            <AuthTwoFA userId={payload.sub}></AuthTwoFA>
         </div>
     )
 }

@@ -5,14 +5,13 @@ import '../../globals.css'
 import QrCodeDisplay from "./QrCodeDisplay";
 import isTwoFAValid from "./utils/isTwoFAValid";
 import generateTwoFA from "./utils/generateTwoFA";
-import { useLoggedInContext } from "@/app/context/LoggedInContextProvider";
 import Submit2FA from "./Submit2FA";
 import { useEffectTimer } from "./utils/useEffectTimer";
 import ButtonAnimation from "./ButtonAnimation";
 import refreshImage from '../../../../public/refresh-icon-10834.svg';
 import isTwoFAActive from "./utils/isTwoFAActive";
 
-const Settings2faComponent = () => {
+const TwoFA = ({userId} : {userId : string}) => {
 
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const [inputValue, setInputValue] = useState('');
@@ -23,7 +22,6 @@ const Settings2faComponent = () => {
 	const [message, setMessage] = useState('');
 	const [colorClick, setColor] = useState<string>('bg-mauve');
 	const [colorText, setColorText] = useState<string>('text-red-700');
-	const {userId} = useLoggedInContext();
 	const [activTwoFA, setActivTwoFA] = useState<boolean>(false);
 	const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
 	const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
@@ -130,10 +128,12 @@ const Settings2faComponent = () => {
 			setIsVisible(true);
 			setColor('bg-mauve');
 			setColorText('text-green-700');
+			setEnableBtnText('Enable 2FA ?');
 		}
 		else {
 			setActivTwoFA(true);
 			setDisableBtnActivated(true);
+			setEnableBtnText('2FA enabled');
 			setCancelDisable(true);
 			setImageUrl('');
 			setDisplayBox(false);
@@ -194,7 +194,7 @@ const Settings2faComponent = () => {
 				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center">
-				<div className="ml-12 flex-shrink self-center">
+				<div className="ml-12 my-4 flex-shrink self-center">
 					<QrCodeDisplay
 						imageUrl={imageUrl}
 						displayBox={displayBox}>
@@ -221,4 +221,5 @@ const Settings2faComponent = () => {
 	);
 };
 
-export default Settings2faComponent;
+export default TwoFA;
+
