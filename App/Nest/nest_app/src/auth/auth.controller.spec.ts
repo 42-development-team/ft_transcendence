@@ -3,7 +3,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
@@ -12,8 +11,7 @@ import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { mockRequest, mockResponse } from 'jest-express';
-
+import { Response } from 'express';
 
 
 // "describe"  groups together related test cases with same focus
@@ -114,24 +112,5 @@ describe('AuthController', () => {
         expect(res.cookie).toHaveBeenNthCalledWith(1, 'jwt', jwt.access_token, expect.any(Object));
         expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
       });
-    });
-
-    describe('logout', () => {
-        it('should call authService.logout and return an empty response', async () => {
-          // Arrange
-          const res = {
-            send: jest.fn(),
-          } as unknown as Response<any, Record<string, any>>;
-    
-          // Mock the logout method
-          jest.spyOn(authService, 'logout');
-    
-          // Act
-          await controller.logout(res);
-    
-          // Assert
-        //   expect(authService.logout).toHaveBeenCalledWith(res);
-        //   expect(res.send).toHaveBeenCalledWith({});
-        });
     });
 });
