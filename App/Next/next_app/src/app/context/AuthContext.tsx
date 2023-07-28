@@ -1,7 +1,6 @@
 "use client";
 import { useContext, createContext, useState, useEffect } from "react";
 
-// Note: we also need username ? Replace "PROFILE" text by "username"
 type AuthContextType = {
     isLoggedIn: boolean;
     login: () => void;
@@ -29,7 +28,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
 
-    // Debug logs
     useEffect(() => {
         const intervalId = setInterval(() => {
             console.log("interval triggered: " + Date.now() / 1000);
@@ -59,7 +57,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }
 
     const refreshJWT = async () => {
-        console.log("refreshJWT");
         await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
             console.log("Error fetching profile: " + error.message);
             logout();
@@ -76,7 +73,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
     const logout = async () => {
         await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
-            console.log("error fetching profile: " + error.message);
+            console.log("error fetching logout: " + error.message);
         });
         setLoggedIn(false);
         // Todo: update user status
