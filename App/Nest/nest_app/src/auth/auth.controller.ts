@@ -46,8 +46,9 @@ export class AuthController {
                 httpOnly: true,
             }
             const jwt = await this.authService.getTokens(req.user, true);
-            res.clearCookie("jwt")
-            .cookie("jwt", jwt.access_token, cookieOptions)
+            // res.clearCookie("jwt") // => not needed because 
+            // res.cookie automatically overwrites the existing cookie with the same name
+            res.cookie("jwt", jwt.access_token, cookieOptions)
             .cookie("rt", jwt.refresh_token, cookieOptions);
         }
         catch (error) {

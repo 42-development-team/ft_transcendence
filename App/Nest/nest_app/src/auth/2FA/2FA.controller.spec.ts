@@ -1,4 +1,3 @@
-// Import necessary dependencies and modules for testing
 import { Test } from '@nestjs/testing';
 import { TwoFAController } from './2FA.controller';
 import { TwoFAService } from './2FA.service';
@@ -7,7 +6,6 @@ import { TwoFADto } from './dto/TwoFactor.dto';
 import { Response } from 'express';
 import * as qrcode from 'qrcode';
 
-// Mock TwoFAService and ConfigService
 jest.mock('./2FA.service');
 jest.mock('@nestjs/config');
 
@@ -29,7 +27,7 @@ describe('TwoFAController', () => {
 
   describe('turnOnTwoFa', () => {
     it('should generate and return a QR code URL', async () => {
-      // Mocking necessary dependencies
+      // Arrange
       const userId = 123;
       const qrCodeUrl = 'mocked-qr-code-url';
       const base64Qrcode = 'mocked-base64-qrcode';
@@ -42,8 +40,10 @@ describe('TwoFAController', () => {
         send: jest.fn(),
       } as unknown as Response;
 
+      // Act
       await controller.turnOnTwoFa(response, twoFADto);
 
+      // Assert
       expect(twoFAService.generateTwoFA).toHaveBeenCalledWith(userId);
       expect(qrcode.toDataURL).toHaveBeenCalledWith(qrCodeUrl);
       expect(response.send).toHaveBeenCalledWith({
@@ -55,6 +55,7 @@ describe('TwoFAController', () => {
 
   describe('isActive', () => {
     it('should check if TwoFA is enabled for a user', async () => {
+      // Arrange
       const userId = '123';
       const response = {
         send: jest.fn(),
@@ -62,14 +63,17 @@ describe('TwoFAController', () => {
 
       jest.spyOn(twoFAService, 'isTwoFAEnabled').mockResolvedValue(undefined);
 
+      // Act
       await controller.isActive(userId, response);
 
+      // Assert
       expect(twoFAService.isTwoFAEnabled).toHaveBeenCalledWith(response, parseInt(userId));
     });
   });
 
   describe('TwoFAAuthRedirect', () => {
     it('should redirect to the specified URL', async () => {
+      // Arrange
       const frontPort = '3000';
       const ip = 'localhost';
       const url = `http://${ip}:${frontPort}/firstLogin`;
@@ -84,14 +88,17 @@ describe('TwoFAController', () => {
         redirect: jest.fn(),
       } as unknown as Response;
 
+      // Act
       await controller.TwoFAAuthRedirect(response);
 
+      // Assert
       expect(response.redirect).toHaveBeenCalledWith(url);
     });
   });
 
   describe('verifyTwoFA', () => {
     it('should verify the provided TwoFA code for a user', async () => {
+      // Arrange
       const userId = 123;
       const code = '123456';
       const isValid = true;
@@ -103,8 +110,10 @@ describe('TwoFAController', () => {
         send: jest.fn(),
       } as unknown as Response;
 
+      // Act
       await controller.verifyTwoFA(response, twoFADto);
 
+      // Assert
       expect(twoFAService.isTwoFACodeValid).toHaveBeenCalledWith(code, userId);
       expect(response.send).toHaveBeenCalledWith(isValid);
     });
@@ -112,13 +121,16 @@ describe('TwoFAController', () => {
 
   describe('turnOffTwoFA', () => {
     it('should turn off TwoFA for a user', async () => {
+      // Arrange
       const userId = '123';
       const twoFADto: TwoFADto = { userId };
 
       jest.spyOn(twoFAService, 'turnOff').mockResolvedValue(undefined);
 
+      // Act
       await controller.turnOffTwoFA(twoFADto);
 
+      // Assert
       expect(twoFAService.turnOff).toHaveBeenCalledWith(parseInt(userId));
     });
   });
