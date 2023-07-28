@@ -53,15 +53,16 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             }
         }
         catch (error) {
-            // Todo: logout on error
-            throw new Error("Error fetching profile: " + error);
+            console.log("Error fetching profile: " + error);
+            logout();
         };
     }
 
     const refreshJWT = async () => {
         console.log("refreshJWT");
         await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
-            throw new Error("Error fetching profile: " + error.message);
+            console.log("Error fetching profile: " + error.message);
+            logout();
         });
     }
 
