@@ -72,7 +72,6 @@ describe('AuthController', () => {
         // This involves making assertions about the actual output 
         // against the expected outcome.
         expect(authService.redirectTwoFA).toHaveBeenCalledWith(req, res);
-        // expect(res.send).toHaveBeenCalled();
     });
 
     
