@@ -3,7 +3,6 @@ import React from "react";
 import {AuthContextProvider} from "@/app/context/AuthContext";
 import Navbar from "@/components/navbar/Navbar";
 import { ChatBarContextProvider } from './context/ChatBarContextProvider';
-import { getJWTCookie } from './utils/cookies';
 
 export const metadata = {
   title: 'Pongolin',

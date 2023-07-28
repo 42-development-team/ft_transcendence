@@ -1,16 +1,16 @@
 "use client";
 import Image from 'next/image';
 import CustomBtn from "@/components/CustomBtn";
-import FirstLogin2faComponent from "@/components/auth/FirstLogin2fa";
+import TwoFA from "@/app/components/auth/TwoFA";
 import { ChangeEvent, useState, useEffect } from 'react';
 
 const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 
-    const [message, setMessage] = useState('');
-    const [isVisible, setIsVisible] = useState(false);
+    const [message, setMessage]                 = useState('');
+    const [isVisible, setIsVisible]             = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
-    const [placeHolder, setPlaceHolder] = useState('');
-    const [waiting2fa, setWaiting2fa] = useState(true);
+    const [placeHolder, setPlaceHolder]         = useState('');
+    const [waiting2fa, setWaiting2fa]           = useState(true);
     let inputUserName: string;
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             method: "GET",
         });
         const data = await response.json();
+        
         setPlaceHolder(data.username);
         inputUserName = data.username;
     }
@@ -57,7 +58,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
             inputUserName = e.target.value;
-            console.log("inputValue-AfterSet: " + inputUserName);
             if (e.target.value === "") {
                 setValidateEnabled(true);
                 inputUserName = placeHolder;
@@ -70,21 +70,22 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                 setIsVisible(true);
                 return ;
             }
+            
             const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
             const isUserAlreadyTaken = await response.json();
             const isUsernameSameAsCurrent = inputUserName === placeHolder;
-            console.log("response: " + isUserAlreadyTaken);
+
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
-                setMessage("Username already taken");
                 setValidateEnabled(false);
                 setIsVisible(true);
+                setMessage("Username already taken");
             }
             else {
-                setMessage("Username available");
                 setIsVisible(true);
                 setValidateEnabled(true);
+                setMessage("Username available");
             }
         } catch (error) { 
             console.log(error);
@@ -97,6 +98,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             <div className="m-4 pt-4">
                 <p className="font-bold text-center">Choose your username</p>
                 <input
+                	id="username"
                     onChange={(e) => handleOnChange(e)}
                     placeholder={placeHolder}
                     inputMode='text'
@@ -128,7 +130,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             {
                 waiting2fa &&
                 <div className="flex flex-col flex-auto items-center justify-center">
-                    <FirstLogin2faComponent userId={userId}></FirstLogin2faComponent>
+                    <TwoFA userId={userId}></TwoFA>
                 </div>
             }
             <CustomBtn disable={!validateEnabled} onClick={handleClick}>

@@ -8,7 +8,6 @@ import { JwtStrategy } from './strategies/jwt-strat';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { APP_GUARD } from '@nestjs/core';
-import { TwoFAController } from './2FA/2FA.controller';
 import { TwoFAModule } from './2FA/2FA.module';
 import { ConfigService } from '@nestjs/config';
 

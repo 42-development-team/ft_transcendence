@@ -66,10 +66,10 @@ export class AuthService {
             httpOnly: true,
         }
         res.clearCookie("jwt", cookieOptions)
-            .clearCookie("rt", cookieOptions)
-            .redirect(`${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}`);
-    }
-
+        .clearCookie("rt", cookieOptions)
+        .send();
+    }    
+    
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
             const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
@@ -92,8 +92,8 @@ export class AuthService {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtSecret'),
-                    expiresIn: "30m",
-                }),
+                expiresIn: "30m",
+            }),
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtRefreshSecret'),
                     expiresIn: "7d",
