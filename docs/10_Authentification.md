@@ -97,31 +97,52 @@ Without the refresh token he can't have a new access token.
 
 It's important to use different secrets to sign the access and refresh tokens!!
 
-## What is 2FA
+## Two Factor Authentication (2FA)
+### What is 2FA ?
 
-- Two-factor authentication is an authentication method providing an additional level of security to user accounts. This system allows for the **unique identification of a user**, **reduces unauthorized access***, and **verifies that the person is indeed who they claim to be**. 
+- Two-factor authentication is an authentication method providing an additional level of security to user accounts. This system allows for the **unique identification** of a user, **reduces unauthorized access**, and verifies that the **person** is indeed **who they claim to be**. <br>
 Moreover, it decreases the possibility of a cyberattack on a weak password, for example.
 
 ### How it Works
 
-- In general, two-factor authentication combines a password (**something the user knows**) and another element (**something the user possesses**) like a USB key, a fingerprint, or, in this case, a One-Time Password (OTP). 
+- In general, two-factor authentication combines a password (**something the user knows**) and another element (**something the user possesses**) like a USB key, a fingerprint, or, in this case, a *One-Time Password (OTP)*. 
 
-- An **OTP** is a temporary password of short duration (or single-use) that can be obtained through certain applications, SMS, or email. There are numerous algorithms that generate OTPs, but many of them use two inputs to do so: a **seed** and a **moving factor**.
+- An **OTP** is a temporary password of short duration (or **single-use**) that can be obtained through certain applications, SMS, or email. There are numerous algorithms that generate OTPs, but many of them use **two inputs** to do so: a **seed** and a **moving factor**.
 
--The seed is a static variable created during the generation of a new account; it remains unchanged and is stored as a secret key until the account is deleted or regenerated. 
-On the other hand, the moving factor can change with each OTP request (*HOTP algorithm: HMAC-based One-time Password*) or change according to a time cycle (*TOTP: time-based OTP*).
+- The **seed** is a **static variable** created during the generation of a new account; it remains unchanged and is **stored as a secret key** until the account is deleted or regenerated. 
+On the other hand, the **moving factor** can change with **each OTP request** (***HOTP** algorithm: HMAC-based One-time Password*) or change according to a **time cycle** (***TOTP**: time-based OTP*).
 
 ### What will we use ?
 
-- In this case, we will use TOTP, created from an authentication app like 'Google Authenticator' via a QR code.
-- Indeed HOTP is more susceptible to brute-force attacks due to its longer window than TOTP, TOTP sometimes suffers from a lag between password creation and use but is easier to implement.
+- In this case, we will use **TOTP**, created from an authentication app like 'Google Authenticator' via a **QR code**.
+- Indeed HOTP is more susceptible to brute-force attacks due to its longer window than TOTP, TOTP sometimes suffers from a lag between password creation and use, but is easier to implement.
 
 ### What's the process ?
 
-User can **activate** the 2FA on his **first Loggin** and on his 'Settings' page application. However he can only desactivate it on the 'Settings' page.
-1. *Generation* of a QR code and registration of its secret key in the database.
-2. *Scanning the QR code* via a third-party application to register the OTP generation.
-3. *Validation of the QR code* on our app, by the 6-digit OTP password. 
+User can **activate** the 2FA on his **first Loggin** and on his **'Settings'** page application. However he can only **desactivate** it on the **'Settings'** page.
+1. *Generation* of a QR code (via the [*OTP library*](https://www.npmjs.com/package/otplib#hotp-options "Official OTPlib Page")) and **registration** of its secret key in the **database**.
+2. *Scanning* the QR code via a third-party application (**Google authenticator** for example) to launch the OTP generation.
+3. *Validation* of the QR code on our app, by the 6-digit OTP password. 
 
-Once validated, it becomes impossible to modify the secret key or access the site without entering the OTP password to confirm the operation.
-OTP password is refreshed every 30 seconds.
+**Once validated**, it becomes **impossible** to modify the secret key or access the site without entering the OTP password to confirm the operation.<br>
+The OTP password is refreshed every 30 seconds.
+
+#### <u>Logic Code on **Settings** :</u> <br>
+1. **OnLoad: isTwoFAEnabled**: Check if 2FA is activated (For now, UserId is stocked in localStorage to avoid Context reset on refreshed page).
+    1. *Yes*: User can only Disable it
+    2. *No*: User can only Enable it
+2. **Disable/Enable**
+    1. Request database to verify Code
+        1. Verified: 'isEnabled/disabled' changed accordingly -> Message success Display
+        2. Not Verified: Error Message display -> max try limit not set for now.
+3. **Button are set accordingly**
+
+#### <u>Logic Code on **FirstLogin** : </u><br>
+
+Almost the same as Logic Code on Settings: Steps **2** *(only enable button)* **to 3**.
+
+###### Main 2FA files :
+    - 'Auth Module' in Nest app.
+    - '2FA Module' in Nest app.
+    - 'FirstLogin Page' in Nest app.
+    - 'Settings Page' in Nest app.
