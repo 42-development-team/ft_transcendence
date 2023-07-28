@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus, Put, Param} from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
@@ -6,10 +6,6 @@ import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from 'src/users/users.service';
-import {FirstLoginDto} from './dto/firstLoginDto';
-
-
-
 
 @Controller('auth')
 export class AuthController {
@@ -78,9 +74,9 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
-            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.twoFactorAuthenticated);
-            res.clearCookie('jwt', cookieOptions)
-            .clearCookie('rt', cookieOptions);
+            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.user.twoFactorAuthenticated);
+            res.clearCookie('jwt', cookieOptions);
+            res.clearCookie('rt', cookieOptions);
 
             res.cookie('jwt', tokenObject.access_token, cookieOptions);
             res.cookie('rt', tokenObject.refresh_token, cookieOptions);
@@ -100,40 +96,4 @@ export class AuthController {
         else
             console.log("You didn't validate 2fa process");
     }
-
-    @Public()
-    @Get('firstLogin/doesUserNameExist/:username')
-	async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
-		try {
-			const userDB = await this.userService.getUserFromUsername(username);
-			if (userDB) {
-				console.log('user exists');
-				return true;
-			}
-			else
-				return false;
-		} catch (error) {
-			throw new Error("Error fetching user in first login: " + error);
-		}
-	}
-
-    @Public()
-	@Put('firstLogin/updateUsername')
-	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-		try {
-			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
-		} catch (error) {
-			return error;
-		}
-	}
-
-    @Public()
-	@Get('firstLogin/getUser/:userId')
-	async getUserByName(@Param('userId') userId: string): Promise<any> {
-		try {;
-			return await this.userService.getUserFromId(Number(userId));
-		} catch (error) {
-			return error;
-		}
-	}
 }

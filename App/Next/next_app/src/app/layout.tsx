@@ -1,6 +1,6 @@
 import './globals.css'
 import React from "react";
-import {LoggedInContextProvider} from "@/context/LoggedInContextProvider";
+import {AuthContextProvider} from "@/app/context/AuthContext";
 import Navbar from "@/components/navbar/Navbar";
 import { ChatBarContextProvider } from './context/ChatBarContextProvider';
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col h-screen">
-          <LoggedInContextProvider>
+          <AuthContextProvider>
             <ChatBarContextProvider>
               <Navbar />
               {/* <div className='flex flex-col flex-auto items-stretch'> */}
@@ -28,7 +28,7 @@ export default function RootLayout({
               </div>
               {/* <p>{jwt?.value}</p> */}
             </ChatBarContextProvider>
-          </LoggedInContextProvider>
+          </AuthContextProvider>
       </body>
     </html>
   )
