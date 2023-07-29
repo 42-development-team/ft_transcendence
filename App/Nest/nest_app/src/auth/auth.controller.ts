@@ -69,33 +69,66 @@ export class AuthController {
         }
     }
 
+    // @Get('refresh')
+    // async generateNewTokens(@Req() req: any, @Res() res: Response) {
+    //     try {
+    //         const verified = await this.authService.verifyRefreshToken(req,  res);
+    //         if (!verified) throw new UnauthorizedException('Invalid refresh token');
+
+    //         const cookieOptions = {
+    //             expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    //             secure: false,
+    //             httpOnly: true,
+    //         }
+    //         const tokenObject: Tokens = await this.authService.getTokens(req.user, req.user.twoFactorAuthenticated);
+    //         // res.clearCookie('jwt', cookieOptions);
+    //         // res.clearCookie('rt', cookieOptions);
+
+    //         res.cookie('jwt', tokenObject.access_token, cookieOptions);
+    //         res.cookie('rt', tokenObject.refresh_token, cookieOptions);
+    //         res.send();
+    //     }
+    //     catch(error) {
+    //         console.log("Generate New Tokens Error:", error.message);
+    //         if (error instanceof UnauthorizedException){
+    //             res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized' + error.message) // error 401
+    //             return;
+    //         } // which is thrown in the verifyRefreshToken method
+    //         else{
+    //             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while generating new tokens.');
+    //             throw error;
+    //         }
+    //     }
+    // }
+
     @Get('refresh')
     async generateNewTokens(@Req() req: any, @Res() res: Response) {
         try {
-            const verified = await this.authService.verifyRefreshToken(req,  res);
-            if (!verified) throw new UnauthorizedException('Invalid refresh token');
+            const payload = await this.authService.verifyRefreshToken(req,  res);
+            // console.log('payload:', payload);
+            if (!payload) throw new UnauthorizedException('Invalid refresh token');
 
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
                 httpOnly: true,
             }
-            const tokenObject: Tokens = await this.authService.getTokens(req.user, req.user.twoFactorAuthenticated);
-            // res.clearCookie('jwt', cookieOptions);
-            // res.clearCookie('rt', cookieOptions);
+            const tokenObject: Tokens = await this.authService.getTokens(payload, payload.twoFactorAuthenticated);
 
             res.cookie('jwt', tokenObject.access_token, cookieOptions);
             res.cookie('rt', tokenObject.refresh_token, cookieOptions);
             res.send();
-        }
-        catch(error) {
+        } catch (error) {
             console.log("Generate New Tokens Error:", error.message);
-            if (error instanceof UnauthorizedException) // which is thrown in the verifyRefreshToken method
+            if (error instanceof UnauthorizedException) {
                 res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized' + error.message) // error 401
-            else
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while generating new tokens.');
+            } else {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while generating new tokens.');
+                throw error;
+            }
         }
     }
+
 
     @Get('profile')
     getProfile(@Req() req, @Res() res: Response) {

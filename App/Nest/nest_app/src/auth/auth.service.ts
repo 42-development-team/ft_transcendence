@@ -114,26 +114,47 @@ export class AuthService {
         }
     }
 
-    async verifyRefreshToken(req: any, res: Response) {
+    // async verifyRefreshToken(req: any, res: Response): Promise<boolean> {
+    //     try {
+    //         // Get the refresh token
+    //         const token = this.extractCookieByName(req, 'rt');
+    //         if (!token) {
+    //             throw new UnauthorizedException('Refresh token not found');
+    //         }
+    
+    //         const secret = this.configService.get<string>('jwtRefrehSecret');
+    //         const isVerify = await this.jwtService.verifyAsync(token, { secret });
+    
+    //         // If the token is not verified, throw an error
+    //         if (!isVerify) {
+    //             throw new UnauthorizedException('Invalid refresh token');
+    //         }
+    
+    //         return true; // Return true if the token is verified
+    //     } catch (error) {
+    //         console.log("Verify Refresh Token Error:", error.message);
+    //         throw error; // Rethrow the error to propagate it to the calling function
+    //     }
+    // }
+
+    async verifyRefreshToken(req: any, res: Response): Promise<any> {
         try {
-            // get refresh token
+            // Get the refresh token
             const token = this.extractCookieByName(req, 'rt');
             if (!token) {
                 throw new UnauthorizedException('Refresh token not found');
             }
+    
             const secret = this.configService.get<string>('jwtRefrehSecret');
-            const isVerify = await this.jwtService.verifyAsync(token, { secret });
-
-            if (!isVerify) {
-                throw new UnauthorizedException('Invalid refresh token');
-            }
-            return isVerify;
-        }
-        catch (error) {
+            const payload = await this.jwtService.verifyAsync(token, { secret });
+            return payload; // Return the payload if the token is verified
+        } catch (error) {
             console.log("Verify Refresh Token Error:", error.message);
-            throw new UnauthorizedException('Failed to verify refresh token');
+            throw new UnauthorizedException('Invalid refresh token');
         }
     }
+    
+    
 
     extractCookieByName(req: any, cookieName: string): string {
         let value: string | null = null;
