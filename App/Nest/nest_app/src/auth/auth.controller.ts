@@ -71,7 +71,7 @@ export class AuthController {
     async generateNewTokens(@Req() req: any, @Res() res: Response) {
         try {
             const verified = this.authService.verifyRefreshToken(req,  res);
-            if (!verified) throw UnauthorizedException;
+            if (!verified) throw new UnauthorizedException;
 
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
@@ -79,8 +79,8 @@ export class AuthController {
                 httpOnly: true,
             }
             const tokenObject: Tokens = await this.authService.getTokens(req.user, req.user.twoFactorAuthenticated);
-            res.clearCookie('jwt', cookieOptions);
-            res.clearCookie('rt', cookieOptions);
+            // res.clearCookie('jwt', cookieOptions);
+            // res.clearCookie('rt', cookieOptions);
 
             res.cookie('jwt', tokenObject.access_token, cookieOptions);
             res.cookie('rt', tokenObject.refresh_token, cookieOptions);
