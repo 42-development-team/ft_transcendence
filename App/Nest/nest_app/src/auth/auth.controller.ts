@@ -60,17 +60,19 @@ export class AuthController {
     @Get('logout')
     async logout(@Res() res: Response) {
         try {
-            this.authService.logout(res);
+            await this.authService.logout(res);
+            res.send('Logged out successfully.');
         }
         catch (error) {
             console.log(error.message);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred during logout.');
         }
     }
 
     @Get('refresh')
     async generateNewTokens(@Req() req: any, @Res() res: Response) {
         try {
-            const verified = this.authService.verifyRefreshToken(req,  res);
+            const verified = await this.authService.verifyRefreshToken(req,  res);
             if (!verified) throw new UnauthorizedException('Invalid refresh token');
 
             const cookieOptions = {

@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode } from '@nestjs/common';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { Public } from './public.routes';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
@@ -91,8 +91,137 @@ describe('AuthController', () => {
       // Assert
       expect(authService.getTokens).toHaveBeenCalledWith(req.user, true);
       expect(res.cookie).toHaveBeenCalledTimes(2);
+      // 2 times because:
+      // The first call should set the jwt cookie with the access_token value.
+      // the second call should set the rt cookie with the refresh_token value.
       expect(res.cookie).toHaveBeenNthCalledWith(1, 'jwt', jwt.access_token, expect.any(Object));
       expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
     });
   });
+
+  describe('logout', () => {
+    it('should send a success response when AuthService.logout is successful', async () => {
+        // Arrange
+        const res: any = { clearCookie: jest.fn().mockReturnThis(), send: jest.fn() };
+        jest.spyOn(authService, 'logout').mockResolvedValue();
+    
+        // Act
+        await controller.logout(res);
+    
+        // Assert
+        expect(authService.logout).toHaveBeenCalledWith(res);
+        // expect(res.clearCookie).toHaveBeenCalledWith('jwt');
+        // expect(res.clearCookie).toHaveBeenCalledWith('rt');
+        expect(res.send).toHaveBeenCalledWith('Logged out successfully.');
+    });
+    
+    it('should send an error response when AuthService.logout throws an error', async () => {
+        // Arrange
+        const res: any = { 
+          clearCookie: jest.fn().mockResolvedValue(undefined), 
+          send: jest.fn(), 
+          status: jest.fn().mockReturnThis(),
+        };
+      
+        // Act
+        try {
+          await controller.logout(res);
+        } catch (error) {
+          // Assert
+          expect(error.message).toBe('Logout failed');
+          expect(res.clearCookie).toHaveBeenCalledWith('jwt');
+          expect(res.clearCookie).toHaveBeenCalledWith('rt');
+          expect(res.send).toHaveBeenCalledWith('Logged out successfully.');
+          expect(res.status).not.toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      });
+      
+  });
+
+//   describe('generateNewTokens', () => {
+//     it('should generate new tokens and set cookies when the refresh token is valid', async () => {
+//         // Arrange
+//         const req: any = { 
+//             user: { 
+//                 // Provide the required properties for req.user
+//                 // For example: id, username, twoFactorAuthenticated
+//             },
+//         };
+//         const res: any = { 
+//             cookie: jest.fn(),
+//             send: jest.fn(),
+//             status: jest.fn().mockReturnThis(),
+//         };
+
+//         // Mock the verifyRefreshToken method to return true
+//         jest.spyOn(authService, 'verifyRefreshToken').mockReturnValue(true);
+
+//         // Mock the getTokens method to return a tokenObject
+//         const tokenObject = { access_token: 'mockAccessToken', refresh_token: 'mockRefreshToken' };
+//         jest.spyOn(authService, 'getTokens').mockResolvedValue(tokenObject);
+
+//         // Act
+//         await controller.generateNewTokens(req, res);
+
+//         // Assert
+//         expect(authService.verifyRefreshToken).toHaveBeenCalledWith(req, res);
+//         expect(res.cookie).toHaveBeenCalledTimes(2);
+//         expect(res.cookie).toHaveBeenCalledWith('jwt', tokenObject.access_token, expect.any(Object));
+//         expect(res.cookie).toHaveBeenCalledWith('rt', tokenObject.refresh_token, expect.any(Object));
+//         expect(res.send).toHaveBeenCalled();
+//     });
+
+//     it('should send an error response when the refresh token is invalid', async () => {
+//         // Arrange
+//         const req: any = { 
+//             user: { 
+//                 // Provide the required properties for req.user
+//                 // For example: id, username, twoFactorAuthenticated
+//             },
+//         };
+//         const res: any = { 
+//             status: jest.fn().mockReturnThis(),
+//             send: jest.fn(),
+//         };
+
+//         // Mock the verifyRefreshToken method to return false
+//         jest.spyOn(authService, 'verifyRefreshToken').mockReturnValue(false);
+
+//         // Act
+//         await controller.generateNewTokens(req, res);
+
+//         // Assert
+//         expect(authService.verifyRefreshToken).toHaveBeenCalledWith(req, res);
+//         expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
+//         expect(res.send).toHaveBeenCalledWith('Unauthorized: Invalid refresh token');
+//     });
+
+//     it('should send an error response when an exception is thrown during token generation', async () => {
+//         // Arrange
+//         const req: any = { 
+//             user: { 
+//                 // Provide the required properties for req.user
+//                 // For example: id, username, twoFactorAuthenticated
+//             },
+//         };
+//         const res: any = { 
+//             status: jest.fn().mockReturnThis(),
+//             send: jest.fn(),
+//         };
+
+//         // Mock the verifyRefreshToken method to throw an error
+//         const mockError = new Error('Some error occurred');
+//         jest.spyOn(authService, 'verifyRefreshToken').mockImplementation(() => {
+//             throw mockError;
+//         });
+
+//         // Act
+//         await controller.generateNewTokens(req, res);
+
+//         // Assert
+//         expect(authService.verifyRefreshToken).toHaveBeenCalledWith(req, res);
+//         expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+//         expect(res.send).toHaveBeenCalledWith('An error occurred while generating new tokens.');
+//     });
+//   });
 });

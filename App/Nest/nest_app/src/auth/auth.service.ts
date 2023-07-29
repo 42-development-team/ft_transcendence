@@ -60,16 +60,22 @@ export class AuthService {
         }
     }
 
-    async logout(res: Response) {
-        // const cookieOptions = {
-        //     secure: false,
-        //     httpOnly: true,
-        // }
-        // res.clearCookie("jwt", cookieOptions)
-        // .clearCookie("rt", cookieOptions)
-        // .send();
-        res.clearCookie("jwt").clearCookie("rt").send();
-    }    
+    // async logout(res: Response) {
+    //     // const cookieOptions = {
+    //     //     secure: false,
+    //     //     httpOnly: true,
+    //     // }
+    //     // res.clearCookie("jwt", cookieOptions)
+    //     // .clearCookie("rt", cookieOptions)
+    //     // .send();
+    //     res.clearCookie("jwt").clearCookie("rt").send();
+    // }   
+    
+    async logout(res: Response): Promise<void> {
+        await res.clearCookie('jwt');
+        await res.clearCookie('rt');
+        return;
+    }
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
