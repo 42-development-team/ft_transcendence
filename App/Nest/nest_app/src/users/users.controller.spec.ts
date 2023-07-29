@@ -17,8 +17,8 @@ describe('UsersController', () => {
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
-	prismaservice = new PrismaService();
-});
+    prismaservice = module.get<PrismaService>(PrismaService);
+  });
 
   describe('create', () => {
     it('should create a new user', async () => {

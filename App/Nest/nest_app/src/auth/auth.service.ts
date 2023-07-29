@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Response } from 'express';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './types/jwtPayload.type';
 import { Tokens } from './types/token.type';
 import { ConfigService } from '@nestjs/config';
@@ -47,7 +47,7 @@ export class AuthService {
                     .redirect(`${frontUrl}/home/`);
             }
         } catch (error) {
-            console.log("Error: " + error.message);
+            throw new Error('Redirect error');
         }
     }
 
@@ -60,15 +60,22 @@ export class AuthService {
         }
     }
 
-    async logout(res: Response) {
-        const cookieOptions = {
-            secure: false,
-            httpOnly: true,
-        }
-        res.clearCookie("jwt", cookieOptions)
-        .clearCookie("rt", cookieOptions)
-        .send();
-    }    
+    // async logout(res: Response) {
+    //     // const cookieOptions = {
+    //     //     secure: false,
+    //     //     httpOnly: true,
+    //     // }
+    //     // res.clearCookie("jwt", cookieOptions)
+    //     // .clearCookie("rt", cookieOptions)
+    //     // .send();
+    //     res.clearCookie("jwt").clearCookie("rt").send();
+    // }   
+    
+    async logout(res: Response): Promise<void> {
+        await res.clearCookie('jwt');
+        await res.clearCookie('rt');
+        return;
+    }
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
@@ -107,21 +114,47 @@ export class AuthService {
         }
     }
 
-    async verifyRefreshToken(req: any, res: Response) {
+    // async verifyRefreshToken(req: any, res: Response): Promise<boolean> {
+    //     try {
+    //         // Get the refresh token
+    //         const token = this.extractCookieByName(req, 'rt');
+    //         if (!token) {
+    //             throw new UnauthorizedException('Refresh token not found');
+    //         }
+    
+    //         const secret = this.configService.get<string>('jwtRefrehSecret');
+    //         const isVerify = await this.jwtService.verifyAsync(token, { secret });
+    
+    //         // If the token is not verified, throw an error
+    //         if (!isVerify) {
+    //             throw new UnauthorizedException('Invalid refresh token');
+    //         }
+    
+    //         return true; // Return true if the token is verified
+    //     } catch (error) {
+    //         console.log("Verify Refresh Token Error:", error.message);
+    //         throw error; // Rethrow the error to propagate it to the calling function
+    //     }
+    // }
+
+    async verifyRefreshToken(req: any, res: Response): Promise<any> {
         try {
-            // get refresh token
+            // Get the refresh token
             const token = this.extractCookieByName(req, 'rt');
-            if (!token) throw UnauthorizedException;
-
+            if (!token) {
+                throw new UnauthorizedException('Refresh token not found');
+            }
+    
             const secret = this.configService.get<string>('jwtRefrehSecret');
-            const isVerify = await this.jwtService.verifyAsync(token, { secret });
-
-            return isVerify;
-        }
-        catch (error) {
+            const payload = await this.jwtService.verifyAsync(token, { secret });
+            return payload; // Return the payload if the token is verified
+        } catch (error) {
             console.log("Verify Refresh Token Error:", error.message);
+            throw new UnauthorizedException('Invalid refresh token');
         }
     }
+    
+    
 
     extractCookieByName(req: any, cookieName: string): string {
         let value: string | null = null;
