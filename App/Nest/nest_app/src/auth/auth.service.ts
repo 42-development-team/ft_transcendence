@@ -61,13 +61,14 @@ export class AuthService {
     }
 
     async logout(res: Response) {
-        const cookieOptions = {
-            secure: false,
-            httpOnly: true,
-        }
-        res.clearCookie("jwt", cookieOptions)
-        .clearCookie("rt", cookieOptions)
-        .send();
+        // const cookieOptions = {
+        //     secure: false,
+        //     httpOnly: true,
+        // }
+        // res.clearCookie("jwt", cookieOptions)
+        // .clearCookie("rt", cookieOptions)
+        // .send();
+        res.clearCookie("jwt").clearCookie("rt").send();
     }    
     
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
