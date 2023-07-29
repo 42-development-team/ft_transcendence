@@ -96,12 +96,17 @@ export class AuthController {
     }
 
     @Get('profile')
-    getProfile(@Req() req) {
+    getProfile(@Req() req, @Res() res: Response) {
         if (this.authService.isTwoFactorAuthenticated(req)) {
             // console.log(req.user);
-            return req.user;
+            return res.send(req.user);
         }
-        else
+        else {
             console.log("You didn't validate 2fa process");
-    }
+            return res.status(HttpStatus.OK).send({
+                message: "Two-factor authentication not completed",
+                user: req.user
+            });
+        }
+    }  
 }
