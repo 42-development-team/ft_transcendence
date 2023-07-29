@@ -71,7 +71,7 @@ export class AuthController {
     async generateNewTokens(@Req() req: any, @Res() res: Response) {
         try {
             const verified = this.authService.verifyRefreshToken(req,  res);
-            if (!verified) throw new UnauthorizedException;
+            if (!verified) throw new UnauthorizedException('Invalid refresh token');
 
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
@@ -88,6 +88,10 @@ export class AuthController {
         }
         catch(error) {
             console.log("Generate New Tokens Error:", error.message);
+            if (error instanceof UnauthorizedException) // which is thrown in the verifyRefreshToken method
+                res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized' + error.message) // error 401
+            else
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while generating new tokens.');
         }
     }
 

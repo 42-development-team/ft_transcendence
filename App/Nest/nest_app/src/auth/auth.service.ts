@@ -112,15 +112,20 @@ export class AuthService {
         try {
             // get refresh token
             const token = this.extractCookieByName(req, 'rt');
-            if (!token) throw UnauthorizedException;
-
+            if (!token) {
+                throw new UnauthorizedException('Refresh token not found');
+            }
             const secret = this.configService.get<string>('jwtRefrehSecret');
             const isVerify = await this.jwtService.verifyAsync(token, { secret });
 
+            if (!isVerify) {
+                throw new UnauthorizedException('Invalid refresh token');
+            }
             return isVerify;
         }
         catch (error) {
             console.log("Verify Refresh Token Error:", error.message);
+            throw new UnauthorizedException('Failed to verify refresh token');
         }
     }
 
