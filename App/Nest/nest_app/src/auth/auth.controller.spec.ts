@@ -94,23 +94,5 @@ describe('AuthController', () => {
       expect(res.cookie).toHaveBeenNthCalledWith(1, 'jwt', jwt.access_token, expect.any(Object));
       expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
     });
-  
-    it('should call authService.getTokens and set cookies with the correct parameters', async () => {
-        // Arrange
-        const req: any = { user: {} };
-        const res: any = { cookie: jest.fn().mockReturnThis() };
-
-        const jwt = { access_token: 'mockAccessToken', refresh_token: 'mockRefreshToken' };
-        jest.spyOn(authService, 'getTokens').mockResolvedValue(jwt);
-      
-        // Act
-        await controller.getJwt(req, res);
-      
-        // Assert
-        expect(authService.getTokens).toHaveBeenCalledWith(req.user, true);
-        expect(res.cookie).toHaveBeenCalledTimes(2); 
-        expect(res.cookie).toHaveBeenNthCalledWith(1, 'jwt', jwt.access_token, expect.any(Object));
-        expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
-      });
-    });
+  });
 });
