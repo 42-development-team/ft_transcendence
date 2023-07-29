@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode } from '@nestjs/common';
+// import { Controller, Get, Body, Req, Res, Param, Put, Post, Redirect, UseGuards, Query, Header, UseInterceptors, HttpCode } from '@nestjs/common';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
-import { Public } from './public.routes';
+// import { Public } from './public.routes';
 import { UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from '../users/users.service';
-import { FirstLoginDto } from './dto/firstLoginDto';
+// import { FirstLoginDto } from './dto/firstLoginDto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -54,10 +54,6 @@ describe('AuthController', () => {
         const req = {};
         const res = {
           send: jest.fn(),
-        //   redirect: jest.fn(),
-        //   status: jest.fn().mockReturnThis(),
-        //   cookie: jest.fn(),
-        //   clearCookie: jest.fn(),
         } as unknown as Response<any, Record<string, any>>;
   
         // Mock the redirectTwoFA method to resolve successfully
@@ -74,8 +70,6 @@ describe('AuthController', () => {
         // against the expected outcome.
         expect(authService.redirectTwoFA).toHaveBeenCalledWith(req, res);
     });
-
-    
   });
 
   describe('getJwt', () => {
@@ -136,18 +130,18 @@ describe('AuthController', () => {
           expect(res.status).not.toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
         }
       });
-      
   });
+
   describe('generateNewTokens', () => {
     it('should generate and send new tokens when the refresh token is verified', async () => {
         // Arrange
-        const req: any = { user: { id: 1, login: 'john_doe', twoFactorAuthenticated: true } };
+        const req: any = { user: { id: 1, login: 'pierre_test', twoFactorAuthenticated: true } };
         const res: Response = {
           cookie: jest.fn(),
           send: jest.fn(),
           status: jest.fn().mockReturnThis(),
         } as any;
-        const jwtPayload: JwtPayload = { sub: 1, login: 'john_doe', twoFactorAuthenticated: true };
+        const jwtPayload: JwtPayload = { sub: 1, login: 'pierre_test', twoFactorAuthenticated: true };
         const tokenObject: Tokens = {
           access_token: 'access-token',
           refresh_token: 'refresh-token',
@@ -187,8 +181,55 @@ describe('AuthController', () => {
           expect(res.status).toHaveBeenCalledWith(HttpStatus.UNAUTHORIZED);
           expect(res.send).toHaveBeenCalledWith('Unauthorized' + error.message);
         }
+    });
+    
+  });
+  describe('getProfile', () => {
+    it('should return user profile when two-factor authentication is completed', () => {
+      // Arrange
+      const req: any = {
+        user: { id: 1, login: 'pierre_test', twoFactorAuthenticated: true },
+      };
+      const res: Response = {
+        send: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as any;
+      const isTwoFactorAuthenticatedMock = jest
+        .spyOn(authService, 'isTwoFactorAuthenticated')
+        .mockReturnValue(true);
+  
+      // Act
+      controller.getProfile(req, res);
+  
+      // Assert
+      expect(isTwoFactorAuthenticatedMock).toHaveBeenCalledWith(req);
+      expect(res.send).toHaveBeenCalledWith(req.user);
+      expect(res.status).not.toHaveBeenCalled();
+    });
+  
+    it('should return status OK and user profile when two-factor authentication is not completed', () => {
+      // Arrange
+      const req: any = {
+        user: { id: 1, login: 'pierre_test', twoFactorAuthenticated: false },
+      };
+      const res: Response = {
+        send: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as any;
+      const isTwoFactorAuthenticatedMock = jest
+        .spyOn(authService, 'isTwoFactorAuthenticated')
+        .mockReturnValue(false);
+  
+      // Act
+      controller.getProfile(req, res);
+  
+      // Assert
+      expect(isTwoFactorAuthenticatedMock).toHaveBeenCalledWith(req);
+      expect(res.send).toHaveBeenCalledWith({
+        message: 'Two-factor authentication not completed',
+        user: req.user,
       });
-    
-    
+      expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+    });
   }); 
 });
