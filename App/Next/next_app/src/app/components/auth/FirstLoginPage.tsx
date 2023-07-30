@@ -11,6 +11,8 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder]         = useState('');
     const [waiting2fa, setWaiting2fa]           = useState(true);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
     let inputUserName: string;
 
     useEffect(() => {
@@ -38,22 +40,44 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
         }
     }
 
+    const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setAvatarFile(file);
+      };
+
     const handleClick = async () => {
         try {
-                setWaiting2fa(false);
-                await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
-                method: "PUT",
-                body: JSON.stringify({newUsername: inputUserName, userId: userId}),
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+            setWaiting2fa(false);
+
+            // Upload the avatar if it's selected
+            let avatarUrl = null;
+            if (avatarFile) {
+            const formData = new FormData();
+            formData.append("file", avatarFile);
+
+            const response = await fetch(`${process.env.BACK_URL}/avatars/upload`, {
+                method: "POST",
+                body: formData,
             });
-            await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
+
+            const data = await response.json();
+            avatarUrl = data.imageUrl;
+            }
+
+            // Update the username and JWT tokens
+            await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
+            method: "PUT",
+            body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+            });
+            await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
             redirectToHome();
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
@@ -120,12 +144,13 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             <div className="m-4 flex-auto">
                 <p className="font-bold mb-2">Choose your avatar</p>
                 <Image
-                    src="https://img.freepik.com/free-icon/user_318-563642.jpg"
+                    src={avatarFile ? URL.createObjectURL(avatarFile) : "https://img.freepik.com/free-icon/user_318-563642.jpg"}
                     alt="default avatar"
                     width={128}
                     height={128}
-                    className=" drop-shadow-xl"
+                    className="drop-shadow-xl"
                 />
+                <input type="file" accept="image/*" onChange={handleAvatarChange} />
             </div>
             {
                 waiting2fa &&
