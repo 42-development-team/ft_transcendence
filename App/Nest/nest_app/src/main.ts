@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 import { ValidationPipe } from '@nestjs/common';
+import * as multer from 'multer';
 
 
 async function bootstrap() {
@@ -24,6 +25,12 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.use(cookieParser());
+
+  // set up multer middleware for file uploads
+  // => the ./uploads/ directory is used as a temporary storage location 
+  // for the uploaded images before they are sent to Cloudinary
+  // => 'file' (to be set in the front) is the field name in the form data for the uploaded file 
+  app.use(multer({ dest: './uploads/'}).single('file'));
 
   app.enableCors({
     origin: [`http://${configService.get<string>('ip')}:${configService.get<string>('frontPort')}`,
