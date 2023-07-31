@@ -3,7 +3,7 @@ import { Strategy } from 'passport-42';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

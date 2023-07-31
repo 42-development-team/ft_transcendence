@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './strategies/passport-strat';
 import { JwtStrategy } from './strategies/jwt-strat';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { APP_GUARD } from '@nestjs/core';
-import { TwoFAController } from './2FA/2FA.controller';
 import { TwoFAModule } from './2FA/2FA.module';
 import { ConfigService } from '@nestjs/config';
 
