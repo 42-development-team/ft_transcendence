@@ -2,17 +2,14 @@ import Canvas from '../components/game/canvas';
 import PlayerInterface from './interfaces/playerInterface';
 import BallInterface from './interfaces/ballInterface';
 
-// window width const
-// window heigth const
-
 const Game = () => {
 // envoyer params
 	let p1: PlayerInterface;
 	let p2: PlayerInterface;
 	let ball: BallInterface;
-	
+
 	p1 = {
-		color: 'blue',
+		color: 'lavender',
 		position: [10, 10],
 		rect: [15, 30],
 	}
@@ -32,7 +29,7 @@ const Game = () => {
 		speed: [0, 0],
 	}
 
-	return <Canvas width={400} height={400} />;
+	return <Canvas player1={p1} player2={p2} ball={ball} width={400} height={400} />;
 }
 
 export default Game;
