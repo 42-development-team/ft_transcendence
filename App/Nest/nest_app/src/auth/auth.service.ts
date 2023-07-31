@@ -111,7 +111,7 @@ export class AuthService {
                 throw new UnauthorizedException('Refresh token not found');
             }
     
-            const secret = this.configService.get<string>('jwtRefrehSecret');
+            const secret = this.configService.get<string>('jwtRefreshSecret');
             const payload = await this.jwtService.verifyAsync(token, { secret });
             return payload; // Return the payload if the token is verified
         } catch (error) {

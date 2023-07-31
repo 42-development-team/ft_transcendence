@@ -1,17 +1,20 @@
 "use client";
-import Image from 'next/image';
 import CustomBtn from "@/components/CustomBtn";
 import TwoFA from "@/app/components/auth/TwoFA";
 import { ChangeEvent, useState, useEffect } from 'react';
+import Image from "next/image";
+
+
 
 const FirstLoginPageComponent = ({userId}: {userId: string}) => {
-
+    
     const [message, setMessage]                 = useState('');
     const [isVisible, setIsVisible]             = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder]         = useState('');
     const [waiting2fa, setWaiting2fa]           = useState(true);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     let inputUserName: string;
 
@@ -40,11 +43,23 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
         }
     }
 
+    /* When the user selects an image for the avatar, 
+    the handleAvatarChange function is called */
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         setAvatarFile(file);
-      };
-
+        if (file) {
+          setImageUrl(URL.createObjectURL(file));
+          // => This temporary URL will be used to display the selected avatar image 
+          //before it is uploaded to Cloudinary 
+        }
+    };
+      
+    /*
+    after the avatar image is uploaded to the back-end and 
+    the imageUrl is sent with the response, 
+    we update the state with the Cloudinary URL
+    */
     const handleClick = async () => {
         try {
             setWaiting2fa(false);
@@ -62,6 +77,9 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 
             const data = await response.json();
             avatarUrl = data.imageUrl;
+
+            // Set the Cloudinary URL for the avatar
+            setImageUrl(avatarUrl);
             }
 
             // Update the username and JWT tokens
@@ -141,17 +159,34 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                 }
             </div>
 
-            <div className="m-4 flex-auto">
+            <div className="m-4 flex-auto flex items-center justify-center">
                 <p className="font-bold mb-2">Choose your avatar</p>
-                <Image
-                    src={avatarFile ? URL.createObjectURL(avatarFile) : "https://img.freepik.com/free-icon/user_318-563642.jpg"}
-                    alt="default avatar"
+                {imageUrl ? (
+                <div>
+                    {/* Display uploaded avatar image temporary stored in URL*/}
+                    <Image
+                    src={imageUrl}
+                    alt="Selected Avatar"
                     width={128}
                     height={128}
                     className="drop-shadow-xl"
-                />
+                    />
+                </div>
+                ) : (
+                <div>
+                    {/* Display default avatar */}
+                    <Image
+                    src="https://img.freepik.com/free-icon/user_318-563642.jpg"
+                    alt="Default Avatar"
+                    width={128}
+                    height={128}
+                    className="drop-shadow-xl"
+                    />
+                </div>
+                )}
                 <input type="file" accept="image/*" onChange={handleAvatarChange} />
             </div>
+
             {
                 waiting2fa &&
                 <div className="flex flex-col flex-auto items-center justify-center">
