@@ -116,7 +116,9 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
-            const isUserAlreadyTaken = await response.json();
+            // const isUserAlreadyTaken = await response.json();
+            const data = await response.json();
+            const isUserAlreadyTaken = data.isUsernameTaken;
             const isUsernameSameAsCurrent = inputUserName === placeHolder;
 
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
