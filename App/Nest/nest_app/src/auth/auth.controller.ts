@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
@@ -109,4 +109,21 @@ export class AuthController {
             });
         }
     }  
+
+    @Public()
+    @Get('firstLogin/doesUserNameExist/:username')
+    async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
+        try {
+            const user = await this.userService.getUserFromUsername(username);
+            const isUsernameTaken = !!user;
+            //If the user object is not null or undefined (truthy), 
+            // !!user will evaluate to true, indicating that the username is taken.
+            // If the user object is null or undefined (falsy), 
+            // !!user will evaluate to false, indicating that the username is available.
+            res.status(HttpStatus.OK).send({ isUsernameTaken });
+        } catch (error) {
+            console.error('Error checking username availability:', error.message);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
+        }
+    }
 }

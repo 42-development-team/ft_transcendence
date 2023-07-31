@@ -139,7 +139,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
         <div className="flex flex-col items-center justify-center">
             <div className="m-4 pt-4">
                 <p className="font-bold text-center">Choose your username</p>
-                <input
+                <input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold"}}
                 	id="username"
                     onChange={(e) => handleOnChange(e)}
                     placeholder={placeHolder}
@@ -159,8 +159,8 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                 }
             </div>
 
-            <div className="m-4 flex-auto flex items-center justify-center">
-                <p className="font-bold mb-2">Choose your avatar</p>
+            <div className="m-4 pt-4">
+                <p className="font-bold text-center"></p>
                 {imageUrl ? (
                 <div>
                     {/* Display uploaded avatar image temporary stored in URL*/}
@@ -184,7 +184,20 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     />
                 </div>
                 )}
-                <input type="file" accept="image/*" onChange={handleAvatarChange} />
+                {/* <input type="file" accept="image/*" onChange={handleAvatarChange}/> */}
+                <div className="mt-2" style={{ marginTop: "20px" }}>
+                    {/* Custom label for file input */}
+                    <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold"}}>
+                    {imageUrl ? "Change Avatar" : "Choose Avatar"}
+                    </label>
+                    <input
+                    type="file"
+                    id="avatarInput"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    />
+                </div>
             </div>
 
             {
