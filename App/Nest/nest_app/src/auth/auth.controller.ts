@@ -115,7 +115,7 @@ export class AuthController {
     async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
         try {
             const user = await this.userService.getUserFromUsername(username);
-            const isUsernameTaken = !!user;
+            const isUsernameTaken = !!user; // double negation to turn user into a boolean
             //If the user object is not null or undefined (truthy), 
             // !!user will evaluate to true, indicating that the username is taken.
             // If the user object is null or undefined (falsy), 
