@@ -26,13 +26,12 @@ export class AvatarsController {
 
       // Check if the user is authenticated (i.e., has a JWT token)
     //   const userDB = await this.usersService.getUserFromLogin(req.user.login);
-      if (req.user){
-          // User is authenticated, associate the avatar with the authenticated user
-          const userId = req.user.sub;
-          await this.usersService.updateAvatar(userId, imageUrl);
-      }
-      else{
-        req.session.avatarUrl = imageUrl;
+    if (req.user) {
+        // User is authenticated, associate the avatar with the authenticated user
+        const userId = req.user.sub;
+        await this.usersService.updateAvatar(userId, imageUrl);
+      } else {
+        req.session.avatarUrl = imageUrl; // Set avatarUrl on req.session
       }
       return { imageUrl };
     } catch (error) {

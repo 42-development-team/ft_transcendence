@@ -3,7 +3,7 @@ import { AvatarsController } from './avatars.controller';
 import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { InternalServerErrorException } from '@nestjs/common'; 
-
+import { CreateUserDto } from '../users/dto';
 
 describe('AvatarsController', () => {
   let avatarsController: AvatarsController;
@@ -35,7 +35,14 @@ describe('AvatarsController', () => {
     const req = { user: { sub: 'user-id' } };
 
     // Mock the usersService's updateAvatar method
-    jest.spyOn(usersService, 'updateAvatar').mockResolvedValue();
+    const mockUserDto: CreateUserDto = {
+        login: 'john_doe',
+        twoFAsecret: 'random_secret',
+        isTwoFAEnabled: true,
+        isFirstLogin: false,
+        // Add other properties as needed...
+      };    jest.spyOn(usersService, 'updateAvatar').mockResolvedValue(mockUserDto);
+
 
     // Execute the uploadAvatar method
     const response = await avatarsController.uploadAvatar(file, req);
