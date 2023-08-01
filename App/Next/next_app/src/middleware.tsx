@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
-    const nonSecurePaths = [ '/', '/firstLogin', '/auth/2fa' ];
+    const nonSecurePaths = [ '/' ];
+    const loginPaths = ['/firstLogin', '/auth/2fa']
 
     let jwtCookie = request.cookies.get("jwt")?.value;
 
@@ -14,18 +15,15 @@ export async function middleware(request: NextRequest) {
 
     if (verifiedJWT && verifiedJWT.exp && verifiedJWT.exp > currentTime) {
         if (verifiedJWT.twoFactorAuthenticated) {
-            if (nonSecurePaths.includes(request.nextUrl.pathname)) {
+            if (nonSecurePaths.includes(request.nextUrl.pathname) || loginPaths.includes(request.nextUrl.pathname)) {
                 console.log('MIDDLEWARE - JWT is already valid : Redirecting to /home');
                 return NextResponse.redirect(new URL('/home', request.url));
             }
         }
     }
-    else {
-        if (!nonSecurePaths.includes(request.nextUrl.pathname)) {
-            console.log(`MIDDLEWARE - Not logged in, redirecting to /: ${request.nextUrl.pathname}}`);
-            return NextResponse.redirect(new URL( '/', request.url)); 
-        }
-        return NextResponse.next();
+    else if (!nonSecurePaths.includes(request.nextUrl.pathname)) {
+        console.log(`MIDDLEWARE - Not logged in, redirecting to /: ${request.nextUrl.pathname}}`);
+        return NextResponse.redirect(new URL( '/', request.url)); 
     }
     return NextResponse.next();
 }
