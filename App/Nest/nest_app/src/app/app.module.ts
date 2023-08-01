@@ -10,11 +10,11 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { SocketGateway } from '../sockets/socket.gateway';
-import { TwoFAController } from 'src/auth/2FA/2FA.controller';
-import { TwoFAService } from 'src/auth/2FA/2FA.service';
+import { TwoFAController } from '../auth/2FA/2FA.controller';
+import { TwoFAService } from '../auth/2FA/2FA.service';
 import { ConfigModule } from '@nestjs/config';
 import { config } from '../config/config';
-import { TwoFAModule } from 'src/auth/2FA/2FA.module';
+import { TwoFAModule } from '../auth/2FA/2FA.module';
 
 @Module({
   imports: [ConfigModule.forRoot({

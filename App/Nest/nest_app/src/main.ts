@@ -9,12 +9,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { doc } from 'prettier';
 import { ValidationPipe } from '@nestjs/common';
 import * as multer from 'multer';
+import * as session from 'express-session';
+import { randomBytes } from 'crypto';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const appService = app.get(AppService);
+  const secretKey = randomBytes(32).toString('hex');
 
   const config = new DocumentBuilder()
     .setTitle("Transcendence API")
@@ -31,6 +34,15 @@ async function bootstrap() {
   // for the uploaded images before they are sent to Cloudinary
   // => 'file' (to be set in the front) is the field name in the form data for the uploaded file 
   app.use(multer({ dest: './uploads/'}).single('file'));
+
+
+  app.use(
+    session({
+      secret: secretKey,
+      resave: false,
+      saveUninitialized: true,
+    }),
+  );
 
   app.enableCors({
     origin: [`http://${configService.get<string>('ip')}:${configService.get<string>('frontPort')}`,

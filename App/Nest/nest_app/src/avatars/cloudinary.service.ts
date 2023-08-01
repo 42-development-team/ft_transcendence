@@ -21,6 +21,7 @@ export class CloudinaryService {
 
       return result.secure_url;
     } catch (error) {
+      console.error('Error uploading avatar to Cloudinary:', error);
       throw new Error('Failed to upload avatar to Cloudinary');
     }
   }

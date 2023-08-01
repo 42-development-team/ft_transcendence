@@ -77,7 +77,8 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 
             const data = await response.json();
             avatarUrl = data.imageUrl;
-
+            
+            console.log("Avatar URL from Cloudinary:", avatarUrl);
             // Set the Cloudinary URL for the avatar
             setImageUrl(avatarUrl);
             }
