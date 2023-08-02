@@ -1,15 +1,15 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ChannelModel } from "../utils/models";
 import { generateFakeChannel } from "../utils/helpers";
 
-const fakeChannels: ChannelModel[] = Array(2)
-    .fill(null)
-    .map(() => generateFakeChannel())
+// const fakeChannels: ChannelModel[] = Array(2)
+//     .fill(null)
+//     .map(() => generateFakeChannel())
 
 export default function useChannels() {
     const [channels, setChannels] = useState<ChannelModel[]>([
-        ...fakeChannels,
+        // ...fakeChannels,
     ])
 
     // const socket = useChatConnection();

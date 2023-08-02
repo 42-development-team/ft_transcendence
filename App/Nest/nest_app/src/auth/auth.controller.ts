@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Req, Res, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Req, Res, UseGuards, HttpCode, HttpStatus, Param, Put } from '@nestjs/common';
 import { Response } from 'express';
 import { FortyTwoAuthGuards } from './guards/42-auth.guards';
 import { AuthService } from './auth.service';
@@ -6,6 +6,7 @@ import { Public } from './public.routes';
 import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from '../users/users.service';
+import { FirstLoginDto } from './dto/firstLoginDto';
 
 
 @Controller('auth')
@@ -126,4 +127,41 @@ export class AuthController {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
         }
     }
+    //     @Public()
+    // @Get('firstLogin/doesUserNameExist/:username')
+	// async doesUserExistByUsername(@Param('username') username: string): Promise<boolean> {
+	// 	try {
+	// 		const userDB = await this.userService.getUserFromUsername(username);
+	// 		if (userDB) {
+	// 			console.log('user exists');
+	// 			return true;
+	// 		}
+	// 		else
+	// 			return false;
+	// 	} catch (error) {
+	// 		throw new Error("Error fetching user in first login: " + error);
+	// 	}
+	// }
+
+    @Public()
+	@Put('firstLogin/updateUsername')
+	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+		try {
+			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
+		} catch (error) {
+			return error;
+		}
+	}
+
+    @Public()
+	@Get('firstLogin/getUser/:userId')
+	async getUserByName(@Param('userId') userId: string): Promise<any> {
+		try {;
+			return await this.userService.getUserFromId(Number(userId));
+		} catch (error) {
+			return error;
+		}
+	}
 }
+
+

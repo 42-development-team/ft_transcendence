@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { UserModel } from "../utils/models";
 import { generateFakeFriend } from "../utils/helpers";
 
-const fakeFriends: UserModel[] = Array(20)
-    .fill(null)
-    .map(() => generateFakeFriend())
+// const fakeFriends: UserModel[] = Array(20)
+//     .fill(null)
+//     .map(() => generateFakeFriend())
 
 export default function useFriends() {
     const [friends, setFriends] = useState<UserModel[]>([
-        ...fakeFriends,
+        // ...fakeFriends,
     ])
 
     // const socket = useChatConnection();
