@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import React from "react";
 import { useAuthcontext } from '@/app/context/AuthContext';
-import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
+import { useRouter } from "next/navigation";
 import Image from "next/image"
-import {useRouter } from "next/navigation";
+import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
+import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
+import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 
 // Todo: pass context to childrens instead of using it everywhere
 const Navbar = () => {
@@ -34,14 +35,28 @@ const NavLinks = () => {
     const router = useRouter();
     return (
         <div className="flex items-center gap-8 px-6 text-lg transition-all">
-            <Link href="/profile" className="text-mauve hover:text-pink pt-2">Profile</Link>
-            <Link href="/settings" className="text-mauve hover:text-pink pt-2">Settings</Link>
-            <button onClick={() => {
-                logout();
-                router.push("/");
-            }}>
-                <Image src={LogoutIcon} width={32} height={32} alt="logout"/>
-            </button>
+            <NavDropDownMenu>
+                <div aria-orientation="vertical">
+                    <DropDownActionLarge onClick={() => router.push('/profile')}>
+                        Profile
+                    </DropDownActionLarge >
+                    <DropDownActionLarge onClick={() => router.push('/settings')}>
+                        Settings
+                    </DropDownActionLarge>
+                    <DropDownSeparator />
+                    <DropDownActionLarge onClick={() => {
+                        logout();
+                        router.push("/");
+                    }}>
+                        <div className="flex items-center justify-between group">
+                            <Image src={LogoutIcon} width={28} height={28} alt="logout" />
+                            <p className=" w-[100%] h-[100%] text-[1rem] ml-2 mr-2">
+                                Logout
+                            </p>
+                        </div>
+                    </DropDownActionLarge>
+                </div>
+            </NavDropDownMenu>
         </div>
     )
 }
