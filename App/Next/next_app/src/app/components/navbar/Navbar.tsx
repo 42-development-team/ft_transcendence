@@ -7,19 +7,17 @@ import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 
-// Todo: pass context to childrens instead of using it everywhere
 const Navbar = () => {
-    const {isLoggedIn} = useAuthcontext();
+    const {isLoggedIn, logout} = useAuthcontext();
     return (
         <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
-            <Logo />
-            {isLoggedIn && <NavLinks /> }
+            <Logo isLoggedIn={isLoggedIn} />
+            {isLoggedIn && <NavLinks logout={logout}/> }
         </nav>
     );
 };
 
-const Logo = () => {
-    const {isLoggedIn} = useAuthcontext();
+const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
     return (
         <div className="flex w-fit items-center justify-center gap-2 p-2 pt-4
             font-bold text-mauve text-2xl">
@@ -30,8 +28,7 @@ const Logo = () => {
     )
 }
 
-const NavLinks = () => {
-    const {logout} = useAuthcontext();
+const NavLinks = ({logout} : {logout: () => void}) => {
     const router = useRouter();
     return (
         <div className="flex items-center gap-8 px-6 text-lg transition-all">
