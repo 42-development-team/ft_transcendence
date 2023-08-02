@@ -12,14 +12,14 @@ const welcomeMessage: MessageModel = {
     content: '👋 Welcome to the Chat 👋',
 }
 
-const fakeMessages: MessageModel[] = Array(20)
-    .fill(null)
-    .map(() => generateFakeMessage())
+// const fakeMessages: MessageModel[] = Array(20)
+//     .fill(null)
+//     .map(() => generateFakeMessage())
 
 export default function useChatMessages() {
     const [messages, setMessages] = useState<MessageModel[]>([
         welcomeMessage,
-        ...fakeMessages
+        // ...fakeMessages
     ])
 
     // const socket = useChatConnection();
