@@ -2,10 +2,11 @@ import ChatBar from "@/components/chat/ChatBar";
 
 export default function Profile() {
     return (
-        <div className="flex flex-auto w-full h-full">
+        <div className=" flex flex-full w-full h-full">
             <ChatBar />
-            <div className="w-full p-4 h-full">
-                <a className="align-baseline"> Welcome to the profile page! </a>
+            <div className=" py-8 px-10 my-20 mx-12 w-full h-[85vh] grid sm:grid-cols-2 gap-x-36 gap-y-20 rounded">
+                <div className=" rounded-lg bg-surface0 flex hover:shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]"></div>
+                <div className="rounded-lg bg-surface0 flex hover:shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]"></div>
             </div>
         </div>
     )
