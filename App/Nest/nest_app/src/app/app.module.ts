@@ -15,6 +15,8 @@ import { TwoFAService } from '../auth/2FA/2FA.service';
 import { ConfigModule } from '@nestjs/config';
 import { config } from '../config/config';
 import { TwoFAModule } from '../auth/2FA/2FA.module';
+import { AvatarsController } from '../avatars/avatars.controller';
+import { CloudinaryService } from '../avatars/cloudinary.service';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -22,7 +24,7 @@ import { TwoFAModule } from '../auth/2FA/2FA.module';
     load: [config],
   }),
   UsersModule, PrismaModule, AuthModule, TwoFAModule],
-  controllers: [AppController, UsersController, ChatroomController,TwoFAController],
-  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService ],
+  controllers: [AppController, UsersController, ChatroomController,TwoFAController, AvatarsController],
+  providers: [AppService, UsersService, ChatroomService, PrismaService, SocketGateway,TwoFAService, CloudinaryService ],
 })
 export class AppModule {}

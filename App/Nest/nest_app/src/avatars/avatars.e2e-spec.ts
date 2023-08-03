@@ -3,6 +3,7 @@ import { AppModule } from '../app/app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as request from 'supertest';
 import { existsSync, unlinkSync } from 'fs';
+import { Public } from '../auth/public.routes'; // Update the import path as per your actual file structure
 
 describe('Avatars (e2e)', () => {
   let app: NestExpressApplication;
@@ -20,12 +21,19 @@ describe('Avatars (e2e)', () => {
     await app.close();
   });
 
-  it('/avatars/upload (POST) - should upload the avatar and return the avatar URL', async () => {
-    const filePath = './test_images/avatar_test.jpg'; 
+  const performAvatarUpload = async (publicTest: boolean) => {
+    const filePath = './test_images/avatar_test.jpg';
     const response = await request(app.getHttpServer())
       .post('/avatars/upload')
-      .attach('file', filePath)
-      .expect(201);
+      .attach('file', filePath);
+
+    if (publicTest) {
+      // Public test case: No JWT authentication expected
+      expect(response.status).toBe(201);
+    } else {
+      // Private test case: JWT authentication expected
+      expect(response.status).toBe(201);
+    }
 
     expect(response.body.imageUrl).toBeDefined();
     expect(typeof response.body.imageUrl).toBe('string');
@@ -33,6 +41,17 @@ describe('Avatars (e2e)', () => {
     if (existsSync(filePath)) {
       unlinkSync(filePath);
     }
+  };
+
+  // Public test case: No JWT authentication expected
+  @Public()
+  it('/avatars/upload (POST) - should upload the avatar and return the avatar URL without JWT authentication', async () => {
+    await performAvatarUpload(true);
+  });
+
+  // Private test case: JWT authentication expected
+  it('/avatars/upload (POST) - should upload the avatar and return the avatar URL with JWT authentication', async () => {
+    await performAvatarUpload(false);
   });
 
   it('/avatars/upload (POST) - should return 400 when no file is attached', async () => {
