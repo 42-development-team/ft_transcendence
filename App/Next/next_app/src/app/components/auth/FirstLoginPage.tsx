@@ -62,41 +62,56 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     */
     const handleClick = async () => {
         try {
-            setWaiting2fa(false);
-
-            // Upload the avatar if it's selected
-            let avatarUrl = null;
-            if (avatarFile) {
+          setWaiting2fa(false);
+      
+          // Upload the avatar if it's selected
+          let avatarUrl = null;
+          if (avatarFile) {
             const formData = new FormData();
             formData.append("file", avatarFile);
-
+      
             const response = await fetch(`${process.env.BACK_URL}/avatars/upload`, {
-                method: "POST",
-                body: formData,
+              method: "POST",
+              body: formData,
             });
-
+      
             const data = await response.json();
             avatarUrl = data.imageUrl;
-            
+      
             console.log("Avatar URL from Cloudinary:", avatarUrl);
             // Set the Cloudinary URL for the avatar
             setImageUrl(avatarUrl);
-            }
-
-            // Update the username and JWT tokens
-            await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
+          }
+      
+          // Update the username and JWT tokens
+          const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
             method: "PUT",
             body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
-            });
-            await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
-            redirectToHome();
+          });
+      
+          if (usernameUpdateResponse.ok) {
+            console.log("Username updated successfully");
+          } else {
+            console.log("Error updating username:", usernameUpdateResponse.status);
+          }
+      
+          const jwtUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
+      
+          if (jwtUpdateResponse.ok) {
+            console.log("JWT tokens updated successfully");
+          } else {
+            console.log("Error updating JWT tokens:", jwtUpdateResponse.status);
+          }
+      
+          redirectToHome();
         } catch (error) {
-            console.log(error);
+          console.log("Error during avatar upload or username update:", error);
         }
-    };
+      };
+      
 
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
