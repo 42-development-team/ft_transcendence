@@ -1,5 +1,6 @@
 "use client";
-import CustomBtn from "@/components/CustomBtn";
+// import CustomBtn from "@/components/CustomBtn";
+import FirstLoginBtn from "../FirstLoginBtn";
 import TwoFA from "@/app/components/auth/TwoFA";
 import { ChangeEvent, useState, useEffect } from 'react';
 import Image from "next/image";
@@ -224,11 +225,13 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     <TwoFA userId={userId}></TwoFA>
                 </div>
             }
-            <CustomBtn disable={!validateEnabled} onClick={handleClick}>
+            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} />
+            {/* <CustomBtn disable={!validateEnabled} onClick={handleClick}>
                 Validate
-            </CustomBtn>
+            </CustomBtn> */}
         </div>
     )
 }
 
 export default FirstLoginPageComponent;
+
