@@ -62,6 +62,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     we update the state with the Cloudinary URL
     */
     const handleClick = async () => {
+        console.log('handleClick has been called');
         try {
           setWaiting2fa(false);
       
@@ -225,7 +226,9 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     <TwoFA userId={userId}></TwoFA>
                 </div>
             }
-            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} />
+            <FirstLoginBtn onClick={async () => await handleClick()} disable={!validateEnabled}>
+                Validate
+            </FirstLoginBtn>
             {/* <CustomBtn disable={!validateEnabled} onClick={handleClick}>
                 Validate
             </CustomBtn> */}
