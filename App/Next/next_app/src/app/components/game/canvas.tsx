@@ -3,72 +3,80 @@ import BallInterface from "@/app/game/interfaces/ballInterface";
 import PlayerInterface from "@/app/game/interfaces/playerInterface";
 import React, { useRef, useEffect, useState } from "react";
 
-// let width: number = window.innerWidth;
-// let height: number = window.innerHeight;
+// ============================================ // 
+// ===============  TO DO  ==================== // 
 
-// window.onload = function handleLoad() {
-// 	width = window.innerWidth;
-// 	height = window.innerHeight;
-// };
+// Use requestAnimationFrame instead of setInterval / setTimeout
+// redraw only the regions that have to and not all canvas
 
-// window.onresize = function handleResize() {
-// 	let width = window.innerWidth;
-// 	let height = window.innerHeight;
-// };
+// ============================================ // 
+
+const canvasStyle: any = {
+	backgroundColor: '#009BD7',
+	width: '100%',
+};
 
 const drawBall = (context: CanvasRenderingContext2D, ball: BallInterface, width: number, height: number) => {
 	context.fillStyle = ball.color;
 	context.beginPath();
-	context.arc(ball.position[0] * width, ball.position[1] * height, ball.r, 0, ball.pi2, false);
-	context.fill();
-}
-	
-const drawPlayer = (context: CanvasRenderingContext2D, player: PlayerInterface, width: number, height: number) => {
-	context.beginPath();
-	context.fillStyle = player.color;
-	context.fillRect(player.position[0] * width, player.position[1] * height, player.rect[0] * width, player.rect[1] * height);
+		context.arc(ball.position[0] * width - ball.r, ball.position[1] * height - ball.r, ball.r, 0, ball.pi2, false);
+		context.fill();
+	context.closePath();
 }
 
-// const renderGame = (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>, {...props}, width:number, height: number) => {
+const drawPlayer = (context: CanvasRenderingContext2D, player: PlayerInterface, width: number, height: number) => {
+	context.fillStyle = player.color;
+	context.beginPath();
+		context.fillRect(player.position[0] * width - player.rect[0] * width, player.position[1] * height - player.rect[1] * height, player.rect[0] * width, player.rect[1] * height);
+	context.closePath();
+}
+
 const renderGame = (context: CanvasRenderingContext2D , {...props}, width:number, height: number) => {
 
+	context.clearRect(0, 0, width, height);
 	drawPlayer(context, props.player1, width, height);
 	drawPlayer(context, props.player2, width, height);
 	drawBall(context, props.ball, width, height);
+
 }
 
 const Canvas = ({ ...props }) => {
 
-	// const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const canvas = useRef<HTMLCanvasElement | null>(null);
-	// const canvas = document.getElementById('canvas') as  HTMLCanvasElement;
-	// if (!canvas)
-	if (!canvas.current)
-		return ;
-
-	// const context = canvas.getContext('2d');
-	const context = canvas.current.getContext('2d');
-	if (!context)
-		return ;
-
 	if (window === undefined)
 		return ;
 
-	let width: number = window.innerWidth;
-	let height: number = window.innerHeight;
+	const [width, setWidth] = useState<number>(window.innerWidth);
+	let height: number;
 	
-	// useEffect(() => {
-	// 	width = window.innerWidth;
-	// 	height = window.innerHeight;
-	// 	// renderGame(canvas, props, width, height);
-		renderGame(context, props, width, height);
-	// }, [window.onresize]);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	// renderGame(canvasRef, props, width, height);
+	useEffect(() => {
+
+			const canvas = canvasRef.current;
+			if (!canvas)
+				return ;
+			const context = canvas.getContext('2d');
+			if (!context)
+				return ;
+			height = width * 0.56;
+			renderGame(context, props, width, height);
+	}, [width]);
+
+	useEffect(() => {
+		function resize() {
+
+			const canvas = canvasRef.current;
+			if (!canvas)
+				return ;
+			
+			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
+		}
+		window.addEventListener('resize', resize);
+	});
 
 	return (
-		<div className="canvas">
-			<canvas width={width} height={height} ref={canvas} />
+		<div className="canvas w-full">
+			<canvas id = "cnv" style={canvasStyle} width={width} height={width * 0.56} ref={canvasRef} />
 		</div>
 	);
 }
