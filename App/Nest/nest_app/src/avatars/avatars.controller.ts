@@ -5,6 +5,10 @@ import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
 import { unlinkSync } from 'fs';
 
+// import { PrismaClient } from '@prisma/client';
+
+// const prisma = new PrismaClient();
+
 @Controller('avatars')
 export class AvatarsController {
   private readonly logger = new Logger(AvatarsController.name);
@@ -17,13 +21,15 @@ export class AvatarsController {
   @Public()
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  /* @UseInterceptors decorator tells that the file field in the front form data 
-  will be used to pass the uploaded file to this method (uploadAvatar) 
-  It use the Multer middleware set up in main.ts to process the uploaded file. */ 
-  async uploadAvatar(@UploadedFile() file: any, @Req() req: any) {
-    /*  @UploadedFile() decorator tells NestJS that we want to access the uploaded file 
-    in this method. 
-    It's like a "getter" for the file that Multer processed. */ 
+  // uploadavatar() {
+    // }
+    /* @UseInterceptors decorator tells that the file field in the front form data 
+    will be used to pass the uploaded file to this method (uploadAvatar) 
+    It use the Multer middleware set up in main.ts to process the uploaded file. */ 
+    async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+      /*  @UploadedFile() decorator tells NestJS that we want to access the uploaded file 
+      in this method. 
+      It's like a "getter" for the file that Multer processed. */ 
     try {
       this.logger.log('Received file in uploadAvatar controller:', file);
       // Upload the image to Cloudinary using the CloudinaryService

@@ -26,17 +26,18 @@ async function bootstrap() {
     .setTitle("Transcendence API")
     .setVersion('0.1')
     .build()
-  const document = SwaggerModule.createDocument(app, config);
-  app.useGlobalPipes( new ValidationPipe() );
-  SwaggerModule.setup('api', app, document);
-
-  app.use(cookieParser());
-
+    const document = SwaggerModule.createDocument(app, config);
+   
   // set up multer middleware for file uploads
   // => the ./uploads/ directory is used as a temporary storage location 
   // for the uploaded images before they are sent to Cloudinary
   // => 'file' (to be set in the front) is the field name in the form data for the uploaded file 
   app.use(multer({ dest: './uploads/'}).single('file'));
+  app.useGlobalPipes( new ValidationPipe() );
+  SwaggerModule.setup('api', app, document);
+
+  app.use(cookieParser());
+
 
 
   app.use(

@@ -48,13 +48,34 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     the handleAvatarChange function is called */
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-        setAvatarFile(file);
-        if (file) {
-          setImageUrl(URL.createObjectURL(file));
-          // => This temporary URL will be used to display the selected avatar image 
-          //before it is uploaded to Cloudinary 
+      
+        if (!file) {
+          // If no file is selected, reset the state for avatarFile and imageUrl
+          setAvatarFile(null);
+          setImageUrl(null);
+          return;
         }
-    };
+      
+        // Check if the selected file is an image (optional)
+        if (!file.type.startsWith('image/')) {
+          console.log('Selected file is not an image.');
+          // You can show a message to the user or perform any other action here.
+          return;
+        }
+      
+        // Check if the selected file size is within acceptable limits (optional)
+        const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxFileSizeInBytes) {
+          console.log('Selected file size exceeds the allowed limit.');
+          // You can show a message to the user or perform any other action here.
+          return;
+        }
+      
+        // If the file is valid, set the avatarFile state and display the image using temporary URL
+        setAvatarFile(file);
+        setImageUrl(URL.createObjectURL(file));
+      };
+      
       
     /*
     after the avatar image is uploaded to the back-end and 
@@ -77,12 +98,17 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
               body: formData,
             });
       
-            const data = await response.json();
-            avatarUrl = data.imageUrl;
-      
-            console.log("Avatar URL from Cloudinary:", avatarUrl);
-            // Set the Cloudinary URL for the avatar
-            setImageUrl(avatarUrl);
+            if (!response.ok) {
+              // Log the response status and text if the response is not okay
+              console.log("Error response status:", response.status);
+              console.log("Error response text:", await response.text());
+            } else {
+              const data = await response.json();
+              avatarUrl = data.imageUrl;
+              console.log("Avatar URL from Cloudinary:", avatarUrl);
+              // Set the Cloudinary URL for the avatar
+              setImageUrl(avatarUrl);
+            }
           }
       
           // Update the username and JWT tokens
