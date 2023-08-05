@@ -1,13 +1,10 @@
-import { Controller, Req, Post, UseInterceptors, InternalServerErrorException, UploadedFile, Logger } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, InternalServerErrorException, UploadedFile, Logger, UnauthorizedException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
+import { GetCurrentUserId } from '../common/custom-decorators/get-current-user-id.decorator';
 import { unlinkSync } from 'fs';
-
-// import { PrismaClient } from '@prisma/client';
-
-// const prisma = new PrismaClient();
 
 @Controller('avatars')
 export class AvatarsController {
@@ -16,39 +13,27 @@ export class AvatarsController {
   constructor(
     private readonly cloudinaryService: CloudinaryService,
     private readonly usersService: UsersService,
-    ) {}
+  ) {}
 
   @Public()
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  // uploadavatar() {
-    // }
-    /* @UseInterceptors decorator tells that the file field in the front form data 
-    will be used to pass the uploaded file to this method (uploadAvatar) 
-    It use the Multer middleware set up in main.ts to process the uploaded file. */ 
-    async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
-      /*  @UploadedFile() decorator tells NestJS that we want to access the uploaded file 
-      in this method. 
-      It's like a "getter" for the file that Multer processed. */ 
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @GetCurrentUserId() userId: number,
+  ) {
     try {
       this.logger.log('Received file in uploadAvatar controller:', file);
+
+      if (!userId) {
+        throw new UnauthorizedException('Missing JWT token');
+      }
+
       // Upload the image to Cloudinary using the CloudinaryService
       const imageUrl = await this.cloudinaryService.uploadAvatar(file);
 
-      // Check if the user is authenticated (i.e., has a JWT token)
-      if (req.user) {
-        // User is authenticated, associate the avatar with the authenticated user
-        const userId = req.user.sub;
-        await this.usersService.updateAvatar(userId, imageUrl);
-      } else {
-        // req.session.avatarUrl = imageUrl; // Set avatarUrl on req.session
-        if (req.session) {
-          req.session.avatarUrl = imageUrl; // Set avatarUrl on req.session
-        } else {
-          // If req.session is undefined, you can consider logging an error or handling it differently
-          console.error('req.session is not defined');
-        }
-      }
+      // Associate the avatar with the authenticated user
+      await this.usersService.updateAvatar(userId, imageUrl);
 
       this.logger.log('Avatar uploaded successfully.');
       return { imageUrl };

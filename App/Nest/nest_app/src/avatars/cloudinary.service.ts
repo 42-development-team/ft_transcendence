@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
+import { Public } from '../auth/public.routes';
 
 @Injectable()
 export class CloudinaryService {
@@ -13,13 +14,19 @@ export class CloudinaryService {
     });
   }
 
-  async uploadAvatar(file: any): Promise<string> {
+  @Public()
+  async uploadAvatar(file: Express.Multer.File): Promise<string> {
     try {
       console.log('File object in uploadAvatar:', file);
 
+      // Convert the Buffer to a base64 string
+      const base64String = file.buffer.toString('base64');
+
       // Upload the image passed by the controller uploadAvatar method
       // to Cloudinary and get the image URL
-      const result = await cloudinary.uploader.upload(file.path);
+      const result = await cloudinary.uploader.upload(`data:${file.mimetype};base64,${base64String}`, {
+        // Set any additional options for Cloudinary upload if needed
+      });
 
       return result.secure_url;
     } catch (error) {
