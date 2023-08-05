@@ -13,8 +13,11 @@ import * as session from 'express-session';
 import { randomBytes } from 'crypto';
 
 
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['debug'], 
+  });
   const configService = app.get(ConfigService);
   const appService = app.get(AppService);
   const secretKey = randomBytes(32).toString('hex');

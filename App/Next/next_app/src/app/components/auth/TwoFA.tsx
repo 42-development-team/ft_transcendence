@@ -86,7 +86,6 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		  });
 	  
 		  if (response.ok) {
-			// If the API call is successful, update the component state accordingly
 			setActivTwoFA(false);
 			setEnableBtnActivated(true);
 			setCancelDisable(true);
@@ -98,7 +97,6 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			setEnableBtnText('Enable 2FA ?');
 			setMessage("Two Factor Auth disabled");
 		  } else {
-			// Handle any error cases here
 			console.log("Error turning off 2FA:", response.status);
 		  }
 		} catch (error) {
@@ -126,8 +124,6 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			return;
 		  }
 		} else {
-		  // If 2FA is currently disabled, you can handle the logic to turn it on here.
-		  // For example, you can call a function to enable 2FA and update the backend accordingly.
 		  try {
 			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
 		  } catch (error) {
@@ -136,7 +132,6 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		  }
 		}
 		
-		// Update the component state based on whether 2FA is enabled or disabled after the submission
 		setActivTwoFA(!activTwoFA);
 		setEnableBtnActivated(!activTwoFA);
 		setDisableBtnActivated(activTwoFA);

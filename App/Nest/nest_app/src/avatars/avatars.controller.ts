@@ -1,15 +1,18 @@
-import { Controller, Req, Post, UseInterceptors, InternalServerErrorException, UploadedFile } from '@nestjs/common';
+import { Controller, Req, Post, UseInterceptors, InternalServerErrorException, UploadedFile, Logger } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
+import { unlinkSync } from 'fs';
 
 @Controller('avatars')
 export class AvatarsController {
+  private readonly logger = new Logger(AvatarsController.name);
+
   constructor(
     private readonly cloudinaryService: CloudinaryService,
-    private readonly usersService: UsersService
-  ) {}
+    private readonly usersService: UsersService,
+    ) {}
 
   @Public()
   @Post('upload')
@@ -22,7 +25,7 @@ export class AvatarsController {
     in this method. 
     It's like a "getter" for the file that Multer processed. */ 
     try {
-      console.log('Uploading avatar...');
+      this.logger.log('Received file in uploadAvatar controller:', file);
       // Upload the image to Cloudinary using the CloudinaryService
       const imageUrl = await this.cloudinaryService.uploadAvatar(file);
 
@@ -41,10 +44,17 @@ export class AvatarsController {
         }
       }
 
-      console.log('Avatar uploaded successfully.');
+      this.logger.log('Avatar uploaded successfully.');
       return { imageUrl };
     } catch (error) {
       console.error('Error uploading avatar:', error);
+      if (file?.path) {
+        try {
+          unlinkSync(file.path); // Remove the uploaded file from the filesystem
+        } catch (cleanupError) {
+          console.error('Error cleaning up uploaded file:', cleanupError);
+        }
+      }
       throw new InternalServerErrorException('Avatar upload failed');
     }
   }

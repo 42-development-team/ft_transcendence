@@ -15,6 +15,8 @@ export class CloudinaryService {
 
   async uploadAvatar(file: any): Promise<string> {
     try {
+      console.log('File object in uploadAvatar:', file);
+
       // Upload the image passed by the controller uploadAvatar method
       // to Cloudinary and get the image URL
       const result = await cloudinary.uploader.upload(file.path);
