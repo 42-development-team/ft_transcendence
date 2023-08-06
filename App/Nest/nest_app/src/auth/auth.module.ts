@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guards';
 import { APP_GUARD } from '@nestjs/core';
 import { TwoFAModule } from './2FA/2FA.module';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
     imports: [
@@ -25,7 +26,7 @@ import { ConfigService } from '@nestjs/config';
         })
     ],
     controllers: [AuthController],
-    providers: [AuthService, FortyTwoStrategy, JwtStrategy,
+    providers: [AuthService, FortyTwoStrategy, JwtStrategy, PrismaService,
     {
         provide: APP_GUARD,
         useClass: JwtAuthGuard,

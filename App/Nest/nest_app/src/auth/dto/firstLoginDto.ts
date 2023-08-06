@@ -1,5 +1,5 @@
 
 export class FirstLoginDto {
-    newUsername?: string
-    userId?: string
+    newUsername?: string;
+    userId?: string;
 }
