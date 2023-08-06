@@ -7,12 +7,14 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
+import { PrismaService } from '../prisma/prisma.service'
 
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
+        private prismaService: PrismaService,
         private authService: AuthService,
         private userService: UsersService,
     ) {}
@@ -143,15 +145,40 @@ export class AuthController {
 	// 	}
 	// }
 
+    // @Public()
+	// @Put('firstLogin/updateUsername')
+	// async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+	// 	try {
+	// 		await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
+	// 	} catch (error) {
+	// 		return error;
+	// 	}
+	// }
     @Public()
-	@Put('firstLogin/updateUsername')
-	async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-		try {
-			await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
-		} catch (error) {
-			return error;
-		}
-	}
+    @Put('firstLogin/updateUsername')
+    async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+    console.log('Received update data:', updateData);
+        try {
+            const userId = Number(updateData.userId);
+            console.log('Parsed userId:', userId);
+            console.log('New username:', updateData.newUsername);
+
+            
+            const updatedUser = await this.prismaService.user.update({
+            where: { id: userId }, 
+            data: { username: updateData.newUsername },
+            });
+            
+            console.log('Updated user:', updatedUser);
+            return updatedUser;
+        } catch (error) {
+            console.error('Error updating username:', error);
+            throw error;
+        }
+    }
+
+    
+      
 
     @Public()
 	@Get('firstLogin/getUser/:userId')

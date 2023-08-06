@@ -31,15 +31,10 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
 
     let inputUserName: string;
-    // const [jwtToken, setJwtToken] = useState('');
 
 
     useEffect(() => {
-      // const fetchJwtToken = () => {
-      //   const cookies = parseCookies();
-      //   const token = cookies.jwt;
-      //   setJwtToken(token);
-      // };
+ 
         try {
             getUserName(userId);
         } catch (error) {
@@ -105,14 +100,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
    const handleClick = async () => {
   try {
     setWaiting2fa(false);
-
-    // const cookies = parseCookies(); // Use the parseCookies function to get the cookies
-    // const jwtToken = cookies.jwt; // Access the 'jwt' cookie
-
-    // console.log("JWT Token:", jwtToken);
-
-
-    // Upload the avatar if it's selected
     let avatarUrl = null;
     if (avatarFile) {
       const formData = new FormData();
@@ -122,35 +109,50 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
       const response = await fetch(`${process.env.BACK_URL}/avatars/upload`, {
         method: "POST",
         body: formData,
-        // headers: {
-        //   "Authorization": `Bearer ${jwtToken}`,
-        // },
       });
 
       if (!response.ok) {
-        // Log the response status and text if the response is not okay
         console.log("Error response status:", response.status);
         console.log("Error response text:", await response.text());
       } else {
         const data = await response.json();
         avatarUrl = data.imageUrl;
         console.log("Avatar URL from Cloudinary:", avatarUrl);
-        // Set the Cloudinary URL for the avatar
         setImageUrl(avatarUrl);
       }
     }
 
-    // Get the JWT token from localStorage (you can use sessionStorage if needed)
+    
 
-    // Update the username and JWT tokens
-    const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
+    // const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
+    //   method: "PUT",
+    //   body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+
+    const inputUserName = (document.getElementById('username') as HTMLInputElement)?.value;
+
+    if (!inputUserName || inputUserName.length < 3 || inputUserName.length > 15) {
+      setMessage("Username must be at least 3 characters long, and at most 15 characters long");
+      setValidateEnabled(false);
+      setIsVisible(true);
+      return;
+    }
+    const updateData = {
+      newUsername: inputUserName,
+      userId: userId, // Send the userId as a string
+    };
+    
+    const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
       method: "PUT",
-      body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
+      body: JSON.stringify(updateData),
       headers: {
         "Content-Type": "application/json",
-        // "Authorization": `Bearer ${jwtToken}`, // Include the JWT token in the request headers
       },
     });
+    
 
     if (usernameUpdateResponse.ok) {
       console.log("Username updated successfully");
