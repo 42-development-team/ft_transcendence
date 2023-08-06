@@ -28,6 +28,8 @@ export class CloudinaryService {
         // Set any additional options for Cloudinary upload if needed
       });
 
+      console.log('Cloudinary response:', result);
+
       return result.secure_url;
     } catch (error) {
       console.error('Error uploading avatar to Cloudinary:', error);

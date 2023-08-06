@@ -1,9 +1,9 @@
-import { Controller, Post, UseInterceptors, InternalServerErrorException, UploadedFile, Logger, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, UseInterceptors, InternalServerErrorException, UploadedFile, Logger, UnauthorizedException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
-import { GetCurrentUserId } from '../common/custom-decorators/get-current-user-id.decorator';
+// import { GetCurrentUserId } from '../common/custom-decorators/get-current-user-id.decorator';
 import { unlinkSync } from 'fs';
 
 @Controller('avatars')
@@ -20,21 +20,29 @@ export class AvatarsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
-    @GetCurrentUserId() userId: number,
+    @Body('userID') userId: string, // Accept userId from the request body as a string
   ) {
     try {
-      this.logger.log('Received file in uploadAvatar controller:', file);
-
+      // this.logger.log('Received file in uploadAvatar controller:', file);
+  
       if (!userId) {
-        throw new UnauthorizedException('Missing JWT token');
+        throw new UnauthorizedException('Missing user ID');
       }
-
+  
+      // Convert the userId to a number
+      const userIdNumber = Number(userId);
+  
+      // Check if the userIdNumber is a valid number
+      if (isNaN(userIdNumber) || !Number.isInteger(userIdNumber) || userIdNumber <= 0) {
+        throw new BadRequestException('Invalid user ID');
+      }
+  
       // Upload the image to Cloudinary using the CloudinaryService
       const imageUrl = await this.cloudinaryService.uploadAvatar(file);
-
+  
       // Associate the avatar with the authenticated user
-      await this.usersService.updateAvatar(userId, imageUrl);
-
+      await this.usersService.updateAvatar(userIdNumber, imageUrl); // Use userIdNumber
+  
       this.logger.log('Avatar uploaded successfully.');
       return { imageUrl };
     } catch (error) {
@@ -49,4 +57,6 @@ export class AvatarsController {
       throw new InternalServerErrorException('Avatar upload failed');
     }
   }
+  
 }
+

@@ -1,9 +1,22 @@
 "use client";
-// import CustomBtn from "@/components/CustomBtn";
-import FirstLoginBtn from "../FirstLoginBtn";
-import TwoFA from "@/app/components/auth/TwoFA";
+// // import CustomBtn from "@/components/CustomBtn";
+// import FirstLoginBtn from "../FirstLoginBtn";
+// import TwoFA from "@/app/components/auth/TwoFA";
+// import { ChangeEvent, useState, useEffect } from 'react';
+// import Image from "next/image";
+
+import { GetServerSidePropsContext } from 'next';
+// import { useRouter } from 'next/router';
 import { ChangeEvent, useState, useEffect } from 'react';
-import Image from "next/image";
+import Image from 'next/image';
+import FirstLoginBtn from '../FirstLoginBtn';
+import TwoFA from '@/app/components/auth/TwoFA';
+// import { NextPage } from 'next';
+// import { parseCookies } from 'nookies'; // Import the parseCookies function
+
+interface FirstLoginPageProps {
+  userId: string;
+}
 
 
 
@@ -14,12 +27,19 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     const [validateEnabled, setValidateEnabled] = useState(true);
     const [placeHolder, setPlaceHolder]         = useState('');
     const [waiting2fa, setWaiting2fa]           = useState(true);
-    const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile]           = useState<File | null>(null);
+    const [imageUrl, setImageUrl]               = useState<string | null>(null);
 
     let inputUserName: string;
+    // const [jwtToken, setJwtToken] = useState('');
+
 
     useEffect(() => {
+      // const fetchJwtToken = () => {
+      //   const cookies = parseCookies();
+      //   const token = cookies.jwt;
+      //   setJwtToken(token);
+      // };
         try {
             getUserName(userId);
         } catch (error) {
@@ -86,15 +106,25 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
   try {
     setWaiting2fa(false);
 
+    // const cookies = parseCookies(); // Use the parseCookies function to get the cookies
+    // const jwtToken = cookies.jwt; // Access the 'jwt' cookie
+
+    // console.log("JWT Token:", jwtToken);
+
+
     // Upload the avatar if it's selected
     let avatarUrl = null;
     if (avatarFile) {
       const formData = new FormData();
       formData.append("file", avatarFile);
+      formData.append("userID", userId);
 
       const response = await fetch(`${process.env.BACK_URL}/avatars/upload`, {
         method: "POST",
         body: formData,
+        // headers: {
+        //   "Authorization": `Bearer ${jwtToken}`,
+        // },
       });
 
       if (!response.ok) {
@@ -111,7 +141,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     }
 
     // Get the JWT token from localStorage (you can use sessionStorage if needed)
-    const jwtToken = localStorage.getItem('jwtToken');
 
     // Update the username and JWT tokens
     const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
@@ -119,7 +148,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
       body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwtToken}`, // Include the JWT token in the request headers
+        // "Authorization": `Bearer ${jwtToken}`, // Include the JWT token in the request headers
       },
     });
 
@@ -256,15 +285,37 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     <TwoFA userId={userId}></TwoFA>
                 </div>
             }
-            <FirstLoginBtn onClick={async () => await handleClick()} disable={!validateEnabled}>
-                Validate
+            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled}>
+              Validate
             </FirstLoginBtn>
+
             {/* <CustomBtn disable={!validateEnabled} onClick={handleClick}>
                 Validate
             </CustomBtn> */}
         </div>
     )
 }
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { userId } = context.query;
+
+  // Add a check for valid userId
+  if (!userId || typeof userId !== 'string') {
+    return {
+      redirect: {
+        destination: '/error-page', // Redirect to an error page when userId is missing or invalid
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userId,
+    },
+  };
+}
+
 
 export default FirstLoginPageComponent;
 
