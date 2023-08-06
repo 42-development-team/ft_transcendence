@@ -6,7 +6,7 @@ import { Public } from '../auth/public.routes';
 @Injectable()
 export class CloudinaryService {
   constructor(private configService: ConfigService) {
-    // Initialize Cloudinary with the data we stored in the .env file
+    // Initialize Cloudinary with the data stored in the .env file
     cloudinary.config({
       cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
       api_key: this.configService.get('CLOUDINARY_API_KEY'),
@@ -25,7 +25,6 @@ export class CloudinaryService {
       // Upload the image passed by the controller uploadAvatar method
       // to Cloudinary and get the image URL
       const result = await cloudinary.uploader.upload(`data:${file.mimetype};base64,${base64String}`, {
-        // Set any additional options for Cloudinary upload if needed
       });
 
       console.log('Cloudinary response:', result);

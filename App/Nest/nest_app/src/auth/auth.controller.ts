@@ -145,15 +145,6 @@ export class AuthController {
 	// 	}
 	// }
 
-    // @Public()
-	// @Put('firstLogin/updateUsername')
-	// async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-	// 	try {
-	// 		await this.userService.updateUsername(Number(updateData.userId), updateData.newUsername);
-	// 	} catch (error) {
-	// 		return error;
-	// 	}
-	// }
     @Public()
     @Put('firstLogin/updateUsername')
     async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {

@@ -1,19 +1,9 @@
 "use client";
-// // import CustomBtn from "@/components/CustomBtn";
-// import FirstLoginBtn from "../FirstLoginBtn";
-// import TwoFA from "@/app/components/auth/TwoFA";
-// import { ChangeEvent, useState, useEffect } from 'react';
-// import Image from "next/image";
-
 import { GetServerSidePropsContext } from 'next';
-// import { useRouter } from 'next/router';
 import { ChangeEvent, useState, useEffect } from 'react';
 import Image from 'next/image';
 import FirstLoginBtn from '../FirstLoginBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
-// import { NextPage } from 'next';
-// import { parseCookies } from 'nookies'; // Import the parseCookies function
-
 interface FirstLoginPageProps {
   userId: string;
 }
@@ -71,22 +61,17 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
           return;
         }
       
-        // Check if the selected file is an image (optional)
         if (!file.type.startsWith('image/')) {
           console.log('Selected file is not an image.');
-          // You can show a message to the user or perform any other action here.
           return;
         }
       
-        // Check if the selected file size is within acceptable limits (optional)
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
           console.log('Selected file size exceeds the allowed limit.');
-          // You can show a message to the user or perform any other action here.
           return;
         }
       
-        // If the file is valid, set the avatarFile state and display the image using temporary URL
         setAvatarFile(file);
         setImageUrl(URL.createObjectURL(file));
       };
@@ -122,16 +107,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
       }
     }
 
-    
-
-    // const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername/`, {
-    //   method: "PUT",
-    //   body: JSON.stringify({ newUsername: inputUserName, userId: userId }),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-
     const inputUserName = (document.getElementById('username') as HTMLInputElement)?.value;
 
     if (!inputUserName || inputUserName.length < 3 || inputUserName.length > 15) {
@@ -142,7 +117,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
     }
     const updateData = {
       newUsername: inputUserName,
-      userId: userId, // Send the userId as a string
+      userId: userId, 
     };
     
     const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
@@ -195,7 +170,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
                 method: "GET",
             });
-            // const isUserAlreadyTaken = await response.json();
             const data = await response.json();
             const isUserAlreadyTaken = data.isUsernameTaken;
             const isUsernameSameAsCurrent = inputUserName === placeHolder;
@@ -265,9 +239,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
                     />
                 </div>
                 )}
-                {/* <input type="file" accept="image/*" onChange={handleAvatarChange}/> */}
                 <div className="mt-2" style={{ marginTop: "20px" }}>
-                    {/* Custom label for file input */}
                     <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold"}}>
                     {imageUrl ? "Change Avatar" : "Choose Avatar"}
                     </label>
@@ -290,10 +262,6 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
             <FirstLoginBtn onClick={handleClick} disable={!validateEnabled}>
               Validate
             </FirstLoginBtn>
-
-            {/* <CustomBtn disable={!validateEnabled} onClick={handleClick}>
-                Validate
-            </CustomBtn> */}
         </div>
     )
 }
@@ -301,11 +269,10 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { userId } = context.query;
 
-  // Add a check for valid userId
   if (!userId || typeof userId !== 'string') {
     return {
       redirect: {
-        destination: '/error-page', // Redirect to an error page when userId is missing or invalid
+        destination: '/error-page', // TBC
         permanent: false,
       },
     };
