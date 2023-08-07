@@ -1,13 +1,19 @@
+"use client";
 import ChatBar from "@/components/chat/ChatBar";
+import { UnderlineTabs } from "../components/profile/tabs";
 
 export default function Profile() {
     return (
-        <div className=" flex flex-full w-full h-full">
+        <div className=" flex flex-row w-full h-full">
             <ChatBar />
-            <div className=" py-8 px-10 my-20 mx-12 w-full h-[85vh] grid sm:grid-cols-2 gap-x-36 gap-y-20 rounded">
-                <div className=" transition hover:duration-[550ms] rounded-lg bg-surface0 flex hover:shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]"></div>
-                <div className="rounded-lg hover:duration-[550ms] hover:border-4 hover:border-surface1 bg-surface0 flex hover:shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]"></div>
-            </div>
+            <div className="flex flex-col w-full h-full mx-5">
+                <div className=" font-semibold text-gray-400 text-center h-[15vh] mt-3 transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+                    Stats <br /><br /><br /> Here Stats Component(s) will be rendered
+                </div>
+                <div className=" h-[72vh] mt-6 rounded-lg transition hover:duration-[550ms] bg-surface0  hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+                    <UnderlineTabs />
+                </div>
+                </div>
         </div>
     )
  }
