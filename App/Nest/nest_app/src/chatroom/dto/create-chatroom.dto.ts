@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsIn, IsOptional, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsIn, IsOptional, IsArray } from 'class-validator';
 
 export class CreateChatroomDto {
     @IsNotEmpty()
