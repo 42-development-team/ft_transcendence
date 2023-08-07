@@ -1,5 +1,5 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Socket } from "socket.io";
+import { Socket, Server } from "socket.io";
 import { ChatService } from "./chat.service";
 
 @WebSocketGateway({cors: {
@@ -11,7 +11,7 @@ export class ChatGateway {
     constructor(private ChatService: ChatService)  {}
 
     @WebSocketServer()
-    server;
+    server: Server;
 
     @SubscribeMessage('message')
     async handleMessage(
@@ -21,8 +21,6 @@ export class ChatGateway {
         const user = await this.ChatService.getUserFromSocket(client);
 
         // Todo: add the message to the database
-
-        console.log("Message received: " + message + " from ID " + user.username);
         this.server.emit('new-message', 
             {message, user}
         );
