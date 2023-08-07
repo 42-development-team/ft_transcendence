@@ -2,7 +2,6 @@ import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { useEffect } from "react";
-import { UserStatus } from "@/app/utils/models";
 import ChannelItem from "./ChannelItem";
 
 const JoinChannel = () => {
