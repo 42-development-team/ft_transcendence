@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import QrCodeDisplay from "./QrCodeDisplay";
@@ -14,7 +15,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   const [inputValue, setInputValue] = useState('');
   const [displayBox, setDisplayBox] = useState<Boolean>(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [enableBtnText, setEnableBtnText] = useState<string>('Enable 2FA ?')
+  const [enableBtnText, setEnableBtnText] = useState<string>('Enable 2FA?')
   const [cancelDisable, setCancelDisable] = useState<boolean>(true);
   const [message, setMessage] = useState('');
   const [colorClick, setColor] = useState<string>('bg-mauve');
@@ -94,7 +95,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			setImageUrl('');
 			setColor('bg-mauve');
 			setColorText('text-green-700');
-			setEnableBtnText('Enable 2FA ?');
+			setEnableBtnText('Enable 2FA?');
 			setMessage("Two Factor Auth disabled");
 		  } else {
 			console.log("Error turning off 2FA:", response.status);
