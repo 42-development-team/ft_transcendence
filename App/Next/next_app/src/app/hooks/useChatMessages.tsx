@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { generateFakeMessage } from "../utils/helpers";
 import { Author, MessageModel } from "../utils/models";
 import useChatConnection from "./useChatConnection";
 
@@ -12,14 +11,9 @@ const welcomeMessage: MessageModel = {
     content: '👋 Welcome to the Chat 👋',
 }
 
-// const fakeMessages: MessageModel[] = Array(20)
-//     .fill(null)
-//     .map(() => generateFakeMessage())
-
 export default function useChatMessages() {
     const [messages, setMessages] = useState<MessageModel[]>([
         welcomeMessage,
-        // ...fakeMessages
     ])
 
     const socket = useChatConnection();
@@ -49,12 +43,17 @@ export default function useChatMessages() {
 
     useEffect(() => {
         // socket?.on('message', (msg: MessageModel) => {
-        socket?.on('new-message', (msg: string) => {
-            console.log("New message: " + msg);
+        // socket?.on('new-message', ({msg, user} : {msg: string, user: any}) => {
+        socket?.on('new-message', (content: {message: string, user: any}) => {
+            console.log("New message: " + content.message + " from user: " + content.user);
             const newMessage: MessageModel = {
                 id: Math.random().toString(36),
-                author: FakeAuthor,
-                content: msg,
+                // Todo: manage colors for each user
+                author: {
+                    rgbColor: 'darkorchid',
+                    username: content.user.username,
+                },
+                content: content.message,
             }
             appendNewMEssage(newMessage);
         })
