@@ -11,6 +11,8 @@
   "dependencies": {
     "@catppuccin/palette": "^0.1.8",
     "@cloudinary/react": "^1.11.2",
+    "@heroicons/react": "^2.0.18",
+    "@material-tailwind/react": "^2.0.8",
     "@types/node": "20.3.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
@@ -38,6 +40,7 @@
     "@catppuccin/tailwindcss": "^0.1.6",
     "@cloudinary/react": "^1.11.2",
     "@faker-js/faker": "^8.0.2",
+    "@heroicons/react": "^2.0.18",
     "api-utils": "^0.0.2",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",

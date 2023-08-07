@@ -32,12 +32,12 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
         }
     }, []);
 
+    /* called on page load, set the placeholder with default username */
     const getUserName = async (userId: string) => {
         const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
             method: "GET",
         });
         const data = await response.json();
-        
         setPlaceHolder(data.username);
         inputUserName = data.username;
     }
@@ -150,7 +150,7 @@ const FirstLoginPageComponent = ({userId}: {userId: string}) => {
 };
 
       
-
+/* handle change of username input */
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
             inputUserName = e.target.value;
