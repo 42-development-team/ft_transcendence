@@ -8,8 +8,15 @@ import { generateFakeChannel } from "../utils/helpers";
 //     .map(() => generateFakeChannel())
 
 export default function useChannels() {
+
+    const testChannel : ChannelModel = {
+        id: 'test-channel',
+        name: 'test-channel',
+        icon: '',
+    }
+
     const [channels, setChannels] = useState<ChannelModel[]>([
-        // ...fakeChannels,
+        testChannel,
     ])
 
     // const socket = useChatConnection();

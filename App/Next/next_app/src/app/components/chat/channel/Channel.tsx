@@ -12,9 +12,12 @@ const Channel = ({channel :{name, icon}}: ChannelProps) => {
     return (
         <li className={styles.channelItem}>
             <button onClick={openChat} className='rounded-[inherit] w-[inherit] h-[inherit] relative'>
-                <Image alt="Channel Icon" fill src={icon} 
-                sizes=" 100vw, 100vw"
-                className="rounded-[inherit]" />
+                {icon === '' ?
+                    <p className='text-xs'>{name}</p> :
+                    <Image alt="Channel Icon" fill src={icon} 
+                    sizes=" 100vw, 100vw"
+                    className="rounded-[inherit]" />
+                }
                 <h4 className={styles.channelName} >{name}</h4>
             </button>
         </li>
