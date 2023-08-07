@@ -32,8 +32,11 @@ const Game = () => {
 		speed: [0, 0],
 	}
 
-	// return <Canvas player1={p1} player2={p2} ball={ball} width={window.innerWidth} height={window.innerHeight} />;
-	return <Canvas player1={p1} player2={p2} ball={ball} />;
+	return (
+		// <div className='items-center'>
+			<Canvas player1={p1} player2={p2} ball={ball} />
+		// </div>
+	);
 }
 
 export default Game;

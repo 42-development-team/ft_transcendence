@@ -10,10 +10,18 @@ import React, { useRef, useEffect, useState } from "react";
 // redraw only the regions that have to and not all canvas
 
 // ============================================ // 
+// update canvas every 1/60 sec
+// move ball in random direction
+// add hit box on canvas border
+// bounce on borders
+// delete hit box on left abd rigth canvas's sides
+// count points on canvas's sides
+// add hit box on paddle
+// ============================================ // 
 
 const canvasStyle: any = {
 	backgroundColor: '#009BD7',
-	width: '100%',
+	width: '80%',
 };
 
 const drawBall = (context: CanvasRenderingContext2D, ball: BallInterface, width: number, height: number) => {
@@ -51,24 +59,26 @@ const Canvas = ({ ...props }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-
 			const canvas = canvasRef.current;
 			if (!canvas)
 				return ;
 			const context = canvas.getContext('2d');
 			if (!context)
 				return ;
-			height = width * 0.56;
+			height = width * (9 / 16);
+
+			// ======================== //
+			// Do we want to loose canvas in height
+			// or to play in a stamp
+
 			renderGame(context, props, width, height);
 	}, [width]);
 
 	useEffect(() => {
 		function resize() {
-
 			const canvas = canvasRef.current;
 			if (!canvas)
 				return ;
-			
 			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
 		}
 		window.addEventListener('resize', resize);
@@ -76,7 +86,7 @@ const Canvas = ({ ...props }) => {
 
 	return (
 		<div className="canvas w-full">
-			<canvas id = "cnv" style={canvasStyle} width={width} height={width * 0.56} ref={canvasRef} />
+			<canvas id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
 }
