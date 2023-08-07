@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useState } from "react";
 import { Author, MessageModel } from "../utils/models";
 import useChatConnection from "./useChatConnection";
@@ -42,8 +43,6 @@ export default function useChatMessages() {
     }
 
     useEffect(() => {
-        // socket?.on('message', (msg: MessageModel) => {
-        // socket?.on('new-message', ({msg, user} : {msg: string, user: any}) => {
         socket?.on('new-message', (content: {message: string, user: any}) => {
             console.log("New message: " + content.message + " from user: " + content.user);
             const newMessage: MessageModel = {
@@ -59,8 +58,6 @@ export default function useChatMessages() {
         })
 
         return () => {
-            // unsubscribe from the event when unmounting
-            console.log(`unsubscribing from new-message event`)
             socket?.off('new-message')
         }
     }, [appendNewMEssage , socket ])

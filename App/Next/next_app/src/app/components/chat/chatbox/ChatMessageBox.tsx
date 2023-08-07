@@ -6,12 +6,10 @@ import Image from 'next/image';
 import { forwardRef } from 'react';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import SendMessageForm from './SendMessageForm';
-import useChatMessages from '@/app/hooks/useChatMessages';
 import style from '../Chat.module.css';
 
-const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[]}> (({ messages }, ref ) => {
+const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[], send : (message: string) => void}> (({ messages, send }, ref) => {
     
-    const {send} = useChatMessages();
     const MessageList = messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
