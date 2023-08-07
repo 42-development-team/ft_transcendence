@@ -32,7 +32,6 @@ export default function useChatMessages() {
 
     const send = useCallback(
         (message: string) => {
-            console.log(`Sending message: ${message}`);
             socket?.emit('message', message);
         }, 
         [socket]
@@ -40,7 +39,6 @@ export default function useChatMessages() {
 
     useEffect(() => {
         socket?.on('new-message', (content: {message: string, user: any}) => {
-            console.log("New message: " + content.message + " from user: " + content.user);
             const newMessage: MessageModel = {
                 // Todo : use correct id
                 id: Math.random().toString(36),

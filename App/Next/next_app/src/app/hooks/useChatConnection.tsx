@@ -21,6 +21,7 @@ export default function useChatConnection() {
     useEffect(() => {
         console.log('Connecting to socket.io server...');
         const socket = connect();
+        console.log('Connected to socket.io server');
         setSocket(socket);
 
         return () => {
