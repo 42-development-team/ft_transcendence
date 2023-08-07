@@ -10,6 +10,13 @@ import { ChatService } from "./chat.service";
 export class ChatGateway {
     constructor(private ChatService: ChatService)  {}
 
+    // Todo: onModuleInit()
+        // OnNewConnection()
+            // Check for verifiedJWT in socket and disconnect if not OK
+            // Connect the user back to all of this channels
+        // OnDisconnect()
+
+
     @WebSocketServer()
     server: Server;
 
