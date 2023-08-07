@@ -104,7 +104,7 @@ export class UsersService {
             const createUserDto: CreateUserDto = {
             login: login,
             username: login,
-            avatar: '',
+            avatar: "noavatar.jpg",
             isTwoFAEnabled: false,
             twoFAsecret: "",
             isFirstLogin: true,
