@@ -43,15 +43,15 @@ const JoinChannel = () => {
                     </span>
                 </div>
                 {/* List of public channels */}
-                <ChannelItem channel={{id:"1", name: 'General', icon: ''}} />
+                {/* <ChannelItem channel={{id:"1", name: 'General', icon: ''}} /> */}
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>
                         Private channels 🔒
                     </span>
                 </div>
                 {/* List of private channels */}
-                <ChannelItem channel={{id:"1", name: 'Private 1', icon: ''}} />
-                <ChannelItem channel={{id:"1", name: 'Private 2', icon: ''}} />
+                {/* <ChannelItem channel={{id:"1", name: 'Private 1', icon: ''}} /> */}
+                {/* <ChannelItem channel={{id:"1", name: 'Private 2', icon: ''}} /> */}
             </div>
         </div>
     )
