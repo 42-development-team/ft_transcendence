@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Author, MessageModel } from "../utils/models";
+import { MessageModel } from "../utils/models";
 import useChatConnection from "./useChatConnection";
 
 const welcomeMessage: MessageModel = {
@@ -37,15 +37,12 @@ export default function useChatMessages() {
         }, 
         [socket]
     )
-    const FakeAuthor : Author = {
-        rgbColor: 'darkorchid',
-        username: 'ChatBot',
-    }
 
     useEffect(() => {
         socket?.on('new-message', (content: {message: string, user: any}) => {
             console.log("New message: " + content.message + " from user: " + content.user);
             const newMessage: MessageModel = {
+                // Todo : use correct id
                 id: Math.random().toString(36),
                 // Todo: manage colors for each user
                 author: {

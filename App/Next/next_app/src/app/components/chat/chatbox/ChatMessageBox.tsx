@@ -9,7 +9,6 @@ import SendMessageForm from './SendMessageForm';
 import style from '../Chat.module.css';
 
 const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[], send : (message: string) => void}> (({ messages, send }, ref) => {
-    
     const MessageList = messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
@@ -26,6 +25,7 @@ const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[], se
 
 // Todo: merge with ChatParticipantsHeader
 const ChatMessageBoxHeader = () => {
+    // Todo: pick correct channel name 
     const {closeChat, toggleChatMembersVisibility: toggleChatParticipantVisibility} = useChatBarContext();
     return (
         <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
@@ -36,7 +36,6 @@ const ChatMessageBoxHeader = () => {
                 </svg>
             </button>
             <span className='font-semibold align-middle pt-2 pr-2'>
-                {/* Todo: pick correct channel name */}
                 Channel Name
             </span>
             <button onClick={closeChat} >
