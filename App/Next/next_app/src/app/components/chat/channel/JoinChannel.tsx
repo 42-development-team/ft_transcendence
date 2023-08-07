@@ -1,16 +1,59 @@
-import style from '../Chat.module.css';
+import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
+import Image from 'next/image';
+import { useEffect } from "react";
+import ChannelItem from "./ChannelItem";
 
 const JoinChannel = () => {
+
+    const {toggleChannelJoinVisibility} = useChatBarContext();
+
+    // const getChannels = async () => {
+    //     console.log("Load channel list");
+    //     try {
+    //         const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
+    //         const data = await response.json();
+    //         console.log(data);
+    //     }
+    //     catch (err) {
+    //         console.log(err);
+    //     }
+    // }
+
+    useEffect(() => {
+        // getChannels();
+    }, [])
+    
     return (
-        <li className={style.channelItem}>
-            <button onClick={() => console.log("Join a channel")} className='rounded-[inherit] w-[inherit] h-[inherit]'>
-                <svg viewBox="0 0 24 24" aria-hidden="false" width={"48"} height={"48"} className={style.channelIcon}>
-                    <path fillRule="evenodd" fill="currentColor" d="M15 10.5C15 12.9853 12.9853 15 10.5 15C8.01472 15 6 12.9853 6 10.5C6 8.01472 8.01472 6 10.5 6C12.9853 6 15 8.01472 15 10.5ZM14.1793 15.2399C13.1632 16.0297 11.8865 16.5 10.5 16.5C7.18629 16.5 4.5 13.8137 4.5 10.5C4.5 7.18629 7.18629 4.5 10.5 4.5C13.8137 4.5 16.5 7.18629 16.5 10.5C16.5 11.8865 16.0297 13.1632 15.2399 14.1792L20.0304 18.9697L18.9697 20.0303L14.1793 15.2399Z"></path>
-                </svg>
-                <h4 className={style.channelName}>Join channel</h4>
-            </button>
-        </li>
-    );
+        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+            <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
+                <span className='font-semibold align-middle pl-2 pt-2'>
+                    Join a channel
+                </span>
+                <button onClick={toggleChannelJoinVisibility} >
+                    <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
+                </button>
+            </div>
+            <div className='overflow-auto h-[86vh]'>
+                
+                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>
+                        Public channels 📢
+                    </span>
+                </div>
+                {/* List of public channels */}
+                {/* <ChannelItem channel={{id:"1", name: 'General', icon: ''}} /> */}
+                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>
+                        Private channels 🔒
+                    </span>
+                </div>
+                {/* List of private channels */}
+                {/* <ChannelItem channel={{id:"1", name: 'Private 1', icon: ''}} /> */}
+                {/* <ChannelItem channel={{id:"1", name: 'Private 2', icon: ''}} /> */}
+            </div>
+        </div>
+    )
 }
 
 export default JoinChannel;
