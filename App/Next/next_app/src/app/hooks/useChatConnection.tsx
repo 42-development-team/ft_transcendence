@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-// import {io, Socket} from 'socket.io-client'
+import {io, Socket} from 'socket.io-client'
 
 // Todo: adapt to our backend
 // Note: example using socket.io connection
@@ -7,26 +7,25 @@ import { useEffect, useState } from "react";
 const ENDPOINT = ""
 
 const connect = () => {
-    // return io(ENPOINT, {
-    //     reconnectionAttempts: 5,
-    // })
+    return io(ENPOINT, {
+        reconnectionAttempts: 5,
+    })
     return 
 }
 
 export default function useChatConnection() {
-    // const [socket, setSocket] = useState<Socket>();
+    const [socket, setSocket] = useState<Socket>();
     
     useEffect(() => {
-        console.log('Connecting...');
-        // const socket = connect();
-        // setSocket(socket);
+        console.log('Connecting to socket.io server...');
+        const socket = connect();
+        setSocket(socket);
 
         return () => {
             console.log('Disconnecting...');
-            // socket.close();
+            socket.close();
         }
     })
     
-    // return socket;
-    return ;
+    return socket;
 }
