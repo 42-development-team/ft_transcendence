@@ -3,11 +3,9 @@ import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/re
 
 export function UnderlineTabs() {
   const [activeTab, setActiveTab] = useState("leaderboard");
-  const [animateTab, setAnimateTab] = useState("transition duration-1000 ease-out transform translate-x-0");
 
   const handleClick = (value: string) => {
     setActiveTab(value);
-    setAnimateTab(value === "leaderboard" ? "transition duration-300 ease-out transform translate-x-0" : "transition duration-300 ease-out transform translate-x-full");
   };
 
   const data = [
@@ -32,9 +30,6 @@ export function UnderlineTabs() {
       <Tabs value={activeTab}>
         <TabsHeader
           className="rounded-none bg-transparent p-0 font-semibold"
-          indicatorProps={{
-            style: indicatorStyle, //this shit doesn't works
-          }}
         >
           {data.map(({ label, value }) => (
             <Tab
