@@ -4,13 +4,14 @@ import {io, Socket} from 'socket.io-client'
 // Todo: adapt to our backend
 // Note: example using socket.io connection
 
-const ENDPOINT = ""
+const ENDPOINT = `${process.env.BACK_URL}` 
 
 const connect = () => {
-    return io(ENPOINT, {
-        reconnectionAttempts: 5,
+    return io(ENDPOINT, {
+        withCredentials: true,
+        reconnectionAttempts: 1,
+        transports: ['websocket'],
     })
-    return 
 }
 
 export default function useChatConnection() {
@@ -25,7 +26,7 @@ export default function useChatConnection() {
             console.log('Disconnecting...');
             socket.close();
         }
-    })
+    }, [])
     
     return socket;
 }

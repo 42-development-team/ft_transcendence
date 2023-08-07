@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { generateFakeMessage } from "../utils/helpers";
-import { MessageModel } from "../utils/models";
-// import useChatConnection from "./useChatConnection";
+import { Author, MessageModel } from "../utils/models";
+import useChatConnection from "./useChatConnection";
 
 const welcomeMessage: MessageModel = {
     id: 'welcome-message',
@@ -22,7 +22,7 @@ export default function useChatMessages() {
         // ...fakeMessages
     ])
 
-    // const socket = useChatConnection();
+    const socket = useChatConnection();
 
     const appendNewMEssage = useCallback(
         (newMessage: MessageModel) => {
@@ -38,23 +38,33 @@ export default function useChatMessages() {
     const send = useCallback(
         (message: string) => {
             console.log(`Sending message: ${message}`);
-            // socket?.emit('message', message);
+            socket?.emit('message', message);
         }, 
-        []
-        // [socket]
+        [socket]
     )
+    const FakeAuthor : Author = {
+        rgbColor: 'darkorchid',
+        username: 'ChatBot',
+    }
 
     useEffect(() => {
-        // socket?.on('new-message', (msg: MessageModel) => {
-        //     appendNewMEssage(msg);
-        // })
+        // socket?.on('message', (msg: MessageModel) => {
+        socket?.on('new-message', (msg: string) => {
+            console.log("New message: " + msg);
+            const newMessage: MessageModel = {
+                id: Math.random().toString(36),
+                author: FakeAuthor,
+                content: msg,
+            }
+            appendNewMEssage(newMessage);
+        })
 
         return () => {
             // unsubscribe from the event when unmounting
             console.log(`unsubscribing from new-message event`)
-            // socket?.off('new-message')
+            socket?.off('new-message')
         }
-    }, [appendNewMEssage /*, socket */])
+    }, [appendNewMEssage , socket ])
 
     return {
         messages,
