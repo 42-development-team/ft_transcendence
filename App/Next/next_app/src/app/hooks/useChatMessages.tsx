@@ -1,7 +1,7 @@
+"use client";
 import { useCallback, useEffect, useState } from "react";
-import { generateFakeMessage } from "../utils/helpers";
 import { MessageModel } from "../utils/models";
-// import useChatConnection from "./useChatConnection";
+import useChatConnection from "./useChatConnection";
 
 const welcomeMessage: MessageModel = {
     id: 'welcome-message',
@@ -12,17 +12,12 @@ const welcomeMessage: MessageModel = {
     content: '👋 Welcome to the Chat 👋',
 }
 
-// const fakeMessages: MessageModel[] = Array(20)
-//     .fill(null)
-//     .map(() => generateFakeMessage())
-
 export default function useChatMessages() {
     const [messages, setMessages] = useState<MessageModel[]>([
         welcomeMessage,
-        // ...fakeMessages
     ])
 
-    // const socket = useChatConnection();
+    const socket = useChatConnection();
 
     const appendNewMEssage = useCallback(
         (newMessage: MessageModel) => {
@@ -37,24 +32,30 @@ export default function useChatMessages() {
 
     const send = useCallback(
         (message: string) => {
-            console.log(`Sending message: ${message}`);
-            // socket?.emit('message', message);
+            socket?.emit('message', message);
         }, 
-        []
-        // [socket]
+        [socket]
     )
 
     useEffect(() => {
-        // socket?.on('new-message', (msg: MessageModel) => {
-        //     appendNewMEssage(msg);
-        // })
+        socket?.on('new-message', (content: {message: string, user: any}) => {
+            const newMessage: MessageModel = {
+                // Todo : use correct id
+                id: Math.random().toString(36),
+                // Todo: manage colors for each user
+                author: {
+                    rgbColor: 'darkorchid',
+                    username: content.user.username,
+                },
+                content: content.message,
+            }
+            appendNewMEssage(newMessage);
+        })
 
         return () => {
-            // unsubscribe from the event when unmounting
-            console.log(`unsubscribing from new-message event`)
-            // socket?.off('new-message')
+            socket?.off('new-message')
         }
-    }, [appendNewMEssage /*, socket */])
+    }, [appendNewMEssage , socket ])
 
     return {
         messages,

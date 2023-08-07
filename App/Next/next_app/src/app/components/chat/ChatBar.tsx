@@ -15,7 +15,7 @@ import ChatMemberList from './chatbox/members/ChatMemberList';
 
 const ChatBar = () => {
     const {isChatOpen, isFriendListOpen, isChatMembersOpen} = useChatBarContext();
-    const {messages} = useChatMessages();
+    const {messages, send} = useChatMessages();
     const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
     const {friends} = useFriends();
@@ -25,7 +25,7 @@ const ChatBar = () => {
             <ChatSideBar channels={channels} />
             {/* Main Panel */}
             {isChatOpen && !isChatMembersOpen &&
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} />
+                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} />
             }
             {isChatOpen && isChatMembersOpen &&
                 <ChatMemberList />

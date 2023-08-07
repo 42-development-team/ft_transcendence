@@ -9,4 +9,14 @@ export const messages = [
     sender: { connect: { login: "fmjsaune" } },
     receiver: { connect: { login: "dfbusrain" } },
   },
+  {
+    content: "Welcome to the public room!",
+    sender: { connect: { login: "fmjsaune" } },
+    chatRoom: { connect: { id: 1 } },
+  },
+  {
+    content: "Hello!",
+    sender: { connect: { id: 1 } },
+    chatRoom: { connect: { id: 1 } },
+  }
 ];

@@ -1,6 +1,9 @@
 import Canvas from '../components/game/canvas';
 import PlayerInterface from './interfaces/playerInterface';
 import BallInterface from './interfaces/ballInterface';
+// import * as style from './styles.css';
+// declare module './styles.css';
+
 
 const Game = () => {
 // envoyer params
@@ -10,26 +13,30 @@ const Game = () => {
 
 	p1 = {
 		color: 'lavender',
-		position: [10, 10],
-		rect: [15, 30],
+		position: [0.1, 0.5],
+		rect: [0.01, 0.08],
 	}
 
 	p2 = {
 		color: 'blue',
-		position: [190, 10],
-		rect: [15, 30],
+		position: [0.9, 0.5],
+		rect: [0.01, 0.08],
 	}
 
 	ball = {
 		color: 'red',
-		position: [100, 100],
+		position: [0.5, 0.5],
 		r: 10, // const
 		pi2: Math.PI * 2, // const
 		direction: [0, 0],
 		speed: [0, 0],
 	}
 
-	return <Canvas player1={p1} player2={p2} ball={ball} width={400} height={400} />;
+	return (
+		// <div className='items-center'>
+			<Canvas player1={p1} player2={p2} ball={ball} />
+		// </div>
+	);
 }
 
 export default Game;
