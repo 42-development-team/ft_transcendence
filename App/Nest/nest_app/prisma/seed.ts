@@ -7,8 +7,8 @@ const prisma = new PrismaClient()
 
 async function seedFeeding() {
     await seedUsers();
-    await seedMessages();
     await seedChatRooms();
+    await seedMessages();
 }
 
 async function seedUsers() {
