@@ -31,7 +31,7 @@ const FirstLoginPageComponent = ({
     const [avatarFile, setAvatarFile]           = useState<File | null>(null);
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
 
-    let inputUserName: string;
+    let inputUserName: string | null;
 
 
     useEffect(() => {
@@ -49,6 +49,8 @@ const FirstLoginPageComponent = ({
             method: "GET",
         });
         const data = await response.json();
+        if (!data.ok)
+            console.log(data.error);
         setPlaceHolder(data.username);
         inputUserName = data.username;
     }
@@ -119,7 +121,7 @@ const FirstLoginPageComponent = ({
           setImageUrl(avatarUrl);
         }
       }
-
+/*Delete after testing */
     const inputUserName = (document.getElementById('username') as HTMLInputElement)?.value;
 
     if (!inputUserName || inputUserName.length < 3 || inputUserName.length > 15) {
@@ -128,11 +130,11 @@ const FirstLoginPageComponent = ({
       setIsVisible(true);
       return;
     }
+    /*delete after testing */
     const updateData = {
       newUsername: inputUserName,
       userId: userId, 
     };
-    
     const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
       method: "PUT",
       body: JSON.stringify(updateData),
@@ -167,7 +169,7 @@ const FirstLoginPageComponent = ({
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
             inputUserName = e.target.value;
-            if (e.target.value === "") {
+            if (inputUserName === "") {
                 setValidateEnabled(true);
                 inputUserName = placeHolder;
                 setIsVisible(false);

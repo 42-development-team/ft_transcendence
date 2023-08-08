@@ -42,6 +42,7 @@ const AvatarComponent = (
           return;
         }
       
+        setImageUrl(URL.createObjectURL(file));
         CallbackAvatarFile(file); //Send Avatar file to Parent Component
         CallbackImageUrl(URL.createObjectURL(file)); //Send Image URL to Parent Component
       };
