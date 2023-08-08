@@ -1,9 +1,15 @@
 export interface ChannelModel {
     id: string
     name: string
+    createdAt: string
+    creatorId: string
     messages?: MessageModel[]
     icon: string
+    type: string
+    password?: string
 }
+
+// Todo: use enum for channel type ?
 
 export interface MessageModel {
     id: string

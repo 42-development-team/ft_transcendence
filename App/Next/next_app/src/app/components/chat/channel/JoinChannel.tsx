@@ -1,27 +1,39 @@
 import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ChannelItem from "./ChannelItem";
 
 const JoinChannel = () => {
 
     const {toggleChannelJoinVisibility} = useChatBarContext();
+    const [publicChannels, setPublicChannels] = useState<any[]>([]);
+    const [privateChannels, setPrivateChannels] = useState<any[]>([]);
 
-    // const getChannels = async () => {
-    //     console.log("Load channel list");
-    //     try {
-    //         const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
-    //         const data = await response.json();
-    //         console.log(data);
-    //     }
-    //     catch (err) {
-    //         console.log(err);
-    //     }
-    // }
+    const getChannels = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const publicChannelsComp = data
+                .filter((channel: any) => channel.type === "public")
+                .map((channel: any) => (
+                    <ChannelItem key={channel.id} channel={channel} />
+                ));
+            const privateChannelsComp = data
+                .filter((channel: any) => channel.type === "private")
+                .map((channel: any) => (
+                    <ChannelItem key={channel.id} channel={channel} />
+                ));
+            setPublicChannels(publicChannelsComp);
+            setPrivateChannels(privateChannelsComp);
+        }
+        catch (err) {
+            console.log("Error fetching channel list: " + err);
+        }
+    }
 
     useEffect(() => {
-        // getChannels();
+        getChannels();
     }, [])
     
     return (
@@ -42,15 +54,14 @@ const JoinChannel = () => {
                     </span>
                 </div>
                 {/* List of public channels */}
-                {/* <ChannelItem channel={{id:"1", name: 'General', icon: ''}} /> */}
+                {publicChannels}
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>
                         Private channels 🔒
                     </span>
                 </div>
+                {privateChannels}
                 {/* List of private channels */}
-                {/* <ChannelItem channel={{id:"1", name: 'Private 1', icon: ''}} /> */}
-                {/* <ChannelItem channel={{id:"1", name: 'Private 2', icon: ''}} /> */}
             </div>
         </div>
     )
