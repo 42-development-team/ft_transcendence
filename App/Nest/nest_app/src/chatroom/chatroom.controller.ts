@@ -5,7 +5,6 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
-import { PrismaService } from '../prisma/prisma.service';
 
 @ApiTags('ChatRoom') 
 @Controller('chatroom')
@@ -14,6 +13,7 @@ export class ChatroomController {
     private chatroomService: ChatroomService,
     private socketGateway: SocketGateway,
     ) {}
+
 
   @Post()
   create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any) {
@@ -30,7 +30,7 @@ export class ChatroomController {
 
 
   @Get()
-  findAll() {
+  async findAll(): Promise<CreateChatroomDto[]> {
     return this.chatroomService.findAll();
   }
 
