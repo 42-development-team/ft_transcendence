@@ -39,10 +39,15 @@ export class ChatroomController {
 	}
 
 	@Get(':id')
-	async findOne(@Param('id') id: string, @Request() req: any): Promise<InfoChatroomDto> {
-		// Todo: throw error if requested channel is not found
+	async findOne(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
 		const userId: number = req.user.sub;
-		return this.chatroomService.findOne(+id, userId);
+		await this.chatroomService.findOne(+id, userId)
+			.then(chatRoom => {
+				response.send(chatRoom);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
 	}
 
 	/* U(pdate) */
@@ -56,12 +61,11 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 
 		await this.chatroomService.join(+id, userId)
-			.then(joinedChatRoom => {
+			.then(() => {
 				// Todo: emit event on socket to join the channel
-				return joinedChatRoom;
+				response.send();
 			})
 			.catch(error => {
-				console.log(error);
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}

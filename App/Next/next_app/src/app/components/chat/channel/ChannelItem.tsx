@@ -1,5 +1,5 @@
 import { ChannelModel } from "@/app/utils/models";
-import { channel } from "diagnostics_channel";
+import { useState } from "react";
 
 type ChannelProps = {
     channel: ChannelModel
@@ -8,16 +8,17 @@ type ChannelProps = {
 // Todo: Add channel icon
 const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps) => {
 
+    const [isJoined, setIsJoined] = useState<boolean>(joined);
+
     const JoinChannel = async () => {
+        console.log("Joining channel " + id);
         if (type === "public") {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id + 5}/join`, { credentials: "include", method: "PATCH" });
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, { credentials: "include", method: "PATCH" });
             if (!response.ok) {
                 console.log("Error joining channel: " + await response.text());
+                return ;
             }
-            else {
-                const data = await response.json();
-                console.log(data);
-            }
+            setIsJoined(true);
             // Todo : how to update channel list? - using socket?
         }
         else if (type === "private") {
@@ -32,7 +33,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
                 <h1 className="font-medium text-md">{name}</h1>
             </div>
             <div className="relative inline-block text-left">
-                {joined
+                {isJoined
                     ? <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-surface1 bg-text">
                         Joined</div>
                     : <button

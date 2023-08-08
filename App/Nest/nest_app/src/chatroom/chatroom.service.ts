@@ -74,8 +74,6 @@ export class ChatroomService {
 	async join(id: number, userId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-		}).catch(error => {
-			throw new Error(error);
 		});
 		
 		// Todo : check if already joined
@@ -87,7 +85,7 @@ export class ChatroomService {
 				where: { id: id },
 				data: { members: { connect: [{ id: userId }] } },
 			});
-			console.log("updateResult " + updateResult);
+			return updateResult;
 		}
 		else if (chatRoom.type === 'private') {
 			// Todo: ask for password

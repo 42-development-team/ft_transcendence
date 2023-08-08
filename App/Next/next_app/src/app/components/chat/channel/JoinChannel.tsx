@@ -12,8 +12,9 @@ const JoinChannel = () => {
 
     const getChannels = async () => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/1`, { credentials: "include", method: "GET" });
             const data = await response.json();
+            console.log(data);
             const publicChannelsComp = data
                 .filter((channel: any) => channel.type === "public")
                 .map((channel: any) => (
