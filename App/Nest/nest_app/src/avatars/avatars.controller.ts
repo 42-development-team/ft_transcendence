@@ -33,7 +33,7 @@ export class AvatarsController {
       if (isNaN(userIdNumber) || !Number.isInteger(userIdNumber) || userIdNumber <= 0) {
         throw new BadRequestException('Invalid user ID');
       }
-  
+
       const imageUrl = await this.cloudinaryService.uploadAvatar(file);
   
       await this.usersService.updateAvatar(userIdNumber, imageUrl);
