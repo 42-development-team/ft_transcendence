@@ -5,11 +5,11 @@ import Image from 'next/image';
 import FirstLoginBtn from '../FirstLoginBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
 import AvatarComponent from '../profile/Avatar';
+import UpdateAvatar from './utils/updateAvatar';
+
 interface FirstLoginPageProps {
   userId: string;
 }
-
-
 
 const FirstLoginPageComponent = ({
     userId,
@@ -61,34 +61,6 @@ const FirstLoginPageComponent = ({
             window.location.href = `${process.env.FRONT_URL}/home`;
         }
     }
-
-  // /* When the user selects an image for the avatar, 
-  // the handleAvatarChange function is called */
-  // const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0] || null;
-
-  //   if (!file) {
-  //     // If no file is selected, reset the state for avatarFile and imageUrl
-  //     setAvatarFile(null);
-  //     setImageUrl(null);
-  //     return;
-  //   }
-
-  //   if (!file.type.startsWith('image/')) {
-  //     console.log('Selected file is not an image.');
-  //     return;
-  //   }
-
-  //   const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
-  //   if (file.size > maxFileSizeInBytes) {
-  //     console.log('Selected file size exceeds the allowed limit.');
-  //     return;
-  //   }
-
-  //   setAvatarFile(file);
-  //   setImageUrl(URL.createObjectURL(file));
-  // };
-      
       
     /*
     after the avatar image is uploaded to the back-end and 
@@ -98,39 +70,7 @@ const FirstLoginPageComponent = ({
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
-      let avatarUrl = null;
-      if (avatarFile) {
-        console.log("avatarFile:", avatarFile);
-        console.log("userId:", userId);
-        const formData = new FormData();
-        formData.append("file", avatarFile);
-        formData.append("userID", userId);
-        console.log("formData:", formData);
-        const response = await fetch(`${process.env.BACK_URL}/avatars/upload`, {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          console.log("Error response status:", response.status);
-          console.log("Error response text:", await response.text());
-        } else {
-          const data = await response.json();
-          avatarUrl = data.imageUrl;
-          console.log("Avatar URL from Cloudinary:", avatarUrl);
-          setImageUrl(avatarUrl);
-        }
-      }
-/*Delete after testing */
-    const inputUserName = (document.getElementById('username') as HTMLInputElement)?.value;
-
-    if (!inputUserName || inputUserName.length < 3 || inputUserName.length > 15) {
-      setMessage("Username must be at least 3 characters long, and at most 15 characters long");
-      setValidateEnabled(false);
-      setIsVisible(true);
-      return;
-    }
-    /*delete after testing */
+    UpdateAvatar( avatarFile, userId, setImageUrl );
     const updateData = {
       newUsername: inputUserName,
       userId: userId, 
@@ -143,7 +83,6 @@ const FirstLoginPageComponent = ({
       },
     });
     
-
     if (usernameUpdateResponse.ok) {
       console.log("Username updated successfully");
     } else {
@@ -206,7 +145,7 @@ const FirstLoginPageComponent = ({
     }
 
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
-        // console.log("Child avatar file:", childAvatarFile);
+        console.log("Child avatar file:", childAvatarFile);
         setAvatarFile(childAvatarFile);
         setImageUrl(childImageUrl);
     }
@@ -235,7 +174,7 @@ const FirstLoginPageComponent = ({
                 }
             </div> 
         <AvatarComponent
-          CallbackAvatarFile={handleCallBackDataFromAvatar} CallbackImageUrl={handleCallBackDataFromAvatar}>
+          CallbackAvatarData={handleCallBackDataFromAvatar}>
         </AvatarComponent>
             {
                 waiting2fa &&

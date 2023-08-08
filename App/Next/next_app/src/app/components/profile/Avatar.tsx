@@ -6,14 +6,12 @@ import Image from 'next/image';
 const AvatarComponent = (
     {
         children,
-        CallbackAvatarFile = () => {},
-        CallbackImageUrl = () => {},
+        CallbackAvatarData = (AvFile: File | null, image: string) => {},
     }
     :
     {
         children: any;
-        CallbackAvatarFile: any;
-        CallbackImageUrl: any;
+        CallbackAvatarData: any;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -26,8 +24,7 @@ const AvatarComponent = (
         if (!file) {
           // If no file is selected, reset the state for avatarFile and imageUrl
           setImageUrl(null);
-          CallbackAvatarFile(null);
-          CallbackImageUrl(null);
+          CallbackAvatarData(null, null);
           return;
         }
       
@@ -43,8 +40,7 @@ const AvatarComponent = (
         }
       
         setImageUrl(URL.createObjectURL(file));
-        CallbackAvatarFile(file); //Send Avatar file to Parent Component
-        CallbackImageUrl(URL.createObjectURL(file)); //Send Image URL to Parent Component
+        CallbackAvatarData(file, imageUrl); //Send Avatar DAta to Parent Component
       };
 
     return (
