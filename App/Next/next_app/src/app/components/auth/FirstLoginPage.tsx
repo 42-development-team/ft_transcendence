@@ -43,7 +43,7 @@ const FirstLoginPageComponent = ({
         }
     }, []);
 
-    /* called on page load, set the placeholder with default username */
+/* called on page load, set the placeholder with default username */
     const getUserName = async (userId: string) => {
         const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
             method: "GET",
@@ -62,11 +62,7 @@ const FirstLoginPageComponent = ({
         }
     }
       
-    /*
-    after the avatar image is uploaded to the back-end and 
-    the imageUrl is sent with the response, 
-    we update the state with the Cloudinary URL
-    */
+/* handle validate click, so username update and avagtar update in cloudinary */
   const handleClick = async () => {
     try {
       setWaiting2fa(false);

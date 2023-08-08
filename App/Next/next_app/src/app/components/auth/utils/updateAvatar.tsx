@@ -1,3 +1,9 @@
+/*
+after the avatar image is uploaded to the back-end and 
+the imageUrl is sent with the response, 
+we update the state with the Cloudinary URL
+*/
+
 const UpdateAvatar = async (
     avatarFile: File | null,
     userId: string,
