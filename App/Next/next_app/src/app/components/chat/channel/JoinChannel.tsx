@@ -15,10 +15,10 @@ const JoinChannel = () => {
             const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const publicChannelsComp = data
-            .filter((channel: any) => channel.type === "public")
-            .map((channel: any) => (
-                <ChannelItem key={channel.id} channel={channel} />
-            ));
+                .filter((channel: any) => channel.type === "public")
+                .map((channel: any) => (
+                    <ChannelItem key={channel.id} channel={channel} />
+                ));
             const privateChannelsComp = data
                 .filter((channel: any) => channel.type === "private")
                 .map((channel: any) => (
@@ -28,7 +28,7 @@ const JoinChannel = () => {
             setPrivateChannels(privateChannelsComp);
         }
         catch (err) {
-            console.log(err);
+            console.log("Error fetching channel list: " + err);
         }
     }
 
