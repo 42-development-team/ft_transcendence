@@ -1,12 +1,26 @@
 import { ChannelModel } from "@/app/utils/models";
+import { channel } from "diagnostics_channel";
 
 type ChannelProps = {
     channel: ChannelModel
 }
 
 // Todo: Add channel icon
-// Todo: manage password for private channels
-const ChannelItem = ({ channel: { name, icon, joined } }: ChannelProps) => {
+const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps) => {
+
+    const JoinChannel = async () => {
+        if (type === "public") {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, { credentials: "include", method: "PATCH" });
+            const data = await response.json();
+            console.log(data);
+            // Todo : how to update channel list ?
+        }
+        else if (type === "private") {
+            // Todo: get the password
+            // Request to join the channel with the password
+        }
+    }
+
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center w-80">
@@ -19,10 +33,9 @@ const ChannelItem = ({ channel: { name, icon, joined } }: ChannelProps) => {
                     : <button
                         type="button"
                         className="inline-flex justify-center w-full rounded-full px-5 py-2 font-semibold text-sm bg-surface1 hover:bg-base"
-                        onClick={() => console.log("Join Channel " + name)}>
+                        onClick={JoinChannel}>
                         Join</button>
                 }
-                
             </div>
         </div>
     )

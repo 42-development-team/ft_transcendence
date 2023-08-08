@@ -72,6 +72,23 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
+	async join(id: number, userId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+		});
+		// Todo : check if already joined
+		if (chatRoom.type === 'public') {
+			await this.prisma.chatRoom.update({
+				where: { id: id },
+				data: { members: { connect: [{ id: userId }] } },
+			});
+		}
+		else if (chatRoom.type === 'private') {
+			// Todo: ask for password
+		}
+		return chatRoom;
+	}
+
 	/* D(elete) */
 	remove(id: number) {
 		return `This action removes a #${id} chatroom`;

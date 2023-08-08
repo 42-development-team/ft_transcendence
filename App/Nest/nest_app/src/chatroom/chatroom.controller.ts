@@ -49,6 +49,14 @@ export class ChatroomController {
     return this.chatroomService.update(+id, updateChatroomDto);
   }
 
+  @Patch(':id/join')
+  join(@Param('id') id: string, @Request() req: any) {
+    const userId: number = req.user.sub;
+    const joinedChatRoom = this.chatroomService.join(+id, userId);
+    // Todo: emit event on socket to join the channel
+    return joinedChatRoom;
+  }
+
   /* D(elete) */
   @Delete(':id')
   remove(@Param('id') id: string) {
