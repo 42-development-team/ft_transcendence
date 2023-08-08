@@ -6,19 +6,23 @@ type ChannelProps = {
 
 // Todo: Add channel icon
 // Todo: manage password for private channels
-const ChannelItem = ({ channel: { name, icon } }: ChannelProps) => {
+const ChannelItem = ({ channel: { name, icon, joined } }: ChannelProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center w-80">
                 <h1 className="font-medium text-md">{name}</h1>
             </div>
             <div className="relative inline-block text-left">
-                <button
-                    type="button"
-                    className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm bg-surface1 hover:bg-base"
-                    onClick={() => console.log("Join Channel " + name)}>
-                    Join
-                </button>
+                {joined
+                    ? <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-surface1 bg-text">
+                        Joined</div>
+                    : <button
+                        type="button"
+                        className="inline-flex justify-center w-full rounded-full px-5 py-2 font-semibold text-sm bg-surface1 hover:bg-base"
+                        onClick={() => console.log("Join Channel " + name)}>
+                        Join</button>
+                }
+                
             </div>
         </div>
     )
