@@ -1,15 +1,9 @@
 "use client";
-import { GetServerSidePropsContext } from 'next';
 import { ChangeEvent, useState, useEffect } from 'react';
-import Image from 'next/image';
 import FirstLoginBtn from '../FirstLoginBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
 import AvatarComponent from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
-
-interface FirstLoginPageProps {
-  userId: string;
-}
 
 const FirstLoginPageComponent = ({
     userId,
@@ -183,25 +177,6 @@ const FirstLoginPageComponent = ({
             </FirstLoginBtn>
         </div>
     )
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { userId } = context.query;
-
-  if (!userId || typeof userId !== 'string') {
-    return {
-      redirect: {
-        destination: '/error-page', // TBC
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      userId,
-    },
-  };
 }
 
 
