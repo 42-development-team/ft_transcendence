@@ -40,6 +40,7 @@ export class ChatroomController {
 
 	@Get(':id')
 	async findOne(@Param('id') id: string, @Request() req: any): Promise<InfoChatroomDto> {
+		// Todo: throw error if requested channel is not found
 		const userId: number = req.user.sub;
 		return this.chatroomService.findOne(+id, userId);
 	}
