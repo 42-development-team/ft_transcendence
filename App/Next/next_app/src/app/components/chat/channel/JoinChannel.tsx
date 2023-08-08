@@ -48,7 +48,7 @@ const JoinChannel = () => {
             </div>
             <div className='overflow-auto h-[86vh]'>
                 
-                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                <div className='flex items-center justify-around py-2 my-2 '>
                     <span className='font-semibold text-sm'>
                         Public channels 📢
                     </span>
