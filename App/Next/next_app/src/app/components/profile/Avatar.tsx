@@ -58,8 +58,8 @@ const Avatar = (
                     <Image
                         src={imageUrlGetFromCloudinary as string || imageUrl as string}
                         alt="Selected Avatar"
-                        width={164}
-                        height={164}
+                        width={188}
+                        height={188}
                         className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[200px] sm:h-[200px] md:w-[212px] md:h-[212px] lg:w-[256px] lg:h-[256px] 2xl:w-[312px] 2xl:h-[312px]"
                     />
                 </div>

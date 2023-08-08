@@ -31,7 +31,7 @@ const StatsWindow = (userId: {userId: string}) => {
     }
 
     return (
-        <div className=" flex justify-center mx-20 font-semibold text-gray-400 text-center h-[20vh] mt-5 transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+        <div className=" flex justify-center 2xl:mx-[100px] xl:mx-16 lg:mx-10 md:mx-8 sm:mx-5 font-semibold text-gray-400 text-center h-[20vh] mt-5 transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
                 <Avatar
                     disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
                 </Avatar>
