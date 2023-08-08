@@ -5,6 +5,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
+import { InfoChatroomDto } from './dto/info-chatroom.dto';
 
 @ApiTags('ChatRoom') 
 @Controller('chatroom')
@@ -31,13 +32,15 @@ export class ChatroomController {
 
   /* R(ead) */
   @Get()
-  async findAll(): Promise<CreateChatroomDto[]> {
-    return this.chatroomService.findAll();
+  async findAll(@Request() req: any): Promise<InfoChatroomDto[]> {
+    const userId: number = req.user.sub;
+    return this.chatroomService.findAll(userId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<CreateChatroomDto> {
-    return this.chatroomService.findOne(+id);
+  async findOne(@Param('id') id: string, @Request() req: any): Promise<InfoChatroomDto> {
+    const userId: number = req.user.sub;
+    return this.chatroomService.findOne(+id, userId);
   }
 
   /* U(pdate) */

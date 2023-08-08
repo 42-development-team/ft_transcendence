@@ -7,6 +7,7 @@ export interface ChannelModel {
     icon: string
     type: string
     password?: string
+    joined: boolean
 }
 
 // Todo: use enum for channel type ?
