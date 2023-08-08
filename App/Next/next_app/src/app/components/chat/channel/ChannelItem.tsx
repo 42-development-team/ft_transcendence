@@ -11,7 +11,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
     const [isJoined, setIsJoined] = useState<boolean>(joined);
 
     const JoinChannel = async () => {
-        console.log("Joining channel " + id);
+        console.log("Joining channel " + name);
         if (type === "public") {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, { credentials: "include", method: "PATCH" });
             if (!response.ok) {
