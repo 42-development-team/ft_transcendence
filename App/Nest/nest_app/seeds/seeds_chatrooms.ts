@@ -56,4 +56,23 @@ export const chatRooms = [
         ],
       },
     },
+    {
+      name: "Private Room 2",
+      type: "private",
+      password: "password123",
+      members: {
+        connect: [
+          { id: 2 },
+          { id: 3 },
+        ],
+      },
+      owner: {
+        connect: { id: 2 },
+      },
+      admins: {
+        connect: [
+          { id: 2 },
+        ],
+      },
+    },
   ];
