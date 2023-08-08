@@ -4,13 +4,11 @@ import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { plainToClass } from 'class-transformer';
 
-
 @Injectable()
 export class ChatroomService {
   constructor(
     private prisma: PrismaService,
 ) {}
-
 
   /* C(reate) */
 
@@ -39,14 +37,20 @@ export class ChatroomService {
     return chatRoomsDto;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chatroom`;
+  async findOne(id: number): Promise<CreateChatroomDto> {
+    const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+      where: { id: id },
+    });
+    const chatRoomDto = plainToClass(CreateChatroomDto, chatRoom);
+    return chatRoomDto;
   }
 
+  /* U(pdate) */
   update(id: number, updateChatroomDto: UpdateChatroomDto) {
     return `This action updates a #${id} chatroom`;
   }
 
+  /* D(elete) */
   remove(id: number) {
     return `This action removes a #${id} chatroom`;
   }
