@@ -5,15 +5,19 @@
 import { useState, ChangeEvent } from "react";
 import Image from 'next/image';
 
-const AvatarComponent = (
+const Avatar = (
     {
         children,
         CallbackAvatarData = (AvFile: File | null, image: string) => {},
+        imageUrlGetFromCloudinary = null,
+        disableChooseAvatar = false,
     }
     :
     {
         children: any;
         CallbackAvatarData: any;
+        imageUrlGetFromCloudinary: string | null;
+        disableChooseAvatar: boolean;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -37,7 +41,7 @@ const AvatarComponent = (
       
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
-          console.log('Selected file size exceeds the allowed limit.');
+          console.log('Setlected file size exceeds the allowed limit.');
           return;
         }
       
@@ -46,17 +50,17 @@ const AvatarComponent = (
       };
 
     return (
-        <div className="m-4 pt-4">
-            <p className="font-bold text-center"></p>
-            {imageUrl ? (
+        <div className="m-4">
+            <p className="font-bold text-center ">Username</p>
+            {imageUrl || imageUrlGetFromCloudinary? (
                 <div>
                     {/* Display uploaded avatar image temporary stored in URL*/}
                     <Image
-                        src={imageUrl}
+                        src={imageUrlGetFromCloudinary as string || imageUrl as string}
                         alt="Selected Avatar"
-                        width={128}
-                        height={128}
-                        className="drop-shadow-xl"
+                        width={256}
+                        height={256}
+                        className="drop-shadow-xl rounded-full"
                     />
                 </div>
             ) : (
@@ -65,13 +69,14 @@ const AvatarComponent = (
                     <Image
                         src="https://img.freepik.com/free-icon/user_318-563642.jpg"
                         alt="Default Avatar"
-                        width={128}
-                        height={128}
-                        className="drop-shadow-xl"
+                        width={256}
+                        height={256}
+                        className="drop-shadow-xl rounded-full"
                     />
                 </div>
             )}
-            <div className="mt-2" style={{ marginTop: "20px" }}>
+            { !disableChooseAvatar &&
+            <div className="mt-8 mb-3 text-center">
                 <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}>
                     {imageUrl ? "Change Avatar" : "Choose Avatar"}
                 </label>
@@ -83,9 +88,10 @@ const AvatarComponent = (
                     className="hidden"
                 />
             </div>
+            }
         </div>
     )
 
 }
 
-export default AvatarComponent;
+export default Avatar;

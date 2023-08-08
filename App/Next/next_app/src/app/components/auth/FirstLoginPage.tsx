@@ -2,7 +2,7 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 import FirstLoginBtn from '../FirstLoginBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
-import AvatarComponent from '../profile/Avatar';
+import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
 
 const FirstLoginPageComponent = ({
@@ -60,7 +60,7 @@ const FirstLoginPageComponent = ({
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
-    UpdateAvatar( avatarFile, userId, setImageUrl );
+    await UpdateAvatar( avatarFile, userId, setImageUrl );
     const updateData = {
       newUsername: inputUserName,
       userId: userId, 
@@ -135,7 +135,6 @@ const FirstLoginPageComponent = ({
     }
 
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
-        console.log("Child avatar file:", childAvatarFile);
         setAvatarFile(childAvatarFile);
         setImageUrl(childImageUrl);
     }
@@ -163,9 +162,9 @@ const FirstLoginPageComponent = ({
                     </div>
                 }
             </div> 
-        <AvatarComponent
-          CallbackAvatarData={handleCallBackDataFromAvatar}>
-        </AvatarComponent>
+        <Avatar
+          CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null}>
+        </Avatar>
             {
                 waiting2fa &&
                 <div className="flex flex-col flex-auto items-center justify-center">
