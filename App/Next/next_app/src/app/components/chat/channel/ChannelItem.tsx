@@ -10,9 +10,13 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
 
     const JoinChannel = async () => {
         if (type === "public") {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, { credentials: "include", method: "PATCH" });
-            const data = await response.json();
-            console.log(data);
+            try {
+                const response = await fetch(`${process.env.BACK_URL}/chatroom/${id + 5}/join`, { credentials: "include", method: "PATCH" });
+                const data = await response.json();
+                console.log(data);
+            } catch (err) {
+                console.log("Error joining channel: " + err);
+            }
             // Todo : how to update channel list ?
         }
         else if (type === "private") {

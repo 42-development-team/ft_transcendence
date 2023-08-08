@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-import { plainToClass } from 'class-transformer';
 import { InfoChatroomDto } from './dto/info-chatroom.dto';
 
 @Injectable()
@@ -75,13 +74,20 @@ export class ChatroomService {
 	async join(id: number, userId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
+		}).catch(error => {
+			throw new Error(error);
 		});
+		
 		// Todo : check if already joined
 		if (chatRoom.type === 'public') {
-			await this.prisma.chatRoom.update({
+			// Todo: how to check the result of the update?
+			// Check the result of the update
+
+			const updateResult = await this.prisma.chatRoom.update({
 				where: { id: id },
 				data: { members: { connect: [{ id: userId }] } },
 			});
+			console.log("updateResult " + updateResult);
 		}
 		else if (chatRoom.type === 'private') {
 			// Todo: ask for password
