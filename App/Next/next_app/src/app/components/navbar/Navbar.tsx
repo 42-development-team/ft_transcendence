@@ -31,9 +31,9 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
 const NavLinks = ({logout} : {logout: () => void}) => {
     const router = useRouter();
     return (
-        <div className="flex items-center gap-8 px-6 text-lg transition-all">
+        <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
-                <div aria-orientation="vertical">
+                <div aria-orientation="vertical" >
                     <DropDownActionLarge onClick={() => router.push('/profile')}>
                         Profile
                     </DropDownActionLarge >

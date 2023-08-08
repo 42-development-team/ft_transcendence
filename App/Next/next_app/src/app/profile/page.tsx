@@ -14,9 +14,9 @@ export default async function Profile() {
     }
 
     return ( //create a component for leader/matchhistory
-        <div className=" flex flex-row w-full h-full">
+        <div className="z-19 relative flex flex-row w-full h-full">
             <ChatBar />
-            <div className=" flex flex-col w-full h-full mx-5">
+            <div className=" z-15 relative flex flex-col w-full h-full mx-5">
                 <div className="z-10 relative">
                     <StatsWindow userId={payload.sub} />
                 </div>
