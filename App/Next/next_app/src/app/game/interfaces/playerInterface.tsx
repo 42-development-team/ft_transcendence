@@ -1,7 +1,9 @@
 interface PlayerInterface {
 	color: string,
-	position: [number, number], // x const
-	rect: [number, number], // const, const 
+	x: number,
+	y: number,
+	w: number;
+	h: number,
 }
 
 export default PlayerInterface;
