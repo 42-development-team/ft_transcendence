@@ -71,7 +71,7 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
-	async join(id: number, userId: number) {
+	async join(id: number, userId: number, password: string) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
@@ -79,8 +79,6 @@ export class ChatroomService {
 		// Todo : check if already joined
 		if (chatRoom.type === 'public') {
 			// Todo: how to check the result of the update?
-			// Check the result of the update
-
 			const updateResult = await this.prisma.chatRoom.update({
 				where: { id: id },
 				data: { members: { connect: [{ id: userId }] } },
@@ -88,7 +86,16 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'private') {
-			// Todo: ask for password
+			if (chatRoom.password === password) {
+				const updateResult = await this.prisma.chatRoom.update({
+					where: { id: id },
+					data: { members: { connect: [{ id: userId }] } },
+				});
+				return updateResult;
+			}
+			else {
+				throw new Error('Wrong password');
+			}
 		}
 		return chatRoom;
 	}

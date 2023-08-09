@@ -57,12 +57,13 @@ export class ChatroomController {
 	}
 
 	@Patch(':id/join')
-	async join(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+	async join(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-
-		await this.chatroomService.join(+id, userId)
+		const password: string = body.password;
+		await this.chatroomService.join(+id, userId, password)
 			.then(() => {
 				// Todo: emit event on socket to join the channel
+				// socket.emit(new-connection on channel)
 				response.send();
 			})
 			.catch(error => {

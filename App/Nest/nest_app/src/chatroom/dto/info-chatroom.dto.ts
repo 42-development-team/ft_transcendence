@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsIn, IsBoolean, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
 
 export class InfoChatroomDto {
     @IsNotEmpty()
@@ -11,7 +11,6 @@ export class InfoChatroomDto {
 
     @IsNotEmpty()
     @IsString()
-    @IsIn(['public', 'private', 'protected'], { message: 'Invalid channel type' })
     type: string;
 
     @IsNotEmpty()
