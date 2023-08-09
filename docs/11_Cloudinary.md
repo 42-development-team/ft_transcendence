@@ -1,3 +1,4 @@
+[Home Page](./00_Documentation.md)
 # CLOUDINARY => Avatar handling
 
 * Temporary URL (Frontend): Used only for previewing the image locally in the browser before the form is submitted. Not stored in Cloudinary.
