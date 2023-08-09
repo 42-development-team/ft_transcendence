@@ -1,6 +1,8 @@
 "use client";
 import React, {useContext, createContext, useState} from "react";
 
+// Todo :use enum in order to avoid boolean hell
+
 type ChatBarContextType = {
     isChatOpen: boolean;
     openChat: () => void;
@@ -10,6 +12,8 @@ type ChatBarContextType = {
     toggleFriendListVisibility: () => void;
     isChatMembersOpen: boolean;
     toggleChatMembersVisibility: () => void;
+    isChannelJoinOpen: boolean;
+    toggleChannelJoinVisibility: () => void;
 }
 
 const ChatBarContextDefaultValues: ChatBarContextType = {
@@ -21,6 +25,8 @@ const ChatBarContextDefaultValues: ChatBarContextType = {
     toggleFriendListVisibility: () => {},
     isChatMembersOpen: false,
     toggleChatMembersVisibility: () => {},
+    isChannelJoinOpen: false,
+    toggleChannelJoinVisibility: () => {}
 }
 
 const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultValues);
@@ -29,32 +35,42 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
     const [isChatOpen, setChatOpen] = useState(false);
     const [isFriendListOpen, setFriendListOpen] = useState(false);
     const [isChatMembersOpen, setChatMembersOpen] = useState(false);
+    const [isChannelJoinOpen, setChannelJoinOpen] = useState(false);
 
     const openChat = () => {
         setChatOpen(true);
         if (isFriendListOpen) {
             setFriendListOpen(false);
         }
+        if (isChannelJoinOpen) {
+            setChannelJoinOpen(false);
+        }
         setChatMembersOpen(false);
     }
     const closeChat = () => {
         setChatOpen(false);
         setChatMembersOpen(false);
+        setChannelJoinOpen(false);
     }
 
     const toggleChatVisibility = () => {
         setChatOpen(!isChatOpen);
-        if (isChatOpen) {
-            setFriendListOpen(false);
-        }
+        setFriendListOpen(false);
+        setChannelJoinOpen(false);
     }
 
     const toggleFriendListVisibility = () => {
         setFriendListOpen(!isFriendListOpen);
-        if (isChatOpen) {
-            setChatOpen(false);
-            setChatMembersOpen(false);
-        }
+        setChatOpen(false);
+        setChatMembersOpen(false);
+        setChannelJoinOpen(false);
+    }
+
+    const toggleChannelJoinVisibility = () => {
+        setChannelJoinOpen(!isChannelJoinOpen);
+        setChatOpen(false);
+        setChatMembersOpen(false);
+        setFriendListOpen(false);
     }
 
     const toggleChatMembersVisibility = () => {
@@ -63,7 +79,8 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
 
     return (
         <ChatBarContext.Provider value = {
-            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen: isChatMembersOpen, toggleChatMembersVisibility: toggleChatMembersVisibility}
+            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen, toggleChatMembersVisibility,
+            isChannelJoinOpen, toggleChannelJoinVisibility}
             }>
             {children}
         </ChatBarContext.Provider>

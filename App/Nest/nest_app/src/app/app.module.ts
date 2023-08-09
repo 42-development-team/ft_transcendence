@@ -18,6 +18,8 @@ import { TwoFAModule } from '../auth/2FA/2FA.module';
 import { AvatarsController } from '../avatars/avatars.controller';
 import { CloudinaryService } from '../avatars/cloudinary.service';
 import { JwtModule } from '@nestjs/jwt';
+import { ChatGateway } from 'src/chat/chat.gateway';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { JwtModule } from '@nestjs/jwt';
     PrismaModule,
     AuthModule,
     TwoFAModule,
+    ChatModule,
     JwtModule.registerAsync({
       inject: [ConfigService], // Inject ConfigService to access JWT_SECRET
       useFactory: (configService: ConfigService) => ({
@@ -52,6 +55,7 @@ import { JwtModule } from '@nestjs/jwt';
     SocketGateway,
     TwoFAService,
     CloudinaryService,
+    ChatGateway
   ],
 })
 export class AppModule {}

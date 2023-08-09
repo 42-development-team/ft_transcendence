@@ -1,16 +1,70 @@
-import style from '../Chat.module.css';
+import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
+import Image from 'next/image';
+import { useEffect, useState } from "react";
+import ChannelItem from "./ChannelItem";
 
 const JoinChannel = () => {
+
+    const {toggleChannelJoinVisibility} = useChatBarContext();
+    const [publicChannels, setPublicChannels] = useState<any[]>([]);
+    const [privateChannels, setPrivateChannels] = useState<any[]>([]);
+
+    const getChannels = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const publicChannelsComp = data
+                .filter((channel: any) => channel.type === "public")
+                .map((channel: any) => (
+                    <ChannelItem key={channel.id} channel={channel} />
+                ));
+            const privateChannelsComp = data
+                .filter((channel: any) => channel.type === "private")
+                .map((channel: any) => (
+                    <ChannelItem key={channel.id} channel={channel} />
+                ));
+            setPublicChannels(publicChannelsComp);
+            setPrivateChannels(privateChannelsComp);
+        }
+        catch (err) {
+            console.log("Error fetching channel list: " + err);
+        }
+    }
+
+    useEffect(() => {
+        getChannels();
+    }, [])
+    
     return (
-        <li className={style.channelItem}>
-            <button onClick={() => console.log("Join a channel")} className='rounded-[inherit] w-[inherit] h-[inherit]'>
-                <svg viewBox="0 0 24 24" aria-hidden="false" width={"48"} height={"48"} className={style.channelIcon}>
-                    <path fillRule="evenodd" fill="currentColor" d="M15 10.5C15 12.9853 12.9853 15 10.5 15C8.01472 15 6 12.9853 6 10.5C6 8.01472 8.01472 6 10.5 6C12.9853 6 15 8.01472 15 10.5ZM14.1793 15.2399C13.1632 16.0297 11.8865 16.5 10.5 16.5C7.18629 16.5 4.5 13.8137 4.5 10.5C4.5 7.18629 7.18629 4.5 10.5 4.5C13.8137 4.5 16.5 7.18629 16.5 10.5C16.5 11.8865 16.0297 13.1632 15.2399 14.1792L20.0304 18.9697L18.9697 20.0303L14.1793 15.2399Z"></path>
-                </svg>
-                <h4 className={style.channelName}>Join channel</h4>
-            </button>
-        </li>
-    );
+        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+            <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
+                <span className='font-semibold align-middle pl-2 pt-2'>
+                    Join a channel
+                </span>
+                <button onClick={toggleChannelJoinVisibility} >
+                    <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
+                </button>
+            </div>
+            <div className='overflow-auto h-[86vh]'>
+                
+                <div className='flex items-center justify-around py-2 my-2 '>
+                    <span className='font-semibold text-sm'>
+                        Public channels 📢
+                    </span>
+                </div>
+                {/* List of public channels */}
+                {publicChannels}
+                <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
+                    <span className='font-semibold text-sm'>
+                        Private channels 🔒
+                    </span>
+                </div>
+                {privateChannels}
+                {/* List of private channels */}
+            </div>
+        </div>
+    )
 }
 
 export default JoinChannel;
