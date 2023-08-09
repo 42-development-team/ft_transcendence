@@ -58,15 +58,16 @@ class Ball {
     show(context: CanvasRenderingContext2D, width:  number, height: number) {
         context.fillStyle = this.color;
         context.beginPath();
-            context.arc(this.x * width - this.r * 100, this.y * height - this.r * 100, this.r * 100, 0, this.pi2, false);
-            context.fill();
+        context.arc(this.x * width, this.y * height , this.r * 100, 0, this.pi2, false);
+        context.fill();
+        context.stroke();
         context.closePath();
     };
 
     renderBall(context: CanvasRenderingContext2D, p1: Player, p2: Player, width: number, height: number) {
         this.show(context, width, height);
-        this.borderBounce(p1, p2, width, height);
-        this.update();
+        // this.borderBounce(p1, p2, width, height);
+        // this.update();
     };
 }
 

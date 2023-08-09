@@ -4,11 +4,11 @@ class Player {
     constructor(bool: boolean) {
         if (bool === true) {
             this.x = 0.01;
-            this.y = 0.5 - this.h / 2; 
+            this.y = 0.5; 
         }
         else {
             this.x = 0.99 - this.w;
-            this.y = 0.5 - this.h / 2;
+            this.y = 0.5;
         }
     }
 
@@ -21,7 +21,7 @@ class Player {
     show(context: CanvasRenderingContext2D, width:  number, height: number) {
         context.fillStyle = this.color;
         context.beginPath();
-            context.fillRect(this.x * width - this.w, this.y * height - this.h, this.w * width, this.h * height);
+            context.fillRect(this.x * width - this.w * width / 2, this.y * height - this.h * height / 2, this.w * width, this.h * height);
         context.closePath();
     }
 

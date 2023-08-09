@@ -27,6 +27,21 @@ const canvasStyle: any = {
 	width: '80%',
 };
 
+const drawCross = (context: CanvasRenderingContext2D, width: number, height: number): any => {
+	context.fillStyle = 'red';
+	context.beginPath();
+		context.moveTo(0, height / 2);
+		context.lineTo(width, height / 2);
+		context.stroke();
+	context.closePath();
+
+	context.beginPath();
+		context.moveTo(width / 2, 0);
+		context.lineTo(width / 2, height);
+		context.stroke();
+	context.closePath();
+}
+
 const Canvas = () => {
 
 	if (window === undefined)
@@ -58,6 +73,7 @@ const Canvas = () => {
 		const render = (): any => {
 
 			context.clearRect(0, 0, width, height);
+			drawCross(context, width, height);
 			ball.renderBall(context, p1, p2, width, height);
 			p1.renderPlayer(context, width, height);
 			p2.renderPlayer(context, width, height);
