@@ -31,10 +31,19 @@ const StatsWindow = (userId: {userId: string}) => {
     }
 
     return (
-        <div className=" flex justify-center 2xl:mx-[100px] xl:mx-16 lg:mx-10 md:mx-8 sm:mx-5 font-semibold text-gray-400 text-center h-[30vh] mt-5 transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
-                <Avatar
-                    disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
-                </Avatar>
+        <div>
+            <div className="mt-5 flex flex-row justify-center">
+                    <div className="mb-4">
+                        <Avatar
+                            disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
+                        </Avatar>
+                    </div>
+                <div className="flex flex-grow ml-5 font-semibold text-gray-400 text-center h-[30vh] transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)] 2xl:mx-[125px] xl:mx-20 lg:mx-16 md:mx-14 sm:mx-8">
+                    <div className="mb-4 w-[22vh]">
+                        Stats
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
