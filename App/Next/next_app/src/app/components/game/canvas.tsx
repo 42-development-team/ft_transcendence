@@ -27,14 +27,6 @@ const canvasStyle: any = {
 	width: '80%',
 };
 
-// interface CanvasProps {
-// 	ball: Ball;
-// 	renderBall: any;
-// }
-
-// const Canvas: React.FC<CanvasProps> = (props) => {
-// const Canvas = ({ ...props }) => {
-// const Canvas = ( props: any ) => {
 const Canvas = () => {
 
 	if (window === undefined)
@@ -42,7 +34,7 @@ const Canvas = () => {
 	// =================== //
 	// Have To Declrare in //
 	//   parent conponent  //
-		const ball: Ball = new Ball(0.002, 0.004);
+		const ball: Ball = new Ball(0.007, 0.003);
 		const p1: Player = new Player(true);
 		const p2: Player = new Player(false);
 	// =================== //

@@ -4,11 +4,11 @@ class Player {
     constructor(bool: boolean) {
         if (bool === true) {
             this.x = 0.01;
-            this.y = 0.5; 
+            this.y = 0.5 - this.h / 2; 
         }
         else {
             this.x = 0.99 - this.w;
-            this.y = 0.5;
+            this.y = 0.5 - this.h / 2;
         }
     }
 

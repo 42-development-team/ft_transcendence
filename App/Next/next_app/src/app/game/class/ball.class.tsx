@@ -18,11 +18,11 @@ class Ball {
     speed: [number, number] = [0, 0];
 
     borderBounce(p1: Player, p2: Player, width:  number, height: number) {
-        if (this.x <= 0) 
+        if (this.x - this.r / 4 <= 0) 
             this.speed[0] *= -1; // reset and count p2 score ++
         if(this.x >= 1)
             this.speed[0] *= -1; // reset and count p1 score ++
-        if (this.y - this.r / 2 <= 0 || this.y >= 1)
+        if (this.y - this.r / 4 <= 0 || this.y >= 1)
             this.speed[1] *= -1;
         this.paddleBounce(p1, p2);
     };
@@ -35,7 +35,7 @@ class Ball {
     }
 
     paddleLeftBounce(p: Player) {
-        if (this.x - this.r / 2 < p.x + p.w) {
+        if (this.x - this.r / 4 < p.x + p.w) {
             if ( this.y > p.y && this.y < p.y + p.h) {
                 this.speed[0] *= -1;
             }
