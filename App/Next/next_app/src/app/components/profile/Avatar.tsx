@@ -50,17 +50,17 @@ const Avatar = (
       };
 
     return (
-        <div className="m-4">
-            <p className="font-bold text-center ">Username</p>
+        <div className="mb-2">
+            <p className="mb-2 font-bold text-center ">Username</p>
             {imageUrl || imageUrlGetFromCloudinary? (
                 <div>
                     {/* Display uploaded avatar image temporary stored in URL*/}
                     <Image
                         src={imageUrlGetFromCloudinary as string || imageUrl as string}
                         alt="Selected Avatar"
-                        width={188}
-                        height={188}
-                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[200px] sm:h-[200px] md:w-[212px] md:h-[212px] lg:w-[256px] lg:h-[256px] 2xl:w-[312px] 2xl:h-[312px]"
+                        width={176}
+                        height={176}
+                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px] 2xl:w-[312px] 2xl:h-[312px]"
                     />
                 </div>
             ) : (
