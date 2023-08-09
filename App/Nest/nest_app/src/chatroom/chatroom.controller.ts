@@ -7,6 +7,7 @@ import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { InfoChatroomDto } from './dto/info-chatroom.dto';
+import { Public } from '../auth/public.routes'
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -16,20 +17,20 @@ export class ChatroomController {
 		private socketGateway: SocketGateway,
 	) { }
 
-
 	/* C(reate) */
-	@Post()
-	create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any) {
-		const user: User = req.user;
+	@Public()
+	@Post('new')
+    async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
+        try {
+            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
 
-		createChatroomDto.owner = user.id;
-		createChatroomDto.admins = [user.id];
+            this.socketGateway.server.emit("NewChatRoom", newChatRoom);
 
-		const newChatRoom = this.chatroomService.createChatRoom(createChatroomDto, user.id);
-
-		this.socketGateway.server.emit("NewChatRoom", newChatRoom);
-		return newChatRoom;
-	}
+            response.status(HttpStatus.CREATED).send(newChatRoom);
+        } catch (error) {
+            response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+        }
+    }
 
 	/* R(ead) */
 	@Get()
