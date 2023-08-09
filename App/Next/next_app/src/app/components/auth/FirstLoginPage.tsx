@@ -56,22 +56,22 @@ const FirstLoginPageComponent = ({
         }
     }
       
-/* handle validate click, so username update and avagtar update in cloudinary */
+  /* handle validate click, so username update and avagtar update in cloudinary */
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
-    await UpdateAvatar( avatarFile, userId, setImageUrl );
-    const updateData = {
-      newUsername: inputUserName,
-      userId: userId, 
-    };
-    const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-      method: "PUT",
-      body: JSON.stringify(updateData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+      await UpdateAvatar(avatarFile, userId, setImageUrl);
+      const updateData = {
+        newUsername: inputUserName,
+        userId: userId,
+      };
+      const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
+        method: "PUT",
+        body: JSON.stringify(updateData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     
     if (usernameUpdateResponse.ok) {
       console.log("Username updated successfully");

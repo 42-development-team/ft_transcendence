@@ -59,9 +59,9 @@ const Avatar = (
                     <Image
                         src={imageUrlGetFromCloudinary as string || imageUrl as string}
                         alt="Selected Avatar"
-                        width={212}
-                        height={212}
-                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px] 2xl:w-[312px] 2xl:h-[312px]"
+                        width={176}
+                        height={176}
+                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px]"
                     />
                 </div>
             ) : (
@@ -72,7 +72,7 @@ const Avatar = (
                         alt="Default Avatar"
                         width={176}
                         height={176}
-                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[200px] sm:h-[200px] md:w-[212px] md:h-[212px] lg:w-[256px] lg:h-[256px] 2xl:w-[312px] 2xl:h-[312px]"
+                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px] 2xl:w-[190px] 2xl:h-[190px]"
                     />
                 </div>
             )}

@@ -39,7 +39,7 @@ const StatsWindow = (userId: {userId: string}) => {
                         </Avatar>
                     </div>
                 <div className="flex flex-grow ml-5 font-semibold text-gray-400 text-center h-[30vh] transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)] 2xl:mx-[125px] xl:mx-20 lg:mx-16 md:mx-14 sm:mx-8">
-                    <div className="mb-4 w-[22vh]">
+                    <div className="mb-4 w-[22vh] text-center ">
                         Stats
                     </div>
                 </div>
