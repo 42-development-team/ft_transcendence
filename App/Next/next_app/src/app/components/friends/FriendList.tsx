@@ -1,12 +1,12 @@
 import { UserModel } from "@/app/utils/models";
 import FriendItem from "./FriendItem";
-import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 
 const FriendList = ({friends}: {friends: UserModel[]}) => {
 
-    const {toggleFriendListVisibility} = useChatBarContext();
+    const { setChatBarState} = useChatBarContext();
 
     const friendsList = friends.map((friend) => (
         <FriendItem key={friend.id} friend={friend}/>
@@ -18,7 +18,7 @@ const FriendList = ({friends}: {friends: UserModel[]}) => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Friend List
                 </span>
-                <button onClick={toggleFriendListVisibility} >
+                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>

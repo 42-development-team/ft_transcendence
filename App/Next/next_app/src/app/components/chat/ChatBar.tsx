@@ -2,7 +2,7 @@
 import useChatMessages from '@/app/hooks/useChatMessages';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatSideBar from './ChatSideBar';
-import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
+import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatMessagesBox from './chatbox/ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
 import FriendList from '../friends/FriendList';
@@ -16,33 +16,33 @@ import CreateChannel from './channel/CreateChannel';
 
 interface ChatBarProps {
     userId: string; // Define the correct type for userId (e.g., string)
-  }
+}
 
 const ChatBar = ({ userId }: ChatBarProps) => {
-    const {isChatOpen, isFriendListOpen, isChatMembersOpen, isChannelJoinOpen, isCreateChannelOpen } = useChatBarContext();
-    const {messages, send} = useChatMessages();
-    const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
-    const {friends} = useFriends();
-    const {channels, createNewChannel} = useChannels();
+    const { chatBarState } = useChatBarContext();
+    const { messages, send } = useChatMessages();
+    const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
+    const { friends } = useFriends();
+    const { channels, createNewChannel } = useChannels();
 
     return (
         <div className='flex h-full'>
             <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
-            {isChatOpen && !isChatMembersOpen &&
+            {chatBarState == ChatBarState.ChatOpen &&
                 <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} />
             }
-            {isChatOpen && isChatMembersOpen &&
+            {chatBarState == ChatBarState.ChatMembersOpen &&
                 <ChatMemberList />
             }
-            {isFriendListOpen &&
+            {chatBarState == ChatBarState.FriendListOpen &&
                 <FriendList friends={friends} />
             }
-            {isChannelJoinOpen &&
+            {chatBarState == ChatBarState.JoinChannelOpen &&
                 <JoinChannel />
             }
-            {isCreateChannelOpen && (
-                <CreateChannel userId={userId} createNewChannel={createNewChannel}/>
+            {chatBarState == ChatBarState.CreateChannelOpen && (
+                <CreateChannel userId={userId} createNewChannel={createNewChannel} />
             )}
         </div>
     )
