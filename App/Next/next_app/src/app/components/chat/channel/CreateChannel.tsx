@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import useChannels from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
@@ -22,7 +22,8 @@ const CreateChannel = ({ userId }: CreateChannelProps) => {
     setShowPasswordInput(selectedType === 'private');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (channelName === '') return;
     if( channelType === 'private' && password === '') return;
 
@@ -52,7 +53,7 @@ const CreateChannel = ({ userId }: CreateChannelProps) => {
             </div>
       
       <div className="p-4">
-        <form >
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="channelName" className="block text-text text-sm font-bold mb-2">
               Channel Name
@@ -97,7 +98,8 @@ const CreateChannel = ({ userId }: CreateChannelProps) => {
             </div>
           )}
           <button
-            onClick={handleSubmit}
+            onSubmit={handleSubmit}
+            // onClick={handleSubmit}
             className={`bg-mauve font-bold text-sm rounded-lg text-base hover:bg-pink drop-shadow-xl mt-1 p-2`}
           >
             Create Channel
