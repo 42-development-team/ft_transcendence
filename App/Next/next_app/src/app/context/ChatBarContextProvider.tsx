@@ -58,12 +58,14 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setChatOpen(false);
         setChatMembersOpen(false);
         setChannelJoinOpen(false);
+        setCreateChannelOpen(false);
     }
 
     const toggleChatVisibility = () => {
         setChatOpen(!isChatOpen);
         setFriendListOpen(false);
         setChannelJoinOpen(false);
+        setCreateChannelOpen(false);
     }
 
     const toggleFriendListVisibility = () => {
@@ -71,6 +73,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setChatOpen(false);
         setChatMembersOpen(false);
         setChannelJoinOpen(false);
+        setCreateChannelOpen(false);
     }
 
     const toggleChannelJoinVisibility = () => {
@@ -78,6 +81,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setChatOpen(false);
         setChatMembersOpen(false);
         setFriendListOpen(false);
+        setCreateChannelOpen(false);
     }
 
     const toggleChatMembersVisibility = () => {
@@ -89,6 +93,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setChatOpen(false);
         setChatMembersOpen(false);
         setFriendListOpen(false);
+        setChannelJoinOpen(false);
     }
 
     return (

@@ -1,14 +1,15 @@
 import React, { useState, ChangeEvent } from 'react';
 import useChannels from '@/app/hooks/useChannels';
-import CreateChannelButton from './CreateChannelButton';
-
+import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
+import Image from 'next/image';
+import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
 
 interface CreateChannelProps {
   userId: string;
-  onClose: () => void;
 }
 
-const CreateChannel = ({ userId, onClose }: CreateChannelProps) => {
+const CreateChannel = ({ userId }: CreateChannelProps) => {
+  const { toggleCreateChannelVisibility } = useChatBarContext();
   const { createNewChannel } = useChannels();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
@@ -21,8 +22,9 @@ const CreateChannel = ({ userId, onClose }: CreateChannelProps) => {
     setShowPasswordInput(selectedType === 'private');
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = () => {
+    if (channelName === '') return;
+    if( channelType === 'private' && password === '') return;
 
     createNewChannel({
       name: channelName,
@@ -35,37 +37,44 @@ const CreateChannel = ({ userId, onClose }: CreateChannelProps) => {
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
-
-    // Close the form after creation
-    onClose();
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <form onSubmit={handleSubmit}>
+    <div className='w-full min-w-[350px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+      
+            <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
+                <span className='font-semibold align-middle pl-2 pt-2'>
+                    Create a channel
+                </span>
+                <button onClick={toggleCreateChannelVisibility} >
+                    <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
+                </button>
+            </div>
+      
+      <div className="p-4">
+        <form >
           <div className="mb-4">
-            <label htmlFor="channelName" className="block text-gray-700 text-sm font-bold mb-2">
-              Channel Name:
+            <label htmlFor="channelName" className="block text-text text-sm font-bold mb-2">
+              Channel Name
             </label>
             <input
               type="text"
               id="channelName"
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
             />
           </div>
 
           <div className="mb-4">
-            <label htmlFor="channelType" className="block text-gray-700 text-sm font-bold mb-2">
-              Channel Type:
+            <label htmlFor="channelType" className="block text-text text-sm font-bold mb-2">
+              Channel Type
             </label>
             <select
               id="channelType"
               value={channelType}
               onChange={handleTypeChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className=" w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
             >
               <option value="public">Public</option>
               <option value="private">Private</option>
@@ -75,7 +84,7 @@ const CreateChannel = ({ userId, onClose }: CreateChannelProps) => {
 
           {showPasswordInput && (
             <div className="mb-4">
-              <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="password" className="block text-text text-sm font-bold mb-2">
                 Password:
               </label>
               <input
@@ -83,14 +92,13 @@ const CreateChannel = ({ userId, onClose }: CreateChannelProps) => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
               />
             </div>
           )}
-
           <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            onClick={handleSubmit}
+            className={`bg-mauve font-bold text-sm rounded-lg text-base hover:bg-pink drop-shadow-xl mt-1 p-2`}
           >
             Create Channel
           </button>
