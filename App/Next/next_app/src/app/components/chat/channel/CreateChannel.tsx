@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
-import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 
 interface CreateChannelProps {
   userId: string;
@@ -10,7 +10,7 @@ interface CreateChannelProps {
 }
 
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
-  const { toggleCreateChannelVisibility } = useChatBarContext();
+  const { setChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
@@ -46,7 +46,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Create a channel
                 </span>
-                <button onClick={toggleCreateChannelVisibility} >
+                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>

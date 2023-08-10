@@ -1,4 +1,4 @@
-import { useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import ChannelItem from "./ChannelItem";
 
 const JoinChannel = () => {
 
-    const {toggleChannelJoinVisibility} = useChatBarContext();
+    const { setChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
     const [privateChannels, setPrivateChannels] = useState<any[]>([]);
 
@@ -42,7 +42,7 @@ const JoinChannel = () => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Join a channel
                 </span>
-                <button onClick={toggleChannelJoinVisibility} >
+                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>
