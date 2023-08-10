@@ -125,4 +125,16 @@ export class ChatroomService {
             return this.userService.getUserFromId(userId);
         }
     }
+
+	async getUserIdFromSocket(socket: Socket) {
+        const authToken = socket.handshake.headers.cookie.split(";");
+        const jwtToken = authToken[0].split("=")[1];
+        const secret = this.configService.get<string>('jwtSecret');
+        const payload = this.jwtService.verify(jwtToken, {secret: secret});
+        const userId = payload.sub;
+        // Todo: if userId is undefined or null?
+        if (userId) {
+            return userId;
+        }
+    }
 }

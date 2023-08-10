@@ -38,19 +38,28 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('joinRoom')
-    joinRoom(client: Socket, room: string){
+    async joinRoom(client: Socket, room: string){
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
         client.join(room);
+        console.log(`User ${userId} joined room ${room}`);
+    }
+
+    @SubscribeMessage('leaveRoom')
+    async handleLeaveRoom(client: Socket, room: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        client.leave(room);
+        console.log(`User ${userId} left room ${room}`);
     }
 
     @SubscribeMessage('message')
     async handleMessage(
-        @MessageBody() message: string,
+        @MessageBody() message: string, room: string,
         @ConnectedSocket() client: Socket
         ) : Promise<void> {
         const user = await this.chatroomService.getUserFromSocket(client);
 
         // Todo: add the message to the database
-        this.server.emit('new-message', 
+        this.server.to(room).emit('new-message', 
             {message, user}
         );
     }
