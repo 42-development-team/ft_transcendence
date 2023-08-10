@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ChannelModel } from "../utils/models";
 
 const testChannel: ChannelModel = {
@@ -21,6 +21,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
+    // Todo: on mount, fetch channels from server and connect to socket rooms
     const [channels, setChannels] = useState<ChannelModel[]>([
         testChannel,
     ]);

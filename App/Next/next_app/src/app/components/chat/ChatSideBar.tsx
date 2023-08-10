@@ -13,7 +13,7 @@ const ChatSideBar = ({ channels, userId }: { channels: ChannelModel[]; userId: s
   ));
 
   return (
-    <div className="w-16 bg-base h-full shadow-inner flex flex-col justify-start items-center">
+    <div className="w-16 min-w-[4rem] bg-base h-full shadow-inner flex flex-col justify-start items-center">
       <div className={style.navChannel} >
         <ul className={style.channelContainer}>
           <ShowFriends />
