@@ -53,6 +53,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
             setChannelJoinOpen(false);
         }
         setChatMembersOpen(false);
+        setCreateChannelOpen(false);
     }
     const closeChat = () => {
         setChatOpen(false);
