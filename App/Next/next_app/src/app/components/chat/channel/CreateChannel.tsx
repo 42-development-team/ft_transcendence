@@ -3,6 +3,8 @@ import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import useChatConnection from "../../../hooks/useChatConnection";
+
 
 interface CreateChannelProps {
   userId: string;
@@ -15,7 +17,8 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
   const [password, setPassword] = useState('');
-
+  const socket = useChatConnection();
+  
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
     setChannelType(selectedType);
@@ -34,7 +37,10 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
       owner: Number(userId),
       admins: [Number(userId)],
     });
-
+    // emit joinRoom event to server
+    if (socket) {
+      socket.emit("joinRoom", channelName);
+    }
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
