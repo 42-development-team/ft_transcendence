@@ -18,7 +18,7 @@ interface ChatBarProps {
     userId: string;
 }
 
-const ChatBar = ({ userId }: ChatBarProps) => {
+const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState } = useChatBarContext();
     const { messages, send } = useChatMessages();
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
@@ -49,4 +49,4 @@ const ChatBar = ({ userId }: ChatBarProps) => {
 }
 
 
-export default ChatBar;
+export default Chat;
