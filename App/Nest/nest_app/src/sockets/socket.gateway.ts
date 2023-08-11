@@ -37,10 +37,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         // remove 
     }
 
+    // @SubscribeMessage('joinRoom')
+    // async joinRoom(client: Socket, room: string){
+    //     client.join(room);
+    //     console.log(`Client ${client.id} joined room ${room}`);
+    // }
+
     @SubscribeMessage('joinRoom')
-    async joinRoom(client: Socket, room: string){
-        client.join(room);
-        console.log(`Client ${client.id} joined room ${room}`);
+    async joinRoom(@ConnectedSocket() client: Socket, room: string) {
+        const userId = this.chatroomService.getUserIdFromSocket(client); 
+        const password = ?
+        const channelId = ?
+        
+        try {
+            const updateResult = await this.chatroomService.join(channelId, Number(userId), password);
+            client.join(room);
+            console.log(`Client ${client.id} joined room ${room}`);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     @SubscribeMessage('leaveRoom')
