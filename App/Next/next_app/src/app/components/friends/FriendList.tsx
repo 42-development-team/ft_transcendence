@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const FriendList = ({friends}: {friends: UserModel[]}) => {
 
-    const { setChatBarState} = useChatBarContext();
+    const { updateChatBarState} = useChatBarContext();
 
     const friendsList = friends.map((friend) => (
         <FriendItem key={friend.id} friend={friend}/>
@@ -18,7 +18,7 @@ const FriendList = ({friends}: {friends: UserModel[]}) => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Friend List
                 </span>
-                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
+                <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>

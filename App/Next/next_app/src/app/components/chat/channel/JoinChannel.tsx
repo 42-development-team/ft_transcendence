@@ -7,7 +7,7 @@ import { ChannelModel } from "@/app/utils/models";
 
 const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetchChannels: () => void}) => {
 
-    const { setChatBarState } = useChatBarContext();
+    const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
     const [privateChannels, setPrivateChannels] = useState<any[]>([]);
 
@@ -36,7 +36,7 @@ const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetch
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Join a channel
                 </span>
-                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
+                <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>
