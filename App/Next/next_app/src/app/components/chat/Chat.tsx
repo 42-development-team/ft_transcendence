@@ -11,9 +11,6 @@ import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
 import CreateChannel from './channel/CreateChannel';
 
-// Todo: do we need an emoji-picker ?
-// https://youtu.be/U2XnoKzxmeY?t=1605
-
 interface ChatBarProps {
     userId: string;
 }
