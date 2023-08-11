@@ -24,4 +24,8 @@ export class ChatroomContentDto {
 
     @IsArray()
     members: ChatroomMemberDto[];
+
+    @IsNotEmpty()
+    @IsNumber()
+    ownerId: number;
 }

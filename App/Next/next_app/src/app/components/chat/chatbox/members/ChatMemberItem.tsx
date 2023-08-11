@@ -5,7 +5,7 @@ import Image from "next/image";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type FriendProps = {
-    friend: ChannelMember
+    user: ChannelMember
 }
 
 const ChatMemberActions = () => {
@@ -31,7 +31,7 @@ const ChatMemberActions = () => {
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ friend: { username, avatar } }: FriendProps) => {
+const ChatMemberItem = ({ user: { username, avatar } }: FriendProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center">

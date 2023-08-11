@@ -25,6 +25,7 @@ export interface ChannelMember {
     id: string
     username: string
     isAdmin: boolean
+    isOwner: boolean
     avatar: string
 }
 

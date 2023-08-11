@@ -75,12 +75,14 @@ export class ChatroomService {
 			name: chatroom.name,
 			type: chatroom.type,
 			joined: isJoined,
+			ownerId: chatroom.ownerId,
 			members: chatroom.members.map(member => {
 				return {
 					id: member.id,
 					username: member.username,
 					avatar: member.avatar,
 					isAdmin: chatroom.admins.some(admin => admin.id === member.id),
+					isOwner: chatroom.creatorId === member.id,
 				};
 			}),
 			messages: chatroom.messages.map(message => {

@@ -16,4 +16,8 @@ export class ChatroomMemberDto {
     @IsNotEmpty()
     @IsBoolean()
     isAdmin: boolean;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    isOwner: boolean;
 }
