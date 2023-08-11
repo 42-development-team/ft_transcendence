@@ -16,6 +16,7 @@ export default function useChannels() {
 
     useEffect(() => {
         fetchChannelsInfo();
+        fetchChannelsContent();
     }, []);
 
     const fetchChannelsInfo = async () => {
@@ -29,9 +30,27 @@ export default function useChannels() {
             setChannels(fetchedChannels);
         }
         catch (err) {
-            console.log("Error fetching channel list: " + err);
+            console.log("Error fetching channel info list: " + err);
         }
     };
+
+    const fetchChannelsContent = async () => {
+        try {
+            console.log("Fetching channel content");
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            console.log("Channel content: " + JSON.stringify(data, null, 2));
+            // const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+            //     channel.icon = '';
+            //     return channel;
+            // });
+            // setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel content list: " + err);
+        }
+    };
+
 
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {

@@ -53,12 +53,26 @@ export class ChatroomController {
 
 	@Get('/content')
 	async getChannelsContent(@Request() req: any, @Res() response: Response) {
-		
+		const userId: number = req.user.sub;
+		await this.chatroomService.getAllChannelsContent(userId)
+			.then(chatRooms => {
+				response.send(chatRooms);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});	
 	}
 
 	@Get('/content/:id')
 	async getChannelContent(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
-
+		const userId: number = req.user.sub;
+		await this.chatroomService.getChannelContent(+id, userId)
+			.then(chatRoom => {
+				response.send(chatRoom);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
 	}
 
 	/* U(pdate) */
