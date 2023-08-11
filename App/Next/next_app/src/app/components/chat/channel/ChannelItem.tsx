@@ -1,54 +1,60 @@
 import { ChannelModel } from "@/app/utils/models";
+import { join } from "path";
 import { FormEvent, useState } from "react";
 
 type ChannelProps = {
     channel: ChannelModel
+    fetchChannels: () => void
 }
 
 // Todo: Add channel icon
-const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps) => {
+const ChannelItem = ({ channel: { id, name, icon, type, joined }, fetchChannels }: ChannelProps) => {
 
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
 
-    const JoinChannel = async (event: FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log("Joining channel " + name);
-        if (type === "public") {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`,
-                { credentials: "include", method: "PATCH" });
-            if (!response.ok) {
-                console.log("Error joining channel: " + await response.text());
-                return;
-            }
-            setIsJoined(true);
-        }
-        else if (type === "private") {
-            if (!showPassword) {
-                setShowPassword(!showPassword);
-                setPassword("");
-                return;
-            }
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`,
-                {
-                    credentials: "include", method: "PATCH",
-                    body: JSON.stringify({ password: password }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-            if (!response.ok) {
-                if (await response.text() === "\"Wrong password\"") {
-                    setIsErrorVisible(true);
-                }
-                return;
-            }
-            setIsJoined(true);
-        }
+        joinChannel();
     }
-    
+
+    // Todo: protected channels
+    const joinChannel = async () => {
+        setIsErrorVisible(false);
+        if (type === "private" && !showPassword) {
+            setShowPassword(!showPassword);
+            setPassword("");
+            return;
+        }
+        const requestOptions: RequestInit = {
+            credentials: "include",
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        };
+
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, requestOptions);
+        if (!response.ok) {
+            const text = await response.text();
+            if (text === "\"Wrong password\"") {
+                setIsErrorVisible(true);
+            }
+            console.log("Error joining channel: " + text);
+            return;
+        }
+        joinSuccess();
+    };
+
+    const joinSuccess = () => {
+        setIsJoined(true);
+        setShowPassword(false);
+        fetchChannels();
+    }
+
     return (
         <div className="flex flex-col flex-grow">
             <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
@@ -62,7 +68,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
                         : <button
                             type="button"
                             className="inline-flex justify-center w-full rounded-full px-5 py-2 font-semibold text-sm bg-surface0 hover:bg-base"
-                            onClick={JoinChannel}>
+                            onClick={joinChannel}>
                             Join</button>
                     }
                 </div>
@@ -70,7 +76,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
             {/* Password input field */}
             {showPassword && type === "private" &&
 
-                <form className="px-2 items-end" onSubmit={JoinChannel}>
+                <form className="px-2 items-end" onSubmit={onSubmit}>
                     <input
                         type="password" value={password}
                         className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
@@ -80,7 +86,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
                         placeholder="password" />
                 </form>
             }
-            {isErrorVisible && 
+            {isErrorVisible &&
                 <p className="text-red text-center font-semibold">Wrong password</p>
             }
         </div>

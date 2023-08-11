@@ -23,7 +23,7 @@ const ChatBar = ({ userId }: ChatBarProps) => {
     const { messages, send } = useChatMessages();
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
-    const { channels, createNewChannel } = useChannels();
+    const { channels, createNewChannel, fetchChannels } = useChannels();
 
     return (
         <div className='flex h-full'>
@@ -39,7 +39,7 @@ const ChatBar = ({ userId }: ChatBarProps) => {
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel channels={channels}/>
+                <JoinChannel channels={channels} fetchChannels={fetchChannels}/>
             }
             {chatBarState == ChatBarState.CreateChannelOpen && (
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} />

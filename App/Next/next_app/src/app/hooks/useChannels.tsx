@@ -65,5 +65,6 @@ export default function useChannels() {
     return {
         channels,
         createNewChannel,
+        fetchChannels,
     }
 }
