@@ -2,38 +2,32 @@ import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextPro
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
-import ChannelItem from "./ChannelItem";
+import JoinChannelItem from "./JoinChannelItem";
+import { ChannelModel } from "@/app/utils/models";
 
-const JoinChannel = () => {
+const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetchChannels: () => void}) => {
 
-    const { setChatBarState } = useChatBarContext();
+    const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
     const [privateChannels, setPrivateChannels] = useState<any[]>([]);
 
-    const getChannels = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const publicChannelsComp = data
-                .filter((channel: any) => channel.type === "public")
-                .map((channel: any) => (
-                    <ChannelItem key={channel.id} channel={channel} />
-                ));
-            const privateChannelsComp = data
-                .filter((channel: any) => channel.type === "private")
-                .map((channel: any) => (
-                    <ChannelItem key={channel.id} channel={channel} />
-                ));
-            setPublicChannels(publicChannelsComp);
-            setPrivateChannels(privateChannelsComp);
-        }
-        catch (err) {
-            console.log("Error fetching channel list: " + err);
-        }
+    const displayChannels = async () => {
+        const publicChannelsComp = channels
+            .filter((channel: any) => channel.type === "public")
+            .map((channel: any) => (
+                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+            ));
+        const privateChannelsComp = channels
+            .filter((channel: any) => channel.type === "private")
+            .map((channel: any) => (
+                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+            ));
+        setPublicChannels(publicChannelsComp);
+        setPrivateChannels(privateChannelsComp);
     }
 
     useEffect(() => {
-        getChannels();
+        displayChannels();
     }, [])
     
     return (
@@ -42,7 +36,7 @@ const JoinChannel = () => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Join a channel
                 </span>
-                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
+                <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>
