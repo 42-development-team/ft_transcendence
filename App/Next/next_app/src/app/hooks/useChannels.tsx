@@ -20,6 +20,10 @@ export default function useChannels() {
         fetchChannelsContent();
     }, []);
 
+    useEffect(() => {
+        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+    }, [joinedChannels]);
+
     // const socket = useChatConnection();
     // useEffect(() => {
         // Subscribe to channels rooms

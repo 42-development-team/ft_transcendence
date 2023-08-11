@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
 
-// Todo: add avatar
 export class ChatroomMemberDto {
     @IsNotEmpty()
     @IsNumber()
@@ -9,6 +8,10 @@ export class ChatroomMemberDto {
     @IsNotEmpty()
     @IsString()
     username: string;
+    
+    @IsNotEmpty()
+    @IsString()
+    avatar: string;
 
     @IsNotEmpty()
     @IsBoolean()

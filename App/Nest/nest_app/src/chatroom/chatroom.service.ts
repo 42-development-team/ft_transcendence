@@ -79,6 +79,7 @@ export class ChatroomService {
 				return {
 					id: member.id,
 					username: member.username,
+					avatar: member.avatar,
 					isAdmin: chatroom.admins.some(admin => admin.id === member.id),
 				};
 			}),

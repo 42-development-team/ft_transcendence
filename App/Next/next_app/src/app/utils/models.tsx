@@ -25,6 +25,7 @@ export interface ChannelMember {
     id: string
     username: string
     isAdmin: boolean
+    avatar: string
 }
 
 export enum UserStatus {
