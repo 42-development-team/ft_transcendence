@@ -3,21 +3,23 @@ import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
-import useChatConnection from "../../../hooks/useChatConnection";
+// import useChatConnection from "../../../hooks/useChatConnection";
+import { io, Socket } from "socket.io-client"
 
 
 interface CreateChannelProps {
   userId: string;
   createNewChannel: (newChannel: NewChannelInfo) => void;
+  socket: Socket;
 }
 
-const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
+const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps) => {
   const { updateChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
   const [password, setPassword] = useState('');
-  const socket = useChatConnection();
+  // const socket = useChatConnection();
   
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
