@@ -14,13 +14,11 @@ interface ChatMessagesBoxProps {
     channel: ChannelModel;
 }
 
-
-
 const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     const sendMessage = (message: string) => {
         sendToChannel(channel, message);
     }
-    if (channel.messages == undefined) {
+    if (channel == undefined || channel.messages == undefined) {
         return <></>
     }
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(channel.messages);

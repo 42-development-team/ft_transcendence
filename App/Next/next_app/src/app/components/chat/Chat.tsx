@@ -19,7 +19,6 @@ const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
     const { friends } = useFriends();
     const { channels, joinedChannels, createNewChannel, fetchChannelsInfo, sendToChannel } = useChannels();
-
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
 
     useEffect(() => {
@@ -34,8 +33,8 @@ const Chat = ({ userId }: ChatBarProps) => {
             {chatBarState == ChatBarState.ChatOpen && currentChannel &&
                 <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
             }
-            {chatBarState == ChatBarState.ChatMembersOpen &&
-                <ChatMemberList />
+            {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
+                <ChatMemberList channel={currentChannel}/>
             }
             {chatBarState == ChatBarState.FriendListOpen &&
                 <FriendList friends={friends} />
