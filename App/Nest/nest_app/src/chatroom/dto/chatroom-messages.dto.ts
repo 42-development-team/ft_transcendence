@@ -1,9 +1,12 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsDate } from 'class-validator';
 
 export class ChatroomMessageDto {
     @IsNotEmpty()
     @IsNumber()
     id: number;
+
+    @IsDate()
+    createdAt: Date;
 
     @IsNotEmpty()
     @IsString()
