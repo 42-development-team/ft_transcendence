@@ -20,7 +20,7 @@ export default function useChannels() {
 
     const fetchChannels = async () => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';

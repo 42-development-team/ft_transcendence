@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-import { InfoChatroomDto } from './dto/info-chatroom.dto';
+import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 
 @Injectable()
 export class ChatroomService {
@@ -29,16 +29,16 @@ export class ChatroomService {
 	}
 
 	/* R(ead) */
-	async findAll(userId: number): Promise<InfoChatroomDto[]> {
+	async findAll(userId: number): Promise<ChatroomInfoDto[]> {
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
 		});
 		// Convert to InfoChatroomDto - add joined field
-		const chatRoomsDtoPromises: Promise<InfoChatroomDto>[] = chatrooms.map(async chatrooms => {
+		const chatRoomsDtoPromises: Promise<ChatroomInfoDto>[] = chatrooms.map(async chatrooms => {
 			const isJoined = await this.prisma.chatRoom.count({
 				where: { id: chatrooms.id, members: { some: { id: userId } } },
 			}) > 0;
-			const current: InfoChatroomDto = {
+			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
 				name: chatrooms.name,
 				type: chatrooms.type,
@@ -50,14 +50,14 @@ export class ChatroomService {
 		return chatRoomsDto;
 	}
 
-	async findOne(id: number, userId: number): Promise<InfoChatroomDto> {
+	async findOne(id: number, userId: number): Promise<ChatroomInfoDto> {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
 			where: { id: id, members: { some: { id: userId } } },
 		}) > 0;
-		const chatRoomDto: InfoChatroomDto = {
+		const chatRoomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
 			name: chatRoom.name,
 			type: chatRoom.type,

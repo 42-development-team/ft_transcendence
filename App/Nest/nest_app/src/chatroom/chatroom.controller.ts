@@ -6,7 +6,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
-import { InfoChatroomDto } from './dto/info-chatroom.dto';
+import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { Public } from '../auth/public.routes'
 
 @ApiTags('ChatRoom')
@@ -33,14 +33,14 @@ export class ChatroomController {
     }
 
 	/* R(ead) */
-	@Get()
-	async findAll(@Request() req: any): Promise<InfoChatroomDto[]> {
+	@Get('/info')
+	async getChannelsInfo(@Request() req: any): Promise<ChatroomInfoDto[]> {
 		const userId: number = req.user.sub;
 		return this.chatroomService.findAll(userId);
 	}
 
-	@Get(':id')
-	async findOne(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+	@Get('/info/:id')
+	async getChannelInfo(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
 		const userId: number = req.user.sub;
 		await this.chatroomService.findOne(+id, userId)
 			.then(chatRoom => {
