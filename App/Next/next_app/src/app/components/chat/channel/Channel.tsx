@@ -7,11 +7,12 @@ type ChannelProps = {
     channel: ChannelModel
 }
 
-const Channel = ({channel :{name, icon}}: ChannelProps) => {
+const Channel = ({channel :{name, icon, type}}: ChannelProps) => {
     const { setChatBarState } = useChatBarContext();
     return (
         <li className={styles.channelItem}>
-            <button onClick={() => setChatBarState(ChatBarState.ChatOpen)} className='rounded-[inherit] w-[inherit] h-[inherit] relative'>
+            <button onClick={() => setChatBarState(ChatBarState.ChatOpen)} 
+                className={`${type == "public" && "bg-blue text-base"} rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
                     <p className='text-xs'>{name}</p> :
                     <Image alt="Channel Icon" fill src={icon} 
