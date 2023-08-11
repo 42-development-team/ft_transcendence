@@ -8,7 +8,9 @@ import JoinChannelButton from './channel/JoinChannelButton';
 import CreateChannelButton from './channel/CreateChannelButton';
 
 const ChatSideBar = ({ channels, userId }: { channels: ChannelModel[]; userId: string }) => {
-  const channelsList = channels.map((channel) => (
+  const channelsList = channels
+    .filter((channel) => channel.joined)
+    .map((channel) => (
     <Channel key={channel.id} channel={channel} />
   ));
 

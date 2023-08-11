@@ -1,5 +1,5 @@
 import { ChannelModel } from "@/app/utils/models";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 type ChannelProps = {
     channel: ChannelModel
@@ -13,17 +13,17 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
 
-    const JoinChannel = async () => {
+    const JoinChannel = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         console.log("Joining channel " + name);
         if (type === "public") {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id + 5}/join`,
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`,
                 { credentials: "include", method: "PATCH" });
             if (!response.ok) {
                 console.log("Error joining channel: " + await response.text());
                 return;
             }
             setIsJoined(true);
-            // Todo : how to update channel list? - using socket?
         }
         else if (type === "private") {
             if (!showPassword) {
@@ -48,7 +48,7 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
             setIsJoined(true);
         }
     }
-    // Todo: why hitting enter on form refreshes page?
+    
     return (
         <div className="flex flex-col flex-grow">
             <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">

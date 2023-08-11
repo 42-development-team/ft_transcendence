@@ -1,16 +1,6 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChannelModel } from "../utils/models";
-
-const testChannel: ChannelModel = {
-    id: 'test-channel',
-    name: 'test-channel',
-    icon: '',
-    createdAt: "new Date",
-    creatorId: "1",
-    type: 'public',
-    joined: true,
-};
 
 export interface NewChannelInfo {
     name: string;
@@ -22,10 +12,28 @@ export interface NewChannelInfo {
 
 export default function useChannels() {
     // Todo: on mount, fetch channels from server and connect to socket rooms
-    const [channels, setChannels] = useState<ChannelModel[]>([
-        testChannel,
-    ]);
+    const [channels, setChannels] = useState<ChannelModel[]>([]);
 
+    useEffect(() => {
+        fetchChannels();
+    }, []);
+
+    const fetchChannels = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel list: " + err);
+        }
+    };
+
+    // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {
         newChannel.joined = true;
         newChannel.icon = '';

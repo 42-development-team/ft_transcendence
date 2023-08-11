@@ -38,6 +38,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
+    // Todo: close the form
   };
 
   return (

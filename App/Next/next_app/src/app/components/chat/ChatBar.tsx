@@ -15,7 +15,7 @@ import CreateChannel from './channel/CreateChannel';
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
 interface ChatBarProps {
-    userId: string; // Define the correct type for userId (e.g., string)
+    userId: string;
 }
 
 const ChatBar = ({ userId }: ChatBarProps) => {
@@ -39,7 +39,7 @@ const ChatBar = ({ userId }: ChatBarProps) => {
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel />
+                <JoinChannel channels={channels}/>
             }
             {chatBarState == ChatBarState.CreateChannelOpen && (
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} />

@@ -3,37 +3,31 @@ import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
 import ChannelItem from "./ChannelItem";
+import { ChannelModel } from "@/app/utils/models";
 
-const JoinChannel = () => {
+const JoinChannel = ({channels}: {channels: ChannelModel[]}) => {
 
     const { setChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
     const [privateChannels, setPrivateChannels] = useState<any[]>([]);
 
-    const getChannels = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const publicChannelsComp = data
-                .filter((channel: any) => channel.type === "public")
-                .map((channel: any) => (
-                    <ChannelItem key={channel.id} channel={channel} />
-                ));
-            const privateChannelsComp = data
-                .filter((channel: any) => channel.type === "private")
-                .map((channel: any) => (
-                    <ChannelItem key={channel.id} channel={channel} />
-                ));
-            setPublicChannels(publicChannelsComp);
-            setPrivateChannels(privateChannelsComp);
-        }
-        catch (err) {
-            console.log("Error fetching channel list: " + err);
-        }
+    const displayChannels = async () => {
+        const publicChannelsComp = channels
+            .filter((channel: any) => channel.type === "public")
+            .map((channel: any) => (
+                <ChannelItem key={channel.id} channel={channel} />
+            ));
+        const privateChannelsComp = channels
+            .filter((channel: any) => channel.type === "private")
+            .map((channel: any) => (
+                <ChannelItem key={channel.id} channel={channel} />
+            ));
+        setPublicChannels(publicChannelsComp);
+        setPrivateChannels(privateChannelsComp);
     }
 
     useEffect(() => {
-        getChannels();
+        displayChannels();
     }, [])
     
     return (
