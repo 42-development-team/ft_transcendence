@@ -66,6 +66,34 @@ export class ChatroomService {
 		}
 		return chatroomDto;
 	}
+
+	// Content: members and messages
+
+	constructChatroomContentDto(chatroom: any, isJoined: boolean): ChatroomContentDto {
+		const current: ChatroomContentDto = {
+			id: chatroom.id,
+			name: chatroom.name,
+			type: chatroom.type,
+			joined: isJoined,
+			members: chatroom.members.map(member => {
+				return {
+					id: member.id,
+					username: member.username,
+					isAdmin: chatroom.admins.some(admin => admin.id === member.id),
+				};
+			}),
+			messages: chatroom.messages.map(message => {
+				return {
+					id: message.id,
+					createdAt: message.createdAt,
+					content: message.content,
+					senderId: message.senderId,
+					senderUsername: "test"
+				};
+			}),
+		};
+		return current;
+	}
 	async getAllChannelsContent(userId: number): Promise<ChatroomContentDto[]> {
 		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
@@ -82,49 +110,25 @@ export class ChatroomService {
 			const isJoined = await this.prisma.chatRoom.count({
 				where: { id: chatroom.id, members: { some: { id: userId } } },
 			}) > 0;
-			const current: ChatroomContentDto = {
-				id: chatroom.id,
-				name: chatroom.name,
-				type: chatroom.type,
-				joined: isJoined,
-				members: chatroom.members.map(member => {
-						return {
-							id: member.id,
-							username: member.username,
-							isAdmin: chatroom.admins.some(admin => admin.id === member.id),
-						};
-					}),
-				messages: chatroom.messages.map(message => {
-						return {
-							id: message.id,
-							createdAt: message.createdAt,
-							content: message.content,
-							senderId: message.senderId,
-							senderUsername: "test"
-						};
-				}),
-			};
+			const current: ChatroomContentDto = this.constructChatroomContentDto(chatroom, isJoined);
 			return current;
 		});
 		const chatRoomsDto = await Promise.all(chatroomsDtoPromises);
 		return chatRoomsDto;
 	}
 
-	async getChannelContent(id: number, userId: number): Promise<ChatroomInfoDto> {
-		// Todo: implement
-		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+	async getChannelContent(id: number, userId: number): Promise<ChatroomContentDto> {
+		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
 			where: { id: id, members: { some: { id: userId } } },
 		}) > 0;
-		const chatRoomDto: ChatroomInfoDto = {
-			id: chatRoom.id,
-			name: chatRoom.name,
-			type: chatRoom.type,
-			joined: isJoined,
+		if (!isJoined) {
+			throw new Error('User is not a member of this channel');
 		}
-		return chatRoomDto;
+		const chatRoomContentDto: ChatroomContentDto = this.constructChatroomContentDto(chatroom, isJoined);
+		return chatRoomContentDto;
 	}
 
 	/* U(pdate) */
@@ -136,7 +140,7 @@ export class ChatroomService {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
-		
+
 		// Todo : check if already joined
 		if (chatRoom.type === 'public') {
 			// Todo: how to check the result of the update?
