@@ -15,10 +15,10 @@ export default function useChannels() {
     const [channels, setChannels] = useState<ChannelModel[]>([]);
 
     useEffect(() => {
-        fetchChannels();
+        fetchChannelsInfo();
     }, []);
 
-    const fetchChannels = async () => {
+    const fetchChannelsInfo = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
             const data = await response.json();
@@ -65,6 +65,6 @@ export default function useChannels() {
     return {
         channels,
         createNewChannel,
-        fetchChannels,
+        fetchChannels: fetchChannelsInfo,
     }
 }
