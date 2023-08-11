@@ -2,7 +2,7 @@ import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextPro
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { useEffect, useState } from "react";
-import ChannelItem from "./ChannelItem";
+import JoinChannelItem from "./JoinChannelItem";
 import { ChannelModel } from "@/app/utils/models";
 
 const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetchChannels: () => void}) => {
@@ -15,12 +15,12 @@ const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetch
         const publicChannelsComp = channels
             .filter((channel: any) => channel.type === "public")
             .map((channel: any) => (
-                <ChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
             ));
         const privateChannelsComp = channels
             .filter((channel: any) => channel.type === "private")
             .map((channel: any) => (
-                <ChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
             ));
         setPublicChannels(publicChannelsComp);
         setPrivateChannels(privateChannelsComp);

@@ -1,5 +1,4 @@
 import { ChannelModel } from "@/app/utils/models";
-import { join } from "path";
 import { FormEvent, useState } from "react";
 
 type ChannelProps = {
@@ -8,7 +7,7 @@ type ChannelProps = {
 }
 
 // Todo: Add channel icon
-const ChannelItem = ({ channel: { id, name, icon, type, joined }, fetchChannels }: ChannelProps) => {
+const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, fetchChannels }: ChannelProps) => {
 
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
@@ -93,4 +92,4 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined }, fetchChannels 
     )
 }
 
-export default ChannelItem;
+export default JoinChannelItem;
