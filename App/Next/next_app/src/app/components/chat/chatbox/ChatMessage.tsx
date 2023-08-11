@@ -3,12 +3,13 @@ import { MessageModel } from "@/app/utils/models";
 
 type MessageProps = {
     message: MessageModel
-} & React.ComponentPropsWithRef<'div'>
+}
 
-const ChatMessage = ({message: {author, content}}: MessageProps) => {
+const ChatMessage = ({message: {senderUsername, content}}: MessageProps) => {
+    const color = 'darkorchid';
     const Author = (
-        <span className="font-semibold" style={{color: author.rgbColor}}>
-            {author.username}
+        <span className="font-semibold" style={{color: color }}>
+            {senderUsername}
         </span>
     )
 

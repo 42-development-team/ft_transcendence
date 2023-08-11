@@ -14,15 +14,10 @@ export interface ChannelModel {
 
 export interface MessageModel {
     id: string
-    author: Sender
+    createdAt: string
     content: string
-}
-
-// Note: color depending on role (admin?) -> or custom color for everyone?
-export interface Sender {
-    id: string
-    username: string
-    rgbColor: string
+    senderId: string
+    senderUsername: string
 }
 
 // Todo: add avatar

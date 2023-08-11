@@ -20,9 +20,10 @@ export default function useChannels() {
         fetchChannelsContent();
     }, []);
 
-    useEffect(() => {
-        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
-    }, [joinedChannels]);
+    // const socket = useChatConnection();
+    // useEffect(() => {
+        // Subscribe to channels rooms
+    // }, [socket]);
 
     const fetchChannelsInfo = async () => {
         try {
@@ -54,7 +55,6 @@ export default function useChannels() {
         }
     };
 
-
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {
         newChannel.joined = true;
@@ -83,11 +83,18 @@ export default function useChannels() {
         [channels]
     );
 
+    // Messaging
+    // Todo: use callback?
+    const sendToChannel = (channel: ChannelModel, message: string) => {
+        console.log(`Sending message "${message}" to channel ${channel.name}`);
+        // socket?.to(channel.name).emit(message);
+    }
 
     return {
         channels,
         joinedChannels,
         createNewChannel,
         fetchChannelsInfo,
+        sendToChannel,
     }
 }

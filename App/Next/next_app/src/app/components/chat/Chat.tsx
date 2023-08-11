@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from 'react';
-import useChatMessages from '@/app/hooks/useChatMessages';
-import useChatScrolling from '@/app/hooks/useChatScrolling';
 import useChannels from '@/app/hooks/useChannels';
 import { ChannelModel } from '@/app/utils/models';
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
@@ -19,10 +17,8 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
-    const { messages, send } = useChatMessages();
-    const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, fetchChannelsInfo } = useChannels();
+    const { channels, joinedChannels, createNewChannel, fetchChannelsInfo, sendToChannel } = useChannels();
 
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
 
@@ -36,7 +32,7 @@ const Chat = ({ userId }: ChatBarProps) => {
             <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
             {chatBarState == ChatBarState.ChatOpen && currentChannel &&
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} channel={currentChannel} />
+                <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
             }
             {chatBarState == ChatBarState.ChatMembersOpen &&
                 <ChatMemberList />

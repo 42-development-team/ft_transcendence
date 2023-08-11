@@ -2,9 +2,6 @@
 import { useEffect, useState } from "react";
 import {io, Socket} from 'socket.io-client'
 
-// Todo: adapt to our backend
-// Note: example using socket.io connection
-
 const ENDPOINT = `${process.env.BACK_URL}` 
 
 const connect = () => {
