@@ -31,6 +31,7 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
     const [openChannelId, setOpenChannelId] = useState<string>("");
 
     useEffect(() => {
+        if (openChannelId == "") return ;
         console.log("open channel id: " + openChannelId);
     }, [openChannelId]);
 
@@ -48,8 +49,8 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
             setOpenChannelId("");
             return;
         }
-        setOpenChannelId(channelId);
         setChatBarState(ChatBarState.ChatOpen);
+        setOpenChannelId(channelId);
     }
 
     return (

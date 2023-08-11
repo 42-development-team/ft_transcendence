@@ -8,13 +8,19 @@ import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import SendMessageForm from './SendMessageForm';
 import style from '../Chat.module.css';
 
-const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[], send : (message: string) => void}> (({ messages, send }, ref) => {
+interface ChatMessagesBoxProps {
+    messages: MessageModel[];
+    send: (message: string) => void;
+    channelName: string;
+}
+
+const ChatMessagesBox = forwardRef<HTMLDivElement, ChatMessagesBoxProps> (({ messages, send, channelName }, ref) => {
     const MessageList = messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
     return (
         <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChatMessageBoxHeader />
+            <ChatMessageBoxHeader channelName={channelName}/>
             <div ref={ref} className='overflow-auto h-[80vh]'>
                 {MessageList}
             </div>
@@ -24,7 +30,7 @@ const ChatMessagesBox = forwardRef<HTMLDivElement, {messages: MessageModel[], se
 });
 
 // Todo: merge with ChatParticipantsHeader
-const ChatMessageBoxHeader = () => {
+const ChatMessageBoxHeader = ({channelName}: {channelName: string}) => {
     // Todo: pick correct channel name 
     const {updateChatBarState} = useChatBarContext();
     return (
@@ -36,7 +42,7 @@ const ChatMessageBoxHeader = () => {
                 </svg>
             </button>
             <span className='font-semibold align-middle pt-2 pr-2'>
-                Channel Name
+                {channelName}
             </span>
             <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
                 <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
