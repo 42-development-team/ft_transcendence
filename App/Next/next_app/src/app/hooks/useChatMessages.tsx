@@ -60,5 +60,6 @@ export default function useChatMessages() {
     return {
         messages,
         send,
+        socket,
     }
 }

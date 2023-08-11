@@ -19,7 +19,7 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
-    const { messages, send } = useChatMessages();
+    const { messages, send, socket } = useChatMessages();
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
     const { channels, createNewChannel, fetchChannels } = useChannels();
@@ -47,8 +47,8 @@ const Chat = ({ userId }: ChatBarProps) => {
             {chatBarState == ChatBarState.JoinChannelOpen &&
                 <JoinChannel channels={channels} fetchChannels={fetchChannels}/>
             }
-            {chatBarState == ChatBarState.CreateChannelOpen && 
-                <CreateChannel userId={userId} createNewChannel={createNewChannel} />
+            {chatBarState == ChatBarState.CreateChannelOpen && socket &&
+                <CreateChannel userId={userId} createNewChannel={createNewChannel} socket={socket} />
             }
         </div>
     )
