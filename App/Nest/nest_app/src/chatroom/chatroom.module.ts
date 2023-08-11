@@ -10,6 +10,6 @@ import { SocketGateway } from '../sockets/socket.gateway';
   imports: [UsersModule],
   controllers: [ChatroomController],
   providers: [ChatroomService, PrismaService, JwtService, SocketGateway],
-  exports: [ChatroomService]
+  exports: [ChatroomService, SocketGateway]
 })
 export class ChatroomModule {}

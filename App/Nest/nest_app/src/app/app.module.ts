@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
-import { SocketGateway } from '../sockets/socket.gateway';
+// import { SocketGateway } from '../sockets/socket.gateway';
 import { TwoFAController } from '../auth/2FA/2FA.controller';
 import { TwoFAService } from '../auth/2FA/2FA.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -51,7 +51,7 @@ import { ChatroomModule } from '../chatroom/chatroom.module';
     UsersService,
     ChatroomService,
     PrismaService,
-    SocketGateway,
+    // SocketGateway,
     TwoFAService,
     CloudinaryService,
   ],
