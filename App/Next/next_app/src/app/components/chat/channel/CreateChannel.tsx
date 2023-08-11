@@ -10,7 +10,7 @@ interface CreateChannelProps {
 }
 
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
-  const { setChatBarState } = useChatBarContext();
+  const { updateChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
@@ -38,6 +38,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
+    // Todo: close the form
   };
 
   return (
@@ -46,7 +47,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
                 <span className='font-semibold align-middle pl-2 pt-2'>
                     Create a channel
                 </span>
-                <button onClick={() => setChatBarState(ChatBarState.Closed)} >
+                <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
                     <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
                 </button>
             </div>

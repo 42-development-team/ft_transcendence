@@ -1,36 +1,42 @@
 "use client";
+import { useEffect, useState } from 'react';
 import useChatMessages from '@/app/hooks/useChatMessages';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
-import ChatSideBar from './ChatSideBar';
-import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import ChatMessagesBox from './chatbox/ChatMessageBox';
 import useChannels from '@/app/hooks/useChannels';
+import { ChannelModel } from '@/app/utils/models';
+import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
+import ChatSideBar from './ChatSideBar';
+import ChatMessagesBox from './chatbox/ChatMessageBox';
 import FriendList from '../friends/FriendList';
 import useFriends from '@/app/hooks/useFriends';
 import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
 import CreateChannel from './channel/CreateChannel';
 
-// Todo: do we need an emoji-picker ?
-// https://youtu.be/U2XnoKzxmeY?t=1605
-
 interface ChatBarProps {
-    userId: string; // Define the correct type for userId (e.g., string)
+    userId: string;
 }
 
-const ChatBar = ({ userId }: ChatBarProps) => {
-    const { chatBarState } = useChatBarContext();
+const Chat = ({ userId }: ChatBarProps) => {
+    const { chatBarState, openChannelId } = useChatBarContext();
     const { messages, send } = useChatMessages();
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
-    const { channels, createNewChannel } = useChannels();
+    const { channels, createNewChannel, fetchChannels } = useChannels();
+
+    const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
+
+    useEffect(() => {
+        if (openChannelId == "") return ;
+        setCurrentChannel(channels.find(channel => channel.id == openChannelId));
+    }, [openChannelId, chatBarState]);
 
     return (
         <div className='flex h-full'>
             <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
             {chatBarState == ChatBarState.ChatOpen &&
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} />
+                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} channelName={currentChannel ? currentChannel.name : ""} />
             }
             {chatBarState == ChatBarState.ChatMembersOpen &&
                 <ChatMemberList />
@@ -39,14 +45,14 @@ const ChatBar = ({ userId }: ChatBarProps) => {
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel />
+                <JoinChannel channels={channels} fetchChannels={fetchChannels}/>
             }
-            {chatBarState == ChatBarState.CreateChannelOpen && (
+            {chatBarState == ChatBarState.CreateChannelOpen && 
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} />
-            )}
+            }
         </div>
     )
 }
 
 
-export default ChatBar;
+export default Chat;

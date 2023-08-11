@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import ChatBar from "@/components/chat/ChatBar";
+import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthcontext } from "../context/AuthContext";
 
@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-auto w-full h-full">
-      <ChatBar userId={userId} />
+      <Chat userId={userId} />
       <div className="w-full p-4 h-full flex items-center justify-center">
         <a>You should land here after successful login</a>
       </div>
