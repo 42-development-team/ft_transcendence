@@ -11,13 +11,18 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
-    // Todo: on mount, fetch channels from server and connect to socket rooms
     const [channels, setChannels] = useState<ChannelModel[]>([]);
+    const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
 
+    // Todo: on mount, fetch channels from server and connect to socket rooms
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
     }, []);
+
+    useEffect(() => {
+        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+    }, [joinedChannels]);
 
     const fetchChannelsInfo = async () => {
         try {
@@ -36,15 +41,13 @@ export default function useChannels() {
 
     const fetchChannelsContent = async () => {
         try {
-            console.log("Fetching channel content");
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();
-            console.log("Channel content: " + JSON.stringify(data, null, 2));
-            // const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-            //     channel.icon = '';
-            //     return channel;
-            // });
-            // setChannels(fetchedChannels);
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setJoinedChannels(fetchedChannels);
         }
         catch (err) {
             console.log("Error fetching channel content list: " + err);
@@ -83,7 +86,8 @@ export default function useChannels() {
 
     return {
         channels,
+        joinedChannels,
         createNewChannel,
-        fetchChannels: fetchChannelsInfo,
+        fetchChannelsInfo,
     }
 }

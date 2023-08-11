@@ -1,7 +1,7 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatMessage from './ChatMessage';
-import { MessageModel } from '@/app/utils/models';
+import { ChannelModel, MessageModel } from '@/app/utils/models';
 import Image from 'next/image';
 import { forwardRef } from 'react';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
@@ -11,16 +11,16 @@ import style from '../Chat.module.css';
 interface ChatMessagesBoxProps {
     messages: MessageModel[];
     send: (message: string) => void;
-    channelName: string;
+    channel: ChannelModel;
 }
 
-const ChatMessagesBox = forwardRef<HTMLDivElement, ChatMessagesBoxProps> (({ messages, send, channelName }, ref) => {
+const ChatMessagesBox = forwardRef<HTMLDivElement, ChatMessagesBoxProps> (({ messages, send, channel }, ref) => {
     const MessageList = messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
     return (
         <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChatMessageBoxHeader channelName={channelName}/>
+            <ChatMessageBoxHeader channelName={channel.name}/>
             <div ref={ref} className='overflow-auto h-[80vh]'>
                 {MessageList}
             </div>

@@ -6,6 +6,7 @@ import useChatConnection from "./useChatConnection";
 const welcomeMessage: MessageModel = {
     id: 'welcome-message',
     author: {
+        id: '12345',
         rgbColor: 'darkorchid',
         username: 'ChatBot',
     },

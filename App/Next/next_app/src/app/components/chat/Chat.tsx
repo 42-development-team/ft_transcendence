@@ -22,21 +22,21 @@ const Chat = ({ userId }: ChatBarProps) => {
     const { messages, send } = useChatMessages();
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
-    const { channels, createNewChannel, fetchChannels } = useChannels();
+    const { channels, joinedChannels, createNewChannel, fetchChannelsInfo } = useChannels();
 
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
 
     useEffect(() => {
-        if (openChannelId == "") return ;
-        setCurrentChannel(channels.find(channel => channel.id == openChannelId));
+        if (openChannelId == "" || chatBarState == ChatBarState.Closed) return ;
+        setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
     }, [openChannelId, chatBarState]);
 
     return (
         <div className='flex h-full'>
             <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
-            {chatBarState == ChatBarState.ChatOpen &&
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} channelName={currentChannel ? currentChannel.name : ""} />
+            {chatBarState == ChatBarState.ChatOpen && currentChannel &&
+                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} channel={currentChannel} />
             }
             {chatBarState == ChatBarState.ChatMembersOpen &&
                 <ChatMemberList />
@@ -45,7 +45,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel channels={channels} fetchChannels={fetchChannels}/>
+                <JoinChannel channels={channels} fetchChannels={fetchChannelsInfo}/>
             }
             {chatBarState == ChatBarState.CreateChannelOpen && 
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} />
