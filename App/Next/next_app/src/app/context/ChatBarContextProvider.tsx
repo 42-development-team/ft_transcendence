@@ -1,5 +1,5 @@
 "use client";
-import React, {useContext, createContext, useState, useEffect} from "react";
+import React, {useContext, createContext, useState } from "react";
 
 export enum ChatBarState {
     Closed,
@@ -29,11 +29,6 @@ const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultVa
 export const ChatBarContextProvider = ({children} : {children: React.ReactNode}) => {
     const [chatBarState, setChatBarState] = useState(ChatBarState.Closed);
     const [openChannelId, setOpenChannelId] = useState<string>("");
-
-    useEffect(() => {
-        if (openChannelId == "") return ;
-        console.log("open channel id: " + openChannelId);
-    }, [openChannelId]);
 
     const updateChatBarState = (state: ChatBarState) => {
         if (state == chatBarState) {

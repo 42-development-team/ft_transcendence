@@ -29,7 +29,6 @@ const Chat = ({ userId }: ChatBarProps) => {
     useEffect(() => {
         if (openChannelId == "") return ;
         setCurrentChannel(channels.find(channel => channel.id == openChannelId));
-        console.log(JSON.stringify(currentChannel));
     }, [openChannelId, chatBarState]);
 
     return (
