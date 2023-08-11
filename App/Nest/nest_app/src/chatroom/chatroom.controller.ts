@@ -36,19 +36,29 @@ export class ChatroomController {
 	@Get('/info')
 	async getChannelsInfo(@Request() req: any): Promise<ChatroomInfoDto[]> {
 		const userId: number = req.user.sub;
-		return this.chatroomService.findAll(userId);
+		return this.chatroomService.getAllChannelsInfo(userId);
 	}
 
 	@Get('/info/:id')
 	async getChannelInfo(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
 		const userId: number = req.user.sub;
-		await this.chatroomService.findOne(+id, userId)
+		await this.chatroomService.getChannelInfo(+id, userId)
 			.then(chatRoom => {
 				response.send(chatRoom);
 			})
 			.catch(error => {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
+	}
+
+	@Get('/content')
+	async getChannelsContent(@Request() req: any, @Res() response: Response) {
+		
+	}
+
+	@Get('/content/:id')
+	async getChannelContent(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+
 	}
 
 	/* U(pdate) */
