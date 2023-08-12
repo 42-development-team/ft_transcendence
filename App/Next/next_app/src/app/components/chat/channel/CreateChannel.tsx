@@ -10,6 +10,8 @@ interface CreateChannelProps {
   createNewChannel: (newChannel: NewChannelInfo) => void;
 }
 
+const CLOSE_DELAY = 500;
+
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
   const { updateChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
@@ -40,7 +42,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     setChannelName('');
     setPassword('');
     // Close the form after short delay
-    await delay(500);
+    await delay(CLOSE_DELAY);
     updateChatBarState(ChatBarState.Closed);
   };
 
