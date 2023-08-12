@@ -7,7 +7,6 @@ import style from '../../Chat.module.css';
 import ChatMemberHeader from './ChatMemberHeader';
 import { ChannelModel } from '@/app/utils/models';
 import ChatMemberItem from './ChatMemberItem';
-import { userAgent } from 'next/server';
 
 interface ChatMemberListProps {
     channel: ChannelModel
