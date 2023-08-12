@@ -36,9 +36,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     )
 };
 
-// Todo: merge with ChatParticipantsHeader
 const ChatMessageBoxHeader = ({channelName}: {channelName: string}) => {
-    // Todo: pick correct channel name 
     const {updateChatBarState} = useChatBarContext();
     return (
         <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
