@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { AppService } from './app/app.service';
-import { UsersService } from './users/users.service';
+// Todo: Remove this import with wildcard
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 // Swagger

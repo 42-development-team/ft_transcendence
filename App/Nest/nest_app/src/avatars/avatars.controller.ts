@@ -4,7 +4,6 @@ import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
 // import { GetCurrentUserId } from '../common/custom-decorators/get-current-user-id.decorator';
-import { unlinkSync } from 'fs';
 
 @Controller('avatars')
 export class AvatarsController {
