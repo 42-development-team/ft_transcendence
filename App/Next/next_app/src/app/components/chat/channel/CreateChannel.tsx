@@ -1,8 +1,9 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
+import { delay } from '@/app/utils/delay';
 
 interface CreateChannelProps {
   userId: string;
@@ -22,7 +23,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     setShowPasswordInput(selectedType === 'private');
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (channelName === '') return;
     if( channelType === 'private' && password === '') return;
@@ -38,7 +39,9 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
-    // Todo: close the form
+    // Close the form after short delay
+    await delay(500);
+    updateChatBarState(ChatBarState.Closed);
   };
 
   return (
