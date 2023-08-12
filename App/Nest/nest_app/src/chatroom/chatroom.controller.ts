@@ -3,7 +3,6 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
