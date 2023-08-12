@@ -14,7 +14,6 @@ export default function useChannels() {
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
 
-    // Todo: on mount, fetch channels from server and connect to socket rooms
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
