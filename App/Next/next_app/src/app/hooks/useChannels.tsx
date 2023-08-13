@@ -26,7 +26,6 @@ export default function useChannels() {
 
     const socket = useChatConnection();
     useEffect(() => {
-        //Subscribe to channels rooms
     }, [socket]);
 
     const fetchChannelsInfo = async () => {
@@ -69,6 +68,7 @@ export default function useChannels() {
     const createNewChannel = useCallback(async (newChannelInfo: NewChannelInfo) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+                credentials: "include",
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

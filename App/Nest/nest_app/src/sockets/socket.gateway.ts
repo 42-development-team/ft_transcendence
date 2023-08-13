@@ -16,18 +16,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer()
     server: Server;
 
-     // Todo: onModuleInit()
-        // OnNewConnection()
-            // Check for verifiedJWT in socket and disconnect if not OK
-            // Connect the user back to all of this channels
-        // OnDisconnect()
-
-    // The client object is an instance of the Socket class provided by the Socket.io library.
-    // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
-    // why "(client: Socket)" ? because client is an instance of Socket class 
-    handleConnection(client: Socket){
-        console.log('Client connected: ' + client.id);
-        // Check for verifiedJWT in socket and disconnect if not OK
+     // The client object is an instance of the Socket class provided by the Socket.io library.
+     // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
+     // why "(client: Socket)" ? because client is an instance of Socket class 
+     handleConnection(client: Socket){
+         console.log('Client connected: ' + client.id);
+         // todo:
+         // Check for verifiedJWT in socket and disconnect if not OK
+         // and retrieve all the channels the user is member of
     }
 
     // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
@@ -43,6 +39,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log(`Client ${client.id} joined room ${room}`);
     }
 
+    /* 
+        if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
+        for now not considered the best choice in order to keep HTTP status response and separation of concerns
+    */
     // @SubscribeMessage('joinRoom')
     // async joinRoom(@ConnectedSocket() client: Socket, room: string) {
     //     console.log("room name got when emit joinroom: ", room);

@@ -18,7 +18,6 @@ export class ChatroomController {
 	) { }
 
 	/* C(reate) */
-	@Public()
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
@@ -81,26 +80,6 @@ export class ChatroomController {
 		return this.chatroomService.update(+id, updateChatroomDto);
 	}
 
-	// @Public()
-	// @Patch(':id/join')
-	// async join(@Body() joinRequestDto: JoinRequestDto, @Request() req: any, @Res() response: Response) {
-	// 	const userId: number = joinRequestDto.userId;
-	// 	const newChannelInfo: CreateChatroomDto = joinRequestDto.newChannelInfo;
-	// 	try {
-	// 		const channelId = await this.chatroomService.getIdFromChannelName(newChannelInfo.name);
-	
-	// 		if (channelId !== null) {
-	// 			await this.chatroomService.join(channelId, userId, newChannelInfo.password);
-	// 			response.send();
-	// 		} else {
-	// 			response.status(HttpStatus.NOT_FOUND).send("Channel not found");
-	// 		}
-	// 	} catch (error) {
-	// 		response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-	// 	}
-	// }
-
-	// @Public()
 	@Patch(':id/join')
 	async join(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
