@@ -54,6 +54,17 @@ export default function useChannels() {
             }
             const newChannel = await response.json();
             appendNewChannel(newChannel);
+            const joinResponse = await fetch(`${process.env.BACK_URL}/chatroom/${newChannel.id}/join`, {
+                method: 'PATCH',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password: newChannelInfo.password }),
+            });
+        
+            if (!joinResponse.ok) {
+                console.log('Error joining channel:', await joinResponse.text());
+            }
         } catch (error) {
             console.error('error creating channel', error);
         }
