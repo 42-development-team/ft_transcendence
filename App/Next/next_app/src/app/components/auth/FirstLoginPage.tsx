@@ -24,8 +24,7 @@ const FirstLoginPageComponent = ({
     const [waiting2fa, setWaiting2fa]           = useState(true);
     const [avatarFile, setAvatarFile]           = useState<File | null>(null);
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
-
-    let inputUserName: string | null;
+    const [inputUserName, setInputUsername]     = useState<string>("");
 
 
     useEffect(() => {
@@ -45,8 +44,8 @@ const FirstLoginPageComponent = ({
         const data = await response.json();
         if (!data.ok)
             console.log(data.error);
-        setPlaceHolder(data.username);
-        inputUserName = data.username;
+          setPlaceHolder(data.username);
+          setInputUsername(data.username);
     }
 
     const redirectToHome = () => {
@@ -59,6 +58,7 @@ const FirstLoginPageComponent = ({
   /* handle validate click, so username update and avagtar update in cloudinary */
   const handleClick = async () => {
     try {
+      console.log("input in validateClick: ", inputUserName);
       setWaiting2fa(false);
       await UpdateAvatar(avatarFile, userId, setImageUrl);
       const updateData = {
@@ -72,7 +72,7 @@ const FirstLoginPageComponent = ({
           "Content-Type": "application/json",
         },
       });
-    
+    return ;
     if (usernameUpdateResponse.ok) {
       console.log("Username updated successfully");
     } else {
@@ -97,10 +97,12 @@ const FirstLoginPageComponent = ({
 /* handle change of username input */
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
-            inputUserName = e.target.value;
+            setInputUsername(e.target.value);
+            console.log("length: ", inputUserName.length);
+            console.log("input: ", inputUserName)
             if (inputUserName === "") {
                 setValidateEnabled(true);
-                inputUserName = placeHolder;
+                setInputUsername(placeHolder);
                 setIsVisible(false);
                 return ;
             }

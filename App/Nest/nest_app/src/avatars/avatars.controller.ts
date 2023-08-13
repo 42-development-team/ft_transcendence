@@ -46,7 +46,6 @@ export class AvatarsController {
     }
   }
 
-  @Public()
   @Get(":id")
   async getAvatar(@Param('id') id: string) {
     try {
