@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelModel } from "../utils/models";
+import useChatConnection from "../hooks/useChatConnection"
 
 export interface NewChannelInfo {
     name: string;
@@ -23,10 +24,10 @@ export default function useChannels() {
         console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
     }, [joinedChannels]);
 
-    // const socket = useChatConnection();
-    // useEffect(() => {
-        // Subscribe to channels rooms
-    // }, [socket]);
+    const socket = useChatConnection();
+    useEffect(() => {
+        //Subscribe to channels rooms
+    }, [socket]);
 
     const fetchChannelsInfo = async () => {
         try {
@@ -79,16 +80,22 @@ export default function useChannels() {
             }
             const newChannel = await response.json();
             appendNewChannel(newChannel);
+            const password = newChannelInfo.password;
             const joinResponse = await fetch(`${process.env.BACK_URL}/chatroom/${newChannel.id}/join`, {
+                credentials: "include",
                 method: 'PATCH',
                 headers: {
                 'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ newChannelInfo }),
+                body: JSON.stringify({ password }),
             });
         
             if (!joinResponse.ok) {
                 console.log('Error joining channel:', await joinResponse.text());
+            }
+            //emit joinRoom event to server
+            if (socket) {
+              socket.emit("joinRoom", newChannelInfo.name);
             }
         } catch (error) {
             console.error('error creating channel', error);
@@ -110,5 +117,6 @@ export default function useChannels() {
         createNewChannel,
         fetchChannelsInfo,
         sendToChannel,
+        socket,
     }
 }

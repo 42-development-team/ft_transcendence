@@ -39,14 +39,15 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     if (channelName === '') return;
     if( channelType === 'private' && password === '') return;
 
-    createNewChannel({
+    const newChannelInfo: NewChannelInfo = {
       name: channelName,
       type: channelType,
       password: channelType === 'private' ? password : undefined,
       owner: Number(userId),
       admins: [Number(userId)],
-    });
-    console.log("channelName before emitting: ", channelName);
+    };
+    createNewChannel(newChannelInfo);
+    // console.log("channelName before emitting: ", channelName);
     // emit joinRoom event to server
     // if (socket) {
     //   socket.emit("joinRoom", channelName);
