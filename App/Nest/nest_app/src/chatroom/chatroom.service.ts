@@ -133,4 +133,28 @@ export class ChatroomService {
             return this.userService.getUserFromId(userId);
         }
     }
+
+	async getPasswordFromChannelName(channelName: string): Promise<string | null> {
+        const chatRoom = await this.prisma.chatRoom.findFirst({
+            where: { name: channelName },
+        });
+
+        if (chatRoom) {
+            return chatRoom.password || null;
+        }
+
+        return null;
+    }
+
+    async getIdFromChannelName(channelName: string): Promise<number | null> {
+        const chatRoom = await this.prisma.chatRoom.findFirst({
+            where: { name: channelName },
+        });
+
+        if (chatRoom) {
+            return chatRoom.id;
+        }
+
+        return null;
+    }
 }

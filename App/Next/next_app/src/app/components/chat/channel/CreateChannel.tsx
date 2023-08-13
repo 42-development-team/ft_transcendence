@@ -37,6 +37,7 @@ const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps)
       owner: Number(userId),
       admins: [Number(userId)],
     });
+    console.log("channelName before emitting: ", channelName);
     // emit joinRoom event to server
     if (socket) {
       socket.emit("joinRoom", channelName);

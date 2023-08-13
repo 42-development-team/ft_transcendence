@@ -37,26 +37,27 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         // remove 
     }
 
-    // @SubscribeMessage('joinRoom')
-    // async joinRoom(client: Socket, room: string){
-    //     client.join(room);
-    //     console.log(`Client ${client.id} joined room ${room}`);
-    // }
-
     @SubscribeMessage('joinRoom')
-    async joinRoom(@ConnectedSocket() client: Socket, room: string) {
-        const userId = this.chatroomService.getUserIdFromSocket(client); 
-        const password = ?
-        const channelId = ?
-        
-        try {
-            const updateResult = await this.chatroomService.join(channelId, Number(userId), password);
-            client.join(room);
-            console.log(`Client ${client.id} joined room ${room}`);
-        } catch (error) {
-            console.error(error);
-        }
+    async joinRoom(client: Socket, room: string){
+        client.join(room);
+        console.log(`Client ${client.id} joined room ${room}`);
     }
+
+    // @SubscribeMessage('joinRoom')
+    // async joinRoom(@ConnectedSocket() client: Socket, room: string) {
+    //     console.log("room name got when emit joinroom: ", room);
+    //     const userId = await this.chatroomService.getUserIdFromSocket(client); 
+    //     const password = await this.chatroomService.getPasswordFromChannelName(room);
+    //     const channelId = await this.chatroomService.getIdFromChannelName(room);
+        
+    //     try {
+    //         const updateResult = await this.chatroomService.join(channelId, userId, password);
+    //         client.join(room);
+    //         console.log(`Client ${client.id} joined room ${room}`);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, room: string) {
