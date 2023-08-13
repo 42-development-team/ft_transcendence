@@ -11,16 +11,26 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
-    // Todo: on mount, fetch channels from server and connect to socket rooms
     const [channels, setChannels] = useState<ChannelModel[]>([]);
+    const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
 
     useEffect(() => {
-        fetchChannels();
+        fetchChannelsInfo();
+        fetchChannelsContent();
     }, []);
 
-    const fetchChannels = async () => {
+    useEffect(() => {
+        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+    }, [joinedChannels]);
+
+    // const socket = useChatConnection();
+    // useEffect(() => {
+        // Subscribe to channels rooms
+    // }, [socket]);
+
+    const fetchChannelsInfo = async () => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom`, { credentials: "include", method: "GET" });
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
@@ -29,7 +39,22 @@ export default function useChannels() {
             setChannels(fetchedChannels);
         }
         catch (err) {
-            console.log("Error fetching channel list: " + err);
+            console.log("Error fetching channel info list: " + err);
+        }
+    };
+
+    const fetchChannelsContent = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setJoinedChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel content list: " + err);
         }
     };
 
@@ -71,11 +96,19 @@ export default function useChannels() {
     },
         [channels]
     );
-    
+
+    // Messaging
+    // Todo: use callback?
+    const sendToChannel = (channel: ChannelModel, message: string) => {
+        console.log(`Sending message "${message}" to channel ${channel.name}`);
+        // socket?.to(channel.name).emit(message);
+    }
 
     return {
         channels,
+        joinedChannels,
         createNewChannel,
-        fetchChannels,
+        fetchChannelsInfo,
+        sendToChannel,
     }
 }

@@ -1,31 +1,40 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
-import { io, Socket } from "socket.io-client"
+// import { io, Socket } from "socket.io-client"
 
+import { delay } from '@/app/utils/delay';
+import { Alert } from '@material-tailwind/react';
+import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 
 interface CreateChannelProps {
   userId: string;
   createNewChannel: (newChannel: NewChannelInfo) => void;
-  socket: Socket;
+  // socket: Socket;
 }
 
-const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps) => {
+// const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps) => {
+const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
+
+  const CLOSE_DELAY = 1500;
+
   const { updateChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
   const [password, setPassword] = useState('');
   
+  const [openAlert, setOpenAlert] = useState(false);
+
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
     setChannelType(selectedType);
     setShowPasswordInput(selectedType === 'private');
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (channelName === '') return;
     if( channelType === 'private' && password === '') return;
@@ -39,13 +48,18 @@ const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps)
     });
     console.log("channelName before emitting: ", channelName);
     // emit joinRoom event to server
-    if (socket) {
-      socket.emit("joinRoom", channelName);
-    }
+    // if (socket) {
+    //   socket.emit("joinRoom", channelName);
+    // }
+
+    // Close the form after short delay
+    setOpenAlert(true);
+    await delay(CLOSE_DELAY);
+    
     // Reset fields after creation.
     setChannelName('');
     setPassword('');
-    // Todo: close the form
+    updateChatBarState(ChatBarState.Closed);
   };
 
   return (
@@ -111,6 +125,13 @@ const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps)
             Create Channel
           </button>
         </form>
+        <Alert color="green" className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all" variant='gradient'
+          open={openAlert}
+          icon={<AlertSuccessIcon />}
+          animate={{
+            mount: { y: 0 },
+            unmount: { y: 100 },
+          }}>{channelName} has been created</Alert>
       </div>
     </div>
   );

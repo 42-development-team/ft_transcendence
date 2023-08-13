@@ -3,10 +3,9 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
-import { InfoChatroomDto } from './dto/info-chatroom.dto';
+import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { Public } from '../auth/public.routes'
 
 @ApiTags('ChatRoom')
@@ -33,16 +32,40 @@ export class ChatroomController {
     }
 
 	/* R(ead) */
-	@Get()
-	async findAll(@Request() req: any): Promise<InfoChatroomDto[]> {
+	@Get('/info')
+	async getChannelsInfo(@Request() req: any): Promise<ChatroomInfoDto[]> {
 		const userId: number = req.user.sub;
-		return this.chatroomService.findAll(userId);
+		return this.chatroomService.getAllChannelsInfo(userId);
 	}
 
-	@Get(':id')
-	async findOne(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+	@Get('/info/:id')
+	async getChannelInfo(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
 		const userId: number = req.user.sub;
-		await this.chatroomService.findOne(+id, userId)
+		await this.chatroomService.getChannelInfo(+id, userId)
+			.then(chatRoom => {
+				response.send(chatRoom);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Get('/content')
+	async getChannelsContent(@Request() req: any, @Res() response: Response) {
+		const userId: number = req.user.sub;
+		await this.chatroomService.getAllChannelsContent(userId)
+			.then(chatRooms => {
+				response.send(chatRooms);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});	
+	}
+
+	@Get('/content/:id')
+	async getChannelContent(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+		const userId: number = req.user.sub;
+		await this.chatroomService.getChannelContent(+id, userId)
 			.then(chatRoom => {
 				response.send(chatRoom);
 			})

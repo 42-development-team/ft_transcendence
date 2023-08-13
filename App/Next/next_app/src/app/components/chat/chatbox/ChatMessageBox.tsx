@@ -1,37 +1,42 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import ChatMessage from './ChatMessage';
-import { MessageModel } from '@/app/utils/models';
+import { ChannelModel, MessageModel } from '@/app/utils/models';
 import Image from 'next/image';
 import { forwardRef } from 'react';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import SendMessageForm from './SendMessageForm';
 import style from '../Chat.module.css';
+import useChatScrolling from '@/app/hooks/useChatScrolling';
+import ChatMessage from './ChatMessage';
 
 interface ChatMessagesBoxProps {
-    messages: MessageModel[];
-    send: (message: string) => void;
-    channelName: string;
+    sendToChannel: (Channel: ChannelModel, message: string) => void;
+    channel: ChannelModel;
 }
 
-const ChatMessagesBox = forwardRef<HTMLDivElement, ChatMessagesBoxProps> (({ messages, send, channelName }, ref) => {
-    const MessageList = messages.map((message) => (
+const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
+    const sendMessage = (message: string) => {
+        sendToChannel(channel, message);
+    }
+    if (channel == undefined || channel.messages == undefined) {
+        return <></>
+    }
+    const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(channel.messages);
+    const MessageList = channel.messages?.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
     return (
         <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChatMessageBoxHeader channelName={channelName}/>
-            <div ref={ref} className='overflow-auto h-[80vh]'>
+            <ChatMessageBoxHeader channelName={channel.name}/>
+            <div ref={chatMessageBoxRef} className='overflow-auto h-[80vh]'>
                 {MessageList}
             </div>
-            <SendMessageForm onSend={send} className='mt-6 flex flex-row flex-auto justify-between' />
+            <SendMessageForm onSend={sendMessage} className='mt-6 flex flex-row flex-auto justify-between' />
         </div>
     )
-});
+};
 
-// Todo: merge with ChatParticipantsHeader
 const ChatMessageBoxHeader = ({channelName}: {channelName: string}) => {
-    // Todo: pick correct channel name 
     const {updateChatBarState} = useChatBarContext();
     return (
         <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>

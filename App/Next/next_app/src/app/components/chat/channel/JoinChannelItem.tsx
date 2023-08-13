@@ -51,6 +51,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, fetchChann
     const joinSuccess = () => {
         setIsJoined(true);
         setShowPassword(false);
+        // Todo: instead of fetching all channels, just update the one that was joined
         fetchChannels();
     }
 

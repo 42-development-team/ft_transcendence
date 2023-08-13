@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from 'react';
-import useChatMessages from '@/app/hooks/useChatMessages';
-import useChatScrolling from '@/app/hooks/useChatScrolling';
 import useChannels from '@/app/hooks/useChannels';
 import { ChannelModel } from '@/app/utils/models';
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
@@ -19,33 +17,32 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
-    const { messages, send, socket } = useChatMessages();
-    const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
+    // const { messages, send, socket } = useChatMessages();
+    // const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
-    const { channels, createNewChannel, fetchChannels } = useChannels();
-
+    const { channels, joinedChannels, createNewChannel, fetchChannelsInfo, sendToChannel } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
 
     useEffect(() => {
-        if (openChannelId == "") return ;
-        setCurrentChannel(channels.find(channel => channel.id == openChannelId));
+        if (openChannelId == "" || chatBarState == ChatBarState.Closed) return ;
+        setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
     }, [openChannelId, chatBarState]);
 
     return (
         <div className='flex h-full'>
             <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
-            {chatBarState == ChatBarState.ChatOpen &&
-                <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} channelName={currentChannel ? currentChannel.name : ""} />
+            {chatBarState == ChatBarState.ChatOpen && currentChannel &&
+                <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
             }
-            {chatBarState == ChatBarState.ChatMembersOpen &&
-                <ChatMemberList />
+            {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
+                <ChatMemberList channel={currentChannel}/>
             }
             {chatBarState == ChatBarState.FriendListOpen &&
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel channels={channels} fetchChannels={fetchChannels}/>
+                <JoinChannel channels={channels} fetchChannels={fetchChannelsInfo}/>
             }
             {chatBarState == ChatBarState.CreateChannelOpen && socket &&
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} socket={socket} />
