@@ -6,8 +6,6 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
-import { Public } from '../auth/public.routes'
-import { JoinRequestDto } from './dto/chatroom-join.dto';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')

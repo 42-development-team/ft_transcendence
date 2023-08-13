@@ -5,7 +5,7 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { Socket } from "socket.io";
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from "src/users/users.service";
+import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 

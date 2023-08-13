@@ -3,7 +3,7 @@ import { ChatroomService } from './chatroom.service';
 import { ChatroomController } from './chatroom.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from "@nestjs/jwt";
-import { UsersModule } from "src/users/users.module";
+import { UsersModule } from "../users/users.module";
 import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
