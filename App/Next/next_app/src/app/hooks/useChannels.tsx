@@ -84,7 +84,7 @@ export default function useChannels() {
                 headers: {
                 'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ password: newChannelInfo.password }),
+                body: JSON.stringify({ newChannelInfo }),
             });
         
             if (!joinResponse.ok) {

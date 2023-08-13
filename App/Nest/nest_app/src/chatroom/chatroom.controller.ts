@@ -80,20 +80,38 @@ export class ChatroomController {
 		return this.chatroomService.update(+id, updateChatroomDto);
 	}
 
+	@Public()
 	@Patch(':id/join')
-	async join(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
-		const userId: number = req.user.sub;
-		const password: string = body.password;
-		await this.chatroomService.join(+id, userId, password)
-			.then(() => {
-				// Todo: emit event on socket to join the channel
-				// socket.emit(new-connection on channel)
+	async join(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
+		const userId: number = createChatroomDto.owner;
+		const password: string = createChatroomDto.password;
+		try {
+			const channelId = await this.chatroomService.getIdFromChannelName(createChatroomDto.name);
+	
+			if (channelId !== null) {
+				await this.chatroomService.join(channelId, userId, password);
 				response.send();
-			})
-			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-			});
+			} else {
+				response.status(HttpStatus.NOT_FOUND).send("Channel not found");
+			}
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
 	}
+
+	// @Public()
+	// @Patch(':id/join')
+	// async join(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+	// 	const userId: number = req.user.sub;
+	// 	const password: string = body.password;
+	// 	await this.chatroomService.join(+id, userId, password)
+	// 		.then(() => {
+	// 			response.send();
+	// 		})
+	// 		.catch(error => {
+	// 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+	// 		});
+	// }
 
 	/* D(elete) */
 	@Delete(':id')

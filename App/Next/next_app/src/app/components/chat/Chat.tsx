@@ -44,8 +44,8 @@ const Chat = ({ userId }: ChatBarProps) => {
             {chatBarState == ChatBarState.JoinChannelOpen &&
                 <JoinChannel channels={channels} fetchChannels={fetchChannelsInfo}/>
             }
-            {chatBarState == ChatBarState.CreateChannelOpen && socket &&
-                <CreateChannel userId={userId} createNewChannel={createNewChannel} socket={socket} />
+            {chatBarState == ChatBarState.CreateChannelOpen &&
+                <CreateChannel userId={userId} createNewChannel={createNewChannel} />
             }
         </div>
     )

@@ -220,7 +220,7 @@ export class ChatroomService {
         });
 
         if (chatRoom) {
-            return chatRoom.id;
+            return Number(chatRoom.id);
         }
 
         return null;
