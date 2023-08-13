@@ -17,8 +17,6 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
-    // const { messages, send, socket } = useChatMessages();
-    // const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(messages)
     const { friends } = useFriends();
     const { channels, joinedChannels, createNewChannel, fetchChannelsInfo, sendToChannel } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();

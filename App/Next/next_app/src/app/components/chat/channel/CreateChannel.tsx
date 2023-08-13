@@ -3,7 +3,6 @@ import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
-// import { io, Socket } from "socket.io-client"
 
 import { delay } from '@/app/utils/delay';
 import { Alert } from '@material-tailwind/react';
@@ -12,10 +11,8 @@ import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 interface CreateChannelProps {
   userId: string;
   createNewChannel: (newChannel: NewChannelInfo) => void;
-  // socket: Socket;
 }
 
-// const CreateChannel = ({ userId, createNewChannel, socket }: CreateChannelProps) => {
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
   const CLOSE_DELAY = 1500;
@@ -47,11 +44,6 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
       admins: [Number(userId)],
     };
     createNewChannel(newChannelInfo);
-    // console.log("channelName before emitting: ", channelName);
-    // emit joinRoom event to server
-    // if (socket) {
-    //   socket.emit("joinRoom", channelName);
-    // }
 
     // Close the form after short delay
     setOpenAlert(true);

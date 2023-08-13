@@ -77,8 +77,4 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             {message, user}
         );
     }
-
-    // broadcast(message: Message){
-    //     this.server.emit('message', message);
-    // }
 }
