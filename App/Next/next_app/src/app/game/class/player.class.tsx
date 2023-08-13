@@ -17,6 +17,27 @@ class Player {
     y: number = 0;
     w: number = 0.01;
     h: number = 0.15;
+    velocity: number = 0;
+
+    setVelocity(val: number) {
+        this.velocity = val;
+    }
+
+    killVelocity() {
+        this.velocity = 0;
+    }
+
+    move() {
+        const val: number  = this.y + this.velocity;
+        if (this.velocity > 0) {
+            if (val + this.h / 2 < 1)
+                this.y = val;
+        }
+        else {
+            if (val - this.h / 2 > 0)
+                this.y = val;
+        }
+    }
 
     show(context: CanvasRenderingContext2D, width:  number, height: number) {
         context.fillStyle = this.color;
@@ -26,6 +47,7 @@ class Player {
     }
 
     renderPlayer(context: CanvasRenderingContext2D, width: number, height: number) {
+        this.move();
         this.show(context, width, height);
     }
 }

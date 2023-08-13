@@ -13,16 +13,16 @@ class Ball {
     color: string = 'red';
     x: number = 0.5;
     y: number = 0.5;
-    r: number = 0.1;
+    r: number = 0.01;
     pi2: number = Math.PI * 2;
     speed: [number, number] = [0, 0];
 
     borderBounce(p1: Player, p2: Player, width:  number, height: number) {
-        if (this.x - this.r / 4 <= 0) 
+        if (this.x <= 0) 
             this.speed[0] *= -1; // reset and count p2 score ++
         if(this.x >= 1)
             this.speed[0] *= -1; // reset and count p1 score ++
-        if (this.y - this.r / 4 <= 0 || this.y >= 1)
+        if (this.y - this.r <= 0 || this.y + this .r >= 1)
             this.speed[1] *= -1;
         this.paddleBounce(p1, p2);
     };
@@ -35,16 +35,16 @@ class Ball {
     }
 
     paddleLeftBounce(p: Player) {
-        if (this.x - this.r / 4 < p.x + p.w) {
-            if ( this.y > p.y && this.y < p.y + p.h) {
+        if (this.x - this.r < p.x + p.w) {
+            if (this.y > p.y - p.h / 2 && this.y < p.y + p.h / 2) {
                 this.speed[0] *= -1;
             }
         }
     };
 
     paddleRightBounce(p: Player) {
-        if (this.x > p.x) {
-            if (this.y > p.y && this.y < p.y + p.h) {
+        if (this.x + this.r > p.x) {
+            if (this.y > p.y - p.h / 2 && this.y < p.y + p.h / 2) {
                 this.speed[0] *= -1;
             }
         }
@@ -58,7 +58,7 @@ class Ball {
     show(context: CanvasRenderingContext2D, width:  number, height: number) {
         context.fillStyle = this.color;
         context.beginPath();
-        context.arc(this.x * width, this.y * height , this.r * 100, 0, this.pi2, false);
+        context.arc(this.x * width, this.y * height , this.r * width, 0, this.pi2, false);
         context.fill();
         context.stroke();
         context.closePath();
@@ -66,8 +66,8 @@ class Ball {
 
     renderBall(context: CanvasRenderingContext2D, p1: Player, p2: Player, width: number, height: number) {
         this.show(context, width, height);
-        // this.borderBounce(p1, p2, width, height);
-        // this.update();
+        this.borderBounce(p1, p2, width, height);
+        this.update();
     };
 }
 

@@ -17,8 +17,33 @@
 // add hit box on paddle
 // ============================================ // 
 
+// function handleKeyDown(e: React.KeyboardEvent) {
+	// const key: string = e.code;
+
+	// console.log("keyDown:", e);
+
+	// if (key == 'ArrowDown')
+	// 	p1.setVelocity(0.001);
+	// else if (key == 'ArrowUp')
+	// 	p1.setVelocity(-0.001);
+// }
+
+// function handleKeyDown(p: Player) {
+
+// 	if (key == 'ArrowDown')
+// 		p1.setVelocity(0.001);
+// 	else if (key == 'ArrowUp')
+// 		p1.setVelocity(-0.001);
+// }
+
+// function handleKeyUp(e: React.KeyboardEvent) {
+// 	const key: string = e.code;
+
+// 	console.log("keyDown:", key);
+// 	p1.killVelocity();
+// }
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, KeyboardEventHandler } from "react";
 import Ball from '../../game/class/ball.class';
 import Player from '../../game/class/player.class';
 
@@ -27,25 +52,32 @@ const canvasStyle: any = {
 	width: '80%',
 };
 
-const drawCross = (context: CanvasRenderingContext2D, width: number, height: number): any => {
-	context.fillStyle = 'red';
-	context.beginPath();
-		context.moveTo(0, height / 2);
-		context.lineTo(width, height / 2);
-		context.stroke();
-	context.closePath();
-
-	context.beginPath();
-		context.moveTo(width / 2, 0);
-		context.lineTo(width / 2, height);
-		context.stroke();
-	context.closePath();
-}
-
 const Canvas = () => {
-
+	
 	if (window === undefined)
 		return ;
+
+	// function useKey(key: string, cb: any) {
+	// 	const callbackRef = useRef(cb);
+
+	// 	useEffect(() => {
+	// 		callbackRef.current = cb;
+	// 	});
+	
+	// 	useEffect(() => {
+	// 		function handleKeyDown(event: any) {
+	// 			console.log(event);
+	
+	// 			if (event.code === "ArrowDown") {
+	// 				callbackRef.current(event);
+	// 			}
+	// 		};
+	
+	// 		document.addEventListener("keydown", handleKeyDown);
+	// 		return removeEventListener("keydown", handleKeyDown);
+	// 	}, [key]);
+	// }
+
 	// =================== //
 	// Have To Declrare in //
 	//   parent conponent  //
@@ -59,6 +91,7 @@ const Canvas = () => {
 	
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
+
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas)
@@ -67,13 +100,12 @@ const Canvas = () => {
 		if (!context)
 			return ;
 		height = width * (9 / 16);
-		
+
 		let animationId: number;
 		
 		const render = (): any => {
 
 			context.clearRect(0, 0, width, height);
-			drawCross(context, width, height);
 			ball.renderBall(context, p1, p2, width, height);
 			p1.renderPlayer(context, width, height);
 			p2.renderPlayer(context, width, height);
@@ -81,7 +113,7 @@ const Canvas = () => {
 			animationId = window.requestAnimationFrame(render);
 		}
 		render();
-		
+
 		return () => window.cancelAnimationFrame(animationId);
 
 		// ======================== //
@@ -90,6 +122,17 @@ const Canvas = () => {
 	}, [width]);
 
 	useEffect(() => {
+		function handleKeyDown(e: any) {
+			if (e.code === "ArrowDown")
+				p1.setVelocity(0.01);
+			else if (e.code === "ArrowUp")
+				p1.setVelocity(-0.01);
+		}
+
+		function handleKeyRelease() {
+			p1.killVelocity();
+		}
+
 		function resize() {
 			const canvas = canvasRef.current;
 			if (!canvas)
@@ -97,10 +140,15 @@ const Canvas = () => {
 			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
 		}
 		window.addEventListener('resize', resize);
+		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("keyup", handleKeyRelease);
+
 	});
 
 	return (
 		<div className="canvas w-full">
+			{/* <input onKeyDown={handleKeyDown}/>
+			<input onKeyUp={handleKeyUp}/> */}
 			<canvas id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
