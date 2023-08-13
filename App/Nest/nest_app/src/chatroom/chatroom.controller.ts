@@ -90,7 +90,7 @@ export class ChatroomController {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
-
+	
 	/* D(elete) */
 	@Delete(':id')
 	remove(@Param('id') id: string) {
