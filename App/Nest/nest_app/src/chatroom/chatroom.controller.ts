@@ -6,7 +6,6 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
-import { Public } from '../auth/public.routes'
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -17,7 +16,6 @@ export class ChatroomController {
 	) { }
 
 	/* C(reate) */
-	@Public()
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
@@ -86,15 +84,13 @@ export class ChatroomController {
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
 			.then(() => {
-				// Todo: emit event on socket to join the channel
-				// socket.emit(new-connection on channel)
 				response.send();
 			})
 			.catch(error => {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
-
+	
 	/* D(elete) */
 	@Delete(':id')
 	remove(@Param('id') id: string) {

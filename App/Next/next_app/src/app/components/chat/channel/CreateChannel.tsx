@@ -3,6 +3,7 @@ import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
+
 import { delay } from '@/app/utils/delay';
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
@@ -12,14 +13,16 @@ interface CreateChannelProps {
   createNewChannel: (newChannel: NewChannelInfo) => void;
 }
 
-const CLOSE_DELAY = 1500;
-
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
+
+  const CLOSE_DELAY = 1500;
+
   const { updateChatBarState } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
   const [password, setPassword] = useState('');
+  
   const [openAlert, setOpenAlert] = useState(false);
 
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -33,13 +36,14 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     if (channelName === '') return;
     if( channelType === 'private' && password === '') return;
 
-    createNewChannel({
+    const newChannelInfo: NewChannelInfo = {
       name: channelName,
       type: channelType,
       password: channelType === 'private' ? password : undefined,
       owner: Number(userId),
       admins: [Number(userId)],
-    });
+    };
+    createNewChannel(newChannelInfo);
 
     // Close the form after short delay
     setOpenAlert(true);

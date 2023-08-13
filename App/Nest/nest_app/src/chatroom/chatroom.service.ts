@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+import { Socket } from "socket.io";
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 
@@ -9,6 +13,9 @@ import { ChatroomContentDto } from './dto/chatroom-content.dto';
 export class ChatroomService {
 	constructor(
 		private prisma: PrismaService,
+		private jwtService: JwtService,
+        private userService: UsersService,
+		private configService: ConfigService
 	) { }
 
 	/* C(reate) */
@@ -172,4 +179,50 @@ export class ChatroomService {
 	remove(id: number) {
 		return `This action removes a #${id} chatroom`;
 	}
+
+	/* Retrieve */
+	
+	async getUserIdFromSocket(socket: Socket){
+		const authToken = socket.handshake.headers.cookie.split(";");
+		const jwtToken = authToken[0].split("=")[1];
+		const secret = this.configService.get<string>('jwtSecret');
+		const payload = this.jwtService.verify(jwtToken, {secret: secret});
+		const userId = payload.sub;
+		if (userId) {
+			return userId;
+		}
+		// Todo: if userId is undefined or null?
+		return null;
+	}
+
+    async getUserFromSocket(socket: Socket) {
+        const userId = await this.getUserIdFromSocket(socket);
+        if (userId) {
+            return this.userService.getUserFromId(userId);
+        }
+    }
+
+	async getPasswordFromChannelName(channelName: string): Promise<string | null> {
+        const chatRoom = await this.prisma.chatRoom.findFirst({
+            where: { name: channelName },
+        });
+
+        if (chatRoom) {
+            return chatRoom.password || null;
+        }
+
+        return null;
+    }
+
+    async getIdFromChannelName(channelName: string): Promise<number | null> {
+        const chatRoom = await this.prisma.chatRoom.findFirst({
+            where: { name: channelName },
+        });
+
+        if (chatRoom) {
+            return Number(chatRoom.id);
+        }
+
+        return null;
+    }
 }
