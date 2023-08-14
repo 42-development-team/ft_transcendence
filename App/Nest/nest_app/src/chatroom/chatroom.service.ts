@@ -18,7 +18,7 @@ export class ChatroomService {
 		private configService: ConfigService
 	) { }
 
-	/* C(reate) */
+	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, password } = createChatroomDto;
@@ -35,8 +35,9 @@ export class ChatroomService {
 
 		return createdChatroom;
 	}
+	// #endregion
 
-	/* R(ead) */
+	// #region R(ead)
 	async getAllChannelsInfo(userId: number): Promise<ChatroomInfoDto[]> {
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
@@ -144,8 +145,10 @@ export class ChatroomService {
 		}
 		return this.constructChatroomContentDto(chatroom, isJoined);
 	}
+	// #endregion
 
-	/* U(pdate) */
+
+	// #region U(pdate)
 	update(id: number, updateChatroomDto: UpdateChatroomDto) {
 		return `This action updates a #${id} chatroom`;
 	}
@@ -178,13 +181,16 @@ export class ChatroomService {
 		}
 		return chatRoom;
 	}
+	
+	// #endregion
 
-	/* D(elete) */
+	// #region D(elete)
 	remove(id: number) {
 		return `This action removes a #${id} chatroom`;
 	}
 
-	/* Retrieve */
+	// #endregion
+	// #region Retrieve
 	
 	async getUserIdFromSocket(socket: Socket){
 		const authToken = socket.handshake.headers.cookie.split(";");
@@ -229,4 +235,6 @@ export class ChatroomService {
 
         return null;
     }
+
+	// #endregion
 }
