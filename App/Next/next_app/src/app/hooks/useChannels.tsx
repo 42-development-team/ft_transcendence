@@ -22,6 +22,7 @@ export default function useChannels() {
 
     useEffect(() => {
         console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+        subscribeToChannels();
     }, [joinedChannels]);
 
     const socket = useChatConnection();
@@ -58,6 +59,12 @@ export default function useChannels() {
         }
     };
 
+    const subscribeToChannels = useCallback(() => {
+        joinedChannels.forEach(channel => {
+           socket?.emit("joinRoom", channel.name); 
+        });
+    }, [socket]);
+
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {
         newChannel.joined = true;
@@ -65,9 +72,10 @@ export default function useChannels() {
         setChannels(prevChannels => [...prevChannels, newChannel]);
     };
 
-    const createNewChannel = useCallback(async (newChannelInfo: NewChannelInfo) => {
+    const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+            // Channel creation
+            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
@@ -80,29 +88,52 @@ export default function useChannels() {
             }
             const newChannel = await response.json();
             appendNewChannel(newChannel);
-            const password = newChannelInfo.password;
-            const joinResponse = await fetch(`${process.env.BACK_URL}/chatroom/${newChannel.id}/join`, {
-                credentials: "include",
-                method: 'PATCH',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password }),
-            });
-        
-            if (!joinResponse.ok) {
-                console.log('Error joining channel:', await joinResponse.text());
-            }
-            //emit joinRoom event to server
-            if (socket) {
-              socket.emit("joinRoom", newChannelInfo.name);
-            }
+
+            // Channel joining
+            joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
         }
-    },
-        [channels]
-    );
+        return "";
+    };
+
+    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
+            credentials: "include",
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+        socket?.emit("joinRoom", name);
+        if (!response.ok) {
+            console.log('Error joining channel:', await response.text());
+            return response;
+        }
+        fetchNewChannelContent(id);
+        fetchChannelsInfo();
+        return response;
+    }
+
+    const fetchNewChannelContent = async (id: string) => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+        const data = await response.json();
+        const fetchedChannel: ChannelModel = {
+            id: data.id,
+            createdAt: data.createdAt,
+            creatorId: data.creatorId,
+            name: data.name,
+            type: data.type,
+            members: data.members,
+            messages: data.messages,
+            icon: '',
+            joined: true,
+        }
+        console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
+        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+    }
 
     // Messaging
     // Todo: use callback?
@@ -115,7 +146,7 @@ export default function useChannels() {
         channels,
         joinedChannels,
         createNewChannel,
-        fetchChannelsInfo,
+        joinChannel,
         sendToChannel,
         socket,
     }

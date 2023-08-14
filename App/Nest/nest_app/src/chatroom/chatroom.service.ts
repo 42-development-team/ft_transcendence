@@ -83,7 +83,7 @@ export class ChatroomService {
 			type: chatroom.type,
 			joined: isJoined,
 			ownerId: chatroom.ownerId,
-			members: chatroom.members.map(member => {
+			members: (chatroom.members === undefined) ? [] : chatroom.members.map(member => {
 				return {
 					id: member.id,
 					username: member.username,
@@ -92,7 +92,7 @@ export class ChatroomService {
 					isOwner: chatroom.creatorId === member.id,
 				};
 			}),
-			messages: chatroom.messages.map(message => {
+			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
 				return {
 					id: message.id,
 					createdAt: message.createdAt,
@@ -130,6 +130,11 @@ export class ChatroomService {
 	async getChannelContent(id: number, userId: number): Promise<ChatroomContentDto> {
 		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
+			include: {
+				messages: true,
+				members: true,
+				admins: true,
+			},
 		});
 		const isJoined = await this.prisma.chatRoom.count({
 			where: { id: id, members: { some: { id: userId } } },
@@ -137,8 +142,7 @@ export class ChatroomService {
 		if (!isJoined) {
 			throw new Error('User is not a member of this channel');
 		}
-		const chatRoomContentDto: ChatroomContentDto = this.constructChatroomContentDto(chatroom, isJoined);
-		return chatRoomContentDto;
+		return this.constructChatroomContentDto(chatroom, isJoined);
 	}
 
 	/* U(pdate) */

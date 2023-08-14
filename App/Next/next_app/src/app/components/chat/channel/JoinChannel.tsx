@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import JoinChannelItem from "./JoinChannelItem";
 import { ChannelModel } from "@/app/utils/models";
 
-const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetchChannels: () => void}) => {
+type JoinChannelProps = {
+    channels: ChannelModel[],
+    joinChannel: (id: string, name:string, password?: string) => Promise<Response>
+}
+
+const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
 
     const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
@@ -15,12 +20,12 @@ const JoinChannel = ({channels, fetchChannels}: {channels: ChannelModel[], fetch
         const publicChannelsComp = channels
             .filter((channel: any) => channel.type === "public")
             .map((channel: any) => (
-                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+                <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         const privateChannelsComp = channels
             .filter((channel: any) => channel.type === "private")
             .map((channel: any) => (
-                <JoinChannelItem key={channel.id} channel={channel} fetchChannels={fetchChannels} />
+                <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         setPublicChannels(publicChannelsComp);
         setPrivateChannels(privateChannelsComp);
