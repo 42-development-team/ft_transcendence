@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useDebugValue, useEffect, useState } from "react";
 import { ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
 
@@ -18,20 +18,23 @@ export default function useChannels() {
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
+        joinPreviousChannels();
     }, []);
 
     useEffect(() => {
-        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
-        console.log("Joined channels length: " + joinedChannels.length);
-        if (joinedChannels.length > 0)
+        // console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+        // console.log("USE EFFECT --- Joined channels length: " + joinedChannels.length);
+        // Todo: prevent from joining over and over
+        if (joinedChannels.length > 0) {
             joinPreviousChannels();
+        }
     }, [joinedChannels]);
 
     const socket = useChatConnection();
     useEffect(() => {
         console.log("subscribe to new message event");
         socket?.on('new-message', (body: any) => {
-            receiveMessage(body);
+            receiveMessage(body, joinedChannels);
         });
     }, [socket]);
 
@@ -69,7 +72,7 @@ export default function useChannels() {
         console.log("Join previous channels");
         joinedChannels.forEach(channel => {
             console.log("Join channel: " + channel.name);
-           socket?.emit("joinRoom", channel.name); 
+            socket?.emit("joinRoom", channel.name); 
         });
     }, [socket, joinedChannels]);
 
@@ -139,7 +142,8 @@ export default function useChannels() {
             icon: '',
             joined: true,
         }
-        console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
+        // console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
+        console.log("adding channel to joined channels");
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
 
@@ -150,13 +154,15 @@ export default function useChannels() {
         socket?.emit("message", {message: message, roomId: channel.id});
     }
 
-    const receiveMessage = (body: any) => {
-        console.log("new message: " + JSON.stringify(body, null, 2));
+    const receiveMessage = (body: any, chans: ChannelModel[]) => {
+        // console.log("new message: " + JSON.stringify(body, null, 2));
         const {newMessage} = body;
         console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
 
         // Find the room
-        console.log("Joined channels length: " + joinedChannels.length);
+        // Todo: bug length = 0
+        console.log("Bug Joined channels length: " + joinedChannels.length);
+        console.log("??? Joined channels length: " + chans.length);
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
             console.log("Room not found");

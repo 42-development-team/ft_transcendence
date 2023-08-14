@@ -7,7 +7,6 @@ import SendMessageForm from './SendMessageForm';
 import style from '../Chat.module.css';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatMessage from './ChatMessage';
-import { useEffect } from 'react';
 
 interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
@@ -27,14 +26,6 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     let MessageList = channel.messages?.map((message) => (
         <ChatMessage key={message.id} message={message} />
     ))
-
-    useEffect(() => {
-        console.log("Channel messages changed");
-        if (channel.messages == undefined) return ;
-        MessageList = channel.messages?.map((message) => (
-            <ChatMessage key={message.id} message={message} />
-        ));
-    }, [channel])                
 
     return (
         <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
