@@ -22,6 +22,7 @@ export default function useChannels() {
 
     useEffect(() => {
         console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
+        subscribeToChannels();
     }, [joinedChannels]);
 
     const socket = useChatConnection();
@@ -57,6 +58,12 @@ export default function useChannels() {
             console.log("Error fetching channel content list: " + err);
         }
     };
+
+    const subscribeToChannels = useCallback(() => {
+        joinedChannels.forEach(channel => {
+           socket?.emit("joinRoom", channel.name); 
+        });
+    }, [socket]);
 
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {

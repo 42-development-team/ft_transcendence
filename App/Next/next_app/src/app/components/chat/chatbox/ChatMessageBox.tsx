@@ -1,8 +1,7 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel, MessageModel } from '@/app/utils/models';
+import { ChannelModel } from '@/app/utils/models';
 import Image from 'next/image';
-import { forwardRef } from 'react';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import SendMessageForm from './SendMessageForm';
 import style from '../Chat.module.css';
