@@ -50,7 +50,7 @@ const Avatar = (
       };
 
     return (
-        <div className="mb-2 flex flex-col justify-center">
+        <div className="">
             <p className=" font-bold text-center">Username</p>
             <div className="">
             {imageUrl || imageUrlGetFromCloudinary? (
@@ -61,7 +61,7 @@ const Avatar = (
                         alt="Selected Avatar"
                         width={176}
                         height={176}
-                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px]"
+                        className="duration-900 drop-shadow-xl rounded-full"
                     />
                 </div>
             ) : (
@@ -72,7 +72,7 @@ const Avatar = (
                         alt="Default Avatar"
                         width={176}
                         height={176}
-                        className="sm:transition-all md:transition-all lg:transition-all 2xl:transition-all duration-900 drop-shadow-xl rounded-full sm:w-[176px] sm:h-[176px] md:w-[182px] md:h-[182px] lg:w-[188px] lg:h-[188px] 2xl:w-[190px] 2xl:h-[190px]"
+                        className="duration-900 drop-shadow-xl rounded-full"
                     />
                 </div>
             )}
