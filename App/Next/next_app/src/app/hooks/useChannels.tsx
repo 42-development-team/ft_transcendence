@@ -58,6 +58,10 @@ export default function useChannels() {
         }
     };
 
+    const fetchSingleChannelContent = async (id: string) => {
+        
+    };
+
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {
         newChannel.joined = true;
@@ -65,9 +69,16 @@ export default function useChannels() {
         setChannels(prevChannels => [...prevChannels, newChannel]);
     };
 
+    const appendNewJoinedChannel = (newChannel: ChannelModel) => {
+        newChannel.joined = true;
+        newChannel.icon = '';
+        setJoinedChannels(prevChannels => [...prevChannels, newChannel]);
+    };
+
     const createNewChannel = useCallback(async (newChannelInfo: NewChannelInfo) => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+            // Channel creation
+            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
@@ -80,6 +91,8 @@ export default function useChannels() {
             }
             const newChannel = await response.json();
             appendNewChannel(newChannel);
+
+            // Channel joining
             const password = newChannelInfo.password;
             const joinResponse = await fetch(`${process.env.BACK_URL}/chatroom/${newChannel.id}/join`, {
                 credentials: "include",
@@ -92,11 +105,29 @@ export default function useChannels() {
         
             if (!joinResponse.ok) {
                 console.log('Error joining channel:', await joinResponse.text());
+                return ;
             }
             //emit joinRoom event to server
             if (socket) {
               socket.emit("joinRoom", newChannelInfo.name);
             }
+            // Todo: extract to function
+            //fetch channel content
+            response = await fetch(`${process.env.BACK_URL}/chatroom/content/${newChannel.id}`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannel: ChannelModel = {
+                id: data.id,
+                createdAt: data.createdAt,
+                creatorId: data.creatorId,
+                name: data.name,
+                type: data.type,
+                members: data.members,
+                messages: data.messages,
+                icon: '',
+                joined: true,
+            }
+            console.log("Fetched channel: " + JSON.stringify(fetchedChannel, null, 2));
+            appendNewJoinedChannel(fetchedChannel);
         } catch (error) {
             console.error('error creating channel', error);
         }
