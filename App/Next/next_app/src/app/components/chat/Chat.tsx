@@ -18,7 +18,7 @@ interface ChatBarProps {
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, fetchChannelsInfo, sendToChannel } = useChannels();
+    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                 <FriendList friends={friends} />
             }
             {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel channels={channels} fetchChannels={fetchChannelsInfo}/>
+                <JoinChannel channels={channels} joinChannel={joinChannel}/>
             }
             {chatBarState == ChatBarState.CreateChannelOpen &&
                 <CreateChannel userId={userId} createNewChannel={createNewChannel} />

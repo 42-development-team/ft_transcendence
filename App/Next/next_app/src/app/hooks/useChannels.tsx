@@ -58,10 +58,6 @@ export default function useChannels() {
         }
     };
 
-    const fetchSingleChannelContent = async (id: string) => {
-        
-    };
-
     // New Channels
     const appendNewChannel = (newChannel: ChannelModel) => {
         newChannel.joined = true;
@@ -87,26 +83,30 @@ export default function useChannels() {
             appendNewChannel(newChannel);
 
             // Channel joining
-            const password = newChannelInfo.password;
-            const joinResponse = await fetch(`${process.env.BACK_URL}/chatroom/${newChannel.id}/join`, {
-                credentials: "include",
-                method: 'PATCH',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password }),
-            });
-        
-            if (!joinResponse.ok) {
-                console.log('Error joining channel:', await joinResponse.text());
-                return ;
-            }
-            socket?.emit("joinRoom", newChannelInfo.name);
-            fetchNewChannelContent(newChannel.id);
+            joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
         } catch (error) {
             console.error('error creating channel', error);
         }
     };
+
+    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
+            credentials: "include",
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+        socket?.emit("joinRoom", name);
+        if (!response.ok) {
+            console.log('Error joining channel:', await response.text());
+            return response;
+        }
+        fetchNewChannelContent(id);
+        fetchChannelsInfo();
+        return response;
+    }
 
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
@@ -122,6 +122,7 @@ export default function useChannels() {
             icon: '',
             joined: true,
         }
+        console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
 
@@ -136,7 +137,7 @@ export default function useChannels() {
         channels,
         joinedChannels,
         createNewChannel,
-        fetchChannelsInfo,
+        joinChannel,
         sendToChannel,
         socket,
     }
