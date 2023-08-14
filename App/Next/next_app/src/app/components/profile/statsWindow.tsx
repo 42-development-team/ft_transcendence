@@ -31,18 +31,16 @@ const StatsWindow = (userId: {userId: string}) => {
     }
 
     return (
-        <div>
-            <div className="flex w-full mb-5">
+            <div className="flex mb-5 mx-[2vw]">
                         <Avatar
                             disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
                         </Avatar>
                 <div className="w-full font-semibold text-gray-400 text-center transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
-                    <div className="text-center ">
+                    <div className="text-center">
                         Stats
                     </div>
                 </div>
             </div>
-        </div>
     )
 }
 

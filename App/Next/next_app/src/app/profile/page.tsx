@@ -16,7 +16,7 @@ export default async function Profile() {
     return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
         <div className="flex h-full w-full"> 
             <Chat userId={payload.sub}/>
-            <div className="mx-5 my-5 flex flex-col flex-grow">
+            <div className="mx-[7vw] my-[4vw] flex flex-col flex-grow">
                     <StatsWindow userId={payload.sub} />
                     <UnderlineTabs />
             </div>
