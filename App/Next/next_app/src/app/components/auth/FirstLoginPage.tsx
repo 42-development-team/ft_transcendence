@@ -62,11 +62,11 @@ const FirstLoginPageComponent = ({
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
-    UpdateAvatar( avatarFile, userId, setImageUrl );
-    const updateData = {
-      newUsername: inputUserName,
-      userId: userId, 
-    };
+      UpdateAvatar(avatarFile, userId, setImageUrl);
+      const updateData = {
+        newUsername: inputUserName,
+        userId: userId,
+      };
     const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
       method: "PUT",
       body: JSON.stringify(updateData),
@@ -100,25 +100,27 @@ const FirstLoginPageComponent = ({
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
             const newinputUserName = e.target.value;
-            if (inputUserName === "") {
-              setInputUserName(newinputUserName);
+            if ( newinputUserName === "") {
+                console.log("empty username, so newInput:", newinputUserName, "placeholder:", placeHolder);
+                setInputUserName(placeHolder);
                 setValidateEnabled(true);
                 setIsVisible(false);
                 return ;
             }
-            else if (inputUserName.length < 3 || inputUserName.length > 15) {
+            else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
                 setMessage("Username must be at least 3 characters long, and at most 15 characters long");
+                console.log("Username must be at least 3 characters long, and at most 15 characters long, newInput:", newinputUserName, "placeholder:", placeHolder);
                 setValidateEnabled(false);
                 setIsVisible(true);
                 return ;
             }
             
-            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
+            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
                 method: "GET",
             });
             const data = await response.json();
             const isUserAlreadyTaken = data.isUsernameTaken;
-            const isUsernameSameAsCurrent = inputUserName === placeHolder;
+            const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
                 setValidateEnabled(false);
@@ -129,6 +131,7 @@ const FirstLoginPageComponent = ({
                 setIsVisible(true);
                 setValidateEnabled(true);
                 setMessage("Username available");
+                setInputUserName(newinputUserName);
             }
         } catch (error) { 
             console.log(error);
