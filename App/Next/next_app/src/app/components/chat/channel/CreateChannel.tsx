@@ -50,6 +50,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
     await delay(CLOSE_DELAY);
     
     // Reset fields after creation.
+    // Todo: open the newly created channel instead of just close
     setChannelName('');
     setPassword('');
     updateChatBarState(ChatBarState.Closed);
