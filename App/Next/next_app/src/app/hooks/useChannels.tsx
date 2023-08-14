@@ -65,7 +65,7 @@ export default function useChannels() {
         setChannels(prevChannels => [...prevChannels, newChannel]);
     };
 
-    const createNewChannel = async (newChannelInfo: NewChannelInfo) => {
+    const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
             let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
@@ -84,9 +84,11 @@ export default function useChannels() {
 
             // Channel joining
             joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
         }
+        return "";
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {

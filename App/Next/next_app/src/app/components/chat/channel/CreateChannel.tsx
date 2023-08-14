@@ -10,14 +10,14 @@ import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 
 interface CreateChannelProps {
   userId: string;
-  createNewChannel: (newChannel: NewChannelInfo) => void;
+  createNewChannel: (newChannel: NewChannelInfo) => Promise<string>;
 }
 
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
-  const CLOSE_DELAY = 1500;
+  const CLOSE_DELAY = 1000;
 
-  const { updateChatBarState } = useChatBarContext();
+  const { updateChatBarState, openChannel } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('public');
@@ -43,17 +43,16 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
       owner: Number(userId),
       admins: [Number(userId)],
     };
-    createNewChannel(newChannelInfo);
+    const createdChannelId = await createNewChannel(newChannelInfo);
 
     // Close the form after short delay
     setOpenAlert(true);
     await delay(CLOSE_DELAY);
     
     // Reset fields after creation.
-    // Todo: open the newly created channel instead of just close
     setChannelName('');
     setPassword('');
-    updateChatBarState(ChatBarState.Closed);
+    openChannel(createdChannelId);
   };
 
   return (
