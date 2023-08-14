@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
-import { ChatroomMessageDto } from './dto/chatroom-messages.dto';
 
 @Injectable()
 export class ChatroomService {

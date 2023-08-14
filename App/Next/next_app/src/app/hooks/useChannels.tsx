@@ -31,7 +31,7 @@ export default function useChannels() {
     useEffect(() => {
         console.log("subscribe to new message event");
         socket?.on('new-message', (body: any) => {
-            receiveMessage(body, joinedChannels);
+            receiveMessage(body);
         });
     }, [socket]);
 
@@ -150,7 +150,7 @@ export default function useChannels() {
         socket?.emit("message", {message: message, roomId: channel.id});
     }
 
-    const receiveMessage = (body: any, joinedChannels: ChannelModel[]) => {
+    const receiveMessage = (body: any) => {
         console.log("new message: " + JSON.stringify(body, null, 2));
         const {newMessage} = body;
         console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
