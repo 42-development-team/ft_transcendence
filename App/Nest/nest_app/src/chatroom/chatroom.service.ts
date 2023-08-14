@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
+import { ChatroomMessageDto } from './dto/chatroom-messages.dto';
 
 @Injectable()
 export class ChatroomService {
@@ -75,6 +76,11 @@ export class ChatroomService {
 		return chatroomDto;
 	}
 
+	async getChannelNameFromId(chanelId: number): Promise<string> {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({	where: { id: chanelId }, });
+		return chatRoom.name;
+	}
+
 	// Content: members and messages
 
 	constructChatroomContentDto(chatroom: any, isJoined: boolean): ChatroomContentDto {
@@ -99,7 +105,8 @@ export class ChatroomService {
 					createdAt: message.createdAt,
 					content: message.content,
 					senderId: message.senderId,
-					senderUsername: "test"
+					// Todo: send correct username
+					senderUsername: "test",
 				};
 			}),
 		};
@@ -180,6 +187,23 @@ export class ChatroomService {
 			}
 		}
 		return chatRoom;
+	}
+
+	async addMessageToChannel(channelId: number, userId: number, message: string) {
+		const newMessage = await this.prisma.message.create({
+			data: {
+				content: message,
+				senderId: userId,
+				chatRoomId: channelId,
+			},
+		});
+		const test = await this.prisma.message.findUnique({
+			where: { id: newMessage.id },
+			include: { 
+				sender: true,
+			},
+		});
+		return test;
 	}
 	
 	// #endregion
