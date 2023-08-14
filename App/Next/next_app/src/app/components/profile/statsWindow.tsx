@@ -33,7 +33,7 @@ const StatsWindow = (userId: {userId: string}) => {
     return (
         <div>
             <div className="mt-5 flex flex-row justify-center">
-                    <div className="mb-4">
+                    <div className="mb-4 flex flex-grow">
                         <Avatar
                             disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
                         </Avatar>

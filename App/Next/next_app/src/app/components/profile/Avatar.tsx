@@ -50,7 +50,7 @@ const Avatar = (
       };
 
     return (
-        <div className="mb-2">
+        <div className="mb-2 flex flex-col justify-center">
             <p className=" font-bold text-center">Username</p>
             <div className="">
             {imageUrl || imageUrlGetFromCloudinary? (

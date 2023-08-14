@@ -1,8 +1,8 @@
-import ChatBar from "@/components/chat/ChatBar";
 import StatsWindow from "../components/profile/statsWindow";
 import { UnderlineTabs } from "../components/profile/tabs";
 import getJwt from '@/app/utils/getJwt';
 import { useRouter } from "next/navigation";
+import Chat from "@/components/chat/Chat";
 
 export default async function Profile() {
 
@@ -15,7 +15,7 @@ export default async function Profile() {
 
     return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
         <div className="flex flex-row w-full h-full"> 
-            <ChatBar />
+            <Chat userId={payload.sub}/>
             <div className="flex flex-col mx-5">
                 <div className="flex flex-between">
                     <StatsWindow userId={payload.sub} />
