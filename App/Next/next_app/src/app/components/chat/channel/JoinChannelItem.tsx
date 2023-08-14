@@ -1,54 +1,43 @@
 import { ChannelModel } from "@/app/utils/models";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 type ChannelProps = {
     channel: ChannelModel
+    joinChannel: (id: string, name: string, password?: string) => Promise<Response>
 }
 
 // Todo: Add channel icon
-const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps) => {
+const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChannel }: ChannelProps) => {
 
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
 
-    const JoinChannel = async () => {
-        console.log("Joining channel " + name);
-        if (type === "public") {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id + 5}/join`,
-                { credentials: "include", method: "PATCH" });
-            if (!response.ok) {
-                console.log("Error joining channel: " + await response.text());
-                return;
-            }
-            setIsJoined(true);
-            // Todo : how to update channel list? - using socket?
-        }
-        else if (type === "private") {
-            if (!showPassword) {
-                setShowPassword(!showPassword);
-                setPassword("");
-                return;
-            }
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`,
-                {
-                    credentials: "include", method: "PATCH",
-                    body: JSON.stringify({ password: password }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-            if (!response.ok) {
-                if (await response.text() === "\"Wrong password\"") {
-                    setIsErrorVisible(true);
-                }
-                return;
-            }
-            setIsJoined(true);
-        }
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        onJoin();
     }
-    // Todo: why hitting enter on form refreshes page?
+
+    const onJoin = async () => {
+        if (type === "private" && !showPassword) {
+            setShowPassword(!showPassword);
+            setPassword("");
+            return;
+        }
+        const response = await joinChannel(id, name, password);
+        if (!response.ok) {
+            const text = await response.text();
+            if (text === "\"Wrong password\"") {
+                setIsErrorVisible(true);
+            }
+            return;
+        }
+        setIsJoined(true);
+        setShowPassword(false);
+    }
+
+    // Todo: protected channels
     return (
         <div className="flex flex-col flex-grow">
             <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
@@ -62,15 +51,14 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
                         : <button
                             type="button"
                             className="inline-flex justify-center w-full rounded-full px-5 py-2 font-semibold text-sm bg-surface0 hover:bg-base"
-                            onClick={JoinChannel}>
+                            onClick={onJoin}>
                             Join</button>
                     }
                 </div>
             </div>
             {/* Password input field */}
             {showPassword && type === "private" &&
-
-                <form className="px-2 items-end" onSubmit={JoinChannel}>
+                <form className="px-2 items-end" onSubmit={onSubmit}>
                     <input
                         type="password" value={password}
                         className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
@@ -80,11 +68,11 @@ const ChannelItem = ({ channel: { id, name, icon, type, joined } }: ChannelProps
                         placeholder="password" />
                 </form>
             }
-            {isErrorVisible && 
+            {isErrorVisible &&
                 <p className="text-red text-center font-semibold">Wrong password</p>
             }
         </div>
     )
 }
 
-export default ChannelItem;
+export default JoinChannelItem;

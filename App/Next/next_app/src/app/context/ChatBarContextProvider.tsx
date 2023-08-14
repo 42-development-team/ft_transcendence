@@ -1,87 +1,57 @@
 "use client";
-import React, {useContext, createContext, useState} from "react";
+import React, {useContext, createContext, useState } from "react";
 
-// Todo :use enum in order to avoid boolean hell
+export enum ChatBarState {
+    Closed,
+    ChatOpen,
+    FriendListOpen,
+    ChatMembersOpen,
+    JoinChannelOpen,
+    CreateChannelOpen,
+}
 
 type ChatBarContextType = {
-    isChatOpen: boolean;
-    openChat: () => void;
-    closeChat: () => void;
-    toggleChatVisibility: () => void;
-    isFriendListOpen: boolean;
-    toggleFriendListVisibility: () => void;
-    isChatMembersOpen: boolean;
-    toggleChatMembersVisibility: () => void;
-    isChannelJoinOpen: boolean;
-    toggleChannelJoinVisibility: () => void;
+    chatBarState: ChatBarState;
+    updateChatBarState: (state: ChatBarState) => void;
+    openChannelId: string;
+    openChannel: (channelId: string) => void;
 }
 
 const ChatBarContextDefaultValues: ChatBarContextType = {
-    isChatOpen: false,
-    openChat: () => {},
-    closeChat: () => {},
-    toggleChatVisibility: () => {},
-    isFriendListOpen: false,
-    toggleFriendListVisibility: () => {},
-    isChatMembersOpen: false,
-    toggleChatMembersVisibility: () => {},
-    isChannelJoinOpen: false,
-    toggleChannelJoinVisibility: () => {}
+    chatBarState: ChatBarState.Closed,
+    updateChatBarState: () => {},
+    openChannelId: "",
+    openChannel: () => {},
 }
 
 const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultValues);
 
 export const ChatBarContextProvider = ({children} : {children: React.ReactNode}) => {
-    const [isChatOpen, setChatOpen] = useState(false);
-    const [isFriendListOpen, setFriendListOpen] = useState(false);
-    const [isChatMembersOpen, setChatMembersOpen] = useState(false);
-    const [isChannelJoinOpen, setChannelJoinOpen] = useState(false);
+    const [chatBarState, setChatBarState] = useState(ChatBarState.Closed);
+    const [openChannelId, setOpenChannelId] = useState<string>("");
 
-    const openChat = () => {
-        setChatOpen(true);
-        if (isFriendListOpen) {
-            setFriendListOpen(false);
+    const updateChatBarState = (state: ChatBarState) => {
+        if (state == chatBarState) {
+            setChatBarState(ChatBarState.Closed);
+        } else {
+            setChatBarState(state);
         }
-        if (isChannelJoinOpen) {
-            setChannelJoinOpen(false);
+    }
+
+    const openChannel = (channelId: string) => {
+        if (channelId == openChannelId) {
+            setChatBarState(ChatBarState.Closed);
+            setOpenChannelId("");
+            return;
         }
-        setChatMembersOpen(false);
-    }
-    const closeChat = () => {
-        setChatOpen(false);
-        setChatMembersOpen(false);
-        setChannelJoinOpen(false);
-    }
-
-    const toggleChatVisibility = () => {
-        setChatOpen(!isChatOpen);
-        setFriendListOpen(false);
-        setChannelJoinOpen(false);
-    }
-
-    const toggleFriendListVisibility = () => {
-        setFriendListOpen(!isFriendListOpen);
-        setChatOpen(false);
-        setChatMembersOpen(false);
-        setChannelJoinOpen(false);
-    }
-
-    const toggleChannelJoinVisibility = () => {
-        setChannelJoinOpen(!isChannelJoinOpen);
-        setChatOpen(false);
-        setChatMembersOpen(false);
-        setFriendListOpen(false);
-    }
-
-    const toggleChatMembersVisibility = () => {
-        setChatMembersOpen(!isChatMembersOpen);
+        setChatBarState(ChatBarState.ChatOpen);
+        setOpenChannelId(channelId);
     }
 
     return (
         <ChatBarContext.Provider value = {
-            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen, toggleChatMembersVisibility,
-            isChannelJoinOpen, toggleChannelJoinVisibility}
-            }>
+            { chatBarState, updateChatBarState, openChannelId, openChannel }
+        }>
             {children}
         </ChatBarContext.Provider>
     )

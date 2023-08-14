@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
 
-export class InfoChatroomDto {
+export class ChatroomInfoDto {
     @IsNotEmpty()
     @IsNumber()
     id: number;
