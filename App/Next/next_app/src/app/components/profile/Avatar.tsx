@@ -52,7 +52,7 @@ const Avatar = (
     return (
         <div className="flex flex-col my-5 justify-center mr-[3vw]">
             <p className=" font-bold text-center mb-1">Username</p>
-            <div className="flex">
+            <div className="flex flex-col">
                 {imageUrl || imageUrlGetFromCloudinary ? (
                     <div>
                         {/* Display uploaded avatar image temporary stored in URL*/}
