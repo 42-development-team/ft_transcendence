@@ -12,6 +12,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
+    const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
 
@@ -20,41 +21,32 @@ export default function useChannels() {
         fetchChannelsContent();
     }, []);
 
+    // Todo: prevent from joining over and over
     useEffect(() => {
-        // console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
-        // console.log("USE EFFECT --- Joined channels length: " + joinedChannels.length);
-        // Todo: prevent from joining over and over
         if (joinedChannels.length > 0) {
             joinPreviousChannels();
         }
     }, [joinedChannels]);
 
-    const socket = useChatConnection();
 
     // Messaging
     const sendToChannel = useCallback(
         (channel: ChannelModel, message: string) => {
-        console.log(`Sending message "${message}" to channel ${channel.id}`);
-        socket?.emit("message", {message: message, roomId: channel.id});
-    }, [socket]
-);
+            console.log(`Sending message "${message}" to channel ${channel.id}`);
+            socket?.emit("message", { message: message, roomId: channel.id });
+        }, [socket]
+    );
 
     const receiveMessage = (body: any) => {
-        // console.log("new message: " + JSON.stringify(body, null, 2));
-        const {newMessage} = body;
-        // console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
+        const { newMessage } = body;
 
-        // Find the room
-        // Todo: bug length = 0
-        // console.log("Bug Joined channels length: " + joinedChannels.length);
-        // console.log("??? Joined channels length: " + chans.length);
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
             console.log("Room not found");
-            return ;
+            return;
         }
 
-        const messageModel : MessageModel = {
+        const messageModel: MessageModel = {
             id: newMessage.id,
             createdAt: newMessage.createdAt,
             content: newMessage.content,
@@ -62,9 +54,6 @@ export default function useChannels() {
             senderUsername: newMessage.sender.username,
         }
 
-        // console.log("messageModel: " + JSON.stringify(messageModel, null, 2));
-
-        // add the message to the room
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             newChannels[channelIndex].messages?.push(messageModel);
@@ -116,7 +105,7 @@ export default function useChannels() {
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
             console.log("Join channel: " + channel.name);
-            socket?.emit("joinRoom", channel.name); 
+            socket?.emit("joinRoom", channel.name);
         });
     }, [socket, joinedChannels]);
 
@@ -174,15 +163,15 @@ export default function useChannels() {
 
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const data = await response.json();
+        const channelContent = await response.json();
         const fetchedChannel: ChannelModel = {
-            id: data.id,
-            createdAt: data.createdAt,
-            creatorId: data.creatorId,
-            name: data.name,
-            type: data.type,
-            members: data.members,
-            messages: data.messages,
+            id: channelContent.id,
+            createdAt: channelContent.createdAt,
+            creatorId: channelContent.creatorId,
+            name: channelContent.name,
+            type: channelContent.type,
+            members: channelContent.members,
+            messages: channelContent.messages,
             icon: '',
             joined: true,
         }
