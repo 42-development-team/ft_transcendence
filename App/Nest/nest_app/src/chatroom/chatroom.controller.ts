@@ -81,8 +81,8 @@ export class ChatroomController {
 	@Patch(':id/join')
 	async join(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const password: string = body.password;
-		await this.chatroomService.join(+id, userId, password)
+		const hashedPassword: string = body.hashedPassword;
+		await this.chatroomService.join(+id, userId, hashedPassword)
 			.then(() => {
 				response.send();
 			})
