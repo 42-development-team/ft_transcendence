@@ -31,7 +31,15 @@ export default function useChannels() {
 
     const socket = useChatConnection();
 
-    const receiveMessage = (body: any, chans: ChannelModel[]) => {
+    // Messaging
+    const sendToChannel = useCallback(
+        (channel: ChannelModel, message: string) => {
+        console.log(`Sending message "${message}" to channel ${channel.id}`);
+        socket?.emit("message", {message: message, roomId: channel.id});
+    }, [socket]
+);
+
+    const receiveMessage = (body: any) => {
         // console.log("new message: " + JSON.stringify(body, null, 2));
         const {newMessage} = body;
         // console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
@@ -66,9 +74,10 @@ export default function useChannels() {
 
     useEffect(() => {
         socket?.on('new-message', (body: any) => {
-            receiveMessage(body, joinedChannels);
+            receiveMessage(body);
         });
 
+        // return is used for cleanup, remove the socket listener on unmount
         return () => {
             socket?.off('new-message');
         }
@@ -178,13 +187,6 @@ export default function useChannels() {
             joined: true,
         }
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
-    }
-
-    // Messaging
-    // Todo: use callback?
-    const sendToChannel = (channel: ChannelModel, message: string) => {
-        console.log(`Sending message "${message}" to channel ${channel.id}`);
-        socket?.emit("message", {message: message, roomId: channel.id});
     }
 
     return {
