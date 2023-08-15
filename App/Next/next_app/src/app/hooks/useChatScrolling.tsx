@@ -7,13 +7,10 @@ export default function useChatScrolling<T extends HTMLElement>(
     const chatMessageBoxRef = useRef<T | null>(null);
 
     const scrollNewMessages = () => {
-        chatMessageBoxRef.current?.lastElementChild?.scrollIntoView(
-            { behavior: "smooth" }
-        )
+        chatMessageBoxRef.current?.lastElementChild?.scrollIntoView()
     }
 
     useEffect(() => {
-        console.log("useChatScrolling: useEffect: messages changed");
         scrollNewMessages();
     }, [messages, scrollNewMessages])
 
