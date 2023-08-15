@@ -15,6 +15,7 @@ export const chatRooms = [
       admins: {
         connect: [
           { id: 1 },
+          { id: 2 },
         ],
       },
     },
@@ -34,6 +35,7 @@ export const chatRooms = [
       admins: {
         connect: [
           { id: 2 },
+          { id: 3 },
         ],
       },
     },

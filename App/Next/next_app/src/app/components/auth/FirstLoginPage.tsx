@@ -2,7 +2,7 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 import FirstLoginBtn from '../FirstLoginBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
-import AvatarComponent from '../profile/Avatar';
+import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
 
 const FirstLoginPageComponent = ({
@@ -24,8 +24,10 @@ const FirstLoginPageComponent = ({
     const [waiting2fa, setWaiting2fa]           = useState(true);
     const [avatarFile, setAvatarFile]           = useState<File | null>(null);
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
+    const [inputUserName, setInputUserName] = useState('');
 
-    let inputUserName: string | null;
+
+    // let inputUserName: string | null;
 
 
     useEffect(() => {
@@ -46,7 +48,7 @@ const FirstLoginPageComponent = ({
         if (!data.ok)
             console.log(data.error);
         setPlaceHolder(data.username);
-        inputUserName = data.username;
+        setInputUserName(data.username);
     }
 
     const redirectToHome = () => {
@@ -56,15 +58,15 @@ const FirstLoginPageComponent = ({
         }
     }
       
-/* handle validate click, so username update and avagtar update in cloudinary */
+  /* handle validate click, so username update and avagtar update in cloudinary */
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
-    UpdateAvatar( avatarFile, userId, setImageUrl );
-    const updateData = {
-      newUsername: inputUserName,
-      userId: userId, 
-    };
+      await UpdateAvatar(avatarFile, userId, setImageUrl);
+      const updateData = {
+        newUsername: inputUserName,
+        userId: userId,
+      };
     const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
       method: "PUT",
       body: JSON.stringify(updateData),
@@ -97,26 +99,27 @@ const FirstLoginPageComponent = ({
 /* handle change of username input */
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
-            inputUserName = e.target.value;
-            if (inputUserName === "") {
+            const newinputUserName = e.target.value;
+            if ( newinputUserName === "") {
+                setInputUserName(placeHolder);
                 setValidateEnabled(true);
-                inputUserName = placeHolder;
                 setIsVisible(false);
                 return ;
             }
-            else if (inputUserName.length < 3 || inputUserName.length > 15) {
+            else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
                 setMessage("Username must be at least 3 characters long, and at most 15 characters long");
+                console.log("Username must be at least 3 characters long, and at most 15 characters long, newInput:", newinputUserName, "placeholder:", placeHolder);
                 setValidateEnabled(false);
                 setIsVisible(true);
                 return ;
             }
             
-            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${inputUserName}`, {
+            const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
                 method: "GET",
             });
             const data = await response.json();
             const isUserAlreadyTaken = data.isUsernameTaken;
-            const isUsernameSameAsCurrent = inputUserName === placeHolder;
+            const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
             if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
                 setValidateEnabled(false);
@@ -127,6 +130,7 @@ const FirstLoginPageComponent = ({
                 setIsVisible(true);
                 setValidateEnabled(true);
                 setMessage("Username available");
+                setInputUserName(newinputUserName);
             }
         } catch (error) { 
             console.log(error);
@@ -135,7 +139,6 @@ const FirstLoginPageComponent = ({
     }
 
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
-        console.log("Child avatar file:", childAvatarFile);
         setAvatarFile(childAvatarFile);
         setImageUrl(childImageUrl);
     }
@@ -163,9 +166,9 @@ const FirstLoginPageComponent = ({
                     </div>
                 }
             </div> 
-        <AvatarComponent
-          CallbackAvatarData={handleCallBackDataFromAvatar}>
-        </AvatarComponent>
+        <Avatar
+          CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null}>
+        </Avatar>
             {
                 waiting2fa &&
                 <div className="flex flex-col flex-auto items-center justify-center">

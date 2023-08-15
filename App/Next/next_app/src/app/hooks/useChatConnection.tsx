@@ -1,9 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import {io, Socket} from 'socket.io-client'
-
-// Todo: adapt to our backend
-// Note: example using socket.io connection
+import { io, Socket } from 'socket.io-client'
 
 const ENDPOINT = `${process.env.BACK_URL}` 
 
@@ -25,7 +22,7 @@ export default function useChatConnection() {
         setSocket(socket);
 
         return () => {
-            console.log('Disconnecting...');
+            console.log('Disconnecting from socket.io server...');
             socket.close();
         }
     }, [])

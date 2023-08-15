@@ -6,7 +6,7 @@
     overflow-y: scroll;
     width: 100%;
     pointer-events: none;
-    max-height: 92vh;
+    max-height: 95vh;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
@@ -50,7 +50,7 @@
 }
 
 .channelName {
-    @apply bg-crust rounded-lg;
+    @apply bg-crust rounded-lg text-text;
     padding: 0.68rem 1.5rem;
     position: absolute;
     display: inline-block;

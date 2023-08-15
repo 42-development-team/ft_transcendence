@@ -1,27 +1,32 @@
 export interface ChannelModel {
     id: string
     name: string
-    createdAt: string
-    creatorId: string
-    messages?: MessageModel[]
+    createdAt: string   //useful?
+    creatorId: string   //useful?
     icon: string
     type: string
-    password?: string
     joined: boolean
+    messages?: MessageModel[]
+    members?: ChannelMember[]
 }
 
 // Todo: use enum for channel type ?
 
 export interface MessageModel {
     id: string
-    author: Author
+    createdAt: string
     content: string
+    senderId: string
+    senderUsername: string
 }
 
-// Note: color depending on role (admin?) -> or custom color for everyone?
-export interface Author {
-    rgbColor: string
+// Todo: add avatar
+export interface ChannelMember {
+    id: string
     username: string
+    isAdmin: boolean
+    isOwner: boolean
+    avatar: string
 }
 
 export enum UserStatus {

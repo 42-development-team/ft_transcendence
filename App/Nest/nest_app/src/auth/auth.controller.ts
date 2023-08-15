@@ -155,10 +155,7 @@ export class AuthController {
             console.log('New username:', updateData.newUsername);
 
             
-            const updatedUser = await this.prismaService.user.update({
-            where: { id: userId }, 
-            data: { username: updateData.newUsername },
-            });
+            const updatedUser = await this.userService.updateUsername(userId, updateData.newUsername);
             
             console.log('Updated user:', updatedUser);
             return updatedUser;

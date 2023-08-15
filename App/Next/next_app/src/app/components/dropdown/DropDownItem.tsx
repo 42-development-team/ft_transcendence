@@ -21,7 +21,7 @@ export const DropDownActionRed = ({children, onClick} : {children: ReactNode, on
 export const DropDownActionLarge = ({children, onClick} : {children: ReactNode, onClick: () => void}) => {
     return (
         <button onClick={onClick}
-            className="text-left w-full block px-4 py-2 text-lg group hover:bg-surface0 rounded-md">
+            className="  text-left w-full block px-4 py-2 text-lg group hover:bg-surface0 rounded-md">
             {children}
         </button>
     )

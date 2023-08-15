@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import { ChatroomService } from './chatroom.service';
 import { ChatroomController } from './chatroom.controller';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from "@nestjs/jwt";
+import { UsersModule } from "../users/users.module";
+import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
-  imports: [],
+  imports: [UsersModule],
   controllers: [ChatroomController],
-  providers: [ChatroomService, PrismaService],
-  exports: [ChatroomService]
+  providers: [ChatroomService, PrismaService, JwtService, SocketGateway],
+  exports: [ChatroomService, SocketGateway, JwtService]
 })
 export class ChatroomModule {}

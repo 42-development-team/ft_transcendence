@@ -1,16 +1,9 @@
 "use client";
-
 import { useCallback, useState } from "react";
 import { UserModel } from "../utils/models";
-import { generateFakeFriend } from "../utils/helpers";
-
-// const fakeFriends: UserModel[] = Array(20)
-//     .fill(null)
-//     .map(() => generateFakeFriend())
 
 export default function useFriends() {
     const [friends, setFriends] = useState<UserModel[]>([
-        // ...fakeFriends,
     ])
 
     // const socket = useChatConnection();
@@ -28,10 +21,10 @@ export default function useFriends() {
 
     const createFriend = useCallback(
         () => {
-            const newFriend: UserModel = generateFakeFriend();
+            // const newFriend: UserModel = generateFakeFriend();
             // appendNewChannel(newChannel);
             // socket?.emit('channel', newChannel);
-            console.log(`new friend creation ${newFriend.username}`);
+            console.log(`new friend creation `);
         },
         []
     )

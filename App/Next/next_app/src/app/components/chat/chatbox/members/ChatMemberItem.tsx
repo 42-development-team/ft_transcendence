@@ -1,11 +1,11 @@
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
-import {DropDownAction, DropDownActionRed} from "@/app/components/dropdown/DropDownItem";
-import { UserModel } from "@/app/utils/models";
+import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
+import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
-import { getStatusColor } from "@/app/utils/getStatusColor";
+// import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type FriendProps = {
-    friend: UserModel
+    user: ChannelMember
 }
 
 const ChatMemberActions = () => {
@@ -30,17 +30,20 @@ const ChatMemberActions = () => {
     )
 }
 
-const ChatMemberItem = ({friend: {username, status, avatar}} : FriendProps) => {
+// Todo: add status and avatar
+const ChatMemberItem = ({ user: { username, avatar } }: FriendProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
-             <div className="flex items-center">
+            <div className="flex items-center">
                 <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
-                    <Image alt="Channel Icon" src={avatar} height={32} width={32}
-                        className="w-[inherit] rounded-[inherit]" />
-
-                    <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
+                    {avatar.startsWith("https://")
+                        ? <Image alt="Member avatar" src={avatar} height={32} width={32}
+                            className="w-[inherit] rounded-[inherit]" />
+                        : null
+                    }
+                    {/* <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`}></div>
-                    </div>
+                    </div> */}
                 </div>
                 <h1 className="text-sm font-medium pl-[0.15rem]">{username}</h1>
             </div>
