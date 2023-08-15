@@ -1,21 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { MessageModel } from "../utils/models";
 
-export default function useChatLiveScrolling<T extends HTMLElement>(
+export default function useChatScrolling<T extends HTMLElement>(
     messages: MessageModel[]
 ) {
     const chatMessageBoxRef = useRef<T | null>(null);
 
-    const scrollNewMessages = useCallback(() => {
+    const scrollNewMessages = () => {
         chatMessageBoxRef.current?.lastElementChild?.scrollIntoView()
-    }, [])
+    }
 
     useEffect(() => {
-            scrollNewMessages()
+        scrollNewMessages();
     }, [messages, scrollNewMessages])
 
     return {
-        chatMessageBoxRef,
-        scrollNewMessages,
+        chatMessageBoxRef
     }
 }

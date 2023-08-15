@@ -17,4 +17,4 @@ export default async function Settings() {
             <TwoFA userId={payload.sub}></TwoFA>
         </div>
     )
-  }
+}
