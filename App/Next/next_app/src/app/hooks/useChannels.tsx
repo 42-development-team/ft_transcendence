@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
-import { getRandomValues } from "crypto";
 
 export interface NewChannelInfo {
     name: string;
@@ -13,6 +12,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
+    const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
 
@@ -21,19 +21,133 @@ export default function useChannels() {
         fetchChannelsContent();
     }, []);
 
+    // Todo: prevent from joining over and over
     useEffect(() => {
-        console.log("Joined channels: " + JSON.stringify(joinedChannels, null, 2));
-        if (joinedChannels.length > 0)
+        if (joinedChannels.length > 0) {
             joinPreviousChannels();
+        }
     }, [joinedChannels]);
 
-    const socket = useChatConnection();
-    useEffect(() => {
-        console.log("subscribe to new message event");
-        socket?.on('new-message', (body: any) => {
-            handleChannelMessage(body);
+
+    // Messaging
+    const sendToChannel = useCallback(
+        (channel: ChannelModel, message: string) => {
+            socket?.emit("message", { message: message, roomId: channel.id });
+        }, [socket]
+    );
+
+    const receiveMessage = (body: any) => {
+        const { newMessage } = body;
+
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
+        if (channelIndex == -1) {
+            console.log("Room not found");
+            return;
+        }
+
+        const messageModel: MessageModel = {
+            id: newMessage.id,
+            createdAt: newMessage.createdAt,
+            content: newMessage.content,
+            senderId: newMessage.senderId,
+            senderUsername: newMessage.sender.username,
+        }
+
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].messages?.push(messageModel);
+            return newChannels;
         });
-    }, [socket]);
+    }
+
+    useEffect(() => {
+        socket?.on('new-message', (body: any) => {
+            receiveMessage(body);
+        });
+
+        // return is used for cleanup, remove the socket listener on unmount
+        return () => {
+            socket?.off('new-message');
+        }
+    }, [socket, receiveMessage]);
+
+    const joinPreviousChannels = useCallback(() => {
+        joinedChannels.forEach(channel => {
+            socket?.emit("joinRoom", channel.name);
+        });
+    }, [socket, joinedChannels]);
+
+    // New Channels
+    const appendNewChannel = (newChannel: ChannelModel) => {
+        newChannel.joined = true;
+        newChannel.icon = '';
+        setChannels(prevChannels => [...prevChannels, newChannel]);
+    };
+
+    // API requests
+    const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
+        try {
+            // Channel creation
+            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+                credentials: "include",
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newChannelInfo),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to create the channel');
+            }
+            const newChannel = await response.json();
+            appendNewChannel(newChannel);
+
+            // Channel joining
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            return newChannel.id;
+        } catch (error) {
+            console.error('error creating channel', error);
+        }
+        return "";
+    };
+
+    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
+            credentials: "include",
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+        socket?.emit("joinRoom", name);
+        if (!response.ok) {
+            console.log('Error joining channel:', await response.text());
+            return response;
+        }
+        await fetchNewChannelContent(id);
+        await fetchChannelsInfo();
+        return response;
+    }
+
+    // FETCHING
+    const fetchNewChannelContent = async (id: string) => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+        const channelContent = await response.json();
+        const fetchedChannel = channelContent;
+        fetchedChannel.joined = true;
+        fetchedChannel.icon = '';
+        fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
+            return {
+                id: message.id,
+                createdAt: message.createdAt,
+                content: message.content,
+                senderId: message.sender.id,
+                senderUsername: message.sender.username,
+            }
+        });
+        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+    }
 
     const fetchChannelsInfo = async () => {
         try {
@@ -56,6 +170,15 @@ export default function useChannels() {
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
+                channel.messages = channel.messages.map((message: any) => {
+                    return {
+                        id: message.id,
+                        createdAt: message.createdAt,
+                        content: message.content,
+                        senderId: message.sender.id,
+                        senderUsername: message.sender.username,
+                    }
+                });
                 return channel;
             });
             setJoinedChannels(fetchedChannels);
@@ -64,120 +187,6 @@ export default function useChannels() {
             console.log("Error fetching channel content list: " + err);
         }
     };
-
-    const joinPreviousChannels = useCallback(() => {
-        console.log("Join previous channels");
-        joinedChannels.forEach(channel => {
-            console.log("Join channel: " + channel.name);
-           socket?.emit("joinRoom", channel.name); 
-        });
-    }, [socket, joinedChannels]);
-
-    // New Channels
-    const appendNewChannel = (newChannel: ChannelModel) => {
-        newChannel.joined = true;
-        newChannel.icon = '';
-        setChannels(prevChannels => [...prevChannels, newChannel]);
-    };
-
-    const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
-        try {
-            // Channel creation
-            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
-                credentials: "include",
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newChannelInfo),
-            });
-            if (!response.ok) {
-                throw new Error('Failed to create the channel');
-            }
-            const newChannel = await response.json();
-            appendNewChannel(newChannel);
-
-            // Channel joining
-            joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
-            return newChannel.id;
-        } catch (error) {
-            console.error('error creating channel', error);
-        }
-        return "";
-    };
-
-    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
-            credentials: "include",
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ password }),
-        });
-        socket?.emit("joinRoom", name);
-        if (!response.ok) {
-            console.log('Error joining channel:', await response.text());
-            return response;
-        }
-        fetchNewChannelContent(id);
-        fetchChannelsInfo();
-        return response;
-    }
-
-    const fetchNewChannelContent = async (id: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const data = await response.json();
-        const fetchedChannel: ChannelModel = {
-            id: data.id,
-            createdAt: data.createdAt,
-            creatorId: data.creatorId,
-            name: data.name,
-            type: data.type,
-            members: data.members,
-            messages: data.messages,
-            icon: '',
-            joined: true,
-        }
-        console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
-        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
-    }
-
-    // Messaging
-    // Todo: use callback?
-    const sendToChannel = (channel: ChannelModel, message: string) => {
-        console.log(`Sending message "${message}" to channel ${channel.name}`);
-        socket?.emit("message", {message: message, room: channel.name});
-    }
-
-    const handleChannelMessage = (body: any) => {
-        const {message, user, room} = body;
-        console.log("new message from " + user.username + " in room " + room + ": " + message);
-
-        // Find the room
-        console.log("Joined channels length: " + joinedChannels.length);
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name == room);
-        if (channelIndex == -1) {
-            console.log("Room not found");
-            return ;
-        }
-
-        // construct the message
-        const newMessage: MessageModel = {
-            id: "18",
-            createdAt: message.createdAt,
-            content: message,
-            senderId: user.id,
-            senderUsername: user.username,
-        };
-        
-        // add the message to the room
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            newChannels[channelIndex].messages?.push(newMessage);
-            return newChannels;
-        });
-    }
 
     return {
         channels,

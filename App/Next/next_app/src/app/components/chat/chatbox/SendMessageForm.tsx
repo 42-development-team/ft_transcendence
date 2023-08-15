@@ -5,7 +5,8 @@ type SendMessageFormProps = {
     className?: string
 }
 
-const MAX_MESSAGE_LENGTH = 300
+// Todo: remove max message length??
+const MAX_MESSAGE_LENGTH = 500
 
 const SendMessageForm = ({ onSend, className }: SendMessageFormProps) => {
     const [message, setMessage] = useState("");
