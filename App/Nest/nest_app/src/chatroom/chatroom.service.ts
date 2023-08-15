@@ -176,7 +176,7 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'private') {
-			if (chatRoom.password === hashedPassword) {
+			if (chatRoom.hashedPassword === hashedPassword) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
@@ -243,7 +243,7 @@ export class ChatroomService {
         });
 
         if (chatRoom) {
-            return chatRoom.password || null;
+            return chatRoom.hashedPassword || null;
         }
 
         return null;
