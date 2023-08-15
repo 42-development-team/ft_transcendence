@@ -30,7 +30,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     return (
         <div className='w-full max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatMessageBoxHeader channelName={channel.name}/>
-            <div ref={chatMessageBoxRef} className='overflow-auto h-[80vh]'>
+            <div ref={chatMessageBoxRef} className='overflow-auto h-[88vh]'>
                 {MessageList}
             </div>
             <SendMessageForm onSend={sendMessage} className='mt-6 flex flex-row flex-auto justify-between' />

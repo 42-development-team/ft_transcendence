@@ -1,6 +1,5 @@
 import { MessageModel } from "@/app/utils/models";
 
-
 type MessageProps = {
     message: MessageModel
 }
