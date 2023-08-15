@@ -15,7 +15,7 @@ interface CreateChannelProps {
 
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
-  const CLOSE_DELAY = 1000;
+  const CLOSE_DELAY = 500;
 
   const { updateChatBarState, openChannel } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
