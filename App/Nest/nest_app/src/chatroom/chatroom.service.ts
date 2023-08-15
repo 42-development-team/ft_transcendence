@@ -103,9 +103,7 @@ export class ChatroomService {
 					id: message.id,
 					createdAt: message.createdAt,
 					content: message.content,
-					senderId: message.senderId,
-					// Todo: send correct username
-					senderUsername: "test",
+					sender: message.sender,
 				};
 			}),
 		};
@@ -117,7 +115,9 @@ export class ChatroomService {
 			orderBy: { id: 'asc' },
 			where: { members: { some: { id: userId } } },
 			include: {
-				messages: true,
+				messages: {
+					include: { sender: true }
+				},
 				members: true,
 				admins: true,
 			},
@@ -138,7 +138,9 @@ export class ChatroomService {
 		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 			include: {
-				messages: true,
+				messages: {
+					include: { sender: true }
+				},
 				members: true,
 				admins: true,
 			},

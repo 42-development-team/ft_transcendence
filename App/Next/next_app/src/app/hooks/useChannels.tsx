@@ -74,7 +74,6 @@ export default function useChannels() {
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
-            console.log("Join channel: " + channel.name);
             socket?.emit("joinRoom", channel.name);
         });
     }, [socket, joinedChannels]);
@@ -136,17 +135,18 @@ export default function useChannels() {
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
         const channelContent = await response.json();
-        const fetchedChannel: ChannelModel = {
-            id: channelContent.id,
-            createdAt: channelContent.createdAt,
-            creatorId: channelContent.creatorId,
-            name: channelContent.name,
-            type: channelContent.type,
-            members: channelContent.members,
-            messages: channelContent.messages,
-            icon: '',
-            joined: true,
-        }
+        const fetchedChannel = channelContent;
+        fetchedChannel.joined = true;
+        fetchedChannel.icon = '';
+        fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
+            return {
+                id: message.id,
+                createdAt: message.createdAt,
+                content: message.content,
+                senderId: message.sender.id,
+                senderUsername: message.sender.username,
+            }
+        });
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
 
@@ -171,6 +171,15 @@ export default function useChannels() {
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
+                channel.messages = channel.messages.map((message: any) => {
+                    return {
+                        id: message.id,
+                        createdAt: message.createdAt,
+                        content: message.content,
+                        senderId: message.sender.id,
+                        senderUsername: message.sender.username,
+                    }
+                });
                 return channel;
             });
             setJoinedChannels(fetchedChannels);
