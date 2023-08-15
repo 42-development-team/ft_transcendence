@@ -59,9 +59,9 @@ const Avatar = (
                         <Image
                             src={imageUrlGetFromCloudinary as string || imageUrl as string}
                             alt="Selected Avatar"
-                            width={200}
-                            height={200}
-                            className="duration-900 drop-shadow-xl rounded-full"
+                            width={212}
+                            height={212}
+                            className="xl:transition-all duration-900 xl:h-[222px] xl:w-[222px]  duration-900 drop-shadow-xl rounded-full"
                         />
                     </div>
                 ) : (

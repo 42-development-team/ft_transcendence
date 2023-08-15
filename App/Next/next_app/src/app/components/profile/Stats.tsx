@@ -25,8 +25,15 @@ const Stats = ( userId: {userId : string }) => {
 					<div className="flex flex-middle h-[105px] border border-gray-600 mx-2"></div>
 				</div>
 				<div className="flex flex-col w-full h-full">
-					<div className="flex uppercase text-xl py-[1vw] text-xl justify-center w-full h-full">
-						Rank
+					<div className="flex py-[1vw] justify-center w-full h-full">
+						<div className="flex flex-col py-[1vw] h-full w-full justify-center ">
+							<div className="text-xl uppercase">
+								Rank
+							</div>
+							<div>
+								??
+							</div>
+						</div>
 					</div>
 					<div className="flex flex-row justify-center">
 						<div className="flex flex-middle w-[5vw] border border-gray-600"></div>
@@ -34,7 +41,7 @@ const Stats = ( userId: {userId : string }) => {
 					<div className="flex py-[1vw] justify-center w-full h-full">
 						<div className="flex flex-col py-[1vw] h-full w-full justify-center ">
 							<div className="text-xl uppercase">
-								Highest winning streak
+								Highest win-streak
 							</div>
 							<div>
 								??
