@@ -5,8 +5,8 @@
     overflow-x: visible;
     overflow-y: scroll;
     width: 100%;
-    pointer-events: none;
-    max-height: 92vh;
+    /* pointer-events: none; */
+    max-height: 95vh;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
