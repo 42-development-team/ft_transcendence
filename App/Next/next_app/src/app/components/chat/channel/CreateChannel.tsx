@@ -3,7 +3,6 @@ import { NewChannelInfo } from '@/app/hooks/useChannels';
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
-
 import { delay } from '@/app/utils/delay';
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
@@ -15,7 +14,7 @@ interface CreateChannelProps {
 
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
-  const CLOSE_DELAY = 500;
+  const CLOSE_DELAY = 750;
 
   const { updateChatBarState, openChannel } = useChatBarContext();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
