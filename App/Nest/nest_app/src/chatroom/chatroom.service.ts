@@ -21,13 +21,13 @@ export class ChatroomService {
 	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
-		const { name, type, password } = createChatroomDto;
+		const { name, type, hashedPassword } = createChatroomDto;
 
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
 				type,
-				password,
+				hashedPassword,
 				owner: { connect: { id: ownerId } },
 				admins: { connect: [{ id: ownerId }] },
 			},
