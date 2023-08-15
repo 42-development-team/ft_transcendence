@@ -1,6 +1,5 @@
 import { WebSocketServer, WebSocketGateway, ConnectedSocket, MessageBody, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Message } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { ChatroomService } from '../chatroom/chatroom.service';
 
@@ -35,8 +34,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
-        client.join(room);
         console.log(`Client ${client.id} joined room ${room}`);
+        client.join(room);
+
+        // Todo: emit on socket to announce new user joined
     }
 
     /* 
@@ -67,14 +68,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('message')
     async handleMessage(
-        @MessageBody() message: string, room: string,
+        @MessageBody() body: any,
         @ConnectedSocket() client: Socket
         ) : Promise<void> {
-        const user = await this.chatroomService.getUserFromSocket(client);
-
-        // Todo: add the message to the database
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const {roomId, message} = body;
+        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        const room = await this.chatroomService.getChannelNameFromId(roomId);
         this.server.to(room).emit('new-message', 
-            {message, user}
+            {newMessage, room}
         );
     }
+    
 }

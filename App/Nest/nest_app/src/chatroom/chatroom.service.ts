@@ -18,7 +18,7 @@ export class ChatroomService {
 		private configService: ConfigService
 	) { }
 
-	/* C(reate) */
+	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, password } = createChatroomDto;
@@ -35,8 +35,9 @@ export class ChatroomService {
 
 		return createdChatroom;
 	}
+	// #endregion
 
-	/* R(ead) */
+	// #region R(ead)
 	async getAllChannelsInfo(userId: number): Promise<ChatroomInfoDto[]> {
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
@@ -74,6 +75,11 @@ export class ChatroomService {
 		return chatroomDto;
 	}
 
+	async getChannelNameFromId(chanelId: number): Promise<string> {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({	where: { id: chanelId }, });
+		return chatRoom.name;
+	}
+
 	// Content: members and messages
 
 	constructChatroomContentDto(chatroom: any, isJoined: boolean): ChatroomContentDto {
@@ -97,8 +103,7 @@ export class ChatroomService {
 					id: message.id,
 					createdAt: message.createdAt,
 					content: message.content,
-					senderId: message.senderId,
-					senderUsername: "test"
+					sender: message.sender,
 				};
 			}),
 		};
@@ -110,7 +115,9 @@ export class ChatroomService {
 			orderBy: { id: 'asc' },
 			where: { members: { some: { id: userId } } },
 			include: {
-				messages: true,
+				messages: {
+					include: { sender: true }
+				},
 				members: true,
 				admins: true,
 			},
@@ -131,7 +138,9 @@ export class ChatroomService {
 		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 			include: {
-				messages: true,
+				messages: {
+					include: { sender: true }
+				},
 				members: true,
 				admins: true,
 			},
@@ -144,8 +153,10 @@ export class ChatroomService {
 		}
 		return this.constructChatroomContentDto(chatroom, isJoined);
 	}
+	// #endregion
 
-	/* U(pdate) */
+
+	// #region U(pdate)
 	update(id: number, updateChatroomDto: UpdateChatroomDto) {
 		return `This action updates a #${id} chatroom`;
 	}
@@ -179,12 +190,32 @@ export class ChatroomService {
 		return chatRoom;
 	}
 
-	/* D(elete) */
+	async addMessageToChannel(channelId: number, userId: number, message: string) {
+		const newMessage = await this.prisma.message.create({
+			data: {
+				content: message,
+				senderId: userId,
+				chatRoomId: channelId,
+			},
+		});
+		const test = await this.prisma.message.findUnique({
+			where: { id: newMessage.id },
+			include: { 
+				sender: true,
+			},
+		});
+		return test;
+	}
+	
+	// #endregion
+
+	// #region D(elete)
 	remove(id: number) {
 		return `This action removes a #${id} chatroom`;
 	}
 
-	/* Retrieve */
+	// #endregion
+	// #region Retrieve
 	
 	async getUserIdFromSocket(socket: Socket){
 		const authToken = socket.handshake.headers.cookie.split(";");
@@ -229,4 +260,6 @@ export class ChatroomService {
 
         return null;
     }
+
+	// #endregion
 }
