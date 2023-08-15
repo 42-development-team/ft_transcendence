@@ -27,6 +27,7 @@
     "@catppuccin/tailwindcss": "^0.1.6",
     "@material-tailwind/react": "^2.1.0",
     "@types/bcryptjs": "^2.4.2",
+    "bcryptjs": "^2.4.3",
     "jose": "^4.14.4",
     "next": "^13.4.16",
     "socket.io-client": "^4.7.2",
