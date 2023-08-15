@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Avatar from "../../components/profile/Avatar";
+import Stats from "./Stats";
 
 const StatsWindow = (userId: {userId: string}) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -31,14 +32,12 @@ const StatsWindow = (userId: {userId: string}) => {
     }
 
     return (
-            <div className="flex mb-5 mx-[2vw]">
+            <div className="flex mb-5 ml-[2vw]">
                         <Avatar
                             disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} >
                         </Avatar>
                 <div className="w-full font-semibold text-gray-400 text-center transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
-                    <div className="text-center">
-                        Stats
-                    </div>
+                        <Stats userId={userId.userId}/>
                 </div>
             </div>
     )

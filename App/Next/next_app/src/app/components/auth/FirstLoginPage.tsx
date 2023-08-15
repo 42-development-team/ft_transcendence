@@ -101,7 +101,6 @@ const FirstLoginPageComponent = ({
         try {
             const newinputUserName = e.target.value;
             if ( newinputUserName === "") {
-                console.log("empty username, so newInput:", newinputUserName, "placeholder:", placeHolder);
                 setInputUserName(placeHolder);
                 setValidateEnabled(true);
                 setIsVisible(false);

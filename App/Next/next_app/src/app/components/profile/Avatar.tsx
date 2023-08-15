@@ -61,7 +61,7 @@ const Avatar = (
                             alt="Selected Avatar"
                             width={200}
                             height={200}
-                            className="duration-900 drop-shadow-xl rounded-full"
+                            className=" duration-900 drop-shadow-xl rounded-full"
                         />
                     </div>
                 ) : (
