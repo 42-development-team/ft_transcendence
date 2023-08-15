@@ -26,10 +26,6 @@ const Chat = ({ userId }: ChatBarProps) => {
         setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
     }, [openChannelId, chatBarState]);
 
-    useEffect(() => {
-        setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
-    }, [joinedChannels]);
-
     return (
         <div className='flex h-full'>
             <ChatSideBar channels={channels} userId={userId} />

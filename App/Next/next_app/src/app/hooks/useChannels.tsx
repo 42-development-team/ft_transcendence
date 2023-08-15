@@ -32,7 +32,6 @@ export default function useChannels() {
     // Messaging
     const sendToChannel = useCallback(
         (channel: ChannelModel, message: string) => {
-            console.log(`Sending message "${message}" to channel ${channel.id}`);
             socket?.emit("message", { message: message, roomId: channel.id });
         }, [socket]
     );
