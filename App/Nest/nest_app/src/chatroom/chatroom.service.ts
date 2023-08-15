@@ -161,7 +161,7 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
-	async join(id: number, userId: number, password: string) {
+	async join(id: number, userId: number, hashedPassword: string) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
@@ -176,7 +176,7 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'private') {
-			if (chatRoom.password === password) {
+			if (chatRoom.password === hashedPassword) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
