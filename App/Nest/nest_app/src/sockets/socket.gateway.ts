@@ -71,12 +71,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         @MessageBody() body: any,
         @ConnectedSocket() client: Socket
         ) : Promise<void> {
-        const user = await this.chatroomService.getUserFromSocket(client);
-        const {room, message} = body;
-        console.log("new message from " + user.username + " in room " + room + ": " + message);
-        // Todo: add the message to the database and emit the correct messageDTO
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const {roomId, message} = body;
+        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        const room = await this.chatroomService.getChannelNameFromId(roomId);
         this.server.to(room).emit('new-message', 
-            {message, user, room}
+            {newMessage, room}
         );
     }
     

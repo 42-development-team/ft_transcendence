@@ -50,7 +50,7 @@ model ChatRoom {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 
-  name              String
+  name              String  
   type              String    // public, private, protected
   password          String?     // for password protected chatrooms
   members           User[]      @relation("members")
