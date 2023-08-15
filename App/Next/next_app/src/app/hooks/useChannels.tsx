@@ -72,36 +72,6 @@ export default function useChannels() {
         }
     }, [socket, receiveMessage]);
 
-    const fetchChannelsInfo = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
-                return channel;
-            });
-            setChannels(fetchedChannels);
-        }
-        catch (err) {
-            console.log("Error fetching channel info list: " + err);
-        }
-    };
-
-    const fetchChannelsContent = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
-                return channel;
-            });
-            setJoinedChannels(fetchedChannels);
-        }
-        catch (err) {
-            console.log("Error fetching channel content list: " + err);
-        }
-    };
-
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
             console.log("Join channel: " + channel.name);
@@ -116,6 +86,7 @@ export default function useChannels() {
         setChannels(prevChannels => [...prevChannels, newChannel]);
     };
 
+    // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
@@ -161,6 +132,7 @@ export default function useChannels() {
         return response;
     }
 
+    // FETCHING
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
         const channelContent = await response.json();
@@ -177,6 +149,36 @@ export default function useChannels() {
         }
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
+
+    const fetchChannelsInfo = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel info list: " + err);
+        }
+    };
+
+    const fetchChannelsContent = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setJoinedChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel content list: " + err);
+        }
+    };
 
     return {
         channels,
