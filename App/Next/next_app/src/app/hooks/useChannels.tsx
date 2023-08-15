@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useDebugValue, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
 
@@ -18,7 +18,6 @@ export default function useChannels() {
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
-        joinPreviousChannels();
     }, []);
 
     useEffect(() => {
@@ -31,12 +30,49 @@ export default function useChannels() {
     }, [joinedChannels]);
 
     const socket = useChatConnection();
+
+    const receiveMessage = (body: any, chans: ChannelModel[]) => {
+        // console.log("new message: " + JSON.stringify(body, null, 2));
+        const {newMessage} = body;
+        // console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
+
+        // Find the room
+        // Todo: bug length = 0
+        // console.log("Bug Joined channels length: " + joinedChannels.length);
+        // console.log("??? Joined channels length: " + chans.length);
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
+        if (channelIndex == -1) {
+            console.log("Room not found");
+            return ;
+        }
+
+        const messageModel : MessageModel = {
+            id: newMessage.id,
+            createdAt: newMessage.createdAt,
+            content: newMessage.content,
+            senderId: newMessage.senderId,
+            senderUsername: newMessage.sender.username,
+        }
+
+        // console.log("messageModel: " + JSON.stringify(messageModel, null, 2));
+
+        // add the message to the room
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].messages?.push(messageModel);
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
-        console.log("subscribe to new message event");
         socket?.on('new-message', (body: any) => {
             receiveMessage(body, joinedChannels);
         });
-    }, [socket]);
+
+        return () => {
+            socket?.off('new-message');
+        }
+    }, [socket, receiveMessage]);
 
     const fetchChannelsInfo = async () => {
         try {
@@ -69,7 +105,6 @@ export default function useChannels() {
     };
 
     const joinPreviousChannels = useCallback(() => {
-        console.log("Join previous channels");
         joinedChannels.forEach(channel => {
             console.log("Join channel: " + channel.name);
             socket?.emit("joinRoom", channel.name); 
@@ -101,7 +136,7 @@ export default function useChannels() {
             appendNewChannel(newChannel);
 
             // Channel joining
-            joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -123,8 +158,8 @@ export default function useChannels() {
             console.log('Error joining channel:', await response.text());
             return response;
         }
-        fetchNewChannelContent(id);
-        fetchChannelsInfo();
+        await fetchNewChannelContent(id);
+        await fetchChannelsInfo();
         return response;
     }
 
@@ -142,8 +177,6 @@ export default function useChannels() {
             icon: '',
             joined: true,
         }
-        // console.log("fetchedChannel: " + JSON.stringify(fetchedChannel, null, 2));
-        console.log("adding channel to joined channels");
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
 
@@ -152,39 +185,6 @@ export default function useChannels() {
     const sendToChannel = (channel: ChannelModel, message: string) => {
         console.log(`Sending message "${message}" to channel ${channel.id}`);
         socket?.emit("message", {message: message, roomId: channel.id});
-    }
-
-    const receiveMessage = (body: any, chans: ChannelModel[]) => {
-        // console.log("new message: " + JSON.stringify(body, null, 2));
-        const {newMessage} = body;
-        console.log("new message in room " + newMessage.chatRoomId + ": " + newMessage.content);
-
-        // Find the room
-        // Todo: bug length = 0
-        console.log("Bug Joined channels length: " + joinedChannels.length);
-        console.log("??? Joined channels length: " + chans.length);
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
-        if (channelIndex == -1) {
-            console.log("Room not found");
-            return ;
-        }
-
-        const messageModel : MessageModel = {
-            id: newMessage.id,
-            createdAt: newMessage.createdAt,
-            content: newMessage.content,
-            senderId: newMessage.senderId,
-            senderUsername: newMessage.sender.username,
-        }
-
-        console.log("messageModel: " + JSON.stringify(messageModel, null, 2));
-
-        // add the message to the room
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            newChannels[channelIndex].messages?.push(messageModel);
-            return newChannels;
-        });
     }
 
     return {
