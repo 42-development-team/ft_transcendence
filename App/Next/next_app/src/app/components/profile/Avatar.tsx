@@ -54,14 +54,14 @@ const Avatar = (
             <p className=" font-bold text-center mb-1">Username</p>
             <div className="flex flex-col">
                 {imageUrl || imageUrlGetFromCloudinary ? (
-                    <div>
+                    <div className="flex justify-center">
                         {/* Display uploaded avatar image temporary stored in URL*/}
                         <Image
                             src={imageUrlGetFromCloudinary as string || imageUrl as string}
                             alt="Selected Avatar"
                             width={200}
                             height={200}
-                            className=" duration-900 drop-shadow-xl rounded-full"
+                            className="duration-900 drop-shadow-xl rounded-full"
                         />
                     </div>
                 ) : (
