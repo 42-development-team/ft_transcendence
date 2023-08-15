@@ -52,7 +52,7 @@ model ChatRoom {
 
   name              String  
   type              String    // public, private, protected
-  password          String?     // for password protected chatrooms
+  hashedPassword          String?     // for password protected chatrooms
   members           User[]      @relation("members")
   messages          Message[]   @relation("chatMessages")
   owner             User        @relation("chatCreated", fields: [creatorId], references: [id])

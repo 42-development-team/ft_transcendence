@@ -21,13 +21,13 @@ export class ChatroomService {
 	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
-		const { name, type, password } = createChatroomDto;
+		const { name, type, hashedPassword } = createChatroomDto;
 
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
 				type,
-				password,
+				hashedPassword,
 				owner: { connect: { id: ownerId } },
 				admins: { connect: [{ id: ownerId }] },
 			},
@@ -161,7 +161,7 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
-	async join(id: number, userId: number, password: string) {
+	async join(id: number, userId: number, hashedPassword: string) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
@@ -176,7 +176,7 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'private') {
-			if (chatRoom.password === password) {
+			if (chatRoom.hashedPassword === hashedPassword) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
@@ -243,7 +243,7 @@ export class ChatroomService {
         });
 
         if (chatRoom) {
-            return chatRoom.password || null;
+            return chatRoom.hashedPassword || null;
         }
 
         return null;
