@@ -2,7 +2,7 @@ export const chatRooms = [
     {
       name: "Public Room 1",
       type: "public",
-      password: null, // No password set
+      hashPassword: null, // No hashPassword set
       members: {
         connect: [
           { id: 1 },
@@ -22,7 +22,7 @@ export const chatRooms = [
     {
       name: "Public Room 2",
       type: "public",
-      password: null, // No password set
+      hashPassword: null, // No hashPassword set
       members: {
         connect: [
           { id: 3 },
@@ -42,7 +42,7 @@ export const chatRooms = [
     {
       name: "Private Room 1",
       type: "private",
-      password: "password123",
+      hashPassword: "hashPassword123",
       members: {
         connect: [
           { id: 2 },
@@ -61,7 +61,7 @@ export const chatRooms = [
     {
       name: "Private Room 2",
       type: "private",
-      password: "password123",
+      hashPassword: "hashPassword123",
       members: {
         connect: [
           { id: 2 },
