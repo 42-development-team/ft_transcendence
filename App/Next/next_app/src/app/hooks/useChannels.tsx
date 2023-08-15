@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
+import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
     name: string;
@@ -88,6 +89,8 @@ export default function useChannels() {
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
+            if (newChannelInfo.password)
+                newChannelInfo.password = await bcrypt.hash(newChannelInfo.password, 10);
             let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
@@ -112,6 +115,8 @@ export default function useChannels() {
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
+        if (password)
+            password = await bcrypt.hash(password, 10);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
