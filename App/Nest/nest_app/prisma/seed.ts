@@ -11,8 +11,8 @@ async function seedFeeding() {
     await seedUsers();
     await seedChatRooms();
     await seedMessages();
-    await seedGames();
     await seedUserStats();
+    await seedGames();
 }
 
 async function seedUsers() {

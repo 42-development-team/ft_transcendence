@@ -8,10 +8,10 @@ export const games = [
         },
         gameDuration: 10,
         winner: {
-            user: { connect: { id: 1 } },
+            connect: { id: 1 },
         },
         loser: {
-            user: { connect: { id: 2 } },
+            connect: { id: 2 },
         },
         drew: false,
     },
@@ -22,6 +22,8 @@ export const games = [
                 { id: 1 },
             ],
         },
+        winner: null,
+        loser: null,
         gameDuration: 3,
         drew: true,
     },
@@ -34,10 +36,10 @@ export const games = [
         },
         gameDuration: 3,
         winner: {
-            user: { connect: { id: 3 } },
+            connect: { id: 3 },
         },
         loser: {
-            user: { connect: { id: 2 } },
+            connect: { id: 2 },
         },
         drew: false,
     },
@@ -50,10 +52,10 @@ export const games = [
         },
         gameDuration: 3,
         winner: {
-            user: { connect: { id: 4 } },
+            connect: { id: 4 },
         },
         loser: {
-            user: { connect: { id: 2 } },
+            connect: { id: 2 },
         },
         drew: false,
     },

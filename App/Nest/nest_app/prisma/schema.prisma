@@ -22,7 +22,7 @@ model User {
   messagesSent     Message[]  @relation("SentMessages")
   chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
   chatRoom         ChatRoom[] @relation("members")
-  userStats        UserStats? @relation("userStats")
+  userStats        UserStats?
   games            Game[]     @relation("gamesPlayed")
   gamesWon         Game[]     @relation("gamesWon")
   gamesLosed       Game[]     @relation("gamesLosed")
@@ -60,8 +60,8 @@ model Game {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  gameWonId    Int?
-  gameLosedId  Int?    
+  gameWonId    Int
+  gameLosedId  Int    
   gameDuration Int
   winner       User?    @relation("gamesWon", fields: [gameWonId], references: [id])
   loser        User?    @relation("gamesLosed", fields: [gameLosedId], references: [id])
@@ -82,5 +82,5 @@ model UserStats {
   ratio      Float    @default(0)
   played     Int      @default(0)
   totalScore Int      @default(0)
-  user       User     @relation("userStats", fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
