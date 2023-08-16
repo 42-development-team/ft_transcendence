@@ -1,55 +1,9 @@
-import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
-import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
-import { useUserRole } from "./UserRoleProvider";
+import ChatMemberActions from "./ChatMemberActions";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
-type ChatMemberActionsProps = {
-    isCurrentUser: boolean
-    isMemberAdmin: boolean
-    isMemberOwner: boolean
-}
 
-// Todo: move to a different file
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner}: ChatMemberActionsProps) => {
-    const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
-    return (
-        <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('View Profile')}>
-                View profile
-            </DropDownAction>
-            {!isCurrentUser &&
-                <DropDownAction onClick={() => console.log('Play')}>
-                    Invite to play
-                </DropDownAction>
-            }
-            {!isCurrentUser && isCurrentUserOwner && !isMemberAdmin && 
-                <DropDownAction onClick={() => console.log('set as admin')}>
-                    Set as admin
-                </DropDownAction>
-            }
-            {!isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner) &&
-                <>
-                    <DropDownAction onClick={() => console.log('Kick')}>
-                        Kick
-                    </DropDownAction>
-                    <DropDownAction onClick={() => console.log('Mute')}>
-                        Mute
-                    </DropDownAction>
-                    <DropDownActionRed onClick={() => console.log('Ban')}>
-                        Ban
-                    </DropDownActionRed>
-                </>
-            }
-            {isCurrentUser &&
-                <DropDownActionRed onClick={() => console.log('Leave Channel')}>
-                    Leave
-                </DropDownActionRed>
-            }
-        </div>
-    )
-}
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -73,9 +27,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner }, isCurren
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
-            <DropDownMenu>
                 <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} />
-            </DropDownMenu>
         </div>
     )
 }
