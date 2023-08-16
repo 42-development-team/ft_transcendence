@@ -7,11 +7,12 @@ import { useUserRole } from "./UserRoleProvider";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
-    isAdmin: boolean
+    isMemberAdmin: boolean
+    isMemberOwner: boolean
 }
 
 // Todo: move to a different file
-const ChatMemberActions = ({ isCurrentUser, isAdmin }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner}: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     return (
         <div aria-orientation="vertical" >
@@ -23,12 +24,12 @@ const ChatMemberActions = ({ isCurrentUser, isAdmin }: ChatMemberActionsProps) =
                     Invite to play
                 </DropDownAction>
             }
-            {!isCurrentUser && isCurrentUserOwner && !isAdmin && 
+            {!isCurrentUser && isCurrentUserOwner && !isMemberAdmin && 
                 <DropDownAction onClick={() => console.log('set as admin')}>
                     Set as admin
                 </DropDownAction>
             }
-            {!isCurrentUser && (isCurrentUserAdmin || isCurrentUserOwner) &&
+            {!isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner) &&
                 <>
                     <DropDownAction onClick={() => console.log('Kick')}>
                         Kick
@@ -56,7 +57,7 @@ type ChatMemberProps = {
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ user: { username, avatar, isAdmin }, isCurrentUser }: ChatMemberProps) => {
+const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner }, isCurrentUser }: ChatMemberProps) => {
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -73,7 +74,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin }, isCurrentUser }: 
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <DropDownMenu>
-                <ChatMemberActions isCurrentUser={isCurrentUser} isAdmin={isAdmin} />
+                <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} />
             </DropDownMenu>
         </div>
     )
