@@ -167,7 +167,7 @@ const FirstLoginPageComponent = ({
                 }
             </div> 
         <Avatar
-          CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null}>
+          CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null} disableChooseAvatar={false}>
         </Avatar>
             {
                 waiting2fa &&
@@ -175,8 +175,10 @@ const FirstLoginPageComponent = ({
                     <TwoFA userId={userId}></TwoFA>
                 </div>
             }
-            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled}>
-              Validate
+            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} >
+              <div className='mt-5 font-bold text-xl hover:animate-bounce duration-1300'>
+                Validate
+              </div>
             </FirstLoginBtn>
         </div>
     )
