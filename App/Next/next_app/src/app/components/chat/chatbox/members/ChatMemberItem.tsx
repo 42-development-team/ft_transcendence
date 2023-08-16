@@ -3,8 +3,6 @@ import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
-
-
 type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
