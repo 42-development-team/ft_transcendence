@@ -25,6 +25,9 @@ model User {
   chatRoomsCreated  ChatRoom[]  @relation("chatCreated")
   chatRoomsAdmin    ChatRoom[]  @relation("chatAdmins")
 
+  games             Games[]     @relation("gamesPlayed")
+  userStats         UserStats?  @relation("userStats")
+
   twoFAsecret       String?
   isTwoFAEnabled    Boolean    @default(false)
   isFirstLogin      Boolean    @default(true)
@@ -52,12 +55,41 @@ model ChatRoom {
 
   name              String  
   type              String    // public, private, protected
-  hashedPassword          String?     // for password protected chatrooms
+  hashedPassword    String?     // for password protected chatrooms
   members           User[]      @relation("members")
   messages          Message[]   @relation("chatMessages")
   owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
   creatorId         Int
   admins            User[]      @relation("chatAdmins")
+}
+
+model Games {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user              User[]      @relation("gamesPlayed")
+  gameDuration      Int
+  winnerId          Int?     
+  looserId          Int?
+  drew              Boolean     @default(false)
+}
+
+model UserStats {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user              User        @relation("userStats", fields: [userId], references: [id])
+  userId            Int         @unique
+  rank              Int         @default(0)
+  winStreak         Int         @default(0)
+  loose             Int         @default(0)
+  win               Int         @default(0)
+  drew              Int         @default(0)
+  ratio             Int         @default(0)
+  played            Int         @default(0)
+  totalScore        Int         @default(0)
 }
 
 // still to implement invitation (adding a new model?) and blocking users
