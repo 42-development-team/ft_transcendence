@@ -34,7 +34,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                 <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
             }
             {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                <ChatMemberList channel={currentChannel}/>
+                <ChatMemberList channel={currentChannel} userId={userId}/>
             }
             {chatBarState == ChatBarState.FriendListOpen &&
                 <FriendList friends={friends} />
