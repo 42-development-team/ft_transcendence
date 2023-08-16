@@ -10,9 +10,10 @@ import ChatMemberItem from './ChatMemberItem';
 
 interface ChatMemberListProps {
     channel: ChannelModel
+    userId: string
 }
 
-const ChatMemberList = ({channel}: ChatMemberListProps) => {
+const ChatMemberList = ({channel, userId}: ChatMemberListProps) => {
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -21,18 +22,18 @@ const ChatMemberList = ({channel}: ChatMemberListProps) => {
     const OwnerList = channel.members
         .filter(member => member.isOwner)
         .map((member) => (
-        <ChatMemberItem key={member.id} user={member} />
+        <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin)
         .map((member) => (
-        <ChatMemberItem key={member.id} user={member} />
+        <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner)
         .map((member) => (
-            <ChatMemberItem key={member.id} user={member} />
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
         ))
 
     return (

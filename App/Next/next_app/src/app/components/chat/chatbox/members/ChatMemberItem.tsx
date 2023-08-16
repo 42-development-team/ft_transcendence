@@ -4,34 +4,44 @@ import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
-type FriendProps = {
+type ChatMemberProps = {
     user: ChannelMember
+    isCurrentUser: boolean
 }
 
-const ChatMemberActions = () => {
+const ChatMemberActions = ({isCurrentUser}: {isCurrentUser: boolean}) => {
     return (
         <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('Play')}>
-                Invite to play
-            </DropDownAction>
             <DropDownAction onClick={() => console.log('View Profile')}>
                 View profile
             </DropDownAction>
-            <DropDownAction onClick={() => console.log('Kick')}>
-                Kick
-            </DropDownAction>
-            <DropDownAction onClick={() => console.log('Mute')}>
-                Mute
-            </DropDownAction>
-            <DropDownActionRed onClick={() => console.log('Ban')}>
-                Ban
-            </DropDownActionRed>
+            {!isCurrentUser &&
+                <>
+                    <DropDownAction onClick={() => console.log('Play')}>
+                        Invite to play
+                    </DropDownAction>
+                    <DropDownAction onClick={() => console.log('Kick')}>
+                        Kick
+                    </DropDownAction>
+                    <DropDownAction onClick={() => console.log('Mute')}>
+                        Mute
+                    </DropDownAction>
+                    <DropDownActionRed onClick={() => console.log('Ban')}>
+                        Ban
+                    </DropDownActionRed>
+                </>
+            }
+            {isCurrentUser &&
+                <DropDownActionRed onClick={() => console.log('Leave')}>
+                    Leave
+                </DropDownActionRed>
+            }
         </div>
     )
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ user: { username, avatar } }: FriendProps) => {
+const ChatMemberItem = ({ user: { username, avatar }, isCurrentUser }: ChatMemberProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center">
@@ -48,7 +58,7 @@ const ChatMemberItem = ({ user: { username, avatar } }: FriendProps) => {
                 <h1 className="text-sm font-medium pl-[0.15rem]">{username}</h1>
             </div>
             <DropDownMenu>
-                <ChatMemberActions />
+                <ChatMemberActions isCurrentUser={isCurrentUser}/>
             </DropDownMenu>
         </div>
     )
