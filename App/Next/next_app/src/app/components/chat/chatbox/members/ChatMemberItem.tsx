@@ -2,24 +2,27 @@ import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
+import { useUserRole } from "./UserRoleProvider";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
-type ChatMemberProps = {
-    user: ChannelMember
+type ChatMemberActionsProps = {
     isCurrentUser: boolean
 }
 
-const ChatMemberActions = ({isCurrentUser}: {isCurrentUser: boolean}) => {
+const ChatMemberActions = ({ isCurrentUser }: ChatMemberActionsProps) => {
+    const {isCurrentUserAdmin, isCurrentUserOwner} = useUserRole();
     return (
         <div aria-orientation="vertical" >
             <DropDownAction onClick={() => console.log('View Profile')}>
                 View profile
             </DropDownAction>
-            {!isCurrentUser &&
+            {!isCurrentUser && 
+                <DropDownAction onClick={() => console.log('Play')}>
+                    Invite to play
+                </DropDownAction>
+            }
+            {!isCurrentUser && (isCurrentUserAdmin || isCurrentUserOwner) &&
                 <>
-                    <DropDownAction onClick={() => console.log('Play')}>
-                        Invite to play
-                    </DropDownAction>
                     <DropDownAction onClick={() => console.log('Kick')}>
                         Kick
                     </DropDownAction>
@@ -38,6 +41,11 @@ const ChatMemberActions = ({isCurrentUser}: {isCurrentUser: boolean}) => {
             }
         </div>
     )
+}
+
+type ChatMemberProps = {
+    user: ChannelMember
+    isCurrentUser: boolean
 }
 
 // Todo: add status and avatar

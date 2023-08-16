@@ -7,6 +7,7 @@ import style from '../../Chat.module.css';
 import ChatMemberHeader from './ChatMemberHeader';
 import { ChannelModel } from '@/app/utils/models';
 import ChatMemberItem from './ChatMemberItem';
+import { UserRoleProvider } from './UserRoleProvider';
 
 interface ChatMemberListProps {
     channel: ChannelModel
@@ -14,40 +15,51 @@ interface ChatMemberListProps {
 }
 
 const ChatMemberList = ({channel, userId}: ChatMemberListProps) => {
-
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
         return <></>
     }
+
+    const currentUser = channel.members.find(member => member.id == userId);
+    if (currentUser == undefined) {
+        console.log("CurrentUser is undefined")
+        return <></>
+    }
+
     const OwnerList = channel.members
         .filter(member => member.isOwner)
         .map((member) => (
-        <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
+        <ChatMemberItem key={member.id} user={member} 
+            isCurrentUser={member.id == userId} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin)
         .map((member) => (
-        <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
+        <ChatMemberItem key={member.id} user={member} 
+            isCurrentUser={member.id == userId} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner)
         .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} />
+            <ChatMemberItem key={member.id} user={member} 
+                isCurrentUser={member.id == userId} />
         ))
 
     return (
         <div className='w-full h-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatMemberListHeader channelName={channel.name} />
-            <div className=' overflow-auto h-[86vh]'>
-                <ChatMemberHeader>👑 Owner</ChatMemberHeader>
-                {OwnerList}
-                <ChatMemberHeader>🛡️ Admin</ChatMemberHeader>
-                {AdminList}
-                <ChatMemberHeader>👪 Members</ChatMemberHeader>
-                {MemberList}
-                <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
-            </div>
+            <UserRoleProvider isCurrentUserAdmin={currentUser?.isAdmin} isCurrentUserOwner={currentUser?.isOwner}>
+                <div className=' overflow-auto h-[86vh]'>
+                    <ChatMemberHeader>👑 Owner</ChatMemberHeader>
+                    {OwnerList}
+                    <ChatMemberHeader>🛡️ Admin</ChatMemberHeader>
+                    {AdminList}
+                    <ChatMemberHeader>👪 Members</ChatMemberHeader>
+                    {MemberList}
+                    <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
+                </div>
+            </UserRoleProvider>
         </div>
     )
 }
