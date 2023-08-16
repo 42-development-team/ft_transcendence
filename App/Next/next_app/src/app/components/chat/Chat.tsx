@@ -11,6 +11,7 @@ import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
 import CreateChannel from './channel/CreateChannel';
 import { UserRoleProvider } from './chatbox/members/UserRoleProvider';
+import ChannelSettings from './channel/ChannelSettings';
 
 interface ChatBarProps {
     userId: string;
@@ -55,6 +56,9 @@ const Chat = ({ userId }: ChatBarProps) => {
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
                     <ChatMemberList channel={currentChannel} userId={userId}/>
+                }
+                {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
+                    <ChannelSettings channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.FriendListOpen &&
                     <FriendList friends={friends} />

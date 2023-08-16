@@ -11,9 +11,7 @@ type ChatMemberActionsProps = {
 
 const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
-    useEffect(() => {
-        console.log(isCurrentUserAdmin, isCurrentUserOwner);
-    }, [isCurrentUserAdmin, isCurrentUserOwner])
+    
     return (
         <DropDownMenu>
             <div aria-orientation="vertical" >
