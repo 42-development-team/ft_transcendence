@@ -1,5 +1,6 @@
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
+import { useEffect } from "react";
 import { useUserRole } from "./UserRoleProvider";
 
 type ChatMemberActionsProps = {
@@ -8,9 +9,11 @@ type ChatMemberActionsProps = {
     isMemberOwner: boolean
 }
 
-// Todo: move to a different file
 const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
+    useEffect(() => {
+        console.log(isCurrentUserAdmin, isCurrentUserOwner);
+    }, [isCurrentUserAdmin, isCurrentUserOwner])
     return (
         <DropDownMenu>
             <div aria-orientation="vertical" >
