@@ -7,18 +7,25 @@ import { useUserRole } from "./UserRoleProvider";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
+    isAdmin: boolean
 }
 
-const ChatMemberActions = ({ isCurrentUser }: ChatMemberActionsProps) => {
-    const {isCurrentUserAdmin, isCurrentUserOwner} = useUserRole();
+// Todo: move to a different file
+const ChatMemberActions = ({ isCurrentUser, isAdmin }: ChatMemberActionsProps) => {
+    const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     return (
         <div aria-orientation="vertical" >
             <DropDownAction onClick={() => console.log('View Profile')}>
                 View profile
             </DropDownAction>
-            {!isCurrentUser && 
+            {!isCurrentUser &&
                 <DropDownAction onClick={() => console.log('Play')}>
                     Invite to play
+                </DropDownAction>
+            }
+            {!isCurrentUser && isCurrentUserOwner && !isAdmin && 
+                <DropDownAction onClick={() => console.log('set as admin')}>
+                    Set as admin
                 </DropDownAction>
             }
             {!isCurrentUser && (isCurrentUserAdmin || isCurrentUserOwner) &&
@@ -35,7 +42,7 @@ const ChatMemberActions = ({ isCurrentUser }: ChatMemberActionsProps) => {
                 </>
             }
             {isCurrentUser &&
-                <DropDownActionRed onClick={() => console.log('Leave')}>
+                <DropDownActionRed onClick={() => console.log('Leave Channel')}>
                     Leave
                 </DropDownActionRed>
             }
@@ -49,7 +56,7 @@ type ChatMemberProps = {
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ user: { username, avatar }, isCurrentUser }: ChatMemberProps) => {
+const ChatMemberItem = ({ user: { username, avatar, isAdmin }, isCurrentUser }: ChatMemberProps) => {
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -66,7 +73,7 @@ const ChatMemberItem = ({ user: { username, avatar }, isCurrentUser }: ChatMembe
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <DropDownMenu>
-                <ChatMemberActions isCurrentUser={isCurrentUser}/>
+                <ChatMemberActions isCurrentUser={isCurrentUser} isAdmin={isAdmin} />
             </DropDownMenu>
         </div>
     )
