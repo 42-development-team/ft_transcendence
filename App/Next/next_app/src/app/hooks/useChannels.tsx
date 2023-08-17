@@ -64,6 +64,7 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
+            // Todo: when the current user is the one joining the channel, the channel is not in the joinedChannels list
             console.log("HandleNewConnectionOnChannel: Room not found");
             return;
         }
@@ -83,6 +84,9 @@ export default function useChannels() {
         });
         socket?.on('newConnection', (body: any) => {
             handleNewConnectionOnChannel(body);
+        });
+        socket?.on('NewChatRoom', (body: any) => {
+            fetchChannelsInfo();
         });
 
         // return is used for cleanup, remove the socket listener on unmount
@@ -193,7 +197,6 @@ export default function useChannels() {
     };
 
     const fetchChannelsContent = async () => {
-        console.log("Fetch Channel content");
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();

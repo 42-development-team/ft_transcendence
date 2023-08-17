@@ -21,6 +21,8 @@ export class ChatroomController {
         try {
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
 
+			// Todo: don't emit the chatroom password
+			// Maybe send an empty body
             this.socketGateway.server.emit("NewChatRoom", newChatRoom);
 
             response.status(HttpStatus.CREATED).send(newChatRoom);
