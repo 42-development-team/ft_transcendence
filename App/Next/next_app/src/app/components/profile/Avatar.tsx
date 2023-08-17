@@ -11,6 +11,7 @@ const Avatar = (
         CallbackAvatarData = (AvFile: File | null, image: string) => {},
         imageUrlGetFromCloudinary = null,
         disableChooseAvatar = false,
+        disableImageResize = false,
     }
     :
     {
@@ -18,6 +19,7 @@ const Avatar = (
         CallbackAvatarData: any;
         imageUrlGetFromCloudinary: string | null;
         disableChooseAvatar: boolean;
+        disableImageResize: boolean;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -52,7 +54,7 @@ const Avatar = (
     return (
         <div className="flex flex-col my-5 justify-center ">
             <p className=" font-bold text-center mb-1">Username</p>
-            <div className="sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]">
+            <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
                 {imageUrl || imageUrlGetFromCloudinary ? (
                     <div className="flex justify-center">
                         {/* Display uploaded avatar image temporary stored in URL*/}
@@ -61,7 +63,7 @@ const Avatar = (
                             alt="Selected Avatar"
                             width={212}
                             height={212}
-                            className=" sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]  drop-shadow-xl rounded-full"
+                            className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`}
                         />
                     </div>
                 ) : (
@@ -72,7 +74,7 @@ const Avatar = (
                             alt="Default Avatar"
                             width={200}
                             height={200}
-                            className="sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px] drop-shadow-xl rounded-full"
+                            className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`}
                         />
                     </div>
                 )}

@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelModel, MessageModel } from "../utils/models";
+import { ChannelMember, ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
 import bcrypt from 'bcryptjs';
 
@@ -22,7 +22,6 @@ export default function useChannels() {
         fetchChannelsContent();
     }, []);
 
-    // Todo: prevent from joining over and over
     useEffect(() => {
         if (joinedChannels.length > 0) {
             joinPreviousChannels();
@@ -61,20 +60,48 @@ export default function useChannels() {
         });
     }
 
+    const handleNewConnectionOnChannel = (body: any) => {
+        const { room, user } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            // Todo: when the current user is the one joining the channel, the channel is not in the joinedChannels list
+            console.log("HandleNewConnectionOnChannel: Room not found");
+            return;
+        }
+
+        const newMember: ChannelMember = user;
+
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].members?.push(newMember);
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
+        });
+        socket?.on('newConnection', (body: any) => {
+            handleNewConnectionOnChannel(body);
+        });
+        socket?.on('NewChatRoom', (body: any) => {
+            fetchChannelsInfo();
         });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
             socket?.off('new-message');
+            socket?.off('newConnection');
         }
     }, [socket, receiveMessage]);
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
-            socket?.emit("joinRoom", channel.name);
+            if (!channel.joined) {
+                socket?.emit("joinRoom", channel.name);
+                channel.joined = true;
+            } 
         });
     }, [socket, joinedChannels]);
 
@@ -175,6 +202,7 @@ export default function useChannels() {
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
+                channel.joined = false;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
                         id: message.id,

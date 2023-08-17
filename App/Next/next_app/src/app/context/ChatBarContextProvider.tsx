@@ -8,6 +8,7 @@ export enum ChatBarState {
     ChatMembersOpen,
     JoinChannelOpen,
     CreateChannelOpen,
+    ChannelSettingsOpen,
 }
 
 type ChatBarContextType = {

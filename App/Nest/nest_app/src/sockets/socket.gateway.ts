@@ -18,11 +18,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
      // why "(client: Socket)" ? because client is an instance of Socket class 
-     handleConnection(client: Socket){
-         console.log('Client connected: ' + client.id);
-         // todo:
-         // Check for verifiedJWT in socket and disconnect if not OK
-         // and retrieve all the channels the user is member of
+    handleConnection(client: Socket){
+        console.log('Client connected: ' + client.id);
+        // todo:
+        // Check for verifiedJWT in socket and disconnect if not OK
+        // and retrieve all the channels the user is member of
     }
 
     // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
@@ -34,10 +34,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
-        console.log(`Client ${client.id} joined room ${room}`);
         client.join(room);
-
-        // Todo: emit on socket to announce new user joined
+        const user = await this.chatroomService.getUserFromSocket(client);
+        console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
+        this.server.to(room).emit('newConnection', 
+            {room, user}
+        );
     }
 
     /* 

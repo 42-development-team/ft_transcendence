@@ -161,7 +161,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	}
 
 	return (
-		<div className="flex-auto flex flex-col border-2 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)] p-4">
+		<div className="flex flex-col border-2 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
 			<div className="flex justify-center mt-2">
 				{
 					!activTwoFA &&

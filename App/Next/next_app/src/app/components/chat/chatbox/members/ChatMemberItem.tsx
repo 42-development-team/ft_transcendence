@@ -1,54 +1,7 @@
-import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
-import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
-import { useUserRole } from "./UserRoleProvider";
+import ChatMemberActions from "./ChatMemberActions";
 // import { getStatusColor } from "@/app/utils/getStatusColor";
-
-type ChatMemberActionsProps = {
-    isCurrentUser: boolean
-    isAdmin: boolean
-}
-
-// Todo: move to a different file
-const ChatMemberActions = ({ isCurrentUser, isAdmin }: ChatMemberActionsProps) => {
-    const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
-    return (
-        <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('View Profile')}>
-                View profile
-            </DropDownAction>
-            {!isCurrentUser &&
-                <DropDownAction onClick={() => console.log('Play')}>
-                    Invite to play
-                </DropDownAction>
-            }
-            {!isCurrentUser && isCurrentUserOwner && !isAdmin && 
-                <DropDownAction onClick={() => console.log('set as admin')}>
-                    Set as admin
-                </DropDownAction>
-            }
-            {!isCurrentUser && (isCurrentUserAdmin || isCurrentUserOwner) &&
-                <>
-                    <DropDownAction onClick={() => console.log('Kick')}>
-                        Kick
-                    </DropDownAction>
-                    <DropDownAction onClick={() => console.log('Mute')}>
-                        Mute
-                    </DropDownAction>
-                    <DropDownActionRed onClick={() => console.log('Ban')}>
-                        Ban
-                    </DropDownActionRed>
-                </>
-            }
-            {isCurrentUser &&
-                <DropDownActionRed onClick={() => console.log('Leave Channel')}>
-                    Leave
-                </DropDownActionRed>
-            }
-        </div>
-    )
-}
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -56,7 +9,7 @@ type ChatMemberProps = {
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ user: { username, avatar, isAdmin }, isCurrentUser }: ChatMemberProps) => {
+const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner }, isCurrentUser }: ChatMemberProps) => {
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -72,9 +25,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin }, isCurrentUser }: 
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
-            <DropDownMenu>
-                <ChatMemberActions isCurrentUser={isCurrentUser} isAdmin={isAdmin} />
-            </DropDownMenu>
+                <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} />
         </div>
     )
 }

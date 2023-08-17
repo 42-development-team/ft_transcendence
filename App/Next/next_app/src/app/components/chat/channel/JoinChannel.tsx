@@ -15,6 +15,9 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
     const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
     const [privateChannels, setPrivateChannels] = useState<any[]>([]);
+    const [protectedChannels, setProtectedChannels] = useState<any[]>([]);
+
+    // Todo: add a way to join a secret channel
 
     const displayChannels = async () => {
         const publicChannelsComp = channels
@@ -27,13 +30,19 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
+        const protectedChannelsComp = channels
+            .filter((channel: any) => channel.type === "protected")
+            .map((channel: any) => (
+                <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
+            ));
         setPublicChannels(publicChannelsComp);
         setPrivateChannels(privateChannelsComp);
+        setProtectedChannels(protectedChannelsComp);
     }
 
     useEffect(() => {
         displayChannels();
-    }, [])
+    }, [channels])
     
     return (
         <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
@@ -52,15 +61,13 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
                         Public channels 📢
                     </span>
                 </div>
-                {/* List of public channels */}
                 {publicChannels}
                 <div className='flex items-center justify-around py-2 my-2 border-t-2 border-mantle'>
                     <span className='font-semibold text-sm'>
-                        Private channels 🔒
+                        Protected channels 🔒
                     </span>
                 </div>
-                {privateChannels}
-                {/* List of private channels */}
+                {protectedChannels}
             </div>
         </div>
     )

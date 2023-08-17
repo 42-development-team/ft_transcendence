@@ -143,43 +143,43 @@ const FirstLoginPageComponent = ({
         setImageUrl(childImageUrl);
     }
 
-    return (
-        <div className="flex flex-col items-center justify-center">
-            <div className="m-4 pt-4">
-                <p className="font-bold text-center">Choose your username</p>
-                <input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold"}}
-                	id="username"
-                    onChange={(e) => handleOnChange(e)}
-                    placeholder={placeHolder}
-                    inputMode='text'
-                    type="text" 
-                    className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none" 
-                />
-                {
-                    validateEnabled ?
-                    <div className=" text-green-400 text-center">
-                        {isVisible && <p>{message}</p>}
-                    </div>
-                    :
-                    <div className=" text-red-700 text-center">
-                        {isVisible && <p>{message}</p>}
-                    </div>
-                }
-            </div> 
-        <Avatar
-          CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null}>
-        </Avatar>
-            {
-                waiting2fa &&
-                <div className="flex flex-col flex-auto items-center justify-center">
-                    <TwoFA userId={userId}></TwoFA>
-                </div>
-            }
-            <FirstLoginBtn onClick={handleClick} disable={!validateEnabled}>
-              Validate
-            </FirstLoginBtn>
+  return (
+    <div className="flex flex-col items-center ">
+      <div className="m-4 pt-4">
+        <p className="font-bold text-center">Choose your username</p>
+        <input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
+          id="username"
+          onChange={(e) => handleOnChange(e)}
+          placeholder={placeHolder}
+          inputMode='text'
+          type="text"
+          className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
+        />
+        {
+          validateEnabled ?
+            <div className=" text-green-400 text-center">
+              {isVisible && <p>{message}</p>}
+            </div>
+            :
+            <div className=" text-red-700 text-center">
+              {isVisible && <p>{message}</p>}
+            </div>
+        }
+      </div>
+      <Avatar
+        CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null} disableChooseAvatar={false} disableImageResize={true}>
+      </Avatar>
+      {
+        waiting2fa &&
+          <TwoFA userId={userId}></TwoFA>
+      }
+      <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} >
+        <div className='mt-5 font-bold text-xl hover:animate-bounce duration-1300'>
+          Validate
         </div>
-    )
+      </FirstLoginBtn>
+    </div>
+  )
 }
 
 

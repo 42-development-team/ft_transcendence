@@ -167,7 +167,7 @@ export class ChatroomService {
 		});
 
 		// Todo : check if already joined
-		if (chatRoom.type === 'public') {
+		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			// Todo: how to check the result of the update?
 			const updateResult = await this.prisma.chatRoom.update({
 				where: { id: id },
@@ -175,7 +175,7 @@ export class ChatroomService {
 			});
 			return updateResult;
 		}
-		else if (chatRoom.type === 'private') {
+		else if (chatRoom.type === 'protected') {
 			if (chatRoom.hashedPassword === hashedPassword) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
