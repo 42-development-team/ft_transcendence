@@ -62,8 +62,6 @@ export default function useChannels() {
 
     const handleNewConnectionOnChannel = (body: any) => {
         const { room, user } = body;
-        // console.log("handleNewConnectionOnChannel", JSON.stringify(body, null, 2));
-
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             console.log("HandleNewConnectionOnChannel: Room not found");
