@@ -37,8 +37,6 @@ const Chat = ({ userId }: ChatBarProps) => {
         if (currentUser) {
             setIsCurrentUserAdmin(currentUser.isAdmin);
             setIsCurrentUserOwner(currentUser.isOwner);
-            console.log("isCurrentUserAdmin", isCurrentUserAdmin);
-            console.log("isCurrentUserOwner", isCurrentUserOwner);
         }
         else {
             setIsCurrentUserAdmin(false);
