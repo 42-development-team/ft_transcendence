@@ -2,12 +2,13 @@ import styles from '../Chat.module.css';
 import Image from "next/image";
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import { ChannelModel } from '@/app/utils/models';
+import { useEffect } from 'react';
 
 type ChannelProps = {
     channel: ChannelModel
 }
 
-const Channel = ({channel :{name, icon, type, id}}: ChannelProps) => {
+const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps) => {
     const { openChannel } = useChatBarContext();
 
     const handleClick = () => {
@@ -19,7 +20,7 @@ const Channel = ({channel :{name, icon, type, id}}: ChannelProps) => {
             <button onClick={handleClick} 
                 className={`
                     ${type == "public" && "bg-blue text-base"} 
-                    ${type == "protected" && "bg-yellow text-base"}} 
+                    ${type == "protected" && "bg-yellow text-base"}
                     rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
                     <p className='text-xs'>{name}</p> :
@@ -28,6 +29,9 @@ const Channel = ({channel :{name, icon, type, id}}: ChannelProps) => {
                     className="rounded-[inherit]" />
                 }
                 <h4 className={styles.channelName} >{name}</h4>
+            {unreadMessages > 0 && 
+                <p className='text-red'>{unreadMessages}</p>
+            }
             </button>
         </li>
     );

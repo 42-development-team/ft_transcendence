@@ -55,7 +55,9 @@ export default function useChannels() {
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
+            newChannels[channelIndex].unreadMessages++;
             newChannels[channelIndex].messages?.push(messageModel);
+            console.log("Unread count: " + newChannels[channelIndex].unreadMessages);
             return newChannels;
         });
     }
@@ -169,6 +171,7 @@ export default function useChannels() {
         const fetchedChannel = channelContent;
         fetchedChannel.joined = true;
         fetchedChannel.icon = '';
+        fetchedChannel.unreadMessages = 0;
         fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
             return {
                 id: message.id,
@@ -203,6 +206,7 @@ export default function useChannels() {
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
                 channel.joined = false;
+                channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
                         id: message.id,

@@ -8,6 +8,7 @@ export interface ChannelModel {
     joined: boolean
     messages?: MessageModel[]
     members?: ChannelMember[]
+    unreadMessages: number
 }
 
 // Todo: use enum for channel type ?
