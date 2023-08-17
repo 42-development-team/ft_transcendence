@@ -63,6 +63,7 @@ const ChangePasswordForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (password === '') return;
+        console.log("Change password to: ", password);
         // Todo: Fetch backend to update channel password
     }
 
