@@ -17,7 +17,10 @@ const Channel = ({channel :{name, icon, type, id}}: ChannelProps) => {
     return (
         <li className={styles.channelItem}>
             <button onClick={handleClick} 
-                className={`${type == "public" && "bg-blue text-base"} rounded-[inherit] w-[inherit] h-[inherit] relative`}>
+                className={`
+                    ${type == "public" && "bg-blue text-base"} 
+                    ${type == "protected" && "bg-yellow text-base"}} 
+                    rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
                     <p className='text-xs'>{name}</p> :
                     <Image alt="Channel Icon" fill src={icon} 

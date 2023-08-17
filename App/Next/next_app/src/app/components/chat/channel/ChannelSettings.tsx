@@ -33,6 +33,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
 
 const ChangeChannelTypeButtons = ({ ChannelType }: { ChannelType: string }) => {
     // Todo: request back to change channelType
+    // Todo: ask for a password if channel is protected
     return (
         <div className="flex flex-col my-4">
             <span className='text-sm font-bold'>

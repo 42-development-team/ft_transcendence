@@ -20,7 +20,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
     }
 
     const onJoin = async () => {
-        if (type === "private" && !showPassword) {
+        if (type === "protected" && !showPassword) {
             setShowPassword(!showPassword);
             setPassword("");
             return;
@@ -37,7 +37,6 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
         setShowPassword(false);
     }
 
-    // Todo: protected channels
     return (
         <div className="flex flex-col flex-grow">
             <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
@@ -57,7 +56,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
                 </div>
             </div>
             {/* Password input field */}
-            {showPassword && type === "private" &&
+            {showPassword && type === "protected" &&
                 <form className="px-2 items-end" onSubmit={onSubmit}>
                     <input
                         type="password" value={password}
