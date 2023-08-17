@@ -42,7 +42,7 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
 
     useEffect(() => {
         displayChannels();
-    }, [])
+    }, [channels])
     
     return (
         <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
