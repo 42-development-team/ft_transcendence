@@ -98,7 +98,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
           {showPasswordInput && (
             <div className="mb-4">
               <label htmlFor="password" className="block text-text text-sm font-bold mb-2">
-                Password:
+                Password
               </label>
               <input
                 type="password"
@@ -109,11 +109,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
               />
             </div>
           )}
-          <button
-            type="submit"
-            // onClick={handleSubmit}
-            className={`bg-mauve font-bold text-sm rounded-lg text-base hover:bg-pink drop-shadow-xl mt-1 p-2`}
-          >
+          <button type="submit" className={`button-mauve`} >
             Create Channel
           </button>
         </form>
