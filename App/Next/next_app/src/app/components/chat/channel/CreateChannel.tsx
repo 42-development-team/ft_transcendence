@@ -27,18 +27,18 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedType = event.target.value;
     setChannelType(selectedType);
-    setShowPasswordInput(selectedType === 'private');
+    setShowPasswordInput(selectedType === 'protected');
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (channelName === '') return;
-    if( channelType === 'private' && password === '') return;
+    if (channelType === 'protected' && password === '') return;
 
     const newChannelInfo: NewChannelInfo = {
       name: channelName,
       type: channelType,
-      password: channelType === 'private' ? password : undefined,
+      password: channelType === 'protected' ? password : undefined,
       owner: Number(userId),
       admins: [Number(userId)],
     };

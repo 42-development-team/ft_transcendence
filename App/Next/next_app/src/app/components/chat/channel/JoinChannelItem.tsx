@@ -20,7 +20,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
     }
 
     const onJoin = async () => {
-        if (type === "private" && !showPassword) {
+        if (type === "protected" && !showPassword) {
             setShowPassword(!showPassword);
             setPassword("");
             return;
@@ -57,7 +57,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
                 </div>
             </div>
             {/* Password input field */}
-            {showPassword && type === "private" &&
+            {showPassword && type === "protected" &&
                 <form className="px-2 items-end" onSubmit={onSubmit}>
                     <input
                         type="password" value={password}

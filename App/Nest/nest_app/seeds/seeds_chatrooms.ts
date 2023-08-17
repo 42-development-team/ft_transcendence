@@ -78,7 +78,7 @@ export const chatRooms = [
       },
     },
     {
-      name: "Private Room 2",
+      name: "Private Room 1",
       type: "private",
       hashedPassword: "hashPassword123",
       members: {
@@ -95,5 +95,5 @@ export const chatRooms = [
           { id: 2 },
         ],
       },
-    },,
+    },
   ];
