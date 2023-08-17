@@ -18,14 +18,14 @@ model User {
   twoFAsecret      String?
   isFirstLogin     Boolean    @default(true)
   chatRoomsCreated ChatRoom[] @relation("chatCreated")
+  gamesLosed       Game[]     @relation("gamesLosed")
+  gamesWon         Game[]     @relation("gamesWon")
   messageReceived  Message[]  @relation("ReceivedMessages")
   messagesSent     Message[]  @relation("SentMessages")
-  chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
-  chatRoom         ChatRoom[] @relation("members")
   userStats        UserStats?
+  chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
   games            Game[]     @relation("gamesPlayed")
-  gamesWon         Game[]     @relation("gamesWon")
-  gamesLosed       Game[]     @relation("gamesLosed")
+  chatRoom         ChatRoom[] @relation("members")
 }
 
 model Message {
@@ -59,13 +59,12 @@ model Game {
   id           Int      @id @default(autoincrement())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  gameWonId    Int?
-  gameLosedId  Int?    
-  gameDuration Int
-  winner       User?    @relation("gamesWon", fields: [gameWonId], references: [id])
-  loser        User?    @relation("gamesLosed", fields: [gameLosedId], references: [id])
   drew         Boolean  @default(false)
+  gameDuration Int
+  gameLosedId  Int
+  gameWonId    Int
+  loser        User?     @relation("gamesLosed", fields: [gameLosedId], references: [id])
+  winner       User?     @relation("gamesWon", fields: [gameWonId], references: [id])
   users        User[]   @relation("gamesPlayed")
 }
 
@@ -73,14 +72,13 @@ model UserStats {
   id         Int      @id @default(autoincrement())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  userId     Int      @unique
   winStreak  Int      @default(0)
-  lose      Int       @default(0)
   win        Int      @default(0)
   drew       Int      @default(0)
   ratio      Float    @default(0)
   played     Int      @default(0)
   totalScore Int      @default(0)
+  lose       Int      @default(0)
+  userId     Int      @unique
   user       User     @relation(fields: [userId], references: [id])
 }
