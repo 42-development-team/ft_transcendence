@@ -34,10 +34,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
-        console.log(`Client ${client.id} joined room ${room}`);
         client.join(room);
-
-        // Todo: emit on socket to announce new user joined
+        const user = await this.chatroomService.getUserFromSocket(client);
+        console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
+        this.server.to(room).emit('newConnection', 
+            {room, user}
+        );
     }
 
     /* 
