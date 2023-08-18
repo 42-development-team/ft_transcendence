@@ -10,8 +10,8 @@ export class GameService {
             data: {
                 users: {
                     connect: [
-                        { id: createGameDto.playerId },
-                        { id: undefined },
+                        { id: createGameDto.playerOneId },
+                        { id: createGameDto.playerTwoId },
                     ],
                 },
             },

@@ -13,12 +13,7 @@ export class GameController {
     logger = new Logger ('UsersController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
     /* C(reate) */
-    /***
-     * // create newGame with one playerId (the first which enter in the matchmaking room)
-     * @param createGameDto
-     * @return newGame
-     */
-    @Post() 
+    @Post() // create newGame with the two PlayerId, return newGame then each player know they are connected to
     async create(@Body() createGameDto: CreateGameDto) {
         this.logger.log('Creating a new game');
         const newGame = await this.gameService.createGame(createGameDto);
