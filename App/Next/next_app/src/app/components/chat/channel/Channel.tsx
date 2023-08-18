@@ -36,7 +36,10 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
                 }
                 <h4 className={styles.channelName} >{name}</h4>
             {unreadMessages > 0 && 
-                <p className='text-red'>{unreadMessages}</p>
+                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold 
+                    text-text bg-rose-500 border-2 border-base rounded-full -top-2 -right-2">
+                    {unreadMessages}
+                </div>
             }
             </button>
         </li>
