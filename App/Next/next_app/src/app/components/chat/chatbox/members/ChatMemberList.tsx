@@ -25,6 +25,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         return <></>
     }
 
+    // Todo: sort by ASCII
     const OwnerList = channel.members
         .filter(member => member.isOwner)
         .map((member) => (

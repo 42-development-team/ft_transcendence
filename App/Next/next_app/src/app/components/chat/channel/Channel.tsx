@@ -9,11 +9,17 @@ type ChannelProps = {
 }
 
 const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps) => {
-    const { openChannel } = useChatBarContext();
+    const { openChannel, openChannelId } = useChatBarContext();
 
     const handleClick = () => {
         openChannel(id);
     }
+
+    useEffect(() => {
+        if (unreadMessages != 0 && openChannelId == id) {
+           unreadMessages = 0; 
+        }
+    }, [unreadMessages]);
 
     return (
         <li className={styles.channelItem}>

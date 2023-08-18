@@ -15,7 +15,6 @@ const ChatSideBar = ({ channels, userId }: { channels: ChannelModel[]; userId: s
       .map((channel) => (
         <Channel key={channel.id} channel={channel} />
       ));
-    console.log(JSON.stringify(channels));
     setChannelsList(channelsList);
   }
 

@@ -16,6 +16,7 @@ export default function useChannels() {
     const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
+    const [currentChannelId, setCurrentChannelId] = useState<string>("")
 
     useEffect(() => {
         fetchChannelsInfo();
@@ -28,6 +29,16 @@ export default function useChannels() {
         }
     }, [joinedChannels]);
 
+    useEffect(() => {
+        // Update the notification count to 0 when the channel is open
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === currentChannelId);
+        if (channelIndex == -1) return;
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].unreadMessages = 0;
+            return newChannels;
+        }); 
+    }, [currentChannelId])
 
     // Messaging
     const sendToChannel = useCallback(
@@ -55,9 +66,11 @@ export default function useChannels() {
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            newChannels[channelIndex].unreadMessages++;
+            if (currentChannelId != newChannels[channelIndex].id) {
+
+                newChannels[channelIndex].unreadMessages++;
+            }
             newChannels[channelIndex].messages?.push(messageModel);
-            console.log("Unread count: " + newChannels[channelIndex].unreadMessages);
             return newChannels;
         });
     }
@@ -232,5 +245,6 @@ export default function useChannels() {
         joinChannel,
         sendToChannel,
         socket,
+        setCurrentChannelId
     }
 }

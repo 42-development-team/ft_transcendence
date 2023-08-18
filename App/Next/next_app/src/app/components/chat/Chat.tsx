@@ -20,7 +20,7 @@ interface ChatBarProps {
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId } = useChatBarContext();
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel } = useChannels();
+    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel, setCurrentChannelId } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
     const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
@@ -28,7 +28,10 @@ const Chat = ({ userId }: ChatBarProps) => {
     let currentUser = undefined;
 
     useEffect(() => {
-        if (openChannelId == "" || chatBarState == ChatBarState.Closed) return ;
+        setCurrentChannelId(openChannelId);
+        if (openChannelId == "" || chatBarState == ChatBarState.Closed) {
+            return ;
+        }
         setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
     }, [openChannelId, chatBarState]);
 
