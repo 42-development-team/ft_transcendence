@@ -16,6 +16,7 @@ export default function useChannels() {
     const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
+    const [currentChannelId, setCurrentChannelId] = useState<string>("")
 
     useEffect(() => {
         fetchChannelsInfo();
@@ -28,6 +29,16 @@ export default function useChannels() {
         }
     }, [joinedChannels]);
 
+    useEffect(() => {
+        // Update the notification count to 0 when the channel is open
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === currentChannelId);
+        if (channelIndex == -1) return;
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].unreadMessages = 0;
+            return newChannels;
+        }); 
+    }, [currentChannelId])
 
     // Messaging
     const sendToChannel = useCallback(
@@ -55,6 +66,10 @@ export default function useChannels() {
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
+            if (currentChannelId != newChannels[channelIndex].id) {
+
+                newChannels[channelIndex].unreadMessages++;
+            }
             newChannels[channelIndex].messages?.push(messageModel);
             return newChannels;
         });
@@ -64,12 +79,12 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
-            // Todo: when the current user is the one joining the channel, the channel is not in the joinedChannels list
-            console.log("HandleNewConnectionOnChannel: Room not found");
             return;
         }
 
         const newMember: ChannelMember = user;
+        if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
+            return ;
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
@@ -79,6 +94,7 @@ export default function useChannels() {
     }
 
     useEffect(() => {
+        // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
         });
@@ -169,6 +185,7 @@ export default function useChannels() {
         const fetchedChannel = channelContent;
         fetchedChannel.joined = true;
         fetchedChannel.icon = '';
+        fetchedChannel.unreadMessages = 0;
         fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
             return {
                 id: message.id,
@@ -203,6 +220,7 @@ export default function useChannels() {
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
                 channel.joined = false;
+                channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
                         id: message.id,
@@ -228,5 +246,6 @@ export default function useChannels() {
         joinChannel,
         sendToChannel,
         socket,
+        setCurrentChannelId
     }
 }
