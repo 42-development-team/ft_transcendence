@@ -1,8 +1,10 @@
 import { ChannelModel } from "@/app/utils/models";
-import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
-import Image from 'next/image';
 import { useChatBarContext, ChatBarState } from "@/app/context/ChatBarContextProvider";
 import { useState } from "react";
+import { Alert } from '@material-tailwind/react';
+import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
+import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
+import Image from 'next/image';
 
 type ChannelSettingsProps = {
     channel: ChannelModel
