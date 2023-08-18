@@ -3,22 +3,22 @@ import { useChatBarContext, ChatBarState } from "@/app/context/ChatBarContextPro
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
+import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
 import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import PasswordInputField from "../PasswordInputField";
 import { delay } from "@/app/utils/delay";
-import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
 
 type ChannelSettingsProps = {
     channel: ChannelModel
 }
 
 const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
-    const { openChannel, updateChatBarState } = useChatBarContext();
+    const { updateChatBarState } = useChatBarContext();
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [password, setPassword] = useState('');
     const [newChannelType, setNewChannelType] = useState(channel.type);
-	const [openAlert, setOpenAlert] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,9 +46,9 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
         }
 
         // Todo: Fetch backend to update channel
-  
-		setOpenAlert(true);
-		await delay(CLOSE_DELAY);
+
+        setOpenAlert(true);
+        await delay(CLOSE_DELAY);
         updateChatBarState(ChatBarState.ChatOpen);
     }
 
@@ -70,19 +70,18 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     </button>
                 </form>
             </div>
-            <Alert 
+            <Alert
                 className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
                 variant='gradient'
                 open={openAlert}
-                icon={error ? <AlertErrorIcon />: <AlertSuccessIcon />}
+                icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
                 animate={{
                     mount: { y: 0 },
                     unmount: { y: 100 },
                 }}>
-                    {error && <p>Password can not be empty</p>}
-                    {!error && <p>{channel.name} has been updated</p>
-                    }
-                </Alert>
+                {error && <p>Password can not be empty</p>}
+                {!error && <p>{channel.name} has been updated</p>}
+            </Alert>
         </div>
     )
 }
