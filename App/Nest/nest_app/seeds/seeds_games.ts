@@ -14,6 +14,8 @@ export const games = [
             connect: { id: 2 },
         },
         drew: false,
+        winnerScore: 10,
+        loserScore: 5,
     },
     {
         users: {
@@ -29,7 +31,8 @@ export const games = [
             undefined,
         },
         gameDuration: 3,
-        drew: true,
+        winnerScore: 2,
+        loserScore: 0,
     },
     {
         users: {
