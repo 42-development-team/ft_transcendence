@@ -12,7 +12,6 @@ export class GameService {
                 users: {
                     connect: [
                         { id: createGameDto.playerOneId },
-                        { id: undefined },
                     ],
                 },
             },

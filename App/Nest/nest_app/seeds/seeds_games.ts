@@ -13,7 +13,6 @@ export const games = [
         loser: {
             connect: { id: 2 },
         },
-        drew: false,
         winnerScore: 10,
         loserScore: 5,
     },
@@ -48,7 +47,6 @@ export const games = [
         loser: {
             connect: { id: 2 },
         },
-        drew: false,
     },
     {
         users: {
@@ -64,6 +62,5 @@ export const games = [
         loser: {
             connect: { id: 2 },
         },
-        drew: false,
     },
 ];
