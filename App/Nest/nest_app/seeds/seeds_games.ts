@@ -22,8 +22,12 @@ export const games = [
                 { id: 1 },
             ],
         },
-        winner: 4,
-        loser: 1,
+        winner: {
+            undefined,
+        },
+        loser: {
+            undefined,
+        },
         gameDuration: 3,
         drew: true,
     },

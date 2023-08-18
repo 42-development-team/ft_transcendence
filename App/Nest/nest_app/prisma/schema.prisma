@@ -61,8 +61,8 @@ model Game {
   updatedAt    DateTime @updatedAt
   drew         Boolean  @default(false)
   gameDuration Int
-  gameLosedId  Int
-  gameWonId    Int
+  gameLosedId  Int?
+  gameWonId    Int?
   loser        User?     @relation("gamesLosed", fields: [gameLosedId], references: [id])
   winner       User?     @relation("gamesWon", fields: [gameWonId], references: [id])
   users        User[]   @relation("gamesPlayed")
