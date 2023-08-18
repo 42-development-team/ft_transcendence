@@ -83,6 +83,8 @@ export default function useChannels() {
         }
 
         const newMember: ChannelMember = user;
+        if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
+            return ;
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
