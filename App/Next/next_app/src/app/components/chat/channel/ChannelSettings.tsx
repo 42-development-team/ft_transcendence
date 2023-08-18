@@ -7,21 +7,24 @@ import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
 import Image from 'next/image';
 import PasswordInputField from "../PasswordInputField";
 import { delay } from "@/app/utils/delay";
+import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
 
 type ChannelSettingsProps = {
     channel: ChannelModel
 }
 
 const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
-    const { updateChatBarState, openChannel } = useChatBarContext();
+    const { openChannel, updateChatBarState } = useChatBarContext();
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [password, setPassword] = useState('');
     const [newChannelType, setNewChannelType] = useState(channel.type);
 	const [openAlert, setOpenAlert] = useState(false);
+    const [error, setError] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        const CLOSE_DELAY = 750;
+        const CLOSE_DELAY = 1250;
         e.preventDefault();
+        setError(false);
         // Change channel Type
         if (newChannelType != channel.type) {
             console.log("Change channel type to:", newChannelType);
@@ -31,7 +34,13 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
         // Change channel password
         // Todo: add alert if password is empty
         if (channel.type === 'protected' || newChannelType === 'protected') {
-            if (password === '') return;
+            if (password === '') {
+                setError(true);
+                setOpenAlert(true);
+                await delay(CLOSE_DELAY);
+                setOpenAlert(false);
+                return;
+            }
             console.log("Change password to:", password)
             // Todo: update password
         }
@@ -40,7 +49,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
   
 		setOpenAlert(true);
 		await delay(CLOSE_DELAY);
-        openChannel(channel.id);
+        updateChatBarState(ChatBarState.ChatOpen);
     }
 
     useEffect(() => {
@@ -61,15 +70,19 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     </button>
                 </form>
             </div>
-            <Alert color="green"
+            <Alert 
                 className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
                 variant='gradient'
                 open={openAlert}
-                icon={<AlertSuccessIcon />}
+                icon={error ? <AlertErrorIcon />: <AlertSuccessIcon />}
                 animate={{
                     mount: { y: 0 },
                     unmount: { y: 100 },
-                }}>{channel.name} has been updated</Alert>
+                }}>
+                    {error && <p>Password can not be empty</p>}
+                    {!error && <p>{channel.name} has been updated</p>
+                    }
+                </Alert>
         </div>
     )
 }
@@ -80,7 +93,7 @@ const ChannelSettingsHeader = ({ channelName, updateChatBarState }: { channelNam
             <span className='font-semibold align-middle pl-2 pt-2'>
                 {channelName} Settings
             </span>
-            <button onClick={() => updateChatBarState(ChatBarState.Closed)} >
+            <button onClick={() => updateChatBarState(ChatBarState.ChatOpen)} >
                 <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
             </button>
         </div>
