@@ -79,8 +79,6 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
-            // Todo: when the current user is the one joining the channel, the channel is not in the joinedChannels list
-            console.log("HandleNewConnectionOnChannel: Room not found");
             return;
         }
 
@@ -94,6 +92,7 @@ export default function useChannels() {
     }
 
     useEffect(() => {
+        // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
         });
