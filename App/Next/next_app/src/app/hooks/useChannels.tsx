@@ -170,7 +170,6 @@ export default function useChannels() {
         });
         socket?.emit("joinRoom", name);
         if (!response.ok) {
-            console.log('Error joining channel:', await response.text());
             return response;
         }
         await fetchNewChannelContent(id);
