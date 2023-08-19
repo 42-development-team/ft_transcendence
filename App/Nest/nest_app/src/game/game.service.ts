@@ -30,7 +30,7 @@ export class GameService {
         return game;
     }
 
-    /* U(pdate) */
+    /* U(pdate) */ //TODO: gameDuration
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
@@ -62,5 +62,5 @@ export class GameService {
         return true;
     }
 
-    
+
 }
