@@ -1,4 +1,3 @@
-import './globals.css';
 import LoginComponent from "@/components/Login";
 
 export default function Home() {
