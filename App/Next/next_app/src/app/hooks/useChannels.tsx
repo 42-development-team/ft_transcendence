@@ -37,7 +37,7 @@ export default function useChannels() {
             const newChannels = [...prevChannels];
             newChannels[channelIndex].unreadMessages = 0;
             return newChannels;
-        }); 
+        });
     }, [currentChannelId])
 
     // Messaging
@@ -117,7 +117,7 @@ export default function useChannels() {
             if (!channel.joined) {
                 socket?.emit("joinRoom", channel.name);
                 channel.joined = true;
-            } 
+            }
         });
     }, [socket, joinedChannels]);
 
@@ -160,6 +160,8 @@ export default function useChannels() {
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
         if (password)
             password = await bcrypt.hash(password, 10);
+		// debug
+		console.log("hashed password on front-side", password);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
