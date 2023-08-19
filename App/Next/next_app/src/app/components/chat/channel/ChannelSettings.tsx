@@ -4,10 +4,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
-import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
-import Image from 'next/image';
 import PasswordInputField from "../PasswordInputField";
 import { delay } from "@/app/utils/delay";
+import ChatHeader from "../chatbox/ChatHeader";
 
 type ChannelSettingsProps = {
     channel: ChannelModel
@@ -58,7 +57,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
 
     return (
         <div className='w-full min-w-[400px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChannelSettingsHeader channelName={channel.name} updateChatBarState={updateChatBarState} />
+            <ChatHeader title={`${channel.name} Settings`} onCollapse={() => updateChatBarState(ChatBarState.ChatOpen)} />
             <div className="p-4 mb-4 flex-col">
                 <ChangeChannelTypeButtons newChannelType={newChannelType} setChannelType={setNewChannelType} />
                 <form onSubmit={handleSubmit} >
@@ -82,19 +81,6 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                 {error && <p>Password can not be empty</p>}
                 {!error && <p>{channel.name} has been updated</p>}
             </Alert>
-        </div>
-    )
-}
-
-const ChannelSettingsHeader = ({ channelName, updateChatBarState }: { channelName: string, updateChatBarState: (state: ChatBarState) => void }) => {
-    return (
-        <div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
-            <span className='font-semibold align-middle pl-2 pt-2'>
-                {channelName} Settings
-            </span>
-            <button onClick={() => updateChatBarState(ChatBarState.ChatOpen)} >
-                <Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
-            </button>
         </div>
     )
 }
