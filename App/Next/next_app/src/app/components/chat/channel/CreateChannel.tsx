@@ -4,9 +4,8 @@ import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextPro
 import { delay } from '@/app/utils/delay';
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
-import collapseImg from "../../../../../public/collapse-left-svgrepo-com.svg"
-import Image from 'next/image';
 import PasswordInputField from '../PasswordInputField';
+import ChatHeader from '../chatbox/ChatHeader';
 
 interface CreateChannelProps {
 	userId: string;
@@ -58,7 +57,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
 	return (
 		<div className='w-full min-w-[350px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-			<ChannelSettingsHeader updateChatBarState={updateChatBarState}/>
+			<ChatHeader title="Create a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
 			<div className="p-4">
 				<form onSubmit={handleSubmit}>
 					<ChannelNameInput value={channelName} setValue={setChannelName} />	
@@ -120,20 +119,5 @@ const ChannelTypeInput = ({value, onChange} : {value: string, onChange: (event: 
 		</div>
 	)
 }
-
-const ChannelSettingsHeader = ({updateChatBarState} : {updateChatBarState: (state: ChatBarState) => void}) => {
-	return (
-		<div className='flex flex-row justify-between border-b-2 pb-2 border-mantle'>
-			<span className='font-semibold align-middle pl-2 pt-2'>
-				Create a channel
-			</span>
-			<button onClick={() => updateChatBarState(ChatBarState.Closed)} >
-				<Image src={collapseImg} height={32} width={32} alt="Collapse" className='transition-all' />
-			</button>
-		</div>
-	)
-}
-
-
 
 export default CreateChannel;
