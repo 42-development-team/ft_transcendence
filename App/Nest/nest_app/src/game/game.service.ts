@@ -6,6 +6,7 @@ import { JoinGameDto } from "./dto/join-game.dto";
 export class GameService {
     constructor(private prisma: PrismaService) {}
 
+    /* C(reate) */
     async createGame(createGameDto: CreateGameDto) {
         
         const newGame = await this.prisma.game.create({
@@ -21,6 +22,7 @@ export class GameService {
         return newGame;
     }
 
+    /* R(ead) */
     async getGame(id: number) {
         const game = await this.prisma.game.findUniqueOrThrow({
             where: { id: id },
@@ -28,6 +30,7 @@ export class GameService {
         return game;
     }
 
+    /* U(pdate) */
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
@@ -50,4 +53,14 @@ export class GameService {
         });
         return game;
     }
+
+    /* D(elete) */
+    async deleteGame(deleteGameDto: any) {
+        this.prisma.game.delete({
+            where: { id: deleteGameDto.gameId },
+        });
+        return true;
+    }
+
+    
 }

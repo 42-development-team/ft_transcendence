@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Delete, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 import { Post, Body, Request, Patch } from '@nestjs/common';
@@ -6,6 +6,7 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { JoinGameDto } from './dto/join-game.dto';
+import { DeleteGameDto } from './dto/delete-game.dto';
 
 @ApiTags('Game')
 @Controller('game')
@@ -52,5 +53,14 @@ export class GameController {
         const game = await this.gameService.joinGame(joinGameDto);
         this.logger.log(`Successfully updated game with ID ${game.id}`);
         return game;
+    }
+
+    /* D(elete) */
+    @Delete('delete')
+    async deleteGame(@Body() deleteGameDto: DeleteGameDto) {
+        this.logger.log('Deleting game');
+        const gameDeleted = await this.gameService.deleteGame(deleteGameDto);
+        this.logger.log(`Successfully deleted game with ID ${deleteGameDto.gameId}`);
+        return gameDeleted;
     }
 }
