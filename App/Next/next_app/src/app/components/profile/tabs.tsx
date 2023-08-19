@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
+import matchHistory from "./matchHistory";
+import MatchHistory from "./matchHistory";
 
 export function UnderlineTabs() {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -23,15 +25,18 @@ export function UnderlineTabs() {
     },
   ];
 
+  //TODO: fetch data from backend
+  const matchHistoryData = { data: ["test1", "test2", "test3", "test4", "test5", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4"] }
+
   const indicatorStyle = {
-    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out",
+    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out",
   };
   
   return (
-    <div className=" mt-[1vw] h-full rounded-lg transition hover:duration-[550ms] bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
       <Tabs value={activeTab}>
         <TabsHeader
-          className="rounded-none bg-transparent p-0 font-semibold"
+          className="text-xl rounded-none bg-transparent p-0 font-semibold h-[4vh]"
         >
           {data.map(({ label, value }) => (
             <Tab
@@ -41,7 +46,7 @@ export function UnderlineTabs() {
               style={indicatorStyle}
               className={`${
                 activeTab === value ? "text-blue-500" : " text-gray-400"
-              } border-b-2 ${
+              } border-b-4 ${
                 activeTab === value ? "border-blue-500" : "border-gray-500"
               }`}
             >
@@ -49,10 +54,14 @@ export function UnderlineTabs() {
             </Tab>
           ))}
         </TabsHeader>
-        <TabsBody>
+        <TabsBody >
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
-              {desc} 
+              {activeTab === "match-history" ? (
+                <MatchHistory data={matchHistoryData}/>
+              ) : (
+                <div>Coucou</div>
+              )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
         </TabsBody>
