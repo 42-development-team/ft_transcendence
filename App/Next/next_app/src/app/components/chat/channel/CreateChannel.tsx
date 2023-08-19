@@ -44,7 +44,6 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 			owner: Number(userId),
 			admins: [Number(userId)],
 		};
-		console.log("ChannelInfo: " + JSON.stringify(newChannelInfo, null, 2));
 		const createdChannelId = await createNewChannel(newChannelInfo);
 
 		// Close the form after short delay

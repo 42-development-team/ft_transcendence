@@ -25,7 +25,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner }, isCurren
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
-                <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} />
+            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} />
         </div>
     )
 }
