@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
+import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class ChatroomService {
@@ -162,7 +163,7 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
-	async join(id: number, userId: number, hashedPassword: string) {
+	async join(id: number, userId: number, password: string) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
@@ -177,8 +178,9 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'protected') {
-			if (chatRoom.hashedPassword === hashedPassword) {
-				console.log('hashed password in join on back side: ', chatRoom.hashedPassword);
+			const validPassword = bcrypt.compare(password, chatRoom.hashedPassword);
+			if (validPassword) {
+				console.log('hashed password comparing in join on back side is valid');
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
