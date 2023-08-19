@@ -5,6 +5,7 @@ import { Post, Body, Request, Patch } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { JoinGameDto } from './dto/join-game.dto';
 
 @ApiTags('Game')
 @Controller('game')
@@ -45,11 +46,11 @@ export class GameController {
         return game;
     }
 
-    // @Patch('join')
-    // async joinGame(@Body() joinGameDto: JoinGameDto)) {
-    //     this.logger.log('Updating game');
-    //     const game = await this.gameService.updateGame();
-    //     this.logger.log(`Successfully updated game with ID ${game.id}`);
-    //     return game;
-    // }
+    @Patch('join')
+    async joinGame(@Body() joinGameDto: JoinGameDto) {
+        this.logger.log('Updating game');
+        const game = await this.gameService.joinGame(joinGameDto);
+        this.logger.log(`Successfully updated game with ID ${game.id}`);
+        return game;
+    }
 }

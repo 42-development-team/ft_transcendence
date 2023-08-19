@@ -1,6 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
+import { JoinGameDto } from "./dto/join-game.dto";
 
 export class GameService {
     constructor(private prisma: PrismaService) {}
@@ -35,6 +36,16 @@ export class GameService {
                 loser: {connect: {id: updateGameDto.loserId} },
                 winnerScore: updateGameDto.winnerScore,
                 loserScore: updateGameDto.loserScore,
+            },
+        });
+        return game;
+    }
+
+    async joinGame(joinGameDto: JoinGameDto) {
+        const game = await this.prisma.game.update({
+            where: { id: joinGameDto.gameId },
+            data: {
+                users: { connect: {id: joinGameDto.playerTwoId} },
             },
         });
         return game;
