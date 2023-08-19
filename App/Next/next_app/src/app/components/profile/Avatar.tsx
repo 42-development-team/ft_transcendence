@@ -46,16 +46,16 @@ const Avatar = (
           console.log('Setlected file size exceeds the allowed limit.');
           return;
         }
-      
-        setImageUrl(URL.createObjectURL(file));
-        CallbackAvatarData(file, imageUrl); //Send Avatar DAta to Parent Component
+        const objectURL = URL.createObjectURL(file);
+        setImageUrl(objectURL);
+        CallbackAvatarData(file, objectURL); //Send Avatar DAta to Parent Component
       };
 
     return (
         <div className="flex flex-col my-5 justify-center ">
             <p className=" font-bold text-center mb-1">Username</p>
             <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
-                {imageUrl || imageUrlGetFromCloudinary ? (
+                {imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
                     <div className="flex justify-center">
                         {/* Display uploaded avatar image temporary stored in URL*/}
                         <Image

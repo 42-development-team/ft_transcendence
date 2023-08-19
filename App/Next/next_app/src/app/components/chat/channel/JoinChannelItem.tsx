@@ -1,5 +1,9 @@
 import { ChannelModel } from "@/app/utils/models";
 import { FormEvent, useState } from "react";
+import { Alert } from '@material-tailwind/react';
+import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
+import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
+import { delay } from "@/app/utils/delay";
 
 type ChannelProps = {
     channel: ChannelModel
@@ -8,11 +12,12 @@ type ChannelProps = {
 
 // Todo: Add channel icon
 const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChannel }: ChannelProps) => {
-
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
+    
+    const [openAlert, setOpenAlert] = useState(false);
+    const [error, setError] = useState(false)
 
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -20,21 +25,33 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
     }
 
     const onJoin = async () => {
-        if (type === "protected" && !showPassword) {
-            setShowPassword(!showPassword);
-            setPassword("");
-            return;
+        setError(false);
+        if (type === "protected") {
+            if (!showPassword) {
+                setShowPassword(!showPassword);
+                setPassword("");
+                return;
+            } else if (password === "") {
+                setError(true);
+                setOpenAlert(true);
+                return;
+            }
         }
+        
         const response = await joinChannel(id, name, password);
         if (!response.ok) {
             const text = await response.text();
             if (text === "\"Wrong password\"") {
-                setIsErrorVisible(true);
+                setError(true);
+                setOpenAlert(true);
             }
             return;
         }
         setIsJoined(true);
         setShowPassword(false);
+        setOpenAlert(true);
+        await delay(1250);
+        setOpenAlert(false);
     }
 
     return (
@@ -67,9 +84,19 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
                         placeholder="password" />
                 </form>
             }
-            {isErrorVisible &&
-                <p className="text-red text-center font-semibold">Wrong password</p>
-            }
+            <Alert
+                className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
+                variant='gradient'
+                open={openAlert}
+                icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
+                animate={{
+                    mount: { y: 0 },
+                    unmount: { y: 100 },
+                }}>
+                {error && password=="" && <p>Password can not be empty</p>}
+                {error && password!="" && <p>Incorrect password</p>}
+                {!error && <p>Joined {name}</p>}
+            </Alert>
         </div>
     )
 }

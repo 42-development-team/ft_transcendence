@@ -174,7 +174,7 @@ const FirstLoginPageComponent = ({
           <TwoFA userId={userId}></TwoFA>
       }
       <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} >
-        <div className='mt-5 font-bold text-xl hover:animate-bounce duration-1300'>
+        <div className='mt-5 font-bold text-xl'>
           Validate
         </div>
       </FirstLoginBtn>
