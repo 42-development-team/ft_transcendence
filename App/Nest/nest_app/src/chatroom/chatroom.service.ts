@@ -169,6 +169,7 @@ export class ChatroomService {
 		});
 
 		// Todo : check if already joined
+		// todo : add to members if not already joined
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			// Todo: how to check the result of the update?
 			const updateResult = await this.prisma.chatRoom.update({

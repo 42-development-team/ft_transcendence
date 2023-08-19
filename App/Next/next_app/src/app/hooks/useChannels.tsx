@@ -132,16 +132,23 @@ export default function useChannels() {
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
+			let hashedPassword;
             if (newChannelInfo.password)
-                newChannelInfo.password = await bcrypt.hash(newChannelInfo.password, 10);
-				console.log("hashed password in creating channel on front-side", newChannelInfo.password);
+                hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
+				console.log("hashed password in creating channel on front-side", hashedPassword);
 				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newChannelInfo),
+                body: JSON.stringify({
+					name: newChannelInfo.name,
+					type: newChannelInfo.type,
+					hashedPassword: hashedPassword,
+					owner: newChannelInfo.owner,
+					admins: newChannelInfo.admins,
+				}),
             });
             if (!response.ok) {
                 throw new Error('Failed to create the channel');
@@ -151,6 +158,7 @@ export default function useChannels() {
 
             // Channel joining
             await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+			console.log("password sent to joining channel on front-side", newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -159,10 +167,10 @@ export default function useChannels() {
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        if (password)
-            password = await bcrypt.hash(password, 10);
+        // if (password)
+        //     password = await bcrypt.hash(password, 10);
 		// debug
-		console.log("hashed password in joining channel on front-side", password);
+		console.log("password received in joining channel on front-side", password);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
