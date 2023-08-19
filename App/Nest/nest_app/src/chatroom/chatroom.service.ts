@@ -22,6 +22,7 @@ export class ChatroomService {
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, hashedPassword } = createChatroomDto;
+		console.log("hashed password back side", hashedPassword);
 
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
@@ -200,13 +201,13 @@ export class ChatroomService {
 		});
 		const test = await this.prisma.message.findUnique({
 			where: { id: newMessage.id },
-			include: { 
+			include: {
 				sender: true,
 			},
 		});
 		return test;
 	}
-	
+
 	// #endregion
 
 	// #region D(elete)
@@ -216,7 +217,7 @@ export class ChatroomService {
 
 	// #endregion
 	// #region Retrieve
-	
+
 	async getUserIdFromSocket(socket: Socket){
 		const authToken = socket.handshake.headers.cookie.split(";");
 		const jwtToken = authToken[0].split("=")[1];

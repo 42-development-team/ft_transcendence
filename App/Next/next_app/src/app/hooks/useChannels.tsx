@@ -134,7 +134,8 @@ export default function useChannels() {
             // Channel creation
             if (newChannelInfo.password)
                 newChannelInfo.password = await bcrypt.hash(newChannelInfo.password, 10);
-            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+				console.log("hashed password in creating channel on front-side", newChannelInfo.password);
+				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
@@ -161,7 +162,7 @@ export default function useChannels() {
         if (password)
             password = await bcrypt.hash(password, 10);
 		// debug
-		console.log("hashed password on front-side", password);
+		console.log("hashed password in joining channel on front-side", password);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
