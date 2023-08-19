@@ -178,6 +178,7 @@ export class ChatroomService {
 		}
 		else if (chatRoom.type === 'protected') {
 			if (chatRoom.hashedPassword === hashedPassword) {
+				console.log('hashed password in join on back side: ', chatRoom.hashedPassword);
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
