@@ -1,7 +1,7 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import { ChannelModel } from '@/app/utils/models';
-import SendMessageForm from './SendMessageForm';
+import ChatMessageBoxFooter from './ChatMessageBoxFooter';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatMessage from './ChatMessage';
 import ChatHeader from './ChatHeader';
@@ -35,7 +35,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             <div ref={chatMessageBoxRef} className='overflow-auto h-[87vh]'>
                 {MessageList}
             </div>
-            <SendMessageForm onSend={sendMessage} />
+            <ChatMessageBoxFooter onSend={sendMessage} />
         </div>
     )
 };

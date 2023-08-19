@@ -9,7 +9,7 @@ type SendMessageFormProps = {
 // Todo: remove max message length??
 const MAX_MESSAGE_LENGTH = 500
 
-const SendMessageForm = ({ onSend }: SendMessageFormProps) => {
+const ChatMessageBoxFooter = ({ onSend }: SendMessageFormProps) => {
     const [message, setMessage] = useState("");
 
     const { isCurrentUserOwner } = useUserRole();
@@ -60,4 +60,4 @@ const ShowChannelSettingsButton = () => {
     )
 }
 
-export default SendMessageForm;
+export default ChatMessageBoxFooter;
