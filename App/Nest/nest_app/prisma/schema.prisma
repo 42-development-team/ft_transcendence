@@ -56,16 +56,17 @@ model ChatRoom {
 }
 
 model Game {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  drew         Boolean  @default(false)
-  gameDuration Int
-  gameLosedId  Int?
-  gameWonId    Int?
-  loser        User?     @relation("gamesLosed", fields: [gameLosedId], references: [id])
-  winner       User?     @relation("gamesWon", fields: [gameWonId], references: [id])
-  users        User[]   @relation("gamesPlayed")
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  users             User[]   @relation("gamesPlayed")
+  loser             User?    @relation("gamesLosed", fields: [gameLosedId], references: [id])
+  gameLosedId       Int?
+  winner            User?    @relation("gamesWon", fields: [gameWonId], references: [id])
+  gameWonId         Int?
+  winnerScore       Int      @default(0)
+  loserScore        Int      @default(0)
+  gameDuration      Int      @default(0)
 }
 
 model UserStats {
@@ -74,7 +75,6 @@ model UserStats {
   updatedAt  DateTime @updatedAt
   winStreak  Int      @default(0)
   win        Int      @default(0)
-  drew       Int      @default(0)
   ratio      Float    @default(0)
   played     Int      @default(0)
   totalScore Int      @default(0)
