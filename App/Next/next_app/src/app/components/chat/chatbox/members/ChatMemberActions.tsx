@@ -33,7 +33,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: Chat
                     </button>
                     {isOpen && (
                         <div className="absolute z-10 mt-2 w-16 right-14 rounded-md bg-crust">
-                            <DropDownAction onClick={() => console.log('Mute 30s')}>
+                            <DropDownAction onClick={() => console.log('Mute 30s!')}>
                                 30s
                             </DropDownAction>
                             <DropDownAction onClick={() => console.log('Mute 60s')}>
