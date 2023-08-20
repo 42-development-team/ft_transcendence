@@ -27,6 +27,7 @@ model User {
   games            Game[]     @relation("gamesPlayed")
   chatRoom         ChatRoom[] @relation("members")
   bannedChatRooms  ChatRoom[] @relation("bannedUsers")
+  memberShips	   Membership[]	@relation("membership")
 }
 
 model Message {
@@ -43,18 +44,19 @@ model Message {
 }
 
 model ChatRoom {
-  id             Int       @id @default(autoincrement())
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id             Int       		@id @default(autoincrement())
+  createdAt      DateTime  		@default(now())
+  updatedAt      DateTime  		@updatedAt
   name           String
   creatorId      Int
   type           String
   hashedPassword String?
-  owner          User      @relation("chatCreated", fields: [creatorId], references: [id])
-  messages       Message[] @relation("chatMessages")
-  admins         User[]    @relation("chatAdmins")
-  members        User[]    @relation("members")
-  bannedUsers    User[]    @relation("bannedUsers")
+  owner          User      		@relation("chatCreated", fields: [creatorId], references: [id])
+  messages       Message[] 		@relation("chatMessages")
+  admins         User[]    		@relation("chatAdmins")
+  members        User[]    		@relation("members")
+  bannedUsers    User[]    		@relation("bannedUsers")
+  memberShips	 Membership[]	@relation("membership")
 }
 
 model Game {
@@ -83,4 +85,14 @@ model UserStats {
   lose       Int      @default(0)
   userId     Int      @unique
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model Membership {
+  id			Int			@id @default(autoincrement())
+  createdAt 	DateTime 	@default(now())
+  updatedAt 	DateTime 	@updatedAt
+  userId		Int
+  chatRoomId 	Int
+  user			User	 	@relation("membership", fields: [userId], references: [id])
+  chatroom		ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
 }
