@@ -23,8 +23,6 @@ export class ChatroomService {
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, hashedPassword } = createChatroomDto;
-		console.log("hashed password back side", hashedPassword);
-
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
@@ -170,7 +168,6 @@ export class ChatroomService {
 		});
 
 		// Todo : check if already joined
-		// todo : add to members if not already joined
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			// Todo: how to check the result of the update?
 			const updateResult = await this.prisma.chatRoom.update({
@@ -180,11 +177,8 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'protected') {
-			console.log("Compare password brut: " + password + " password hashed " + chatRoom.hashedPassword);
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
-			console.log("isValid: ", isValid);
 			if (isValid) {
-				console.log('hashed password comparing in join on back side is valid');
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },

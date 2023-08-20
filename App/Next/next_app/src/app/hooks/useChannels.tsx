@@ -128,7 +128,6 @@ export default function useChannels() {
 			let hashedPassword;
             if (newChannelInfo.password)
                 hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
-				console.log("hashed password in creating channel on front-side", hashedPassword);
 				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
@@ -150,10 +149,6 @@ export default function useChannels() {
 
             // Channel joining
             const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
-			if (!joinResponse.ok) {
-				console.log("Create chann error in join: " + await joinResponse.text());
-			}
-			console.log("password sent to joining channel on front-side", newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
