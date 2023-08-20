@@ -23,9 +23,6 @@ export class ChatroomController {
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
-			const channelId = await this.chatroomService.getIdFromChannelName(createChatroomDto.name);
-			const userId = createChatroomDto.owner;
-			const newMembership = await this.membershipService.create(userId, channelId);
 			// Todo: don't emit the chatroom password
 			// Maybe send an empty body
             this.socketGateway.server.emit("NewChatRoom", newChatRoom);
