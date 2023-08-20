@@ -199,6 +199,30 @@ export class ChatroomService {
 		return chatRoom;
 	}
 
+	async kick(id: number, userId: number, userToKickId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: { owner: true},
+		});
+		// Check if target user is admin
+		const isAdmin = await this.prisma.chatRoom.count({
+			where: { id: id, admins: { some: { id: userId } } },
+		}) > 0;
+		if (!isAdmin) {
+			throw new Error('User is not an admin of this channel');
+		}
+		const isTargetOwner = chatRoom.owner.id === userToKickId;
+		if (isTargetOwner) {
+			throw new Error('Cannot kick owner of the channel');
+		}
+		const updateResult = await this.prisma.chatRoom.update({
+			where: { id: id },
+			data: { members: { disconnect: [{ id: userToKickId }] } },
+		});
+		// Todo: disconnect from socket
+		return updateResult;
+	}
+
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
 		const newMessage = await this.prisma.message.create({
 			data: {

@@ -92,6 +92,19 @@ export class ChatroomController {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
+
+	@Patch(':id/kick')
+	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const userToKickId: number = body.userToKickId;
+		await this.chatroomService.kick(+id, userId, userToKickId)
+			.then(() => {
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
 	
 	/* D(elete) */
 	@Delete(':id')
