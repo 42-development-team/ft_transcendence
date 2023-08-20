@@ -1,4 +1,4 @@
-export const MemberShips = [
+export const memberShips = [
     {
         user: {
             connect: { id: 2 },
