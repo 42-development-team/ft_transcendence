@@ -45,6 +45,14 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
                 isCurrentUser={member.id == userId} />
         ))
 
+    const BannedList = channel.bannedUsers == undefined 
+        ? [] 
+        : channel.bannedUsers.map((member) => (
+            <ChatMemberItem key={member.id} user={member}
+                isCurrentUser={member.id == userId} />
+        )
+    )
+
     return (
         <div className='w-full h-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
@@ -58,6 +66,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
                 <ChatMemberHeader>👪 Members</ChatMemberHeader>
                 {MemberList}
                 <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
+                {BannedList}
             </div>
         </div>
     )
