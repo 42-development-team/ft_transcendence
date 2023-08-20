@@ -30,6 +30,19 @@ export class MembershipService {
     return `This action returns all membership`;
   }
 
+  async getMemberShipFromUserAndChannelId(userId: number, channelId: number) {
+	try {
+		const memberShip = await this.prisma.membership.findFirst({
+			where:
+				  { userId: userId, chatRoomId: channelId }
+		})
+		return memberShip;
+	}
+	catch (error) {
+		console.log(error.message);
+	}
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} membership`;
   }

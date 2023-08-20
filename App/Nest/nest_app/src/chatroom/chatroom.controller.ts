@@ -90,7 +90,12 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-			.then(() => {
+		.then(() => {
+				const memberShipExist = this.membershipService.getMemberShipFromUserAndChannelId(userId, Number(id))
+				// console.log ("membershipExist= ", memberShipExist);
+				if (memberShipExist) {
+					this.membershipService.create(userId, Number(id));
+				}
 				response.send();
 			})
 			.catch(error => {
