@@ -1,11 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
+import { PrismaService } from '../prisma/prisma.service';
+// import { ConfigService } from '@nestjs/config';
+// import { JwtService } from '@nestjs/jwt';
+// import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class MembershipService {
-  create(createMembershipDto: CreateMembershipDto) {
-    return 'This action adds a new membership';
+	constructor(
+		private prisma: PrismaService,
+		// private jwtService: JwtService,
+        // private userService: UsersService,
+		// private configService: ConfigService
+	) {}
+
+  async create(userId: number, chatRoomId: number) {
+	const createdMembership = await this.prisma.membership.create({
+		data: {
+			user: { connect: { id: userId } },
+			chatroom: { connect: { id: chatRoomId } },
+		},
+	});
+
+    return createdMembership;
   }
 
   findAll() {

@@ -3,15 +3,18 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+// import { CreateMembershipDto } from '../membership/dto/create-membership.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
+import { MembershipService } from '../membership/membership.service';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
 export class ChatroomController {
 	constructor(
 		private chatroomService: ChatroomService,
+		private membershipService: MembershipService,
 		private socketGateway: SocketGateway,
 	) { }
 
@@ -20,7 +23,9 @@ export class ChatroomController {
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
-
+			const channelId = await this.chatroomService.getIdFromChannelName(createChatroomDto.name);
+			const userId = createChatroomDto.owner;
+			const newMembership = await this.membershipService.create(userId, channelId);
 			// Todo: don't emit the chatroom password
 			// Maybe send an empty body
             this.socketGateway.server.emit("NewChatRoom", newChatRoom);
