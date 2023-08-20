@@ -121,13 +121,6 @@ export default function useChannels() {
         });
     }, [socket, joinedChannels]);
 
-    // New Channels
-    // const appendNewChannel = (newChannel: ChannelModel) => {
-    //     newChannel.joined = true;
-    //     newChannel.icon = '';
-    //     setChannels(prevChannels => [...prevChannels, newChannel]);
-    // };
-
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
@@ -154,7 +147,6 @@ export default function useChannels() {
                 throw new Error('Failed to create the channel');
             }
             const newChannel = await response.json();
-            // appendNewChannel(newChannel);
 
             // Channel joining
             const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
@@ -170,10 +162,6 @@ export default function useChannels() {
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        // if (password)
-        //     password = await bcrypt.hash(password, 10);
-		// debug
-		console.log("password received in joining channel on front-side", password);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
