@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
+import { comparePassword } from '../utils/bcrypt';
 
 @Injectable()
 export class ChatroomService {
@@ -22,7 +23,6 @@ export class ChatroomService {
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, hashedPassword } = createChatroomDto;
-
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
@@ -170,7 +170,8 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
-	async join(id: number, userId: number, hashedPassword: string) {
+	async join(id: number, userId: number, password: string) {
+		const isValid = undefined;
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
@@ -185,7 +186,8 @@ export class ChatroomService {
 			return updateResult;
 		}
 		else if (chatRoom.type === 'protected') {
-			if (chatRoom.hashedPassword === hashedPassword) {
+			const isValid = await comparePassword(password, chatRoom.hashedPassword);
+			if (isValid) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
@@ -233,13 +235,13 @@ export class ChatroomService {
 		});
 		const test = await this.prisma.message.findUnique({
 			where: { id: newMessage.id },
-			include: { 
+			include: {
 				sender: true,
 			},
 		});
 		return test;
 	}
-	
+
 	// #endregion
 
 	// #region D(elete)
@@ -249,7 +251,7 @@ export class ChatroomService {
 
 	// #endregion
 	// #region Retrieve
-	
+
 	async getUserIdFromSocket(socket: Socket){
 		const authToken = socket.handshake.headers.cookie.split(";");
 		const jwtToken = authToken[0].split("=")[1];
