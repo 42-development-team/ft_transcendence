@@ -12,6 +12,7 @@ interface CreateChannelProps {
 	createNewChannel: (newChannel: NewChannelInfo) => Promise<string>;
 }
 
+// Todo: prevent double click on button
 const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
 	const CLOSE_DELAY = 750;

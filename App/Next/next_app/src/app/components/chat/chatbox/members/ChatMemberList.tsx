@@ -49,7 +49,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         ? [] 
         : channel.bannedUsers.map((member) => (
             <ChatMemberItem key={member.id} user={member}
-                isCurrentUser={member.id == userId} />
+                isCurrentUser={member.id == userId} isBanned={true} />
         )
     )
 
