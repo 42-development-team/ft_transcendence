@@ -25,6 +25,9 @@ export class ChatroomContentDto {
     @IsArray()
     members: ChatroomMemberDto[];
 
+    @IsArray()
+    bannedUsers: ChatroomMemberDto[];
+
     @IsNotEmpty()
     @IsNumber()
     ownerId: number;

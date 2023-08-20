@@ -9,9 +9,10 @@ type ChatMemberActionsProps = {
     isCurrentUser: boolean
     isMemberAdmin: boolean
     isMemberOwner: boolean
+    isBanned?: boolean
 }
 
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: Chat
 
     return (
         <div className="flex flex-row gap-2">
-            {adminActionsEnabled &&
+            {adminActionsEnabled && !isBanned &&
                 <div ref={wrapperRef} className=" text-left w-full">
                     <Tooltip content="Mute" placement="top" className="tooltip">
                         <button onClick={() => setIsOpen(!isOpen)}
@@ -65,19 +66,25 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner }: Chat
                             Invite to play
                         </DropDownAction>
                     }
-                    {ownerActionsEnabled &&
+                    {ownerActionsEnabled && !isBanned &&
                         <DropDownAction onClick={() => console.log('set as admin')}>
                             Set as admin
                         </DropDownAction>
                     }
-                    {adminActionsEnabled &&
+                    {adminActionsEnabled && isBanned &&
+                        <DropDownActionRed onClick={() => console.log('unban')}>
+                            Unban
+                        </DropDownActionRed>
+                    }
+
+                    {adminActionsEnabled && !isBanned &&
                         <>
                             <DropDownActionRed onClick={() => console.log('Kick')}>
                                 Kick
                             </DropDownActionRed>
-                            <DropDownActionRed onClick={() => console.log('Ban')}>
+                            <DropDownAction onClick={() => console.log('Ban')}>
                                 Ban
-                            </DropDownActionRed>
+                            </DropDownAction>
                         </>
                     }
                     {isCurrentUser &&
