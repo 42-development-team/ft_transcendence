@@ -20,6 +20,11 @@
     @apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2;
 }
 
+.tooltip {
+    @apply bg-crust z-20 p-3;
+    font-size: 1rem;
+}
+
 .icon {
     color: var(--color-mauve);
     border-radius: inherit;
