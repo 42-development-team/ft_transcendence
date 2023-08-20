@@ -8,6 +8,7 @@ export interface ChannelModel {
     joined: boolean
     messages?: MessageModel[]
     members?: ChannelMember[]
+    bannedUsers?: ChannelMember[]
     unreadMessages: number
 }
 

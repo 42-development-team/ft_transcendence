@@ -26,6 +26,7 @@ model User {
   chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
   games            Game[]     @relation("gamesPlayed")
   chatRoom         ChatRoom[] @relation("members")
+  bannedChatRooms  ChatRoom[] @relation("bannedUsers")
 }
 
 model Message {
@@ -53,6 +54,7 @@ model ChatRoom {
   messages       Message[] @relation("chatMessages")
   admins         User[]    @relation("chatAdmins")
   members        User[]    @relation("members")
+  bannedUsers    User[]    @relation("bannedUsers")
 }
 
 model Game {
