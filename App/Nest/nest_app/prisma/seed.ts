@@ -4,6 +4,7 @@ import { chatRooms } from '../seeds/seeds_chatrooms'
 import { messages } from '../seeds/seeds_messages'
 import { games } from "../seeds/seeds_games";
 import { UserStats } from "../seeds/seeds_userstats";
+import { MemberShips } from "../seeds/seeds_memberships";
 
 const prisma = new PrismaClient()
 
@@ -13,6 +14,7 @@ async function seedFeeding() {
     await seedMessages();
     await seedUserStats();
     await seedGames();
+	await seedMemberShips();
 }
 
 async function seedUsers() {
@@ -32,6 +34,14 @@ async function seedMessages() {
 }
 
 async function seedChatRooms() {
+    for (let chatRoom of chatRooms) {
+      await prisma.chatRoom.create({
+        data: chatRoom,
+      });
+    }
+  }
+
+async function seedMemberShips() {
     for (let chatRoom of chatRooms) {
       await prisma.chatRoom.create({
         data: chatRoom,
