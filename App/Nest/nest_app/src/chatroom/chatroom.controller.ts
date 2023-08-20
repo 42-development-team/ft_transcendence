@@ -89,7 +89,6 @@ export class ChatroomController {
 		await this.chatroomService.join(+id, userId, password)
 		.then(() => {
 				const memberShipExist = this.membershipService.getMemberShipFromUserAndChannelId(userId, Number(id))
-				// console.log ("membershipExist= ", memberShipExist);
 				if (memberShipExist) {
 					this.membershipService.create(userId, Number(id));
 				}
