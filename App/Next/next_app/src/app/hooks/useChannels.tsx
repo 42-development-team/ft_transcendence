@@ -122,11 +122,11 @@ export default function useChannels() {
     }, [socket, joinedChannels]);
 
     // New Channels
-    const appendNewChannel = (newChannel: ChannelModel) => {
-        newChannel.joined = true;
-        newChannel.icon = '';
-        setChannels(prevChannels => [...prevChannels, newChannel]);
-    };
+    // const appendNewChannel = (newChannel: ChannelModel) => {
+    //     newChannel.joined = true;
+    //     newChannel.icon = '';
+    //     setChannels(prevChannels => [...prevChannels, newChannel]);
+    // };
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
@@ -154,10 +154,13 @@ export default function useChannels() {
                 throw new Error('Failed to create the channel');
             }
             const newChannel = await response.json();
-            appendNewChannel(newChannel);
+            // appendNewChannel(newChannel);
 
             // Channel joining
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+			if (!joinResponse.ok) {
+				console.log("Create chann error in join: " + await joinResponse.text());
+			}
 			console.log("password sent to joining channel on front-side", newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
@@ -179,10 +182,10 @@ export default function useChannels() {
             },
             body: JSON.stringify({ password }),
         });
-        socket?.emit("joinRoom", name);
         if (!response.ok) {
             return response;
         }
+        socket?.emit("joinRoom", name);
         await fetchNewChannelContent(id);
         await fetchChannelsInfo();
         return response;
