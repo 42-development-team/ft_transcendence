@@ -102,8 +102,8 @@ export class ChatroomController {
 	@Patch(':id/kick')
 	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const userToKickId: number = body.userToKickId;
-		await this.chatroomService.kick(+id, userId, userToKickId)
+		const kickedId: number = body.kickedId;
+		await this.chatroomService.kick(+id, userId, kickedId)
 			.then(() => {
 				response.send();
 			})
