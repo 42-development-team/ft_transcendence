@@ -1,10 +1,9 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { UserStatsService } from "./userstats.service";
-import { create } from "domain";
 import { UserIdDto } from "./dto/user-id.dto";
 import { UserStatsDto } from "./dto/userstats.dto";
-import { response } from "express";
+import { response, request } from "express";
 
 ApiTags('Userstats')
 @Controller('userstats')
@@ -25,10 +24,12 @@ export class UserstatsController {
 
 	/* R(ead) */
 	@Get('info')
-	async getUserStats(@Body() userIdDto: UserIdDto) {
+	async getUserStats(@Req() req: any) {
 		try {
-			const stats = await this.userstatsService.getUserStats(userIdDto);
+			const userId: number = req.user.sub;
+			const stats = await this.userstatsService.getUserStats(userId);
 
+			console.log("stats READ:", stats)
 			response.status(HttpStatus.OK).send(stats);
 		} catch (error) {
 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

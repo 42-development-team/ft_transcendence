@@ -9,22 +9,22 @@ const StatsWindow = (userId: {userId: string}) => {
 
 
 
-    useEffect(() => {
-        const getAvatar = async () => {
-            const response = await fetch(`${process.env.BACK_URL}/avatars/${userId.userId}`, {
-                method: "GET",
-            });
-            if (!response.ok) {
-                console.log("Error response status:", response.status);
-                console.log("Error response text:", response.text());
-                return (response.status);
-            }
-            const data = await response.json();
-            setImageUrl(data.avatar);
-            return (data.avatar);
-        }
-        getAvatar();
-    }, []);
+    // useEffect(() => {
+    //     const getAvatar = async () => {
+    //         const response = await fetch(`${process.env.BACK_URL}/avatars/${userId.userId}`, {
+    //             method: "GET",
+    //         });
+    //         if (!response.ok) {
+    //             console.log("Error response status:", response.status);
+    //             console.log("Error response text:", response.text());
+    //             return (response.status);
+    //         }
+    //         const data = await response.json();
+    //         setImageUrl(data.avatar);
+    //         return (data.avatar);
+    //     }
+    //     getAvatar();
+    // }, []);
     
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
         setAvatarFile(childAvatarFile);
