@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
-import { GameService } from './game.service';
-import { GameController } from './game.controller';
-import { UsersModule } from "../users/users.module";
+import { UserStats } from 'seeds/seeds_userstats';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersModule } from 'src/users/users.module';
+import { UserstatsController } from './userstats.controller';
+import { UserStatsService } from './userstats.service';
 
 @Module({
 	  imports: [UsersModule],
-	  controllers: [GameController],
-	  providers: [GameService, PrismaService],
-	  exports: [GameService]
+	  controllers: [UserstatsController],
+	  providers: [UserStatsService, PrismaService],
+	  exports: [UserStatsService]
 })
 
 export class UserstatsModule {}

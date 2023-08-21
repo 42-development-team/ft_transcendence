@@ -22,4 +22,26 @@ export class UserStatsService {
 		});
 		return stats.userStats;
 	}
+
+	/* U(pdate) */
+	async updateUserStats( userId: number, userUpdateDto: UserStatsDto ) {
+		const updatedStats = await this.prisma.userStats.update({
+			where: { userId: userUpdateDto.userId },
+			data: { 
+					winStreak: userUpdateDto.winStreak,
+					win: userUpdateDto.win,
+					lose: userUpdateDto.lose,
+					totalScore: userUpdateDto.totalScore,
+					ratio: userUpdateDto.ratio,
+					played: userUpdateDto.played,
+			},
+		});
+	}
+
+	/* D(elete) */
+	async deleteUserStats( userIdDto: UserIdDto ) {
+		this.prisma.userStats.delete({
+			where: { userId: userIdDto.userId },
+		});
+	}
 }
