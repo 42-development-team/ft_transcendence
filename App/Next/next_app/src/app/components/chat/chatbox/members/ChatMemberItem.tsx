@@ -7,11 +7,12 @@ type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
     isBanned?: boolean
-    kick?: (kickedId: string) => void
+    kick: (kickedId: string) => void
+    leaveChannel: () => void
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCurrentUser, isBanned, kick }: ChatMemberProps) => {
+const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCurrentUser, isBanned, kick, leaveChannel }: ChatMemberProps) => {
     const kickUser = () => {
         if (kick == undefined) return;
         kick(id);
@@ -32,7 +33,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser}/>
+                kickUser={kickUser} leaveChannel={leaveChannel}/>
         </div>
     )
 }

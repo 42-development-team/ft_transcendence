@@ -28,6 +28,17 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         }
     }
 
+    const leaveChannel = async () => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/leave`, {
+            credentials: "include",
+            method: 'PATCH',
+        });
+        if (!response.ok) {
+            console.log("Error leaving channel: " + response.status);
+            return;
+        }
+    }
+
     const { updateChatBarState } = useChatBarContext();
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -45,27 +56,27 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         .filter(member => member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick}/>
+                kick={kick} leaveChannel={leaveChannel} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick}/>
+                kick={kick} leaveChannel={leaveChannel} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick}/>
+                kick={kick} leaveChannel={leaveChannel} />
         ))
 
     const BannedList = channel.bannedUsers == undefined 
         ? [] 
         : channel.bannedUsers.map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
-                kick={kick}/>
+                kick={kick} leaveChannel={leaveChannel} />
         )
     )
 
