@@ -3,7 +3,7 @@ import Ball from "./ball.class";
 class Player {
     constructor(bool: boolean) {
         if (bool === true) {
-            this.x = 0.01;
+            this.x = 0.01 + this.w;
             this.y = 0.5; 
         }
         else {

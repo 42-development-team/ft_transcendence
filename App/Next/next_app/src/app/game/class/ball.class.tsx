@@ -2,10 +2,10 @@ import Player from './player.class';
 
 class Ball {
     constructor(xspeed: number, yspeed: number) {
-        let val = 1;
-        if (Math.random() < 0.5) {
-           val *= -1;
-        }
+        let val = -1;
+        // if (Math.random() < 0.5) {
+        //    val *= -1;
+        // }
         this.speed[0] = xspeed * val;
         this.speed[1] = yspeed * val;
     }
@@ -24,27 +24,22 @@ class Ball {
             this.speed[0] *= -1; // reset and count p1 score ++
         if (this.y - this.r <= 0 || this.y + this .r >= 1)
             this.speed[1] *= -1;
-        this.paddleBounce(p1, p2);
+        this.paddleSide(p1, p2, height);
     };
 
-    paddleBounce(p1: Player, p2: Player) {
+    paddleSide(p1: Player, p2: Player, height: number) {
         if (this.speed[0] < 0)
-            this.paddleLeftBounce(p1);
+            this.paddleBounce(p1, height);
         else
-            this.paddleRightBounce(p2);
+            this.paddleBounce(p2, height);
     }
 
-    paddleLeftBounce(p: Player) {
-        if (this.x - this.r < p.x + p.w) {
-            if (this.y > p.y - p.h / 2 && this.y < p.y + p.h / 2) {
-                this.speed[0] *= -1;
-            }
-        }
-    };
+    paddleBounce(p: Player, height: number) {
+        let dx = Math.abs(this.x - p.x);
+        let dy = Math.abs(this.y - p.y);
 
-    paddleRightBounce(p: Player) {
-        if (this.x + this.r > p.x) {
-            if (this.y > p.y - p.h / 2 && this.y < p.y + p.h / 2) {
+        if (dx <= (this.r + p.w)) {
+            if (dy <= (this.r + p.h)) {
                 this.speed[0] *= -1;
             }
         }

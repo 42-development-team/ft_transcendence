@@ -81,6 +81,7 @@ const Canvas = () => {
 	// =================== //
 	// Have To Declrare in //
 	//   parent conponent  //
+		// const ball: Ball = new Ball(0.007, 0.003);
 		const ball: Ball = new Ball(0.007, 0.003);
 		const p1: Player = new Player(true);
 		const p2: Player = new Player(false);
