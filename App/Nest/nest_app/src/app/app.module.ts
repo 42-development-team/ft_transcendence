@@ -20,11 +20,11 @@ import { CloudinaryService } from '../avatars/cloudinary.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ChatroomModule } from '../chatroom/chatroom.module';
 import { GameModule } from 'src/game/game.module';
-import { UserstatsModule } from './userstats/userstats.module';
+import { UserstatsModule } from '../userstats/userstats.module';
 import { GameController } from 'src/game/game.controller';
 import { GameService } from 'src/game/game.service';
-import { UserStatsService } from './userstats/userstats.service';
-import { UserstatsController } from './userstats/userstats.controller';
+import { UserStatsService } from '../userstats/userstats.service';
+import { UserstatsController } from '../userstats/userstats.controller';
 
 @Module({
   imports: [
