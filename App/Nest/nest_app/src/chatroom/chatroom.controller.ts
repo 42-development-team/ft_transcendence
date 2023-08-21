@@ -8,6 +8,7 @@ import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { MembershipService } from '../membership/membership.service';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -16,6 +17,7 @@ export class ChatroomController {
 		private chatroomService: ChatroomService,
 		private membershipService: MembershipService,
 		private socketGateway: SocketGateway,
+		private userService: UsersService,
 	) { }
 
 	/* C(reate) */
@@ -99,6 +101,23 @@ export class ChatroomController {
 			});
 	}
 
+	@Patch(':id/kick')
+	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const kickedId: number = body.kickedId;
+		const kickedUserSocket = await this.userService.getUserSocketFromId(kickedId);
+		await this.chatroomService.kick(+id, userId, kickedId)
+			.then((res) => {
+				const roomName = res.name;
+				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
+				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+	
 	/* D(elete) */
 	@Delete(':id')
 	remove(@Param('id') id: string) {
