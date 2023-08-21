@@ -111,7 +111,6 @@ export class ChatroomController {
 				const roomName = res.name;
 				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
-				// this.socketGateway.leaveRoom(clientSocket, roomName);
 				response.send();
 			})
 			.catch(error => {
