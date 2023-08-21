@@ -26,27 +26,39 @@ export class UserStatsService {
 
 	/* R(ead) */
 	async getUserStats( userId: number ): Promise<UserStatsDto> {
-		console.log("userId READ:", userId);
-		const stats = await this.prisma.userStats.findUnique({
-			where:  { userId: userId },
+		const user = await this.prisma.user.findUniqueOrThrow({
+			include: { userStats: true },
+			where: { id: userId },
 		});
-		if (stats === undefined || !stats) {
+		const userName = user.username;
+
+		let statsDto = {
+			userId: user.id,
+			userName: userName,
+			winStreak: 0,
+			win: 0,
+			lose: 0,
+			totalScore: 0,
+			ratio: 0,
+			played: 0,
+		};
+
+		if (user.userStats === undefined || !user.userStats) {
 			const newUserStats = await this.createUserStats({ userId: userId });
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
 			console.log("newUserStats READ:", newUserStats)
-			return newUserStats;
+			return statsDto;
 		}
-		const statsDto = {
-			userId: stats.userId,
-			winStreak: stats.winStreak,
-			win: stats.win,
-			lose: stats.lose,
-			totalScore: stats.totalScore,
-			ratio: stats.ratio,
-			played: stats.played,
-		};
+
+		statsDto.winStreak = user.userStats.winStreak;
+		statsDto.win = user.userStats.win;
+		statsDto.lose = user.userStats.lose;
+		statsDto.totalScore = user.userStats.totalScore;
+		statsDto.ratio = user.userStats.ratio;
+		statsDto.played = user.userStats.played;
+		
 		return statsDto;
 	}
 

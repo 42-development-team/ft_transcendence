@@ -1,10 +1,12 @@
 
 export class UserStatsDto {
-	userId: number;
-	winStreak: number;
-	win: number;
-	ratio: number;
-	played: number;
-	totalScore: number;
-	lose: number;
+
+	userName: string;
+	userId: number = 0;
+	winStreak: number = 0;
+	win: number = 0;
+	ratio: number = 0;
+	played: number = 0;
+	totalScore: number = 0;
+	lose: number = 0;
 }

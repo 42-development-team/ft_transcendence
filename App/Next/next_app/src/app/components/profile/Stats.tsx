@@ -1,31 +1,15 @@
 import { useEffect, useState } from "react";
 
-const Stats = ( userId: {userId : string }) => {
-	const [stats, setStats] = useState<any>(null);
+const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 
 	useEffect(() => {
-		getStats();
 		console.log("Stats in useEffect: " ,stats);
 	}, []);
-
-	const getStats = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/userstats/info`, {
-			credentials: "include",
-			method: "GET",
-		});
-		if (!response.ok) {
-			console.log("Error response status:", response.status);
-			console.log("Error response text:", await response.text());
-			return (response.status);
-		}
-		const data = await response.json();
-		setStats(data);
-	}
 
 	return (
 		<div className="flex flex-col mx-[2vw] h-full">
 			<p className=" flex flex-col mt-1 text-center text-2xl uppercase text-xl underline underline-offset-2 text-red-400">Stats</p>
-			<div className="flex flex-row h-full w-full ">
+			<div className="flex flex-row h-[inherit] w-full ">
 				<div className="flex flex-col w-full justify-center">
 					<div className="flex flex-col py-[1vw] justify-center h-full w-full ">
 						<div className="text-xl uppercase text-center ">Played</div>
