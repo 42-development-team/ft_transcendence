@@ -93,6 +93,36 @@ export default function useChannels() {
         });
     }
 
+    const handleDisconnectionOnChannel = (body: any) => {
+        const { room, user } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Remove user from channel
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != user.id);
+            return newChannels;
+        });
+    }
+
+    const handleLeftRoom = (body: any) => {
+        const { room } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Todo: update channel list display
+        fetchChannelsInfo();
+        // Remove channel from joined channels
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels.splice(channelIndex, 1);
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
@@ -100,6 +130,12 @@ export default function useChannels() {
         });
         socket?.on('newConnection', (body: any) => {
             handleNewConnectionOnChannel(body);
+        });
+        socket?.on('newDisconnection', (body: any) => {
+            handleDisconnectionOnChannel(body);
+        });
+        socket?.on('leftRoom', (body: any) => {
+            handleLeftRoom(body);
         });
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();

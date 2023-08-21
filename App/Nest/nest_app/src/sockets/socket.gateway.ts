@@ -73,15 +73,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //     }
     // }
 
-    leaveRoom(client: Socket, room: string) {
-        client.leave(room);
-        console.log(`Client ${client.id} left room ${room}`);
-    }
-
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, room: string) {
+        const user = await this.chatroomService.getUserFromSocket(client);
         client.leave(room);
-        console.log(`Client ${client.id} left room ${room}`);
+        client.emit('leftRoom', {room});
+        console.log(`Client ${user.username} ${client.id} left room ${room}`);
+        this.server.to(room).emit('newDisconnection', {room, user});
     }
 
     @SubscribeMessage('message')
