@@ -2,10 +2,10 @@ import Player from './player.class';
 
 class Ball {
     constructor(xspeed: number, yspeed: number) {
-        let val = -1;
-        // if (Math.random() < 0.5) {
-        //    val *= -1;
-        // }
+        let val = 1;
+        if (Math.random() < 0.5) {
+           val *= -1;
+        }
         this.speed[0] = xspeed * val;
         this.speed[1] = yspeed * val;
     }
@@ -24,30 +24,49 @@ class Ball {
             this.speed[0] *= -1; // reset and count p1 score ++
         if (this.y - this.r <= 0 || this.y + this .r >= 1)
             this.speed[1] *= -1;
-        this.paddleSide(p1, p2, height);
+        this.paddleBounce(p1, p2, height);
     };
 
-    paddleSide(p1: Player, p2: Player, height: number) {
+    paddleBounce(p1: Player, p2: Player, height: number) {
         if (this.speed[0] < 0)
-            this.paddleBounce(p1, height);
+            this.paddleLeftBounce(p1, height);
         else
-            this.paddleBounce(p2, height);
+            this.paddleRightBounce(p2, height);
     }
 
-    paddleBounce(p: Player, height: number) {
-        let dx = Math.abs(this.x - p.x);
+    paddleLeftBounce(p: Player, height: number) {
+        let dx = Math.abs(this.x + this.r - p.x);
         let dy = Math.abs(this.y - p.y);
 
         if (dx <= (this.r + p.w)) {
-            if (dy <= (this.r + p.h)) {
-                this.speed[0] *= -1;
+            if (dy <= (this.r + p.h / 2)) {
+                const diff = 10 * (this.y - p.y);
+                const rad = (diff * p.angle) * (Math.PI / 180);
+                this.speed[0] = Math.cos(rad);
+                this.speed[1] = Math.sin(rad);
+                console.log(diff);
+            }
+        }
+    };
+
+    paddleRightBounce(p: Player, height: number) {
+        let dx = Math.abs(this.x - this.r - p.x);
+        let dy = Math.abs(this.y - p.y);
+
+        if (dx <= (this.r + p.w)) {
+            if (dy <= (this.r + p.h / 2)) {
+                const diff = 10 * (this.y - p.y);
+                const rad = (diff * p.angle) * (Math.PI / 180);
+                this.speed[0] = -Math.cos(rad);
+                this.speed[1] = Math.sin(rad);
+                console.log(diff);
             }
         }
     };
 
     update() {
-        this.x += this.speed[0];
-        this.y += this.speed[1];
+        this.x += this.speed[0] / 100;
+        this.y += this.speed[1] / 100;
     };
 
     show(context: CanvasRenderingContext2D, width:  number, height: number) {

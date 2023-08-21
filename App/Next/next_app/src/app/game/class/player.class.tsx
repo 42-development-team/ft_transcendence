@@ -4,11 +4,13 @@ class Player {
     constructor(bool: boolean) {
         if (bool === true) {
             this.x = 0.01 + this.w;
-            this.y = 0.5; 
+            this.y = 0.5;
+            this.angle = 45;
         }
         else {
             this.x = 0.99 - this.w;
             this.y = 0.5;
+            this.angle = 135;
         }
     }
 
@@ -18,6 +20,7 @@ class Player {
     w: number = 0.01;
     h: number = 0.15;
     velocity: number = 0;
+    angle: number = 0;
 
     setVelocity(val: number) {
         this.velocity = val;
