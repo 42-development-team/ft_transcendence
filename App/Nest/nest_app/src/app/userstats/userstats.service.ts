@@ -10,6 +10,12 @@ export class UserStatsService {
 
 	/* C(reate) */
 	async createUserStats( userIdDto: UserIdDto ) {
+		const stats = await this.prisma.userStats.findUnique({
+			where:  { id: userIdDto.userId },
+		});
+		if ( stats ) {
+			throw new Error("UsersStats already exists");
+		}
 		const newUserStats = await this.prisma.userStats.create({
 			data: {
 				user: { connect: { id: userIdDto.userId } },
@@ -21,17 +27,18 @@ export class UserStatsService {
 	/* R(ead) */
 	async getUserStats( userId: number ): Promise<UserStatsDto> {
 		console.log("userId READ:", userId);
-		const stats = await this.prisma.userStats.findUniqueOrThrow({
+		const stats = await this.prisma.userStats.findUnique({
 			where:  { id: userId },
 		});
-		console.log("stats READ in service:", stats)
 		if (stats === undefined || !stats) {
 			const newUserStats = await this.createUserStats({ userId: userId });
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
+			console.log("newUserStats READ:", newUserStats)
 			return newUserStats;
 		}
+		console.log("stats READ in service:", JSON.stringify(stats))
 		return stats;
 	}
 

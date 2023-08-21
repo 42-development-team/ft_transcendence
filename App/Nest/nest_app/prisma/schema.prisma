@@ -22,7 +22,7 @@ model User {
   gamesWon         Game[]     @relation("gamesWon")
   messageReceived  Message[]  @relation("ReceivedMessages")
   messagesSent     Message[]  @relation("SentMessages")
-  userStats        UserStats? 
+  userStats        UserStats?
   chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
   games            Game[]     @relation("gamesPlayed")
   chatRoom         ChatRoom[] @relation("members")
@@ -56,7 +56,7 @@ model ChatRoom {
   admins         User[]    		@relation("chatAdmins")
   members        User[]    		@relation("members")
   bannedUsers    User[]    		@relation("bannedUsers")
-  memberShips	 Membership[]	@relation("membership")
+  memberShips	   Membership[]	@relation("membership")
 }
 
 model Game {
@@ -84,7 +84,7 @@ model UserStats {
   totalScore Int      @default(0)
   lose       Int      @default(0)
   userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Membership {

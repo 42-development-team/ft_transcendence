@@ -32,7 +32,8 @@ export class UserstatsController {
 			console.log("stats READ:", stats)
 			response.status(HttpStatus.OK).send(stats);
 		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			// response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			console.log(JSON.stringify(error.message));
 		}
 	}
 
