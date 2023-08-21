@@ -40,11 +40,11 @@ class Ball {
 
         if (dx <= (this.r + p.w)) {
             if (dy <= (this.r + p.h / 2)) {
-                const diff = 10 * (this.y - p.y);
-                const rad = (diff * p.angle) * (Math.PI / 180);
-                this.speed[0] = Math.cos(rad);
-                this.speed[1] = Math.sin(rad);
-                console.log(diff);
+                const coef = 10 * (this.y - p.y);
+                const radian = (coef * p.angle) * (Math.PI / 180);
+                this.speed[0] = Math.cos(radian);
+                this.speed[1] = Math.sin(radian);
+                console.log(coef);
             }
         }
     };
@@ -55,11 +55,11 @@ class Ball {
 
         if (dx <= (this.r + p.w)) {
             if (dy <= (this.r + p.h / 2)) {
-                const diff = 10 * (this.y - p.y);
-                const rad = (diff * p.angle) * (Math.PI / 180);
-                this.speed[0] = -Math.cos(rad);
-                this.speed[1] = Math.sin(rad);
-                console.log(diff);
+                const coef = 10 * (this.y - p.y);
+                const radian = (coef * p.angle) * (Math.PI / 180);
+                this.speed[0] = -Math.cos(radian);
+                this.speed[1] = Math.sin(radian);
+                console.log(coef);
             }
         }
     };

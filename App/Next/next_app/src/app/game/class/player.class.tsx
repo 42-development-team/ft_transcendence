@@ -10,7 +10,7 @@ class Player {
         else {
             this.x = 0.99 - this.w;
             this.y = 0.5;
-            this.angle = 135;
+            this.angle = 45;
         }
     }
 
