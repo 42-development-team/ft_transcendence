@@ -224,6 +224,24 @@ export class ChatroomService {
 		return updateResult;
 	}
 
+	async leave(id: number, userId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: { owner: true},
+		});
+		// Check if target user is admin
+		// const isOwner = await this.prisma.chatRoom.count({
+		// 	where: { id: id, owner: { id: userId } },
+		// }) > 0;
+		// Todo: if owner
+		// Todo: remove from admin list
+		const updateResult = await this.prisma.chatRoom.update({
+			where: { id: id },
+			data: { members: { disconnect: [{ id: userId }] } },
+		});
+		return updateResult;
+	}
+
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
 		const newMessage = await this.prisma.message.create({
 			data: {
