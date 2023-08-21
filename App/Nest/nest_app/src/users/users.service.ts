@@ -87,6 +87,14 @@ export class UsersService {
         return updatedUser;
     }
 
+    async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
+        const updatedUser = await this.prisma.user.update({
+            where: { id },
+            data: { socketId: updatedSocketId },
+        });
+        return updatedUser;
+    }
+
       /* D(elete) */
 
     async deleteUser(id: number): Promise<void> {
