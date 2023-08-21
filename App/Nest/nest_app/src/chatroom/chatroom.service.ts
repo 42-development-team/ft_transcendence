@@ -202,7 +202,6 @@ export class ChatroomService {
 	}
 
 	async kick(id: number, userId: number, kickedId: number) {
-		console.log("kick - " + id + " - " + kickedId);
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 			include: { owner: true},
@@ -222,7 +221,6 @@ export class ChatroomService {
 			where: { id: id },
 			data: { members: { disconnect: [{ id: kickedId }] } },
 		});
-		// Todo: disconnect from socket
 		return updateResult;
 	}
 

@@ -19,6 +19,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @WebSocketServer()
     server: Server;
 
+    clients: Socket[] = [];
+
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
      // why "(client: Socket)" ? because client is an instance of Socket class 
@@ -26,6 +28,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log('Client connected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, client.id);
+        this.clients.push(client);
         // todo: Check for verifiedJWT in socket and disconnect if not OK
         // and retrieve all the channels the user is member of
     }
@@ -35,6 +38,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
+        this.clients = this.clients.filter(c => c.id !== client.id);
         // add logic for:
         // remove 
     }
@@ -68,6 +72,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //         console.error(error);
     //     }
     // }
+
+    leaveRoom(client: Socket, room: string) {
+        client.leave(room);
+        console.log(`Client ${client.id} left room ${room}`);
+    }
 
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, room: string) {

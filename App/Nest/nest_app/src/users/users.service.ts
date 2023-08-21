@@ -42,6 +42,13 @@ export class UsersService {
         return userDto;
     }
 
+    async getUserSocketFromId(id: number): Promise<string> {
+        const user = await this.prisma.user.findUniqueOrThrow({
+            where: { id },
+        });
+        return user.socketId;
+    }
+
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {
             const user = await this.prisma.user.findUniqueOrThrow({
