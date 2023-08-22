@@ -22,6 +22,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	const [channelName, setChannelName] = useState('');
 	const [channelType, setChannelType] = useState('public');
 	const [password, setPassword] = useState('');
+	const [lockInterface, setLockInterface] = useState(false);
 
 	const [openAlert, setOpenAlert] = useState(false);
 
@@ -32,10 +33,11 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	};
 
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		// Todo: check for unique channel name
 		event.preventDefault();
 		if (channelName === '') return;
 		if (channelType === 'protected' && password === '') return;
-
+		setLockInterface(true);
 		setShowPasswordInput(false);
 		const newChannelInfo: NewChannelInfo = {
 			name: channelName,
@@ -53,6 +55,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 		// Reset fields after creation.
 		setChannelName('');
 		setPassword('');
+		setLockInterface(false);
 		openChannel(createdChannelId);
 	};
 
@@ -61,12 +64,12 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 			<ChatHeader title="Create a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
 			<div className="p-4">
 				<form onSubmit={handleSubmit}>
-					<ChannelNameInput value={channelName} setValue={setChannelName} />	
-					<ChannelTypeInput value={channelType} onChange={handleTypeChange} />	
+					<ChannelNameInput value={channelName} setValue={setChannelName} disabled={lockInterface} />	
+					<ChannelTypeInput value={channelType} onChange={handleTypeChange} disabled={lockInterface} />	
 					{showPasswordInput && 
 						<PasswordInputField value={password}  setValue={setPassword}/>
 					}
-					<button type="submit" className={`button-mauve`} >
+					<button type="submit" className={`button-mauve disabled:pointer-events-none disabled:bg-overlay1`} disabled={lockInterface} >
 						Create Channel
 					</button>
 				</form>
@@ -84,7 +87,8 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	);
 };
 
-const ChannelNameInput = ({value, setValue} : {value: string, setValue: Dispatch<SetStateAction<string>>} ) => {
+const ChannelNameInput = ({value, setValue, disabled} :
+	{value: string, setValue: Dispatch<SetStateAction<string>>, disabled: boolean} ) => {
 	return (
 		<div className="mb-4">
 			<label htmlFor="channelName" className="block text-text text-sm font-bold mb-2">
@@ -94,6 +98,7 @@ const ChannelNameInput = ({value, setValue} : {value: string, setValue: Dispatch
 				type="text"
 				id="channelName"
 				value={value}
+				disabled={disabled}
 				onChange={(e) => setValue(e.target.value)}
 				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
@@ -101,7 +106,8 @@ const ChannelNameInput = ({value, setValue} : {value: string, setValue: Dispatch
 	)	
 }
 
-const ChannelTypeInput = ({value, onChange} : {value: string, onChange: (event: ChangeEvent<HTMLSelectElement>) => void}) => {
+const ChannelTypeInput = ({value, onChange, disabled} :
+	{value: string, onChange: (event: ChangeEvent<HTMLSelectElement>) => void, disabled: boolean}) => {
 	return (
 		<div className="mb-4">
 			<label htmlFor="channelType" className="block text-text text-sm font-bold mb-2">
@@ -111,6 +117,7 @@ const ChannelTypeInput = ({value, onChange} : {value: string, onChange: (event: 
 				id="channelType"
 				value={value}
 				onChange={onChange}
+				disabled={disabled}
 				className=" w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			>
 				<option value="public">Public</option>
