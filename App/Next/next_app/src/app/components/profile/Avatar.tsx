@@ -17,13 +17,13 @@ const Avatar = (
     }
     :
     {
-        children: any;
-        CallbackAvatarData: any;
-        imageUrlGetFromCloudinary: string | null;
-        disableChooseAvatar: boolean;
-        disableImageResize: boolean;
-        userName: string | null;
-        userId: string | null;
+        children?: any;
+        CallbackAvatarData?: any;
+        imageUrlGetFromCloudinary?: string | null;
+        disableChooseAvatar?: boolean;
+        disableImageResize?: boolean;
+        userName?: string | null;
+        userId?: string | null;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);

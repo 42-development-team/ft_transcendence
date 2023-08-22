@@ -6,6 +6,8 @@ import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
 import { Tooltip } from "@material-tailwind/react";
 import { useRef, useState } from "react";
 import { useUserRole } from "./UserRoleProvider";
+import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
+import { Alert } from "@material-tailwind/react";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
@@ -21,11 +23,17 @@ type ChatMemberActionsProps = {
 const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
         sessionStorage.setItem("userId", userId);
-        window.location.href = "/profile";
+        if (sessionStorage.getItem("userId") === undefined) {
+            setOpenAlert(true);
+        }
+        else
+            window.location.href = "/profile";
     }
+    
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [ openAlert, setOpenAlert ] = useState(false);
 
     const adminActionsEnabled: boolean = !isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !isMemberAdmin;
@@ -72,6 +80,17 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                     <DropDownAction onClick={onProfileClick}>
                         View profile
                     </DropDownAction>
+                    <Alert
+                        className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
+                        variant='gradient'
+                        open={openAlert}
+                        icon={<AlertErrorIcon />}
+                        animate={{
+                            mount: { y: 0 },
+                            unmount: { y: 100 },
+                        }}>
+                        {<p>User not found</p>}
+                    </Alert>
                     {!isCurrentUser &&
                         <DropDownAction onClick={() => console.log('Play')}>
                             Invite to play
