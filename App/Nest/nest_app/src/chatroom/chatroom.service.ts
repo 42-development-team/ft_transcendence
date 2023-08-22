@@ -29,11 +29,21 @@ export class ChatroomService {
 				type,
 				hashedPassword,
 				owner: { connect: { id: ownerId } },
-				admins: { connect: [{ id: ownerId }] },
+				memberShips: {
+					create: {
+						user: { connect: { id: ownerId } },
+						isAdmin: true,
+					}
+				},
 			},
 		});
-
-		return createdChatroom;
+		const chatRoomInfo : ChatroomInfoDto = {
+			id: createdChatroom.id,
+			name: createdChatroom.name,
+			type: createdChatroom.type,
+			joined: true,
+		}
+		return chatRoomInfo;
 	}
 	// #endregion
 

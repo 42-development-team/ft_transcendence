@@ -24,10 +24,13 @@ export class ChatroomController {
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
-            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
+			const userId: number = req.user.sub;
+			console.log("userId: ", userId);
+			// return ;
+            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
 			// Todo: don't emit the chatroom password
 			// Maybe send an empty body
-            this.socketGateway.server.emit("NewChatRoom", newChatRoom);
+            this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
 
             response.status(HttpStatus.CREATED).send(newChatRoom);
         } catch (error) {

@@ -184,6 +184,7 @@ export default function useChannels() {
             const newChannel = await response.json();
 
             // Channel joining
+            console.log(JSON.stringify(newChannel, null, 2));
             const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
