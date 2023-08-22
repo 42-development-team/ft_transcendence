@@ -180,35 +180,35 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
+	async connectUserToChatroom(userId: number, chatroomId: number) {
+		const createdMembership = await this.prisma.membership.create({
+			data: {
+				user: { connect: { id: userId } },
+				chatroom: { connect: { id: chatroomId } },
+			},
+		});
+		return createdMembership;
+	}
+
 	async join(id: number, userId: number, password: string) {
-		const isValid = undefined;
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
+			include: { memberShips: true },
 		});
 
-		// Todo : check if already joined
+		console.log(JSON.stringify(chatRoom, null, 2));
+		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			// Todo: how to check the result of the update?
-			const updateResult = await this.prisma.chatRoom.update({
-				where: { id: id },
-				data: { members: { connect: [{ id: userId }] } },
-			});
-			return updateResult;
+			return isJoined;
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (isValid) {
-				const updateResult = await this.prisma.chatRoom.update({
-					where: { id: id },
-					data: { members: { connect: [{ id: userId }] } },
-				});
-				return updateResult;
-			}
-			else {
+				return isJoined;
+			} else {
 				throw new Error('Wrong password');
 			}
 		}
-		return chatRoom;
 	}
 
 	async kick(id: number, userId: number, kickedId: number) {

@@ -25,13 +25,8 @@ export class ChatroomController {
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
 			const userId: number = req.user.sub;
-			console.log("userId: ", userId);
-			// return ;
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
-			// Todo: don't emit the chatroom password
-			// Maybe send an empty body
             this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
-
             response.status(HttpStatus.CREATED).send(newChatRoom);
         } catch (error) {
             response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -92,9 +87,9 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-		.then(() => {
-				const memberShipExist = this.membershipService.getMemberShipFromUserAndChannelId(userId, Number(id))
-				if (memberShipExist) {
+		.then((isJoined: boolean) => {
+				console.log("isJoined: " + isJoined);
+				if (!isJoined) {
 					this.membershipService.create(userId, Number(id));
 				}
 				response.send();
