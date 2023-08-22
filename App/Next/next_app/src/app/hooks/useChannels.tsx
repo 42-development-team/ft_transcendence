@@ -150,8 +150,11 @@ export default function useChannels() {
         return () => {
             socket?.off('new-message');
             socket?.off('newConnection');
+            socket?.off('newDisconnection');
+            socket?.off('leftRoom');
+            socket?.off('NewChatRoom');
         }
-    }, [socket, receiveMessage]);
+    }, [socket]);
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {

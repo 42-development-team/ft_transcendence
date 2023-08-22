@@ -14,6 +14,7 @@ interface ChatMemberListProps {
 const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
 
     const kick = async (kickedId: string) => {
+        // Todo: add try catch
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/kick`, {
             credentials: "include",
             method: 'PATCH',

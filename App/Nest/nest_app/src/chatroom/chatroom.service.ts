@@ -9,6 +9,7 @@ import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 import { comparePassword } from '../utils/bcrypt';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class ChatroomService {
@@ -16,7 +17,8 @@ export class ChatroomService {
 		private prisma: PrismaService,
 		private jwtService: JwtService,
         private userService: UsersService,
-		private configService: ConfigService
+		private configService: ConfigService,
+		private membershipService: MembershipService,
 	) { }
 
 	// #region C(reate)
@@ -211,24 +213,57 @@ export class ChatroomService {
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-			include: { owner: true},
+			include: {
+				 owner: true,
+				 memberShips: {
+					include: { user: true}
+				 }
+				},
 		});
+		console.log(JSON.stringify(chatRoom, null, 2));
 		// Check if target user is admin
-		const isAdmin = await this.prisma.chatRoom.count({
-			where: { id: id, admins: { some: { id: userId } } },
-		}) > 0;
-		if (!isAdmin) {
-			throw new Error('User is not an admin of this channel');
+		try {
+			const isAdmin = await this.prisma.chatRoom.count({
+				where: { 
+					id: id, 
+					memberShips: { 
+						some: { 
+							userId: userId,
+							isAdmin: true 
+						}
+					},
+				}
+			}) > 0;
+			console.log("admin: ", isAdmin);
+			if (!isAdmin) {
+				throw new Error('User is not an admin of this channel');
+			}
+		} catch (error) {
+			console.log(error.message);
 		}
 		const isTargetOwner = chatRoom.owner.id === kickedId;
 		if (isTargetOwner) {
 			throw new Error('Cannot kick owner of the channel');
 		}
-		const updateResult = await this.prisma.chatRoom.update({
+		const kickedMembership = await this.prisma.membership.deleteMany({
+			where:
+				  { userId: kickedId, chatRoomId: id },
+		})
+		const chatRoomAfter = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-			data: { members: { disconnect: [{ id: kickedId }] } },
+			include: {
+				 owner: true,
+				 memberShips: true,
+				},
 		});
-		return updateResult;
+		console.log(JSON.stringify(chatRoomAfter, null, 2));
+		// this.membershipService.getMemberShipFromUserAndChannelId(kickedId, id);
+
+		// const updateResult = await this.prisma.chatRoom.update({
+		// 	where: { id: id },
+		// 	data: { memberShips: { disconnect: } },
+		// });
+		return chatRoomAfter;
 	}
 
 	async leave(id: number, userId: number) {
