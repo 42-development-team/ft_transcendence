@@ -27,7 +27,7 @@ model User {
   games            Game[]     @relation("gamesPlayed")
   chatRoom         ChatRoom[] @relation("members")
   bannedChatRooms  ChatRoom[] @relation("bannedUsers")
-  memberShips	   Membership[]	@relation("membership")
+  memberShips	     Membership[]	@relation("membership")
 }
 
 model Message {
