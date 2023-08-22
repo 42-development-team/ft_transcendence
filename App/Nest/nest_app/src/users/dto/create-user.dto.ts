@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength, IsBoolean } from 'class-validator';
- 
+import { IsNotEmpty, IsString, MaxLength, IsBoolean, IsIn } from 'class-validator';
+
  export class CreateUserDto {
    @IsNotEmpty()
    @IsString()
@@ -16,11 +16,16 @@ import { IsNotEmpty, IsString, MaxLength, IsBoolean } from 'class-validator';
 
    @IsString()
    twoFAsecret: string;
-   
+
    @IsBoolean()
    isTwoFAEnabled: Boolean;
 
    @IsBoolean()
    isFirstLogin: Boolean;
+
+   @IsNotEmpty()
+   @IsString()
+   @IsIn(['online', 'offline', 'in a game'], { message: 'Invalid user status' })
+   currentStatus: String;
 
  }

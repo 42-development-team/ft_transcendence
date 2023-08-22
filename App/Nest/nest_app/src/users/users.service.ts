@@ -19,6 +19,7 @@ export class UsersService {
                 username: createUserDto.username,
                 avatar: createUserDto.avatar,
                 twoFAsecret: createUserDto.twoFAsecret,
+				userStatus: createUserDto.userStatus,
             }
         });
         return user;
