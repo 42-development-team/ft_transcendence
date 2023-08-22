@@ -22,7 +22,7 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
         <div className="flex w-fit items-center justify-center gap-2 p-2 pt-4
             font-bold text-mauve text-2xl">
             <Link href={isLoggedIn ? "/home" : "/"}>
-                Pongolin
+                Pong
             </Link>
         </div>
     )

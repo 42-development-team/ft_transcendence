@@ -11,6 +11,7 @@ export default async function Settings() {
         router.push('/');
         return;
     }
+    console.log("payload:", payload);
 
     return (
         <div className="flex flex-col flex-auto justify-center ">
