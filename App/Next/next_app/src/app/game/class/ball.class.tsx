@@ -42,7 +42,7 @@ class Ball {
         if (Math.random() < 0.5) {
            val *= -1;
         }
-        this.speed[0] = Math.random() * val;
+        this.speed[0] = 0.3;
         this.speed[1] = Math.random() * val;
     }
 
@@ -61,7 +61,7 @@ class Ball {
             if (dy <= (this.r + p.h / 2)) {
                 const coef = 10 * (this.y - p.y);
                 const radian = (coef * p.angle) * (Math.PI / 180);
-                this.speed[0] = Math.cos(radian);
+                this.speed[0] *= -1;
                 this.speed[1] = Math.sin(radian);
                 console.log(coef);
             }
@@ -76,7 +76,8 @@ class Ball {
             if (dy <= (this.r + p.h / 2)) {
                 const coef = 10 * (this.y - p.y);
                 const radian = (coef * p.angle) * (Math.PI / 180);
-                this.speed[0] = -Math.cos(radian);
+                // this.speed[0] = -Math.cos(radian);
+                this.speed[0] *= -1;
                 this.speed[1] = Math.sin(radian);
                 console.log(coef);
             }
