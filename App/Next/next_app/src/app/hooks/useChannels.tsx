@@ -37,7 +37,7 @@ export default function useChannels() {
             const newChannels = [...prevChannels];
             newChannels[channelIndex].unreadMessages = 0;
             return newChannels;
-        }); 
+        });
     }, [currentChannelId])
 
     // Messaging
@@ -93,6 +93,36 @@ export default function useChannels() {
         });
     }
 
+    const handleDisconnectionOnChannel = (body: any) => {
+        const { room, user } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Remove user from channel
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != user.id);
+            return newChannels;
+        });
+    }
+
+    const handleLeftRoom = (body: any) => {
+        const { room } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Todo: update channel list display
+        fetchChannelsInfo();
+        // Remove channel from joined channels
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels.splice(channelIndex, 1);
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
@@ -100,6 +130,12 @@ export default function useChannels() {
         });
         socket?.on('newConnection', (body: any) => {
             handleNewConnectionOnChannel(body);
+        });
+        socket?.on('newDisconnection', (body: any) => {
+            handleDisconnectionOnChannel(body);
+        });
+        socket?.on('leftRoom', (body: any) => {
+            handleLeftRoom(body);
         });
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
@@ -117,39 +153,38 @@ export default function useChannels() {
             if (!channel.joined) {
                 socket?.emit("joinRoom", channel.name);
                 channel.joined = true;
-            } 
+            }
         });
     }, [socket, joinedChannels]);
-
-    // New Channels
-    const appendNewChannel = (newChannel: ChannelModel) => {
-        newChannel.joined = true;
-        newChannel.icon = '';
-        setChannels(prevChannels => [...prevChannels, newChannel]);
-    };
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
+			let hashedPassword;
             if (newChannelInfo.password)
-                newChannelInfo.password = await bcrypt.hash(newChannelInfo.password, 10);
-            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+                hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
+				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newChannelInfo),
+                body: JSON.stringify({
+					name: newChannelInfo.name,
+					type: newChannelInfo.type,
+					hashedPassword: hashedPassword,
+					owner: newChannelInfo.owner,
+					admins: newChannelInfo.admins,
+				}),
             });
             if (!response.ok) {
                 throw new Error('Failed to create the channel');
             }
             const newChannel = await response.json();
-            appendNewChannel(newChannel);
 
             // Channel joining
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -158,8 +193,6 @@ export default function useChannels() {
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        if (password)
-            password = await bcrypt.hash(password, 10);
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
@@ -168,10 +201,10 @@ export default function useChannels() {
             },
             body: JSON.stringify({ password }),
         });
-        socket?.emit("joinRoom", name);
         if (!response.ok) {
             return response;
         }
+        socket?.emit("joinRoom", name);
         await fetchNewChannelContent(id);
         await fetchChannelsInfo();
         return response;

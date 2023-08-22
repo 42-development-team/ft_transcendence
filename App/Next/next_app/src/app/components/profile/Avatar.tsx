@@ -2,7 +2,7 @@
 
 
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import Image from 'next/image';
 
 const Avatar = (
@@ -12,14 +12,18 @@ const Avatar = (
         imageUrlGetFromCloudinary = null,
         disableChooseAvatar = false,
         disableImageResize = false,
+        userName = null,
+        userId = null,
     }
     :
     {
-        children: any;
-        CallbackAvatarData: any;
-        imageUrlGetFromCloudinary: string | null;
-        disableChooseAvatar: boolean;
-        disableImageResize: boolean;
+        children?: any;
+        CallbackAvatarData?: any;
+        imageUrlGetFromCloudinary?: string | null;
+        disableChooseAvatar?: boolean;
+        disableImageResize?: boolean;
+        userName?: string | null;
+        userId?: string | null;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -53,7 +57,7 @@ const Avatar = (
 
     return (
         <div className="flex flex-col my-5 justify-center ">
-            <p className=" font-bold text-center mb-1">Username</p>
+            <p className=" font-bold text-center text-2xl mb-1">{userName}</p>
             <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
                 {imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
                     <div className="flex justify-center">

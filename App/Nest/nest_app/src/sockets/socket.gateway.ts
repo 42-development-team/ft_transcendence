@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocketGateway, ConnectedSocket, MessageBody, Subscr
 import { Socket, Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { ChatroomService } from '../chatroom/chatroom.service';
+import { UsersService } from '../users/users.service'
 
 
 @Injectable()
@@ -10,24 +11,34 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 }})
 
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
-    constructor(private chatroomService: ChatroomService) {}
+    constructor(
+        private chatroomService: ChatroomService,
+        private userService: UsersService,
+        ) {}
     
     @WebSocketServer()
     server: Server;
 
+    clients: Socket[] = [];
+
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
      // why "(client: Socket)" ? because client is an instance of Socket class 
-    handleConnection(client: Socket){
+    async handleConnection(client: Socket){
         console.log('Client connected: ' + client.id);
-        // todo:
-        // Check for verifiedJWT in socket and disconnect if not OK
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        await this.userService.updateSocketId(userId, client.id);
+        this.clients.push(client);
+        // todo: Check for verifiedJWT in socket and disconnect if not OK
         // and retrieve all the channels the user is member of
     }
 
     // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
-    handleDisconnect(client: Socket){
+    async handleDisconnect(client: Socket){
         console.log('Client disconnected: ' + client.id);
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        await this.userService.updateSocketId(userId, null);
+        this.clients = this.clients.filter(c => c.id !== client.id);
         // add logic for:
         // remove 
     }
@@ -64,8 +75,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, room: string) {
+        const user = await this.chatroomService.getUserFromSocket(client);
         client.leave(room);
-        console.log(`Client ${client.id} left room ${room}`);
+        client.emit('leftRoom', {room});
+        console.log(`Client ${user.username} ${client.id} left room ${room}`);
+        this.server.to(room).emit('newDisconnection', {room, user});
     }
 
     @SubscribeMessage('message')

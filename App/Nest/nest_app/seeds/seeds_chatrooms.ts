@@ -18,6 +18,12 @@ export const chatRooms = [
           { id: 2 },
         ],
       },
+      bannedUsers: {
+        connect: [
+          { id: 3 },
+          { id: 4},
+        ],
+      }
     },
     {
       name: "Public Room 2",
