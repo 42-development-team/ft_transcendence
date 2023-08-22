@@ -9,6 +9,7 @@ type ChatMemberProps = {
     isBanned?: boolean
     kick: (kickedId: string) => void
     leaveChannel: () => void
+    redirToProfile: () => void
 }
 
 // Todo: add status and avatar
@@ -17,6 +18,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
         if (kick == undefined) return;
         kick(id);
     }
+
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -33,7 +35,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser} leaveChannel={leaveChannel}/>
+                kickUser={kickUser} leaveChannel={leaveChannel} userId={id} />
         </div>
     )
 }
