@@ -1,26 +1,30 @@
-import Ball from "./ball.class";
-
 class Player {
     constructor(bool: boolean) {
         if (bool === true) {
             this.x = 0.01 + this.w;
             this.y = 0.5;
-            this.angle = 45;
         }
         else {
             this.x = 0.99 - this.w;
             this.y = 0.5;
-            this.angle = 45;
+            this.name = 'Player 2';
         }
     }
 
-    color: string = 'blue';
+    name: string = 'Player 1';
+    color: string = '#cba6f7aa';
     x: number = 0;
     y: number = 0;
     w: number = 0.01;
     h: number = 0.15;
     velocity: number = 0;
-    angle: number = 0;
+    angle: number = 60;
+    points: number = 0;
+
+    score(): number {
+        this.points++;
+        return this.points;
+    }
 
     setVelocity(val: number) {
         this.velocity = val;
