@@ -59,7 +59,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
                 kick={kick} leaveChannel={leaveChannel} />
         ))
     const MemberList = channel.members
-        .filter(member => !member.isAdmin)
+        .filter(member => !member.isAdmin && !member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} leaveChannel={leaveChannel} />
