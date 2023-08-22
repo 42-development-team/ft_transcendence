@@ -19,6 +19,12 @@ import { AvatarsController } from '../avatars/avatars.controller';
 import { CloudinaryService } from '../avatars/cloudinary.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ChatroomModule } from '../chatroom/chatroom.module';
+import { GameModule } from 'src/game/game.module';
+import { UserstatsModule } from '../userstats/userstats.module';
+import { GameController } from 'src/game/game.controller';
+import { GameService } from 'src/game/game.service';
+import { UserStatsService } from '../userstats/userstats.service';
+import { UserstatsController } from '../userstats/userstats.controller';
 
 @Module({
   imports: [
@@ -31,6 +37,8 @@ import { ChatroomModule } from '../chatroom/chatroom.module';
     AuthModule,
     TwoFAModule,
     ChatroomModule,
+    GameModule,
+    UserstatsModule,
     JwtModule.registerAsync({
       inject: [ConfigService], // Inject ConfigService to access JWT_SECRET
       useFactory: (configService: ConfigService) => ({
@@ -45,6 +53,8 @@ import { ChatroomModule } from '../chatroom/chatroom.module';
     ChatroomController,
     TwoFAController,
     AvatarsController,
+    GameController,
+    UserstatsController,
   ],
   providers: [
     AppService,
@@ -54,6 +64,8 @@ import { ChatroomModule } from '../chatroom/chatroom.module';
     // SocketGateway,
     TwoFAService,
     CloudinaryService,
+    GameService,
+    UserStatsService,
   ],
 })
 export class AppModule {}

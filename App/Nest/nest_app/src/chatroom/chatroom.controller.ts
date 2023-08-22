@@ -3,16 +3,21 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+// import { CreateMembershipDto } from '../membership/dto/create-membership.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
+import { MembershipService } from '../membership/membership.service';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
 export class ChatroomController {
 	constructor(
 		private chatroomService: ChatroomService,
+		private membershipService: MembershipService,
 		private socketGateway: SocketGateway,
+		private userService: UsersService,
 	) { }
 
 	/* C(reate) */
@@ -20,7 +25,8 @@ export class ChatroomController {
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
-
+			// Todo: don't emit the chatroom password
+			// Maybe send an empty body
             this.socketGateway.server.emit("NewChatRoom", newChatRoom);
 
             response.status(HttpStatus.CREATED).send(newChatRoom);
@@ -57,7 +63,7 @@ export class ChatroomController {
 			})
 			.catch(error => {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-			});	
+			});
 	}
 
 	@Get('/content/:id')
@@ -83,7 +89,43 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-			.then(() => {
+		.then(() => {
+				const memberShipExist = this.membershipService.getMemberShipFromUserAndChannelId(userId, Number(id))
+				if (memberShipExist) {
+					this.membershipService.create(userId, Number(id));
+				}
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/kick')
+	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const kickedId: number = body.kickedId;
+		const kickedUserSocket = await this.userService.getUserSocketFromId(kickedId);
+		await this.chatroomService.kick(+id, userId, kickedId)
+			.then((res) => {
+				const roomName = res.name;
+				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
+				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+	@Patch(':id/leave')
+	async leave(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.leave(+id, userId)
+			.then((res) => {
+				const roomName = res.name;
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
 				response.send();
 			})
 			.catch(error => {

@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelModel, MessageModel } from "../utils/models";
+import { ChannelMember, ChannelModel, MessageModel } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
+import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
     name: string;
@@ -15,19 +16,29 @@ export default function useChannels() {
     const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
+    const [currentChannelId, setCurrentChannelId] = useState<string>("")
 
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
     }, []);
 
-    // Todo: prevent from joining over and over
     useEffect(() => {
         if (joinedChannels.length > 0) {
             joinPreviousChannels();
         }
     }, [joinedChannels]);
 
+    useEffect(() => {
+        // Update the notification count to 0 when the channel is open
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === currentChannelId);
+        if (channelIndex == -1) return;
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].unreadMessages = 0;
+            return newChannels;
+        });
+    }, [currentChannelId])
 
     // Messaging
     const sendToChannel = useCallback(
@@ -55,55 +66,125 @@ export default function useChannels() {
 
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
+            if (currentChannelId != newChannels[channelIndex].id) {
+
+                newChannels[channelIndex].unreadMessages++;
+            }
             newChannels[channelIndex].messages?.push(messageModel);
             return newChannels;
         });
     }
 
+    const handleNewConnectionOnChannel = (body: any) => {
+        const { room, user } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+
+        const newMember: ChannelMember = user;
+        if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
+            return ;
+
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].members?.push(newMember);
+            return newChannels;
+        });
+    }
+
+    const handleDisconnectionOnChannel = (body: any) => {
+        const { room, user } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Remove user from channel
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != user.id);
+            return newChannels;
+        });
+    }
+
+    const handleLeftRoom = (body: any) => {
+        const { room } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        // Todo: update channel list display
+        fetchChannelsInfo();
+        // Remove channel from joined channels
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            newChannels.splice(channelIndex, 1);
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
+        // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
+        });
+        socket?.on('newConnection', (body: any) => {
+            handleNewConnectionOnChannel(body);
+        });
+        socket?.on('newDisconnection', (body: any) => {
+            handleDisconnectionOnChannel(body);
+        });
+        socket?.on('leftRoom', (body: any) => {
+            handleLeftRoom(body);
+        });
+        socket?.on('NewChatRoom', (body: any) => {
+            fetchChannelsInfo();
         });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
             socket?.off('new-message');
+            socket?.off('newConnection');
         }
     }, [socket, receiveMessage]);
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
-            socket?.emit("joinRoom", channel.name);
+            if (!channel.joined) {
+                socket?.emit("joinRoom", channel.name);
+                channel.joined = true;
+            }
         });
     }, [socket, joinedChannels]);
-
-    // New Channels
-    const appendNewChannel = (newChannel: ChannelModel) => {
-        newChannel.joined = true;
-        newChannel.icon = '';
-        setChannels(prevChannels => [...prevChannels, newChannel]);
-    };
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
-            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+			let hashedPassword;
+            if (newChannelInfo.password)
+                hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
+				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newChannelInfo),
+                body: JSON.stringify({
+					name: newChannelInfo.name,
+					type: newChannelInfo.type,
+					hashedPassword: hashedPassword,
+					owner: newChannelInfo.owner,
+					admins: newChannelInfo.admins,
+				}),
             });
             if (!response.ok) {
                 throw new Error('Failed to create the channel');
             }
             const newChannel = await response.json();
-            appendNewChannel(newChannel);
 
             // Channel joining
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -120,11 +201,10 @@ export default function useChannels() {
             },
             body: JSON.stringify({ password }),
         });
-        socket?.emit("joinRoom", name);
         if (!response.ok) {
-            console.log('Error joining channel:', await response.text());
             return response;
         }
+        socket?.emit("joinRoom", name);
         await fetchNewChannelContent(id);
         await fetchChannelsInfo();
         return response;
@@ -137,6 +217,7 @@ export default function useChannels() {
         const fetchedChannel = channelContent;
         fetchedChannel.joined = true;
         fetchedChannel.icon = '';
+        fetchedChannel.unreadMessages = 0;
         fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
             return {
                 id: message.id,
@@ -170,6 +251,8 @@ export default function useChannels() {
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
+                channel.joined = false;
+                channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
                         id: message.id,
@@ -195,5 +278,6 @@ export default function useChannels() {
         joinChannel,
         sendToChannel,
         socket,
+        setCurrentChannelId
     }
 }

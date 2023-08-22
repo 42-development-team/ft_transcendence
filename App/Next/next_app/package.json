@@ -13,6 +13,7 @@
     "@types/node": "20.3.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
+    "bcryptjs": "^2.4.3",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
     "next": "^13.4.12",
@@ -25,6 +26,8 @@
   "devDependencies": {
     "@catppuccin/tailwindcss": "^0.1.6",
     "@material-tailwind/react": "^2.1.0",
+    "@types/bcryptjs": "^2.4.2",
+    "bcryptjs": "^2.4.3",
     "jose": "^4.14.4",
     "next": "^13.4.19",
     "socket.io-client": "^4.7.2",

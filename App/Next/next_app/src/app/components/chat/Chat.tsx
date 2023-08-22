@@ -10,41 +10,75 @@ import useFriends from '@/app/hooks/useFriends';
 import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
 import CreateChannel from './channel/CreateChannel';
+import { UserRoleProvider } from './chatbox/members/UserRoleProvider';
+import ChannelSettings from './channel/ChannelSettings';
 
 interface ChatBarProps {
     userId: string;
 }
 
 const Chat = ({ userId }: ChatBarProps) => {
-    const { chatBarState, openChannelId } = useChatBarContext();
+    const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel } = useChannels();
+    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel, setCurrentChannelId } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
+    const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
+    const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
+    
+    let currentUser = undefined;
 
     useEffect(() => {
-        if (openChannelId == "" || chatBarState == ChatBarState.Closed) return ;
+        setCurrentChannelId(openChannelId);
+        if (openChannelId == "" || chatBarState == ChatBarState.Closed) {
+            return ;
+        }
         setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
     }, [openChannelId, chatBarState]);
 
+    useEffect(() => {
+        currentUser = currentChannel?.members?.find(member => member.id == userId);
+        if (currentUser) {
+            setIsCurrentUserAdmin(currentUser.isAdmin);
+            setIsCurrentUserOwner(currentUser.isOwner);
+        }
+        else {
+            setIsCurrentUserAdmin(false);
+            setIsCurrentUserOwner(false);
+        }
+    }, [currentChannel, userId]);
+
+    useEffect(() => {
+        if ((chatBarState == ChatBarState.ChatOpen || chatBarState == ChatBarState.ChatMembersOpen) && joinedChannels.find(channel => channel.id == openChannelId) == undefined) {
+            console.log("Current channel not found");
+            updateChatBarState(ChatBarState.Closed);
+            setCurrentChannelId("");
+        }   
+    }, [joinedChannels]);
+
     return (
         <div className='flex h-full'>
-            <ChatSideBar channels={channels} userId={userId} />
-            {/* Main Panel */}
-            {chatBarState == ChatBarState.ChatOpen && currentChannel &&
-                <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
-            }
-            {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                <ChatMemberList channel={currentChannel}/>
-            }
-            {chatBarState == ChatBarState.FriendListOpen &&
-                <FriendList friends={friends} />
-            }
-            {chatBarState == ChatBarState.JoinChannelOpen &&
-                <JoinChannel channels={channels} joinChannel={joinChannel}/>
-            }
-            {chatBarState == ChatBarState.CreateChannelOpen &&
-                <CreateChannel userId={userId} createNewChannel={createNewChannel} />
-            }
+            <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
+                <ChatSideBar channels={joinedChannels} userId={userId} />
+                {/* Main Panel */}
+                {chatBarState == ChatBarState.ChatOpen && currentChannel &&
+                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
+                }
+                {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
+                    <ChatMemberList channel={currentChannel} userId={userId}/>
+                }
+                {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
+                    <ChannelSettings channel={currentChannel} />
+                }
+                {chatBarState == ChatBarState.FriendListOpen &&
+                    <FriendList friends={friends} />
+                }
+                {chatBarState == ChatBarState.JoinChannelOpen &&
+                    <JoinChannel channels={channels} joinChannel={joinChannel}/>
+                }
+                {chatBarState == ChatBarState.CreateChannelOpen &&
+                    <CreateChannel userId={userId} createNewChannel={createNewChannel} />
+                }
+            </UserRoleProvider>
         </div>
     )
 }

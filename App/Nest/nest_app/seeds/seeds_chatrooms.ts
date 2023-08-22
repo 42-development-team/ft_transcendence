@@ -2,7 +2,7 @@ export const chatRooms = [
     {
       name: "Public Room 1",
       type: "public",
-      password: null, // No password set
+      hashedPassword: null,
       members: {
         connect: [
           { id: 1 },
@@ -18,11 +18,17 @@ export const chatRooms = [
           { id: 2 },
         ],
       },
+      bannedUsers: {
+        connect: [
+          { id: 3 },
+          { id: 4},
+        ],
+      }
     },
     {
       name: "Public Room 2",
       type: "public",
-      password: null, // No password set
+      hashedPassword: null,
       members: {
         connect: [
           { id: 3 },
@@ -36,32 +42,51 @@ export const chatRooms = [
         connect: [
           { id: 2 },
           { id: 3 },
+        ],
+      },
+    },
+    {
+      name: "Protected Room 1",
+      type: "protected",
+      hashedPassword: "hashPassword123",
+      members: {
+        connect: [
+          { id: 2 },
+          { id: 3 },
+        ],
+      },
+      owner: {
+        connect: { id: 2 },
+      },
+      admins: {
+        connect: [
+          { id: 2 },
+        ],
+      },
+    },
+    {
+      name: "Protected Room 2",
+      type: "protected",
+      hashedPassword: "hashPassword123",
+      members: {
+        connect: [
+          { id: 2 },
+          { id: 3 },
+        ],
+      },
+      owner: {
+        connect: { id: 2 },
+      },
+      admins: {
+        connect: [
+          { id: 2 },
         ],
       },
     },
     {
       name: "Private Room 1",
       type: "private",
-      password: "password123",
-      members: {
-        connect: [
-          { id: 2 },
-          { id: 3 },
-        ],
-      },
-      owner: {
-        connect: { id: 2 },
-      },
-      admins: {
-        connect: [
-          { id: 2 },
-        ],
-      },
-    },
-    {
-      name: "Private Room 2",
-      type: "private",
-      password: "password123",
+      hashedPassword: "hashPassword123",
       members: {
         connect: [
           { id: 2 },

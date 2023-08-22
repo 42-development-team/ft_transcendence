@@ -10,10 +10,10 @@ import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 const Navbar = () => {
     const {isLoggedIn, logout} = useAuthcontext();
     return (
-        <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
+        <div className="h-[4vh] flex items-center justify-between bg-base p-1  drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
             {isLoggedIn && <NavLinks logout={logout}/> }
-        </nav>
+        </div>
     );
 };
 
@@ -22,7 +22,7 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
         <div className="flex w-fit items-center justify-center gap-2 p-2 pt-4
             font-bold text-mauve text-2xl">
             <Link href={isLoggedIn ? "/home" : "/"}>
-                Pongolin
+                Pong
             </Link>
         </div>
     )

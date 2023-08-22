@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
+import { comparePassword } from '../utils/bcrypt';
 
 @Injectable()
 export class ChatroomService {
@@ -21,13 +22,12 @@ export class ChatroomService {
 	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
-		const { name, type, password } = createChatroomDto;
-
+		const { name, type, hashedPassword } = createChatroomDto;
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
 				type,
-				password,
+				hashedPassword,
 				owner: { connect: { id: ownerId } },
 				admins: { connect: [{ id: ownerId }] },
 			},
@@ -106,6 +106,13 @@ export class ChatroomService {
 					sender: message.sender,
 				};
 			}),
+			bannedUsers: (chatroom.bannedUsers === undefined) ? [] : chatroom.bannedUsers.map(bannedUser => {
+				return {
+					id: bannedUser.id,	
+					username: bannedUser.username,
+					avatar: bannedUser.avatar,
+				};
+			}),
 		};
 		return current;
 	}
@@ -120,6 +127,7 @@ export class ChatroomService {
 				},
 				members: true,
 				admins: true,
+				bannedUsers: true,
 			},
 		});
 		// Convert to ChatRoomContentDto - add joined field
@@ -143,6 +151,7 @@ export class ChatroomService {
 				},
 				members: true,
 				admins: true,
+				bannedUsers: true,
 			},
 		});
 		const isJoined = await this.prisma.chatRoom.count({
@@ -162,12 +171,13 @@ export class ChatroomService {
 	}
 
 	async join(id: number, userId: number, password: string) {
+		const isValid = undefined;
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 		});
 
 		// Todo : check if already joined
-		if (chatRoom.type === 'public') {
+		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			// Todo: how to check the result of the update?
 			const updateResult = await this.prisma.chatRoom.update({
 				where: { id: id },
@@ -175,8 +185,9 @@ export class ChatroomService {
 			});
 			return updateResult;
 		}
-		else if (chatRoom.type === 'private') {
-			if (chatRoom.password === password) {
+		else if (chatRoom.type === 'protected') {
+			const isValid = await comparePassword(password, chatRoom.hashedPassword);
+			if (isValid) {
 				const updateResult = await this.prisma.chatRoom.update({
 					where: { id: id },
 					data: { members: { connect: [{ id: userId }] } },
@@ -190,6 +201,47 @@ export class ChatroomService {
 		return chatRoom;
 	}
 
+	async kick(id: number, userId: number, kickedId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: { owner: true},
+		});
+		// Check if target user is admin
+		const isAdmin = await this.prisma.chatRoom.count({
+			where: { id: id, admins: { some: { id: userId } } },
+		}) > 0;
+		if (!isAdmin) {
+			throw new Error('User is not an admin of this channel');
+		}
+		const isTargetOwner = chatRoom.owner.id === kickedId;
+		if (isTargetOwner) {
+			throw new Error('Cannot kick owner of the channel');
+		}
+		const updateResult = await this.prisma.chatRoom.update({
+			where: { id: id },
+			data: { members: { disconnect: [{ id: kickedId }] } },
+		});
+		return updateResult;
+	}
+
+	async leave(id: number, userId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: { owner: true},
+		});
+		// Check if target user is admin
+		// const isOwner = await this.prisma.chatRoom.count({
+		// 	where: { id: id, owner: { id: userId } },
+		// }) > 0;
+		// Todo: if owner
+		// Todo: remove from admin list
+		const updateResult = await this.prisma.chatRoom.update({
+			where: { id: id },
+			data: { members: { disconnect: [{ id: userId }] } },
+		});
+		return updateResult;
+	}
+
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
 		const newMessage = await this.prisma.message.create({
 			data: {
@@ -200,13 +252,13 @@ export class ChatroomService {
 		});
 		const test = await this.prisma.message.findUnique({
 			where: { id: newMessage.id },
-			include: { 
+			include: {
 				sender: true,
 			},
 		});
 		return test;
 	}
-	
+
 	// #endregion
 
 	// #region D(elete)
@@ -216,7 +268,7 @@ export class ChatroomService {
 
 	// #endregion
 	// #region Retrieve
-	
+
 	async getUserIdFromSocket(socket: Socket){
 		const authToken = socket.handshake.headers.cookie.split(";");
 		const jwtToken = authToken[0].split("=")[1];
@@ -243,7 +295,7 @@ export class ChatroomService {
         });
 
         if (chatRoom) {
-            return chatRoom.password || null;
+            return chatRoom.hashedPassword || null;
         }
 
         return null;

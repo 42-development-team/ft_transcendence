@@ -12,7 +12,7 @@ export class CreateChatroomDto {
 
     @IsOptional()
     @IsString()
-    password?: string;
+    hashedPassword?: string;
 
     @IsNotEmpty()
     owner: number;
