@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreateMembershipDto {
     @IsNotEmpty()
@@ -6,4 +6,7 @@ export class CreateMembershipDto {
 
     @IsNotEmpty()
     chatroom: number;
+
+    @IsBoolean()
+    isAdministrator: boolean;
 }

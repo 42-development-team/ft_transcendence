@@ -49,14 +49,14 @@ model ChatRoom {
   createdAt      DateTime  		@default(now())
   updatedAt      DateTime  		@updatedAt
   name           String
-  creatorId      Int
   type           String
   hashedPassword String?
+  creatorId      Int
   owner          User      		@relation("chatCreated", fields: [creatorId], references: [id])
   messages       Message[] 		@relation("chatMessages")
-  admins         User[]    		@relation("chatAdmins")
-  members        User[]    		@relation("members")
-  bannedUsers    User[]    		@relation("bannedUsers")
+  admins         User[]    		@relation("chatAdmins") // Todo: remove
+  members        User[]    		@relation("members")    // Todo: remove
+  bannedUsers    User[]    		@relation("bannedUsers")  // Todo : use membership and remove
   memberShips	 Membership[]	@relation("membership")
 }
 

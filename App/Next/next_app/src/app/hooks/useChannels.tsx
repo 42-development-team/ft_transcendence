@@ -213,25 +213,6 @@ export default function useChannels() {
     }
 
     // FETCHING
-    const fetchNewChannelContent = async (id: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const channelContent = await response.json();
-        const fetchedChannel = channelContent;
-        fetchedChannel.joined = true;
-        fetchedChannel.icon = '';
-        fetchedChannel.unreadMessages = 0;
-        fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
-            return {
-                id: message.id,
-                createdAt: message.createdAt,
-                content: message.content,
-                senderId: message.sender.id,
-                senderUsername: message.sender.username,
-            }
-        });
-        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
-    }
-
     const fetchChannelsInfo = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
@@ -246,6 +227,26 @@ export default function useChannels() {
             console.log("Error fetching channel info list: " + err);
         }
     };
+
+    const fetchNewChannelContent = async (id: string) => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+        const channelContent = await response.json();
+        console.log("Channel Content: " + JSON.stringify(channelContent, null, 2));
+        const fetchedChannel: ChannelModel = channelContent;
+        fetchedChannel.joined = true;
+        fetchedChannel.icon = '';
+        fetchedChannel.unreadMessages = 0;
+        fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
+            return {
+                id: message.id,
+                createdAt: message.createdAt,
+                content: message.content,
+                senderId: message.sender.id,
+                senderUsername: message.sender.username,
+            }
+        });
+        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+    }
 
     const fetchChannelsContent = async () => {
         try {

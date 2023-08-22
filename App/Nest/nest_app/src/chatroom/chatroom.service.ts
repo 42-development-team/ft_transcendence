@@ -55,7 +55,7 @@ export class ChatroomService {
 		// Convert to InfoChatroomDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomInfoDto>[] = chatrooms.map(async chatrooms => {
 			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatrooms.id, members: { some: { id: userId } } },
+				where: { id: chatrooms.id, memberShips: { some: { id: userId } } },
 			}) > 0;
 			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
@@ -74,7 +74,7 @@ export class ChatroomService {
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, members: { some: { id: userId } } },
+			where: { id: id, memberShips: { some: { id: userId } } },
 		}) > 0;
 		const chatroomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
@@ -92,22 +92,20 @@ export class ChatroomService {
 
 	// Content: members and messages
 
-	constructChatroomContentDto(chatroom: any, isJoined: boolean): ChatroomContentDto {
+	constructChatroomContentDto(chatroom: any): ChatroomContentDto {
 		const current: ChatroomContentDto = {
 			id: chatroom.id,
 			name: chatroom.name,
 			type: chatroom.type,
-			joined: isJoined,
 			ownerId: chatroom.ownerId,
-			members: (chatroom.members === undefined) ? [] : chatroom.members.map(member => {
+			members: (chatroom.memberShip === undefined) ? [] : chatroom.memberShip.map(member => {
 				return {
-					id: member.id,
-					username: member.username,
-					avatar: member.avatar,
-					isAdmin: chatroom.admins.some(admin => admin.id === member.id),
-					isOwner: chatroom.creatorId === member.id,
+					id: member.userId,
+					username: member.user.username,
+					isAdmin: member.isAdmin,
+					isOwner: chatroom.owner.id === member.userId,
 				};
-			}),
+			}),				
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
 				return {
 					id: message.id,
@@ -130,26 +128,20 @@ export class ChatroomService {
 		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
-			where: { members: { some: { id: userId } } },
+			where: { memberShips: { some: { userId: userId } } },
 			include: {
 				messages: {
 					include: { sender: true }
 				},
-				members: true,
-				admins: true,
-				bannedUsers: true,
+				owner: true,
+				memberShips: true
 			},
 		});
-		// Convert to ChatRoomContentDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomContentDto>[] = chatrooms.map(async chatroom => {
-			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatroom.id, members: { some: { id: userId } } },
-			}) > 0;
-			const current: ChatroomContentDto = this.constructChatroomContentDto(chatroom, isJoined);
+			const current: ChatroomContentDto = this.constructChatroomContentDto(chatroom);
 			return current;
 		});
-		const chatRoomsDto = await Promise.all(chatroomsDtoPromises);
-		return chatRoomsDto;
+		return await Promise.all(chatroomsDtoPromises);
 	}
 
 	async getChannelContent(id: number, userId: number): Promise<ChatroomContentDto> {
@@ -159,18 +151,15 @@ export class ChatroomService {
 				messages: {
 					include: { sender: true }
 				},
-				members: true,
-				admins: true,
-				bannedUsers: true,
+				owner: true,
+				memberShips: true
 			},
 		});
-		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, members: { some: { id: userId } } },
-		}) > 0;
+		const isJoined = chatroom.memberShips.some(member => member.userId === userId);
 		if (!isJoined) {
 			throw new Error('User is not a member of this channel');
 		}
-		return this.constructChatroomContentDto(chatroom, isJoined);
+		return this.constructChatroomContentDto(chatroom);
 	}
 	// #endregion
 
