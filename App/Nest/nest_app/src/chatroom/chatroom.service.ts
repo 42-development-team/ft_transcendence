@@ -55,7 +55,7 @@ export class ChatroomService {
 		// Convert to InfoChatroomDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomInfoDto>[] = chatrooms.map(async chatrooms => {
 			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatrooms.id, memberShips: { some: { id: userId } } },
+				where: { id: chatrooms.id, memberShips: { some: { userId: userId } } },
 			}) > 0;
 			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
@@ -74,7 +74,7 @@ export class ChatroomService {
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, memberShips: { some: { id: userId } } },
+			where: { id: id, memberShips: { some: { userId: userId } } },
 		}) > 0;
 		const chatroomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
