@@ -6,7 +6,6 @@ import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 import PasswordInputField from '../PasswordInputField';
 import ChatHeader from '../chatbox/ChatHeader';
-import CustomBtn from '../../CustomBtn';
 
 interface CreateChannelProps {
 	userId: string;

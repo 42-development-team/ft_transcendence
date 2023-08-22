@@ -44,9 +44,9 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
     }, [channels])
     
     return (
-        <div className='w-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='w-full min-w-[450px] h-[96vh] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title="Join a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
-            <div className='overflow-auto h-[86vh]'>
+            <div className='overflow-auto h-[92vh]'>
                 <div className='flex items-center justify-around py-2 my-2 '>
                     <span className='font-semibold text-sm'>
                         Public channels 📢
