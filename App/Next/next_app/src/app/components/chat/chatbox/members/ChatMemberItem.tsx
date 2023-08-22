@@ -1,8 +1,6 @@
 import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { useRouter } from "next/navigation";
-
 // import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type ChatMemberProps = {
@@ -21,12 +19,6 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
         kick(id);
     }
 
-    const redirToProfile = () => {
-        const Router = useRouter();
-        sessionStorage.setItem("profileId", id);
-        Router.push("/profile");
-    }
-
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -43,7 +35,7 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser} leaveChannel={leaveChannel} redirToProfile={redirToProfile} />
+                kickUser={kickUser} leaveChannel={leaveChannel} userId={id} />
         </div>
     )
 }

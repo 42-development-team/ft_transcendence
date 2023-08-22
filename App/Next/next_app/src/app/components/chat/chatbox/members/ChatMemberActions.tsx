@@ -1,3 +1,5 @@
+'use client';
+
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
@@ -7,22 +9,27 @@ import { useUserRole } from "./UserRoleProvider";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
+    userId: string
     isMemberAdmin: boolean
     isMemberOwner: boolean
     isBanned?: boolean
     kickUser: () => void
     leaveChannel: () => void
-    redirToProfile: () => void
 }
 
 
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel, redirToProfile }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
+    const onProfileClick = () => {
+        sessionStorage.setItem("userId", userId);
+        window.location.href = "/profile";
+    }
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
     const adminActionsEnabled: boolean = !isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !isMemberAdmin;
+
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
@@ -62,7 +69,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBann
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={redirToProfile}>
+                    <DropDownAction onClick={onProfileClick}>
                         View profile
                     </DropDownAction>
                     {!isCurrentUser &&
