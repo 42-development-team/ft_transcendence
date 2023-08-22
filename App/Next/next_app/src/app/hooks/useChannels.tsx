@@ -26,6 +26,7 @@ export default function useChannels() {
     useEffect(() => {
         if (joinedChannels.length > 0) {
             joinPreviousChannels();
+            // console.log(JSON.stringify(joinedChannels, null, 2));
         }
     }, [joinedChannels]);
 
@@ -67,7 +68,6 @@ export default function useChannels() {
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             if (currentChannelId != newChannels[channelIndex].id) {
-
                 newChannels[channelIndex].unreadMessages++;
             }
             newChannels[channelIndex].messages?.push(messageModel);
@@ -82,10 +82,15 @@ export default function useChannels() {
             return;
         }
 
-        const newMember: ChannelMember = user;
+        const newMember: ChannelMember = {
+            id: user.id,
+            username: user.username,
+            isAdmin: user.isAdmin,
+            isOwner: user.isOwner,
+            avatar: user.avatar,
+        }
         if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
             return ;
-
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             newChannels[channelIndex].members?.push(newMember);

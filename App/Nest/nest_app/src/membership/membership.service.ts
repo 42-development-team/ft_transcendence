@@ -28,7 +28,10 @@ export class MembershipService {
 	try {
 		const memberShip = await this.prisma.membership.findFirst({
 			where:
-				  { userId: userId, chatRoomId: channelId }
+				  { userId: userId, chatRoomId: channelId },
+			include: { 
+				user: true,
+			}
 		})
 		return memberShip;
 	}
