@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { UserStatsService } from "./userstats.service";
-import { create } from "domain";
 import { UserIdDto } from "./dto/user-id.dto";
 import { UserStatsDto } from "./dto/userstats.dto";
-import { response } from "express";
 
 ApiTags('Userstats')
 @Controller('userstats')
@@ -13,7 +11,7 @@ export class UserstatsController {
 
 	/* C(reate) */
 	@Post('create')
-	async createUserStats(@Body() userIdDto: UserIdDto) {
+	async createUserStats(@Body() userIdDto: UserIdDto, @Res() response: any) {
 		try {
 			const newUserStats = await this.userstatsService.createUserStats(userIdDto);
 
@@ -25,11 +23,13 @@ export class UserstatsController {
 
 	/* R(ead) */
 	@Get('info')
-	async getUserStats(@Body() userIdDto: UserIdDto) {
+	async getUserStats(@Req() req: any, @Res() response: any) {
 		try {
-			const stats = await this.userstatsService.getUserStats(userIdDto);
+			const userId: number = req.user.sub;
+			const statsDto = await this.userstatsService.getUserStats(userId);
 
-			response.status(HttpStatus.OK).send(stats);
+			console.log("stats READ in get:", statsDto)
+			response.status(HttpStatus.OK).send(JSON.stringify(statsDto));
 		} catch (error) {
 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
@@ -37,7 +37,7 @@ export class UserstatsController {
 
 	/* U(pdate) */
 	@Patch('update/:id')
-	async updateUserStats(@Param('id') id: number, @Body() userUpdateDto: UserStatsDto) {
+	async updateUserStats(@Param('id') id: number, @Body() userUpdateDto: UserStatsDto, @Res() response: any) {
 		try {
 			this.userstatsService.updateUserStats(id, userUpdateDto);
 
@@ -50,7 +50,7 @@ export class UserstatsController {
 
 	/* D(elete) */
 	@Delete('delete')
-	async deleteUserStats(@Body() userIdDto: UserIdDto) {
+	async deleteUserStats(@Body() userIdDto: UserIdDto, @Res() response: any) {
 		try {
 			this.userstatsService.deleteUserStats(userIdDto);
 
