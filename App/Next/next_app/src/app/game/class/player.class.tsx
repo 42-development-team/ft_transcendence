@@ -37,11 +37,11 @@ class Player {
     move() {
         const val: number  = this.y + this.velocity;
         if (this.velocity > 0) {
-            if (val + this.h / 2 < 1)
+            if (val + this.h / 2 < 0.99)
                 this.y = val;
         }
         else {
-            if (val - this.h / 2 > 0)
+            if (val - this.h / 2 > 0.01)
                 this.y = val;
         }
     }

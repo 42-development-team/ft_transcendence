@@ -11,6 +11,7 @@ class Ball {
     r: number = 0.01;
     pi2: number = Math.PI * 2;
     speed: [number, number] = [0, 0];
+    incr: number = 0;
 
     bounce(p1: Player, p2: Player, width:  number, height: number) {
         if (this.y - this.r <= 0 || this.y + this .r >= 1)
@@ -63,7 +64,6 @@ class Ball {
                 const radian = (coef * p.angle) * (Math.PI / 180);
                 this.speed[0] *= -1;
                 this.speed[1] = Math.sin(radian);
-                console.log(coef);
             }
         }
     };
@@ -76,10 +76,8 @@ class Ball {
             if (dy <= (this.r + p.h / 2)) {
                 const coef = 10 * (this.y - p.y);
                 const radian = (coef * p.angle) * (Math.PI / 180);
-                // this.speed[0] = -Math.cos(radian);
                 this.speed[0] *= -1;
                 this.speed[1] = Math.sin(radian);
-                console.log(coef);
             }
         }
     };
@@ -102,6 +100,12 @@ class Ball {
         this.show(context, width, height);
         this.bounce(p1, p2, width, height);
         this.update();
+        this.incr++;
+        if (this.incr === 10) {
+            this.speed[0] += 0.01 * this.speed[0];
+            this.incr = 0;
+            console.log("incr");
+        }
     };
 }
 
