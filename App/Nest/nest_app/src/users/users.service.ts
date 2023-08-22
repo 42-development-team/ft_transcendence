@@ -42,6 +42,13 @@ export class UsersService {
         return userDto;
     }
 
+    async getUserSocketFromId(id: number): Promise<string> {
+        const user = await this.prisma.user.findUniqueOrThrow({
+            where: { id },
+        });
+        return user.socketId;
+    }
+
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {
             const user = await this.prisma.user.findUniqueOrThrow({
@@ -83,6 +90,14 @@ export class UsersService {
         const updatedUser = await this.prisma.user.update({
             where: { id },
             data: { avatar: updatedAvatar },
+        });
+        return updatedUser;
+    }
+
+    async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
+        const updatedUser = await this.prisma.user.update({
+            where: { id },
+            data: { socketId: updatedSocketId },
         });
         return updatedUser;
     }

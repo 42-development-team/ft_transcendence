@@ -18,7 +18,7 @@ interface ChatBarProps {
 }
 
 const Chat = ({ userId }: ChatBarProps) => {
-    const { chatBarState, openChannelId } = useChatBarContext();
+    const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
     const { friends } = useFriends();
     const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel, setCurrentChannelId } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
@@ -46,6 +46,14 @@ const Chat = ({ userId }: ChatBarProps) => {
             setIsCurrentUserOwner(false);
         }
     }, [currentChannel, userId]);
+
+    useEffect(() => {
+        if ((chatBarState == ChatBarState.ChatOpen || chatBarState == ChatBarState.ChatMembersOpen) && joinedChannels.find(channel => channel.id == openChannelId) == undefined) {
+            console.log("Current channel not found");
+            updateChatBarState(ChatBarState.Closed);
+            setCurrentChannelId("");
+        }   
+    }, [joinedChannels]);
 
     return (
         <div className='flex h-full'>

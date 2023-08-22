@@ -10,9 +10,12 @@ type ChatMemberActionsProps = {
     isMemberAdmin: boolean
     isMemberOwner: boolean
     isBanned?: boolean
+    kickUser: () => void
+    leaveChannel: () => void
 }
 
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned }: ChatMemberActionsProps) => {
+
+const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -79,7 +82,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBann
 
                     {adminActionsEnabled && !isBanned &&
                         <>
-                            <DropDownActionRed onClick={() => console.log('Kick')}>
+                            <DropDownActionRed onClick={kickUser}>
                                 Kick
                             </DropDownActionRed>
                             <DropDownAction onClick={() => console.log('Ban')}>
@@ -88,7 +91,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBann
                         </>
                     }
                     {isCurrentUser &&
-                        <DropDownActionRed onClick={() => console.log('Leave Channel')}>
+                        <DropDownActionRed onClick={leaveChannel}>
                             Leave
                         </DropDownActionRed>
                     }
