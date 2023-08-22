@@ -236,6 +236,16 @@ export default function useChannels() {
         fetchedChannel.joined = true;
         fetchedChannel.icon = '';
         fetchedChannel.unreadMessages = 0;
+        fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
+            return {
+                id: member.userId,
+                username: member.username,
+                isAdmin: member.isAdmin,
+                isOwner: channelContent.ownerId == member.userId,
+                avatar: "",
+                // avatar: member.user.avatar,
+            }
+        });
         fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
             return {
                 id: message.id,
@@ -252,6 +262,7 @@ export default function useChannels() {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();
+            // console.log("DATA: " + JSON.stringify(data, null, 2));
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
                 channel.joined = false;
@@ -263,6 +274,16 @@ export default function useChannels() {
                         content: message.content,
                         senderId: message.sender.id,
                         senderUsername: message.sender.username,
+                    }
+                });
+                channel.members = channel.members.map((member: any) => {
+                    return {
+                        id: member.userId,
+                        username: member.username,
+                        isAdmin: member.isAdmin,
+                        isOwner: channel.ownerId == member.userId,
+                        //Todo: avatar
+                        avatar: "",
                     }
                 });
                 return channel;

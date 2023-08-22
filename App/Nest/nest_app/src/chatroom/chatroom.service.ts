@@ -98,7 +98,8 @@ export class ChatroomService {
 			name: chatroom.name,
 			type: chatroom.type,
 			ownerId: chatroom.ownerId,
-			members: (chatroom.memberShip === undefined) ? [] : chatroom.memberShip.map(member => {
+			// members: [],
+			members: (chatroom.memberShips === undefined) ? [] : chatroom.memberShips.map(member => {
 				return {
 					id: member.userId,
 					username: member.user.username,
@@ -134,7 +135,9 @@ export class ChatroomService {
 					include: { sender: true }
 				},
 				owner: true,
-				memberShips: true
+				memberShips: {
+					include: { user: true }
+				}
 			},
 		});
 		const chatroomsDtoPromises: Promise<ChatroomContentDto>[] = chatrooms.map(async chatroom => {
@@ -152,7 +155,9 @@ export class ChatroomService {
 					include: { sender: true }
 				},
 				owner: true,
-				memberShips: true
+				memberShips: {
+					include: { user: true }
+				}
 			},
 		});
 		const isJoined = chatroom.memberShips.some(member => member.userId === userId);
@@ -188,12 +193,15 @@ export class ChatroomService {
 		console.log(JSON.stringify(chatRoom, null, 2));
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			return isJoined;
+			if (!isJoined)
+				await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (isValid) {
-				return isJoined;
+				if (!isJoined) {
+					await this.connectUserToChatroom(userId, id);
+				}
 			} else {
 				throw new Error('Wrong password');
 			}

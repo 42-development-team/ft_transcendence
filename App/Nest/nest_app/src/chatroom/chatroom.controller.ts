@@ -87,11 +87,7 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-		.then((isJoined: boolean) => {
-				console.log("isJoined: " + isJoined);
-				if (!isJoined) {
-					this.membershipService.create(userId, Number(id));
-				}
+		.then(() => {
 				response.send();
 			})
 			.catch(error => {
