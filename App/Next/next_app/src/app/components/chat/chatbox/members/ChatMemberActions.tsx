@@ -12,10 +12,11 @@ type ChatMemberActionsProps = {
     isBanned?: boolean
     kickUser: () => void
     leaveChannel: () => void
+    redirProfilUser: () => void
 }
 
 
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel, redirProfilUser }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +62,7 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBann
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={() => console.log('View Profile')}>
+                    <DropDownAction onClick={redirProfilUser}>
                         View profile
                     </DropDownAction>
                     {!isCurrentUser &&
