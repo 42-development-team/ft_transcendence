@@ -1,12 +1,17 @@
+'use client';
+
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
 import { Tooltip } from "@material-tailwind/react";
 import { useRef, useState } from "react";
 import { useUserRole } from "./UserRoleProvider";
+import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
+import { Alert } from "@material-tailwind/react";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
+    userId: string
     isMemberAdmin: boolean
     isMemberOwner: boolean
     isBanned?: boolean
@@ -15,13 +20,24 @@ type ChatMemberActionsProps = {
 }
 
 
-const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
+    const onProfileClick = () => {
+        sessionStorage.setItem("userId", userId);
+        if (sessionStorage.getItem("userId") === undefined) {
+            setOpenAlert(true);
+        }
+        else
+            window.location.href = "/profile";
+    }
+    
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [ openAlert, setOpenAlert ] = useState(false);
 
     const adminActionsEnabled: boolean = !isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !isMemberAdmin;
+
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
@@ -61,9 +77,20 @@ const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBann
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={() => console.log('View Profile')}>
+                    <DropDownAction onClick={onProfileClick}>
                         View profile
                     </DropDownAction>
+                    <Alert
+                        className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
+                        variant='gradient'
+                        open={openAlert}
+                        icon={<AlertErrorIcon />}
+                        animate={{
+                            mount: { y: 0 },
+                            unmount: { y: 100 },
+                        }}>
+                        {<p>User not found</p>}
+                    </Alert>
                     {!isCurrentUser &&
                         <DropDownAction onClick={() => console.log('Play')}>
                             Invite to play

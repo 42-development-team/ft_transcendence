@@ -22,16 +22,16 @@ export class UserstatsController {
 	}
 
 	/* R(ead) */
-	@Get('info')
-	async getUserStats(@Req() req: any, @Res() response: any) {
+	@Get('info/:userId')
+	async getUserStats(@Param('userId') userId: string,  @Res() response: any) {
 		try {
-			const userId: number = req.user.sub;
-			const statsDto = await this.userstatsService.getUserStats(userId);
+			const id: number = Number(userId);
+			const statsDto = await this.userstatsService.getUserStats(id);
 
 			console.log("stats READ in get:", statsDto)
-			response.status(HttpStatus.OK).send(JSON.stringify(statsDto));
+			await response.status(HttpStatus.OK).send(JSON.stringify(statsDto));
 		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
 
