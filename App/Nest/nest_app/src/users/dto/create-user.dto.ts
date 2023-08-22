@@ -26,6 +26,5 @@ import { IsNotEmpty, IsString, MaxLength, IsBoolean, IsIn } from 'class-validato
    @IsNotEmpty()
    @IsString()
    @IsIn(['online', 'offline', 'in a game'], { message: 'Invalid user status' })
-   currentStatus: String;
-
+   currentStatus: string;
  }
