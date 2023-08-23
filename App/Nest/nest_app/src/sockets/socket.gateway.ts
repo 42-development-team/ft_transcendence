@@ -96,4 +96,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         );
     }
     
+    // ============================ GAME EVENTS ================================== //
+    @SubscribeMessage('joinGameRoom')
+    async handleJoinGameRoom() {}
+
+    @SubscribeMessage('leaveGameRoom')
+    async handleLeaveGameRoom() {}
+
+    @SubscribeMessage('move')
+    async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
+        // find player
+        // player.setVelocity(); || killVelocity();
+    }
+
+    // Send the players positions + ball positions to correct room
+    async sendGameData(roomName: string, gameData: GameDto) {
+        // calculGamePositions
+        // gameData contains game score????
+        this.server.to(roomName).emit('updateGame', {gameData});
+    }
+
+    // Should emit to room event 'GameOver' ??
 }

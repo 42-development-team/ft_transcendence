@@ -26,6 +26,6 @@ export default function useChatConnection() {
             socket.close();
         }
     }, [])
-    
+
     return socket;
 }

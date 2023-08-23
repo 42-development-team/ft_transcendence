@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useState, KeyboardEventHandler } from "react";
-import BallClass from "@/app/game/class/ball.class";
-import PlayerClass from "@/app/game/class/player.class";
+import PlayerClass from "../../game/class/player.class";
+import BallClass from "../../game/class/ball.class";
 
 const canvasStyle: any = {
 	backgroundColor: '#4B3C4E',
