@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsString, IsBoolean, IsNumber, IsArray } from 'class-validator';
-import { CreateMembershipDto } from 'src/membership/dto/create-membership.dto';
+import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
 import { ChatroomMemberDto } from './chatroom-member.dto';
 import { ChatroomMessageDto } from './chatroom-messages.dto';
 
@@ -21,9 +20,6 @@ export class ChatroomContentDto {
 
     @IsArray()
     members: ChatroomMemberDto[];
-
-    @IsArray()
-    bannedUsers: ChatroomMemberDto[];
 
     @IsNotEmpty()
     @IsNumber()

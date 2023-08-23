@@ -115,13 +115,6 @@ export class ChatroomService {
 					sender: message.sender,
 				};
 			}),
-			bannedUsers: (chatroom.bannedUsers === undefined) ? [] : chatroom.bannedUsers.map(bannedUser => {
-				return {
-					id: bannedUser.id,	
-					username: bannedUser.username,
-					avatar: bannedUser.avatar,
-				};
-			}),
 		};
 		return current;
 	}

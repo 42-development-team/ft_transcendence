@@ -1,9 +1,11 @@
 interface PlayerInterface {
+	name: string,
 	color: string,
 	x: number,
 	y: number,
-	w: number;
+	w: number,
 	h: number,
+    points: number,
 }
 
 export default PlayerInterface;
