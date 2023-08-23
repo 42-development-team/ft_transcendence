@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { JwtPayload } from '../auth/types/jwtPayload.type';
+import { request } from 'http';
 
 
 // "describe"  groups together related test cases with same focus
@@ -21,7 +22,7 @@ describe('AuthController', () => {
   let authService: AuthService;
   let userService: UsersService;
   let prismaService: PrismaService;
-  
+
   // creating testing module with mock dependencies (AuthService and PrismaService)
   // to test Authcontroller in isolation
   // "beforeEach" is an hook that runs before each test case
@@ -29,8 +30,8 @@ describe('AuthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        AuthService, 
-        FortyTwoAuthGuards, 
+        AuthService,
+        FortyTwoAuthGuards,
         UsersService,
         ConfigService,
         JwtService,
@@ -48,25 +49,25 @@ describe('AuthController', () => {
     // Each it block contains a series of steps that follow the AAA pattern: Arrange, Act, and Assert.
     it('should call authService.redirectTwoFA and return a response', async () => {
         // Arrange
-        // set up and create any required objects or instances that the test case needs. 
-        // => This includes initializing variables, setting up mock objects, 
+        // set up and create any required objects or instances that the test case needs.
+        // => This includes initializing variables, setting up mock objects,
         // and preparing the input data for the unit under test.
         const req = {};
         const res = {
           send: jest.fn(),
         } as unknown as Response<any, Record<string, any>>;
-  
+
         // Mock the redirectTwoFA method to resolve successfully
         jest.spyOn(authService, 'redirectTwoFA').mockResolvedValue();
-  
+
         // Act
-        // actual test execution => calling the method or function to test, 
+        // actual test execution => calling the method or function to test,
         // passing in the prepared input data
         await controller.callback(req, res);
-  
+
         // Assert
-        // verifying that the output matches the expected result. 
-        // This involves making assertions about the actual output 
+        // verifying that the output matches the expected result.
+        // This involves making assertions about the actual output
         // against the expected outcome.
         expect(authService.redirectTwoFA).toHaveBeenCalledWith(req, res);
     });
@@ -79,10 +80,10 @@ describe('AuthController', () => {
       const res: any = { cookie: jest.fn().mockReturnThis() };
       const jwt = { access_token: 'mockAccessToken', refresh_token: 'mockRefreshToken' };
       jest.spyOn(authService, 'getTokens').mockResolvedValue(jwt);
-  
+
       // Act
       await controller.getJwt(req, res);
-  
+
       // Assert
       expect(authService.getTokens).toHaveBeenCalledWith(req.user, true);
       expect(res.cookie).toHaveBeenCalledTimes(2);
@@ -98,29 +99,33 @@ describe('AuthController', () => {
     it('should send a success response when AuthService.logout is successful', async () => {
         // Arrange
         const res: any = { clearCookie: jest.fn().mockReturnThis(), send: jest.fn() };
+		const req: any = { user: { sub: 1 } };
+
         jest.spyOn(authService, 'logout').mockResolvedValue();
-    
+
         // Act
-        await controller.logout(res);
-    
+        await controller.logout(res, req);
+
         // Assert
         expect(authService.logout).toHaveBeenCalledWith(res);
         // expect(res.clearCookie).toHaveBeenCalledWith('jwt');
         // expect(res.clearCookie).toHaveBeenCalledWith('rt');
         expect(res.send).toHaveBeenCalledWith('Logged out successfully.');
     });
-    
+
     it('should send an error response when AuthService.logout throws an error', async () => {
         // Arrange
-        const res: any = { 
-          clearCookie: jest.fn().mockResolvedValue(undefined), 
-          send: jest.fn(), 
+        const res: any = {
+          clearCookie: jest.fn().mockResolvedValue(undefined),
+          send: jest.fn(),
           status: jest.fn().mockReturnThis(),
         };
-      
+
+		const req: any = { user: { sub: 1 } };
+
         // Act
         try {
-          await controller.logout(res);
+          await controller.logout(res, req);
         } catch (error) {
           // Assert
           expect(error.message).toBe('Logout failed');
@@ -148,10 +153,10 @@ describe('AuthController', () => {
         };
         const verifyRefreshTokenMock = jest.spyOn(authService, 'verifyRefreshToken').mockResolvedValue(jwtPayload);
         const getTokensMock = jest.spyOn(authService, 'getTokens').mockResolvedValue(tokenObject);
-    
+
         // Act
         await controller.generateNewTokens(req, res);
-    
+
         // Assert
         expect(verifyRefreshTokenMock).toHaveBeenCalledWith(req, res);
         expect(getTokensMock).toHaveBeenCalledWith(jwtPayload, req.user.twoFactorAuthenticated);
@@ -159,9 +164,9 @@ describe('AuthController', () => {
         expect(res.cookie).toHaveBeenCalledWith('rt', tokenObject.refresh_token, expect.any(Object));
         expect(res.send).toHaveBeenCalled();
         expect(res.status).not.toHaveBeenCalled();
-      
+
     });
-    
+
     it('should throw UnauthorizedException when the refresh token is invalid', async () => {
         // Arrange with invalid req
         const req: any = { user: { id: 0, login: '', twoFactorAuthenticated: false }};
@@ -171,7 +176,7 @@ describe('AuthController', () => {
             status: jest.fn().mockReturnThis(),
           } as any;
         const verifyRefreshTokenMock = jest.spyOn(authService, 'verifyRefreshToken').mockResolvedValue(null);
-    
+
         // Act & Assert
         try {
           await controller.generateNewTokens(req, res);
@@ -182,7 +187,7 @@ describe('AuthController', () => {
           expect(res.send).toHaveBeenCalledWith('Unauthorized' + error.message);
         }
     });
-    
+
   });
   describe('getProfile', () => {
     it('should return user profile when two-factor authentication is completed', () => {
@@ -197,16 +202,16 @@ describe('AuthController', () => {
       const isTwoFactorAuthenticatedMock = jest
         .spyOn(authService, 'isTwoFactorAuthenticated')
         .mockReturnValue(true);
-  
+
       // Act
       controller.getProfile(req, res);
-  
+
       // Assert
       expect(isTwoFactorAuthenticatedMock).toHaveBeenCalledWith(req);
       expect(res.send).toHaveBeenCalledWith(req.user);
       expect(res.status).not.toHaveBeenCalled();
     });
-  
+
     it('should return status OK and user profile when two-factor authentication is not completed', () => {
       // Arrange
       const req: any = {
@@ -219,10 +224,10 @@ describe('AuthController', () => {
       const isTwoFactorAuthenticatedMock = jest
         .spyOn(authService, 'isTwoFactorAuthenticated')
         .mockReturnValue(false);
-  
+
       // Act
       controller.getProfile(req, res);
-  
+
       // Assert
       expect(isTwoFactorAuthenticatedMock).toHaveBeenCalledWith(req);
       expect(res.send).toHaveBeenCalledWith({
@@ -231,5 +236,5 @@ describe('AuthController', () => {
       });
       expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     });
-  }); 
+  });
 });
