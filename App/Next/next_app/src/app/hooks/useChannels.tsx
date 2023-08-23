@@ -328,4 +328,6 @@ export default function useChannels() {
         socket,
         setCurrentChannelId
     }
+  }
 }
+
