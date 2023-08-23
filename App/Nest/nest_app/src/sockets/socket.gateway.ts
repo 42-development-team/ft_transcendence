@@ -79,14 +79,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // }
 
     @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(client: Socket, room: string) {
-        const user = await this.chatroomService.getUserFromSocket(client);
-        client.leave(room);
-        client.emit('leftRoom', {room});
-        console.log(`Client ${user.username} ${client.id} left room ${room}`);
-        this.server.to(room).emit('newDisconnection', {room, user});
+    async handleLeaveRoom(client: Socket, roomId: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        client.leave(roomName);
+        client.emit('leftRoom', {roomName});
+        console.log(`Client ${userId} ${client.id} left room ${roomName}`);
+        this.server.to(roomName).emit('newDisconnection', {roomName, userId});
     }
-
     @SubscribeMessage('message')
     async handleMessage(
         @MessageBody() body: any,

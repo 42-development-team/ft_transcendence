@@ -101,10 +101,9 @@ export class ChatroomController {
 		const kickedId: number = body.kickedId;
 		const kickedUserSocket = await this.userService.getUserSocketFromId(kickedId);
 		await this.chatroomService.kick(+id, userId, kickedId)
-			.then((res) => {
-				const roomName = res.name;
+			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {

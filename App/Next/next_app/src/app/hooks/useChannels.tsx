@@ -26,7 +26,6 @@ export default function useChannels() {
     useEffect(() => {
         if (joinedChannels.length > 0) {
             joinPreviousChannels();
-            // console.log(JSON.stringify(joinedChannels, null, 2));
         }
     }, [joinedChannels]);
 
@@ -53,7 +52,7 @@ export default function useChannels() {
 
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
-            console.log("Room not found");
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -79,6 +78,7 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -99,23 +99,25 @@ export default function useChannels() {
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
-        const { room, user } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const { roomName, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
         // Remove user from channel
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != user.id);
+            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
             return newChannels;
         });
     }
 
     const handleLeftRoom = (body: any) => {
-        const { room } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const { roomName } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
+            console.log("Room not found");
             return;
         }
         // Todo: update channel list display
@@ -154,7 +156,7 @@ export default function useChannels() {
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
         }
-    }, [socket]);
+    }, [socket, joinedChannels]);
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
@@ -239,7 +241,6 @@ export default function useChannels() {
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
         const channelContent = await response.json();
-        console.log("Channel Content: " + JSON.stringify(channelContent, null, 2));
         const fetchedChannel: ChannelModel = channelContent;
         fetchedChannel.joined = true;
         fetchedChannel.icon = '';

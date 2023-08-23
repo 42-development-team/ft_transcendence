@@ -14,7 +14,7 @@ type ChatMemberActionsProps = {
     leaveChannel: () => void
 }
 
-
+// Todo: prevent double click on kick button
 const ChatMemberActions = ({ isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const wrapperRef = useRef<HTMLDivElement>(null);
