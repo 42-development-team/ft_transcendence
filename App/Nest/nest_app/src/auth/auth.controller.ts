@@ -63,7 +63,7 @@ export class AuthController {
             await this.authService.logout(res);
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
-			(await user).currentStatus = "offline";
+			this.authService.updateCurrentStatus(user, "offline");
             res.send('Logged out successfully.');
         }
         catch (error) {

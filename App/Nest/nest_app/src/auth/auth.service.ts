@@ -60,6 +60,13 @@ export class AuthService {
         }
     }
 
+    async updateCurrentStatus(user: any, status: string) {
+            await this.prisma.user.updateMany({
+                where: { username: user.username },
+                data: { currentStatus: status },
+            });
+    }
+
     async logout(res: Response): Promise<void> {
         await res.clearCookie('jwt');
         await res.clearCookie('rt');
