@@ -43,7 +43,7 @@ class Ball {
         if (Math.random() < 0.5) {
            val *= -1;
         }
-        this.speed[0] = 0.3;
+        this.speed[0] = 0.3 * val;
         this.speed[1] = Math.random() * val;
     }
 
