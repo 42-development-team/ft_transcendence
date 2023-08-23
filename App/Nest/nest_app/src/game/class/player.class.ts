@@ -1,3 +1,5 @@
+import { PlayerDto } from "../dto/player.dto";
+
 class PlayerClass {
     constructor(bool: boolean) {
         if (bool === true) {
@@ -46,8 +48,17 @@ class PlayerClass {
         }
     }
 
-    calculPlayerPosition() {
-        this.move();
+    returnInfos(): PlayerDto {
+        let player: PlayerDto;
+
+        player.color = this.color;
+        player.name = this.name;
+        player.x = this.x;
+        player.y = this.y;
+        player.h = this.h;
+        player.w = this.w;
+        player.points = this.points;
+        return player;
     }
 }
 

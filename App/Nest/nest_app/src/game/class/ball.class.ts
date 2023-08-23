@@ -1,4 +1,5 @@
-import PlayerClass from './player.class'
+import { BallDto } from '../dto/ball.dto';
+import PlayerClass from './player.class';
 
 class BallClass {
 
@@ -22,14 +23,14 @@ class BallClass {
     }
 
     //>>PADDLE<//
-    paddleBounce(p1: PlayerClass, p2: PlayerClass) {
+    paddleBounce(p1: PlayerClass, p2: PlayerClass, height: number) {
         if (this.speed[0] < 0)
-            this.paddleLeftBounce(p1);
+            this.paddleLeftBounce(p1, height);
             else
-            this.paddleRightBounce(p2);
+            this.paddleRightBounce(p2, height);
         }
         
-    paddleLeftBounce(p: PlayerClass) {
+    paddleLeftBounce(p: PlayerClass, height: number) {
         let dx = Math.abs(this.x + this.r - p.x);
         let dy = Math.abs(this.y - p.y);
         
@@ -43,7 +44,7 @@ class BallClass {
         }
     };
     
-    paddleRightBounce(p: PlayerClass) {
+    paddleRightBounce(p: PlayerClass, height: number) {
         
         let dx = Math.abs(this.x - this.r - p.x);
         let dy = Math.abs(this.y - p.y);
@@ -58,9 +59,9 @@ class BallClass {
         }
     };
     
-    bounce(p1: PlayerClass, p2: PlayerClass) {
+    bounce(p1: PlayerClass, p2: PlayerClass, width:  number, height: number) {
         this.borderBounce();
-        this.paddleBounce(p1, p2);
+        this.paddleBounce(p1, p2, height);
         this.score(p1, p2);
     };
 
@@ -105,11 +106,24 @@ class BallClass {
     };
 
     //>>CALCUL POSITION<<//
-    calculBallPosition(p1: PlayerClass, p2: PlayerClass) {
-        this.bounce(p1, p2);
+    renderBall(p1: PlayerClass, p2: PlayerClass, width: number, height: number) {
+        // back
+        this.bounce(p1, p2, width, height);
         this.update();
         this.incrementSpeed();
     };
+
+    //========== RETURN INFORMATIONS =============//
+    returnInfos(): BallDto {
+        let ball: BallDto;
+
+        ball.color = this.color;
+        ball.x = this.x;
+        ball.y = this.y;
+        ball.r = this.r;
+        ball.pi2 = this.pi2;
+        return ball;
+    }
 }
 
 export default BallClass;

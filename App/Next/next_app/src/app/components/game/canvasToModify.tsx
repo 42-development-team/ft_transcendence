@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useRef, useEffect, useState, KeyboardEventHandler } from "react";
-import Ball from '../../game/class/ball.class';
-import Player from '../../game/class/player.class';
+import BallClass from "@/app/game/class/ball.class";
+import PlayerClass from "@/app/game/class/player.class";
 
 const canvasStyle: any = {
 	backgroundColor: '#4B3C4E',
 	width: '78%',
 };
 
-function printScore(context: CanvasRenderingContext2D, p1: Player, p2: Player, width: number, height: number): [Player, Player] | null {
+function printScore(context: CanvasRenderingContext2D, p1: PlayerClass, p2: PlayerClass, width: number, height: number): [PlayerClass, PlayerClass] | null {
 	context.font='30px Arial';
 	context.fillStyle='#cba6f7';
 	context.beginPath();
@@ -21,6 +21,13 @@ function printScore(context: CanvasRenderingContext2D, p1: Player, p2: Player, w
 	else if (p2.points === 11)
 		return [p2, p1];
 	return null;
+}
+
+function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
+	context.fillStyle= 'rgba(0, 0, 0, 0.25';
+	context.beginPath();
+		context.fillRect(0, 0, width, height);
+	context.closePath();
 }
 
 function printMidLine(context: CanvasRenderingContext2D, width: number, height: number) {
@@ -37,7 +44,7 @@ function printMidLine(context: CanvasRenderingContext2D, width: number, height: 
 	context.closePath();
 }
 
-function win(context: CanvasRenderingContext2D, result: [Player, Player], width: number, height: number) {
+function win(context: CanvasRenderingContext2D, result: [PlayerClass, PlayerClass], width: number, height: number) {
 	
 	context.font='30px Arial';
 	context.fillStyle='red';
@@ -47,23 +54,48 @@ function win(context: CanvasRenderingContext2D, result: [Player, Player], width:
 	context.closePath();
 }
 
-function finish(result: [Player, Player], animationId: number) {
+function finish(result: [PlayerClass, PlayerClass], animationId: number) {
 	// envoyer les infos au back
 	() => window.cancelAnimationFrame(animationId);
 }
 
-const Canvas = () => {
+// ============ RENDER ==============//
+function renderBall(context: CanvasRenderingContext2D, ball: BallClass, width:  number, height: number) {
+	context.fillStyle = ball.color;
+	context.beginPath();
+		context.arc(ball.x * width, ball.y * height , ball.r * width, 0, ball.pi2, false);
+		context.fill();
+		context.stroke();
+	context.closePath();
+};
+
+function renderPlayer(context: CanvasRenderingContext2D, p: PlayerClass, width:  number, height: number) {
+	context.fillStyle = p.color;
+	context.beginPath();
+		context.fillRect(p.x * width - p.w * width / 2, p.y * height - p.h * height / 2, p.w * width, p.h * height);
+	context.closePath();
+}
+
+function renderGame(context: CanvasRenderingContext2D, ball: BallClass, p1: PlayerClass, p2: PlayerClass, width: number, height: number) {
+	renderBall(context, ball, width, height);
+	renderPlayer(context, p1, width, height);
+	renderPlayer(context, p2, width, height);
+};
+
+const CanvasWithoutSock = () => {
 	
 	if (window === undefined)
 		return ;
 
-	const ball: Ball = new Ball();
-	const p1: Player = new Player(true);
-	const p2: Player = new Player(false);
-
+	// ====== BACK DECLARATION ====== //
+	const ball: BallClass = new BallClass();
+	const p1: PlayerClass = new PlayerClass(true);
+	const p2: PlayerClass = new PlayerClass(false);
+	// ============================== //
+	
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
-	
+
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -79,16 +111,18 @@ const Canvas = () => {
 		
 		const render = (): any => {
 
-			context.fillStyle= 'rgba(0, 0, 0, 0.25';
-			context.beginPath();
-				context.fillRect(0, 0, width, height);
-			context.closePath();
+			blurEffect(context, width, height);
 
 			printMidLine(context, width, height);
 
-			ball.renderBall(context, p1, p2, width, height);
-			p1.renderPlayer(context, width, height);
-			p2.renderPlayer(context, width, height);
+			// ====== BACK LOGIC ====== //
+			ball.calculBallPosition(p1, p2);
+			p1.calculPlayerPosition();
+			p2.calculPlayerPosition();
+			// ======================== //
+
+			renderGame(context, ball, p1, p2, width, height);
+
 			const result: any = printScore(context, p1, p2, width, height);
 			if (result) {
 				win(context, result, width, height);
@@ -116,9 +150,16 @@ const Canvas = () => {
 				p2.setVelocity(-0.01);
 		}
 
-		function handleKeyRelease() {
-			p1.killVelocity();
-			p2.killVelocity();
+		function handleKeyRelease(e: any) {
+			if (e.code === "ArrowUp")
+				p1.killVelocity();
+			else if (e.code === "ArrowDown")
+				p1.killVelocity();
+
+			if (e.code === "KeyW")
+				p2.killVelocity();
+			else if (e.code === "KeyS")
+				p2.killVelocity();
 		}
 
 		function resize() {
@@ -130,7 +171,6 @@ const Canvas = () => {
 		window.addEventListener("resize", resize);
 		document.addEventListener("keydown", handleKeyDown);
 		document.addEventListener("keyup", handleKeyRelease);
-
 	});
 
 	return (
@@ -140,4 +180,4 @@ const Canvas = () => {
 	);
 }
 
-export default Canvas;
+export default CanvasWithoutSock;
