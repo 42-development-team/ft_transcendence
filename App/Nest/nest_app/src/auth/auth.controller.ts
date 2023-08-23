@@ -60,10 +60,10 @@ export class AuthController {
     @Get('logout')
     async logout(@Res() res: Response, @Req() req: any) {
         try {
-            await this.authService.logout(res);
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
 			this.authService.updateCurrentStatus(user, "offline");
+            await this.authService.logout(res);
             res.send('Logged out successfully.');
         }
         catch (error) {
