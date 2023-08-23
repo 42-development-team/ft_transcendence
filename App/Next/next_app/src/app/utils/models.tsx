@@ -29,6 +29,7 @@ export interface ChannelMember {
     isAdmin: boolean
     isOwner: boolean
     avatar: string
+	currentStatus: UserStatus
 }
 
 export enum UserStatus {
