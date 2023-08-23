@@ -27,6 +27,6 @@
       "@/utils/*": ["./src/app/utils/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../Nest/nest_app/src/game/class/ball.class.ts"],
   "exclude": ["node_modules"]
 }
