@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelMember, ChannelModel, MessageModel } from "../utils/models";
+import { ChannelMember, ChannelModel, MessageModel, UserStatus } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
 import bcrypt from 'bcryptjs';
 
@@ -121,10 +121,13 @@ export default function useChannels() {
         // Remove user from channel
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
-            return newChannels;
-        });
-    }
+            // newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
+            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+            if (memberIndex !== undefined && memberIndex !== -1) {
+            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+        }
+        return newChannels;
+    });  
 
     const handleLeftRoom = (body: any) => {
         const { roomName } = body;
