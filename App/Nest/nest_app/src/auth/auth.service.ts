@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     async updateCurrentStatus(user: any, status: string) {
-            await this.prisma.user.update({
+            await this.prisma.user.updateMany({
                 where: { username: user.username },
                 data: { currentStatus: status },
             });
@@ -95,7 +95,7 @@ export class AuthService {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtSecret'),
-                expiresIn: "30m",
+                expiresIn: "1d",
             }),
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtRefreshSecret'),
