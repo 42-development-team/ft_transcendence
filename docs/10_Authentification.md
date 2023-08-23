@@ -16,7 +16,7 @@
 ---
 ## Oauth protocol
 Open Authorization is a protocole that allow a third-party to access your database whithout sharing password.
- 
+
 ### How does this works in our case?
 First you need to register the project to API you want user to log with (google, facebook, 42, ...).
 Specifying a callback URL that will receive the user informations (in our case: "http://'IP':'BACK_PORT'/auth/42/callback").
@@ -24,9 +24,9 @@ Specifying a callback URL that will receive the user informations (in our case: 
 To trigger this Oauth protocole you need a Sign In button in the frontend. You got it ? Perfect !
 Then this button will redirect to a backend URL, let say "http://'IP':'BACK_PORT'/auth/login".
 BUT !
-This URL is guarded by a @UseGuard(AuthGuard('42')) automatically linked with a passport-42 strategy. 
-This open a page 42 in the browser to log with the user 42 account. 
-The 42 API respond to the callback URL. 
+This URL is guarded by a @UseGuard(AuthGuard('42')) automatically linked with a passport-42 strategy.
+This open a page 42 in the browser to log with the user 42 account.
+The 42 API respond to the callback URL.
 The response contains:
 - Access token
 - Refresh token
@@ -57,12 +57,12 @@ To sign this I need to specify :
 - which informations the JWT need to contain.
 - when the JWT will expire
 - the secret to tell my backend that this JWT has been created by him.
-	
+
 So I will create an object : `jwtPayload = {name: "Marc", id: "1"}`
 And then pass it to my jwtService to sign it like this:
 
 ```
-const myJwtSigned = jwtService.sign(jwtPayload, { 
+const myJwtSigned = jwtService.sign(jwtPayload, {
 			secret: 'MySecretStringInEnvFile',
 			expiresIn: '30m',
 		}),
@@ -105,11 +105,11 @@ Moreover, it decreases the possibility of a cyberattack on a weak password, for 
 
 ### How it Works
 
-- In general, two-factor authentication combines a password (**something the user knows**) and another element (**something the user possesses**) like a USB key, a fingerprint, or, in this case, a *One-Time Password (OTP)*. 
+- In general, two-factor authentication combines a password (**something the user knows**) and another element (**something the user possesses**) like a USB key, a fingerprint, or, in this case, a *One-Time Password (OTP)*.
 
 - An **OTP** is a temporary password of short duration (or **single-use**) that can be obtained through certain applications, SMS, or email. There are numerous algorithms that generate OTPs, but many of them use **two inputs** to do so: a **seed** and a **moving factor**.
 
-- The **seed** is a **static variable** created during the generation of a new account; it remains unchanged and is **stored as a secret key** until the account is deleted or regenerated. 
+- The **seed** is a **static variable** created during the generation of a new account; it remains unchanged and is **stored as a secret key** until the account is deleted or regenerated.
 On the other hand, the **moving factor** can change with **each OTP request** (***HOTP** algorithm: HMAC-based One-time Password*) or change according to a **time cycle** (***TOTP**: time-based OTP*).
 
 ### What will we use ?
@@ -122,7 +122,7 @@ On the other hand, the **moving factor** can change with **each OTP request** (*
 User can **activate** the 2FA on his **first Loggin** and on his **'Settings'** page application. However he can only **desactivate** it on the **'Settings'** page.
 1. *Generation* of a QR code (via the [*OTP library*](https://www.npmjs.com/package/otplib#hotp-options "Official OTPlib Page")) and **registration** of its secret key in the **database**.
 2. *Scanning* the QR code via a third-party application (**Google authenticator** for example) to launch the OTP generation.
-3. *Validation* of the QR code on our app, by the 6-digit OTP password. 
+3. *Validation* of the QR code on our app, by the 6-digit OTP password.
 
 **Once validated**, it becomes **impossible** to modify the secret key or access the site without entering the OTP password to confirm the operation.<br>
 The OTP password is refreshed every 30 seconds.

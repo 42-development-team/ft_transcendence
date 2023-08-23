@@ -29,6 +29,7 @@ model User {
   bannedChatRooms  ChatRoom[] @relation("bannedUsers")
   memberShips	   Membership[]	@relation("membership")
   socketId         String?  	@unique
+  currentStatus	   String
 }
 
 model Message {
