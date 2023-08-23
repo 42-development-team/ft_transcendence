@@ -29,12 +29,13 @@ export interface ChannelMember {
     isAdmin: boolean
     isOwner: boolean
     avatar: string
+	currentStatus: UserStatus
 }
 
 export enum UserStatus {
-    Online = "Online",
-    Offline = "Offline",
-    InGame = "InGame",
+    Online = "online",
+    Offline = "offline",
+    InGame = "in a game",
 }
 
 export interface UserModel {

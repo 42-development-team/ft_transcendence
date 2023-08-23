@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelMember, ChannelModel, MessageModel } from "../utils/models";
+import { ChannelMember, ChannelModel, MessageModel, UserStatus } from "../utils/models";
 import useChatConnection from "../hooks/useChatConnection"
 import bcrypt from 'bcryptjs';
 
@@ -76,7 +76,7 @@ export default function useChannels() {
 
     const handleNewConnectionOnChannel = (body: any) => {
         const { room, user } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const channelIndex: number = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
@@ -88,14 +88,27 @@ export default function useChannels() {
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
             avatar: user.avatar,
+			currentStatus: user.currentStatus,
         }
-        if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
-            return ;
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            newChannels[channelIndex].members?.push(newMember);
-            return newChannels;
-        });
+		// console.log("newMember username = ", newMember.username);
+		// console.log("newMember current status: ", newMember.currentStatus);
+		const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
+        if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
+			setJoinedChannels(prevChannels => {
+				const newChannels = joinedChannels ? [...prevChannels] : [];
+				// if (newChannels[channelIndex]?.members){
+					(newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
+				// }
+				return newChannels;
+			})
+		}
+		else {
+			setJoinedChannels(prevChannels => {
+				const newChannels = [...prevChannels];
+				newChannels[channelIndex].members?.push(newMember);
+				return newChannels;
+			});
+		}
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
@@ -108,10 +121,13 @@ export default function useChannels() {
         // Remove user from channel
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
-            return newChannels;
-        });
-    }
+            // newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
+            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+            if (memberIndex !== undefined && memberIndex !== -1) {
+            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+        }
+        return newChannels;
+    });  
 
     const handleLeftRoom = (body: any) => {
         const { roomName } = body;
@@ -312,4 +328,6 @@ export default function useChannels() {
         socket,
         setCurrentChannelId
     }
+  }
 }
+
