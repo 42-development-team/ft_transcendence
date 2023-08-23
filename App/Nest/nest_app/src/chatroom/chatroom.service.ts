@@ -16,7 +16,7 @@ export class ChatroomService {
 		private prisma: PrismaService,
 		private jwtService: JwtService,
         private userService: UsersService,
-		private configService: ConfigService
+		private configService: ConfigService,
 	) { }
 
 	// #region C(reate)
@@ -29,11 +29,21 @@ export class ChatroomService {
 				type,
 				hashedPassword,
 				owner: { connect: { id: ownerId } },
-				admins: { connect: [{ id: ownerId }] },
+				memberShips: {
+					create: {
+						user: { connect: { id: ownerId } },
+						isAdmin: true,
+					}
+				},
 			},
 		});
-
-		return createdChatroom;
+		const chatRoomInfo : ChatroomInfoDto = {
+			id: createdChatroom.id,
+			name: createdChatroom.name,
+			type: createdChatroom.type,
+			joined: true,
+		}
+		return chatRoomInfo;
 	}
 	// #endregion
 
@@ -45,7 +55,7 @@ export class ChatroomService {
 		// Convert to InfoChatroomDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomInfoDto>[] = chatrooms.map(async chatrooms => {
 			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatrooms.id, members: { some: { id: userId } } },
+				where: { id: chatrooms.id, memberShips: { some: { userId: userId } } },
 			}) > 0;
 			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
@@ -64,7 +74,7 @@ export class ChatroomService {
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, members: { some: { id: userId } } },
+			where: { id: id, memberShips: { some: { userId: userId } } },
 		}) > 0;
 		const chatroomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
@@ -82,35 +92,27 @@ export class ChatroomService {
 
 	// Content: members and messages
 
-	constructChatroomContentDto(chatroom: any, isJoined: boolean): ChatroomContentDto {
+	constructChatroomContentDto(chatroom: any): ChatroomContentDto {
 		const current: ChatroomContentDto = {
 			id: chatroom.id,
 			name: chatroom.name,
 			type: chatroom.type,
-			joined: isJoined,
 			ownerId: chatroom.ownerId,
-			members: (chatroom.members === undefined) ? [] : chatroom.members.map(member => {
+			// members: [],
+			members: (chatroom.memberShips === undefined) ? [] : chatroom.memberShips.map(member => {
 				return {
-					id: member.id,
-					username: member.username,
-					avatar: member.avatar,
-					isAdmin: chatroom.admins.some(admin => admin.id === member.id),
-					isOwner: chatroom.creatorId === member.id,
+					id: member.userId,
+					username: member.user.username,
+					isAdmin: member.isAdmin,
+					isOwner: chatroom.owner.id === member.userId,
 				};
-			}),
+			}),				
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
 				return {
 					id: message.id,
 					createdAt: message.createdAt,
 					content: message.content,
 					sender: message.sender,
-				};
-			}),
-			bannedUsers: (chatroom.bannedUsers === undefined) ? [] : chatroom.bannedUsers.map(bannedUser => {
-				return {
-					id: bannedUser.id,	
-					username: bannedUser.username,
-					avatar: bannedUser.avatar,
 				};
 			}),
 		};
@@ -120,26 +122,22 @@ export class ChatroomService {
 		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
-			where: { members: { some: { id: userId } } },
+			where: { memberShips: { some: { userId: userId } } },
 			include: {
 				messages: {
 					include: { sender: true }
 				},
-				members: true,
-				admins: true,
-				bannedUsers: true,
+				owner: true,
+				memberShips: {
+					include: { user: true }
+				}
 			},
 		});
-		// Convert to ChatRoomContentDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomContentDto>[] = chatrooms.map(async chatroom => {
-			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatroom.id, members: { some: { id: userId } } },
-			}) > 0;
-			const current: ChatroomContentDto = this.constructChatroomContentDto(chatroom, isJoined);
+			const current: ChatroomContentDto = this.constructChatroomContentDto(chatroom);
 			return current;
 		});
-		const chatRoomsDto = await Promise.all(chatroomsDtoPromises);
-		return chatRoomsDto;
+		return await Promise.all(chatroomsDtoPromises);
 	}
 
 	async getChannelContent(id: number, userId: number): Promise<ChatroomContentDto> {
@@ -149,18 +147,17 @@ export class ChatroomService {
 				messages: {
 					include: { sender: true }
 				},
-				members: true,
-				admins: true,
-				bannedUsers: true,
+				owner: true,
+				memberShips: {
+					include: { user: true }
+				}
 			},
 		});
-		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, members: { some: { id: userId } } },
-		}) > 0;
+		const isJoined = chatroom.memberShips.some(member => member.userId === userId);
 		if (!isJoined) {
 			throw new Error('User is not a member of this channel');
 		}
-		return this.constructChatroomContentDto(chatroom, isJoined);
+		return this.constructChatroomContentDto(chatroom);
 	}
 	// #endregion
 
@@ -170,58 +167,79 @@ export class ChatroomService {
 		return `This action updates a #${id} chatroom`;
 	}
 
+	async connectUserToChatroom(userId: number, chatroomId: number) {
+		const createdMembership = await this.prisma.membership.create({
+			data: {
+				user: { connect: { id: userId } },
+				chatroom: { connect: { id: chatroomId } },
+			},
+		});
+		return createdMembership;
+	}
+
 	async join(id: number, userId: number, password: string) {
-		const isValid = undefined;
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
+			include: { memberShips: true },
 		});
 
-		// Todo : check if already joined
+		console.log(JSON.stringify(chatRoom, null, 2));
+		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			// Todo: how to check the result of the update?
-			const updateResult = await this.prisma.chatRoom.update({
-				where: { id: id },
-				data: { members: { connect: [{ id: userId }] } },
-			});
-			return updateResult;
+			if (!isJoined)
+				await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (isValid) {
-				const updateResult = await this.prisma.chatRoom.update({
-					where: { id: id },
-					data: { members: { connect: [{ id: userId }] } },
-				});
-				return updateResult;
-			}
-			else {
+				if (!isJoined) {
+					await this.connectUserToChatroom(userId, id);
+				}
+			} else {
 				throw new Error('Wrong password');
 			}
 		}
-		return chatRoom;
 	}
 
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-			include: { owner: true},
+			include: {
+				 owner: true,
+				 memberShips: {
+					include: { user: true}
+				 }
+				},
 		});
 		// Check if target user is admin
-		const isAdmin = await this.prisma.chatRoom.count({
-			where: { id: id, admins: { some: { id: userId } } },
-		}) > 0;
-		if (!isAdmin) {
-			throw new Error('User is not an admin of this channel');
+		try {
+			const isAdmin = await this.prisma.chatRoom.count({
+				where: { 
+					id: id, 
+					memberShips: { 
+						some: { 
+							userId: userId,
+							isAdmin: true 
+						}
+					},
+				}
+			}) > 0;
+			console.log("admin: ", isAdmin);
+			if (!isAdmin) {
+				throw new Error('User is not an admin of this channel');
+			}
+		} catch (error) {
+			throw new Error(error);
 		}
 		const isTargetOwner = chatRoom.owner.id === kickedId;
 		if (isTargetOwner) {
 			throw new Error('Cannot kick owner of the channel');
 		}
-		const updateResult = await this.prisma.chatRoom.update({
-			where: { id: id },
-			data: { members: { disconnect: [{ id: kickedId }] } },
-		});
-		return updateResult;
+		const kickedMembership = await this.prisma.membership.deleteMany({
+			where:
+				  { userId: kickedId, chatRoomId: id },
+		})
+		return kickedMembership;
 	}
 
 	async leave(id: number, userId: number) {
@@ -229,17 +247,16 @@ export class ChatroomService {
 			where: { id: id },
 			include: { owner: true},
 		});
-		// Check if target user is admin
+
+		// Todo: if owner transmit ownership to another member (admin)
 		// const isOwner = await this.prisma.chatRoom.count({
 		// 	where: { id: id, owner: { id: userId } },
 		// }) > 0;
-		// Todo: if owner
-		// Todo: remove from admin list
-		const updateResult = await this.prisma.chatRoom.update({
-			where: { id: id },
-			data: { members: { disconnect: [{ id: userId }] } },
+		const kickedMembership = await this.prisma.membership.deleteMany({
+			where:
+				  { userId: userId, chatRoomId: id },
 		});
-		return updateResult;
+		return kickedMembership;
 	}
 
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
