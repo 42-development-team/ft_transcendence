@@ -61,6 +61,7 @@ export class AuthService {
     }
 
     async updateCurrentStatus(user: any, status: string) {
+		user.currentStatus = status;
             await this.prisma.user.updateMany({
                 where: { username: user.username },
                 data: { currentStatus: status },
