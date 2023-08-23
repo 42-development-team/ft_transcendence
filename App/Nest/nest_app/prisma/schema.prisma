@@ -26,6 +26,7 @@ model User {
   games            Game[]     @relation("gamesPlayed")
   memberShips	   Membership[]	@relation("membershipUser")
   socketId         String?  	@unique
+  currentStatus	   String
 }
 
 model Message {
