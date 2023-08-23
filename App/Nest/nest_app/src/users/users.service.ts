@@ -129,6 +129,10 @@ export class UsersService {
 
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
+		else {
+			if (user.currentStatus != "online")
+				user.currentStatus = "online";
+		}
         // console.log("user: ", user);
         return user;
     }
