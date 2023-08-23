@@ -58,14 +58,14 @@ export class AuthService {
                 data: { isFirstLogin: false },
             });
         }
-    }  
-    
+    }
+
     async logout(res: Response): Promise<void> {
         await res.clearCookie('jwt');
         await res.clearCookie('rt');
         return;
     }
-    
+
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
             const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
@@ -110,7 +110,7 @@ export class AuthService {
             if (!token) {
                 throw new UnauthorizedException('Refresh token not found');
             }
-    
+
             const secret = this.configService.get<string>('jwtRefreshSecret');
             const payload = await this.jwtService.verifyAsync(token, { secret });
             return payload; // Return the payload if the token is verified
