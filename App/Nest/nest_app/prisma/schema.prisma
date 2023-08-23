@@ -23,11 +23,8 @@ model User {
   messageReceived  Message[]  @relation("ReceivedMessages")
   messagesSent     Message[]  @relation("SentMessages")
   userStats        UserStats?
-  chatRoomsAdmin   ChatRoom[] @relation("chatAdmins")
   games            Game[]     @relation("gamesPlayed")
-  chatRoom         ChatRoom[] @relation("members")
-  bannedChatRooms  ChatRoom[] @relation("bannedUsers")
-  memberShips	   Membership[]	@relation("membership")
+  memberShips	   Membership[]	@relation("membershipUser")
   socketId         String?  	@unique
   currentStatus	   String
 }
@@ -50,14 +47,11 @@ model ChatRoom {
   createdAt      DateTime  		@default(now())
   updatedAt      DateTime  		@updatedAt
   name           String
-  creatorId      Int
   type           String
   hashedPassword String?
+  creatorId      Int
   owner          User      		@relation("chatCreated", fields: [creatorId], references: [id])
   messages       Message[] 		@relation("chatMessages")
-  admins         User[]    		@relation("chatAdmins")
-  members        User[]    		@relation("members")
-  bannedUsers    User[]    		@relation("bannedUsers")
   memberShips	 Membership[]	@relation("membership")
 }
 
@@ -95,6 +89,7 @@ model Membership {
   updatedAt 	DateTime 	@updatedAt
   userId		Int
   chatRoomId 	Int
-  user			User	 	@relation("membership", fields: [userId], references: [id])
+  isAdmin		Boolean		@default(false)
+  user			User	 	@relation("membershipUser", fields: [userId], references: [id])
   chatroom		ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
 }

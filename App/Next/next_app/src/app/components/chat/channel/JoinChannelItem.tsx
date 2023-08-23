@@ -1,5 +1,5 @@
 import { ChannelModel } from "@/app/utils/models";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
@@ -23,6 +23,10 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
         event.preventDefault();
         onJoin();
     }
+
+    useEffect(() => {
+        setIsJoined(joined);
+    }, [joined])
 
     const onJoin = async () => {
         setError(false);

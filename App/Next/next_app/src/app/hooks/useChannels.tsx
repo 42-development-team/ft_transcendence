@@ -52,7 +52,7 @@ export default function useChannels() {
 
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
-            console.log("Room not found");
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -67,7 +67,6 @@ export default function useChannels() {
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             if (currentChannelId != newChannels[channelIndex].id) {
-
                 newChannels[channelIndex].unreadMessages++;
             }
             newChannels[channelIndex].messages?.push(messageModel);
@@ -79,13 +78,19 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
-        const newMember: ChannelMember = user;
+        const newMember: ChannelMember = {
+            id: user.id,
+            username: user.username,
+            isAdmin: user.isAdmin,
+            isOwner: user.isOwner,
+            avatar: user.avatar,
+        }
         if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
             return ;
-
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             newChannels[channelIndex].members?.push(newMember);
@@ -94,23 +99,25 @@ export default function useChannels() {
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
-        const { room, user } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const { roomName, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
+            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
         // Remove user from channel
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != user.id);
+            newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
             return newChannels;
         });
     }
 
     const handleLeftRoom = (body: any) => {
-        const { room } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const { roomName } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
+            console.log("Room not found");
             return;
         }
         // Todo: update channel list display
@@ -145,8 +152,11 @@ export default function useChannels() {
         return () => {
             socket?.off('new-message');
             socket?.off('newConnection');
+            socket?.off('newDisconnection');
+            socket?.off('leftRoom');
+            socket?.off('NewChatRoom');
         }
-    }, [socket, receiveMessage]);
+    }, [socket, joinedChannels]);
 
     const joinPreviousChannels = useCallback(() => {
         joinedChannels.forEach(channel => {
@@ -184,6 +194,7 @@ export default function useChannels() {
             const newChannel = await response.json();
 
             // Channel joining
+            console.log(JSON.stringify(newChannel, null, 2));
             const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
@@ -193,6 +204,7 @@ export default function useChannels() {
     };
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
+        //Todo: add try catch to prevent console.log.error
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
             credentials: "include",
             method: 'PATCH',
@@ -211,25 +223,6 @@ export default function useChannels() {
     }
 
     // FETCHING
-    const fetchNewChannelContent = async (id: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const channelContent = await response.json();
-        const fetchedChannel = channelContent;
-        fetchedChannel.joined = true;
-        fetchedChannel.icon = '';
-        fetchedChannel.unreadMessages = 0;
-        fetchedChannel.messages = fetchedChannel.messages.map((message: any) => {
-            return {
-                id: message.id,
-                createdAt: message.createdAt,
-                content: message.content,
-                senderId: message.sender.id,
-                senderUsername: message.sender.username,
-            }
-        });
-        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
-    }
-
     const fetchChannelsInfo = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
@@ -244,6 +237,35 @@ export default function useChannels() {
             console.log("Error fetching channel info list: " + err);
         }
     };
+
+    const fetchNewChannelContent = async (id: string) => {
+        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+        const channelContent = await response.json();
+        const fetchedChannel: ChannelModel = channelContent;
+        fetchedChannel.joined = true;
+        fetchedChannel.icon = '';
+        fetchedChannel.unreadMessages = 0;
+        fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
+            return {
+                id: member.id,
+                username: member.username,
+                isAdmin: member.isAdmin,
+                isOwner: member.isOwner,
+                avatar: "",
+                // avatar: member.user.avatar,
+            }
+        });
+        fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
+            return {
+                id: message.id,
+                createdAt: message.createdAt,
+                content: message.content,
+                senderId: message.sender.id,
+                senderUsername: message.sender.username,
+            }
+        });
+        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+    }
 
     const fetchChannelsContent = async () => {
         try {
@@ -260,6 +282,16 @@ export default function useChannels() {
                         content: message.content,
                         senderId: message.sender.id,
                         senderUsername: message.sender.username,
+                    }
+                });
+                channel.members = channel.members.map((member: any) => {
+                    return {
+                        id: member.id,
+                        username: member.username,
+                        isAdmin: member.isAdmin,
+                        isOwner: member.isOwner,
+                        //Todo: avatar
+                        avatar: "",
                     }
                 });
                 return channel;
