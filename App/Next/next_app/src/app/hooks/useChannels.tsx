@@ -76,7 +76,7 @@ export default function useChannels() {
 
     const handleNewConnectionOnChannel = (body: any) => {
         const { room, user } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        const channelIndex: number = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
@@ -90,13 +90,25 @@ export default function useChannels() {
             avatar: user.avatar,
 			currentStatus: user.currentStatus,
         }
-        if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
-            return ;
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            newChannels[channelIndex].members?.push(newMember);
-            return newChannels;
-        });
+		console.log("newMember username = ", newMember.username);
+		console.log("newMember current status: ", newMember.currentStatus);
+		const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
+        if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
+			setJoinedChannels(prevChannels => {
+				const newChannels = joinedChannels ? [...prevChannels] : [];
+				// if (newChannels[channelIndex]?.members){
+					(newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
+				// }
+				return newChannels;
+			})
+		}
+		else {
+			setJoinedChannels(prevChannels => {
+				const newChannels = [...prevChannels];
+				newChannels[channelIndex].members?.push(newMember);
+				return newChannels;
+			});
+		}
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
