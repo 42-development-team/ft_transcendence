@@ -23,19 +23,6 @@ function printScore(context: CanvasRenderingContext2D, p1: Player, p2: Player, w
 	return null;
 }
 
-function printBorder(context: CanvasRenderingContext2D, width: number, height: number) {
-	context.strokeStyle='#cba6f7';
-	context.beginPath();
-		context.moveTo(0, 0);
-			context.lineTo(0, height);
-			context.lineTo(width, height);
-		context.moveTo(0, 0);
-			context.lineTo(width, 0);
-			context.lineTo(width, height);
-		context.stroke();
-	context.closePath();
-}
-
 function printMidLine(context: CanvasRenderingContext2D, width: number, height: number) {
 	let y = 0;
 
@@ -97,7 +84,6 @@ const Canvas = () => {
 				context.fillRect(0, 0, width, height);
 			context.closePath();
 
-			printBorder(context, width, height);
 			printMidLine(context, width, height);
 
 			ball.renderBall(context, p1, p2, width, height);
@@ -149,7 +135,7 @@ const Canvas = () => {
 
 	return (
 		<div className="canvas w-full">
-			<canvas id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
+			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
 }
