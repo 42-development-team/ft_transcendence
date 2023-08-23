@@ -14,10 +14,6 @@ type ChatMemberProps = {
 
 // Todo: add status and avatar
 const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id, currentStatus }, isCurrentUser, isBanned, kick, leaveChannel }: ChatMemberProps) => {
-	console.log("currentStatus = ", currentStatus);
-	console.log("username = ", username);
-	console.log("isAdmin = ", isAdmin);
-	// currentStatus = "online";
     const kickUser = () => {
         if (kick == undefined) return;
         kick(id);
