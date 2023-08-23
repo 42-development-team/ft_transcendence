@@ -1,7 +1,7 @@
 import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-// import { getStatusColor } from "@/app/utils/getStatusColor";
+import { getStatusColor } from "@/app/utils/getStatusColor";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -28,9 +28,9 @@ const ChatMemberItem = ({ user: { username, avatar, isAdmin, isOwner, id }, isCu
                             className="w-[inherit] rounded-[inherit]" />
                         : null
                     }
-                    {/* <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
+                    <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`}></div>
-                    </div> */}
+                    </div>
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>

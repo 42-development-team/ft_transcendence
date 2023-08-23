@@ -32,9 +32,9 @@ export interface ChannelMember {
 }
 
 export enum UserStatus {
-    Online = "Online",
-    Offline = "Offline",
-    InGame = "InGame",
+    Online = "online",
+    Offline = "offline",
+    InGame = "in a game",
 }
 
 export interface UserModel {
