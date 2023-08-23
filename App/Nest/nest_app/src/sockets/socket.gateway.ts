@@ -84,7 +84,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
         client.leave(roomName);
         client.emit('leftRoom', {roomName});
-        console.log(`Client ${userId} ${client.id} left room ${roomName}`);
+        console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
         this.server.to(roomName).emit('newDisconnection', {roomName, userId});
     }
     @SubscribeMessage('message')

@@ -254,17 +254,16 @@ export class ChatroomService {
 			where: { id: id },
 			include: { owner: true},
 		});
-		// Check if target user is admin
+
+		// Todo: if owner transmit ownership to another member (admin)
 		// const isOwner = await this.prisma.chatRoom.count({
 		// 	where: { id: id, owner: { id: userId } },
 		// }) > 0;
-		// Todo: if owner
-		// Todo: remove from admin list
-		const updateResult = await this.prisma.chatRoom.update({
-			where: { id: id },
-			data: { members: { disconnect: [{ id: userId }] } },
+		const kickedMembership = await this.prisma.membership.deleteMany({
+			where:
+				  { userId: userId, chatRoomId: id },
 		});
-		return updateResult;
+		return kickedMembership;
 	}
 
 	async addMessageToChannel(channelId: number, userId: number, message: string) {

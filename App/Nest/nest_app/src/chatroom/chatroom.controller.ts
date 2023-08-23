@@ -116,9 +116,8 @@ export class ChatroomController {
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
 			.then((res) => {
-				const roomName = res.name;
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {
