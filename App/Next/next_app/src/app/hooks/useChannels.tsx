@@ -88,6 +88,7 @@ export default function useChannels() {
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
             avatar: user.avatar,
+			currentStatus: user.currentStatus,
         }
         if (joinedChannels[channelIndex].members?.find((member: ChannelMember) => member.id == newMember.id) != undefined)
             return ;
