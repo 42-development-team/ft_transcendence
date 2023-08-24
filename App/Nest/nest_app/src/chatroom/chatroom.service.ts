@@ -9,7 +9,6 @@ import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 import { comparePassword } from '../utils/bcrypt';
-import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class ChatroomService {
@@ -18,7 +17,6 @@ export class ChatroomService {
 		private jwtService: JwtService,
 		private userService: UsersService,
 		private configService: ConfigService,
-		private membershipService: MembershipService,
 	) { }
 
 	// #region C(reate)
@@ -187,7 +185,11 @@ export class ChatroomService {
 		});
 
 		console.log(JSON.stringify(chatRoom, null, 2));
-		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == false);
+		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
+		if (isBanned) {
+			throw new Error('User is banned from this channel');
+		}
+		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
 		// Todo: return if already joined
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			if (!isJoined)
