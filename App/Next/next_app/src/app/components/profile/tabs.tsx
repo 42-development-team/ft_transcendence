@@ -4,9 +4,19 @@ import React, { useState } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
 import LeaderBoard  from "./leaderboard";
+import sessionStorageUser from "./sessionStorage";
 
-export function UnderlineTabs() {
+export function UnderlineTabs( {userId}: {userId: string} ) {
   const [activeTab, setActiveTab] = useState("leaderboard");
+
+  const useEffect = () => {
+    let sessionUserId = null;
+    sessionUserId = sessionStorageUser();
+
+    if (sessionUserId !== null && sessionUserId !== undefined) {
+      userId = sessionUserId as string;
+    }
+  }
 
   const handleClick = (value: string) => {
     setActiveTab(value);
@@ -79,7 +89,7 @@ export function UnderlineTabs() {
               {activeTab === "match-history" ? (
                 <MatchHistory data={matchHistoryData}/>
               ) : (
-                <LeaderBoard data={leaderBoardData} currentUser={"aucaland"}/>
+                <LeaderBoard data={leaderBoardData} currentUser={userId}/>
               )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
