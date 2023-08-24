@@ -26,7 +26,7 @@ export function UnderlineTabs() {
   ];
 
   //TODO: fetch data from backend
-  const matchHistoryData = { data: ["test1", "test2", "test3", "test4", "test5", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4", "test2", "test3", "test4"] }
+  const matchHistoryData = [{ win: true, score: 10, vs: "jeanClaude38" },{ win: false, score: 15, vs: "jeanmi" },{ win: true, score: 10, vs: "darksasuke" },{ win: true, score: 10, vs: "jeanClaude38" },{ win: true, score: 10, vs: "jeanClaude38" }];
 
   const indicatorStyle = {
     transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out",
