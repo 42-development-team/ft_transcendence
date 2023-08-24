@@ -1,22 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
 import LeaderBoard  from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
+import getGames from "./getGames";
 
 export function UnderlineTabs( {userId}: {userId: string} ) {
   const [activeTab, setActiveTab] = useState("leaderboard");
+  const [games, setGames] = useState<any>({});
 
-  const useEffect = () => {
+  useEffect(() => {
     let sessionUserId = null;
     sessionUserId = sessionStorageUser();
 
     if (sessionUserId !== null && sessionUserId !== undefined) {
       userId = sessionUserId as string;
     }
-  }
+    setGames(getGames({userId: Number(userId)}));
+    console.log("games: ", games)
+
+  }, []);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
@@ -36,19 +41,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
   ];
 
   //TODO: fetch data from backend
-  const matchHistoryData = [{ win: true, score: 10, vs: "jeanClaude38" },
-  { win: false, score: 15, vs: "jeanmi" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "darksasuke" },
-  { win: true, score: 10, vs: "jeanClaude38" },
-  { win: true, score: 10, vs: "jeanClaude38" }];
+
 
   const leaderBoardData = [{ avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
   { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
@@ -87,7 +80,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
-                <MatchHistory data={matchHistoryData} currentUser={userId}/>
+                <MatchHistory currentUser={userId}/>
               ) : (
                 <LeaderBoard data={leaderBoardData} currentUser={userId}/>
               )}

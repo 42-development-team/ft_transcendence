@@ -30,18 +30,21 @@ export class GameController {
 
     /* R(ead) */ //with game id
     @Get('info/:id')
-    async getGame(@Param('id') id: number) {
+    async getGame(@Param('id') id: string) {
+        const gameId = parseInt(id);
         this.logger.log('Getting game');
-        const game = await this.gameService.getGame(id);
+        const game = await this.gameService.getGame(gameId);
         this.logger.log(`Successfully got game with ID ${game.id}`);
         return game;
     }
 
-    @Get('info/:userId')
-    async getJSDocAugmentsTag(@Param('userId') userId: number) {
-        this.logger.log('Getting game');
-        const games = await this.gameService.getGames(userId);
-        this.logger.log(`Successfully got game with ID ${games}`);
+    @Get('infoGames/:userId')
+    async getGames(@Param('userId') userId: string) {
+        const id = parseInt(userId);
+        this.logger.log('Getting games');
+        const games = await this.gameService.getGames(id);
+        this.logger.log(`Successfully got games of user with ID ${id}`);
+        console.log(JSON.stringify(games));
         return games;
     }
 

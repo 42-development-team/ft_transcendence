@@ -35,11 +35,12 @@ export class GameService {
 
 
     async getGames(userId: number) {
-        const user = await this.prisma.game.findMany({
+        const games = await this.prisma.game.findMany({
             orderBy: { createdAt: 'desc' },
-            include: { loser: true, winner: true},
+            include: { loser: true, winner: true },
             where: { users: { some: { id: userId } } },
         });
+        return games;
     }
 
     /* U(pdate) */ //TODO: gameDuration
