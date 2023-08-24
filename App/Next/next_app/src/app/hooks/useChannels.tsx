@@ -16,7 +16,7 @@ export default function useChannels() {
     const socket = useChatConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
-    const [currentChannelId, setCurrentChannelId] = useState<string>("")
+    const [currentChannelId, setCurrentChannelId] = useState<string>("");
 
     useEffect(() => {
         fetchChannelsInfo();
@@ -88,27 +88,27 @@ export default function useChannels() {
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
             avatar: user.avatar,
-			currentStatus: user.currentStatus,
+            currentStatus: user.currentStatus,
         }
-		// console.log("newMember username = ", newMember.username);
-		// console.log("newMember current status: ", newMember.currentStatus);
-		const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
+        // console.log("newMember username = ", newMember.username);
+        // console.log("newMember current status: ", newMember.currentStatus);
+        const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
         if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
-			setJoinedChannels(prevChannels => {
-				const newChannels = joinedChannels ? [...prevChannels] : [];
-				// if (newChannels[channelIndex]?.members){
-					(newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
-				// }
-				return newChannels;
-			})
-		}
-		else {
-			setJoinedChannels(prevChannels => {
-				const newChannels = [...prevChannels];
-				newChannels[channelIndex].members?.push(newMember);
-				return newChannels;
-			});
-		}
+            setJoinedChannels(prevChannels => {
+                const newChannels = joinedChannels ? [...prevChannels] : [];
+                // if (newChannels[channelIndex]?.members){
+                (newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
+                // }
+                return newChannels;
+            })
+        }
+        else {
+            setJoinedChannels(prevChannels => {
+                const newChannels = [...prevChannels];
+                newChannels[channelIndex].members?.push(newMember);
+                return newChannels;
+            });
+        }
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
@@ -124,10 +124,11 @@ export default function useChannels() {
             // newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
             const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
             if (memberIndex !== undefined && memberIndex !== -1) {
-            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
-        }
-        return newChannels;
-    });  
+                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+            }
+            return newChannels;
+        });
+    }
 
     const handleLeftRoom = (body: any) => {
         const { roomName } = body;
@@ -174,35 +175,26 @@ export default function useChannels() {
         }
     }, [socket, joinedChannels]);
 
-    const joinPreviousChannels = useCallback(() => {
-        joinedChannels.forEach(channel => {
-            if (!channel.joined) {
-                socket?.emit("joinRoom", channel.name);
-                channel.joined = true;
-            }
-        });
-    }, [socket, joinedChannels]);
-
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             // Channel creation
-			let hashedPassword;
+            let hashedPassword;
             if (newChannelInfo.password)
                 hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
-				let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
+            let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-					name: newChannelInfo.name,
-					type: newChannelInfo.type,
-					hashedPassword: hashedPassword,
-					owner: newChannelInfo.owner,
-					admins: newChannelInfo.admins,
-				}),
+                    name: newChannelInfo.name,
+                    type: newChannelInfo.type,
+                    hashedPassword: hashedPassword,
+                    owner: newChannelInfo.owner,
+                    admins: newChannelInfo.admins,
+                }),
             });
             if (!response.ok) {
                 throw new Error('Failed to create the channel');
@@ -217,7 +209,7 @@ export default function useChannels() {
             console.error('error creating channel', error);
         }
         return "";
-    };
+    }
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
         //Todo: add try catch to prevent console.log.error
@@ -239,20 +231,6 @@ export default function useChannels() {
     }
 
     // FETCHING
-    const fetchChannelsInfo = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
-                return channel;
-            });
-            setChannels(fetchedChannels);
-        }
-        catch (err) {
-            console.log("Error fetching channel info list: " + err);
-        }
-    };
 
     const fetchNewChannelContent = async (id: string) => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
@@ -268,6 +246,8 @@ export default function useChannels() {
                 isAdmin: member.isAdmin,
                 isOwner: member.isOwner,
                 avatar: "",
+                // Todo: currentStatus
+                currentStatus: UserStatus.Offline,
                 // avatar: member.user.avatar,
             }
         });
@@ -282,6 +262,22 @@ export default function useChannels() {
         });
         setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
     }
+    // FETCHING
+    const fetchChannelsInfo = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel info list: " + err);
+        }
+    };
+
 
     const fetchChannelsContent = async () => {
         try {
@@ -317,7 +313,16 @@ export default function useChannels() {
         catch (err) {
             console.log("Error fetching channel content list: " + err);
         }
-    };
+    }
+
+    const joinPreviousChannels = useCallback(() => {
+        joinedChannels.forEach(channel => {
+            if (!channel.joined) {
+                socket?.emit("joinRoom", channel.name);
+                channel.joined = true;
+            }
+        });
+    }, [socket, joinedChannels]);
 
     return {
         channels,
@@ -328,6 +333,5 @@ export default function useChannels() {
         socket,
         setCurrentChannelId
     }
-  }
 }
 
