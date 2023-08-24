@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
-import matchHistory from "./matchHistory";
 import MatchHistory from "./matchHistory";
+import LeaderBoard  from "./leaderboard";
 
 export function UnderlineTabs() {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -26,10 +26,29 @@ export function UnderlineTabs() {
   ];
 
   //TODO: fetch data from backend
-  const matchHistoryData = [{ win: true, score: 10, vs: "jeanClaude38" },{ win: false, score: 15, vs: "jeanmi" },{ win: true, score: 10, vs: "darksasuke" },{ win: true, score: 10, vs: "jeanClaude38" },{ win: true, score: 10, vs: "jeanClaude38" }];
+  const matchHistoryData = [{ win: true, score: 10, vs: "jeanClaude38" },
+  { win: false, score: 15, vs: "jeanmi" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "jeanClaude38" },
+  { win: true, score: 10, vs: "jeanClaude38" }];
+
+  const leaderBoardData = [{ avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "aucaland", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" }];
 
   const indicatorStyle = {
-    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out",
+    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out,font-size 0.1s ease-in-out",
   };
   
   return (
@@ -45,7 +64,7 @@ export function UnderlineTabs() {
               onClick={() => handleClick(value)}
               style={indicatorStyle}
               className={`${
-                activeTab === value ? "text-blue-500" : " text-gray-400"
+                activeTab === value ? "text-blue-500 text-xl" : " text-gray-400"
               } border-b-4 ${
                 activeTab === value ? "border-blue-500" : "border-gray-500"
               }`}
@@ -60,7 +79,7 @@ export function UnderlineTabs() {
               {activeTab === "match-history" ? (
                 <MatchHistory data={matchHistoryData}/>
               ) : (
-                <div>Coucou</div>
+                <LeaderBoard data={leaderBoardData} currentUser={"aucaland"}/>
               )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
