@@ -1,5 +1,5 @@
 
-const matchHistory = ( props: { data: any } ) => {
+const matchHistory = ( props: { data: any, currentUser: string } ) => {
     const { data } = props;
 
     return (

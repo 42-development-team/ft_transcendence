@@ -87,7 +87,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
-                <MatchHistory data={matchHistoryData}/>
+                <MatchHistory data={matchHistoryData} currentUser={userId}/>
               ) : (
                 <LeaderBoard data={leaderBoardData} currentUser={userId}/>
               )}
