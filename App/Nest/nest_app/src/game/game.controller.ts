@@ -1,7 +1,8 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
-import { Post, Body, Request, Patch } from '@nestjs/common';
+import { Post, Body, Patch } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateGameDto } from './dto/create-game.dto';
 import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
@@ -39,13 +40,12 @@ export class GameController {
     }
 
     @Get('infoGames/:userId')
-    async getGames(@Param('userId') userId: string) {
+    async getGames(@Param('userId') userId: string, @Res() res: Response) {
         const id = parseInt(userId);
         this.logger.log('Getting games');
         const games = await this.gameService.getGames(id);
         this.logger.log(`Successfully got games of user with ID ${id}`);
-        console.log(JSON.stringify(games));
-        return games;
+        res.status(HttpStatus.OK).send(games);
     }
 
     /* U(pdate) */

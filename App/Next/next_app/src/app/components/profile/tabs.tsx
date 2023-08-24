@@ -9,7 +9,7 @@ import getGames from "./getGames";
 
 export function UnderlineTabs( {userId}: {userId: string} ) {
   const [activeTab, setActiveTab] = useState("leaderboard");
-  const [games, setGames] = useState<any>({});
+  const [games, setGames] = useState<any>([]);
 
   useEffect(() => {
     let sessionUserId = null;
@@ -19,9 +19,12 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
       userId = sessionUserId as string;
     }
     setGames(getGames({userId: Number(userId)}));
-    console.log("games: ", games)
 
   }, []);
+
+  useEffect(() => {
+    console.log("games in i: ", games);
+  }, [games]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);

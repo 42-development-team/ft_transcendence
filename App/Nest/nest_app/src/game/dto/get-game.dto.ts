@@ -5,6 +5,6 @@ export class GetGameDto {
     gameDuration: number;
     winnerScore: number;
     loserScore: number;
-    winner: GameUserDto[];
-    loser: GameUserDto[];
+    winner: GameUserDto;
+    loser: GameUserDto;
 }
