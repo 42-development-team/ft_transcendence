@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import BallInterface from "../../game/interfaces/ballInterface";
-import PlayerInterface from "../../game/interfaces/playerInterface";
+import { GameInterface, PlayerInterface, BallInterface } from "../../game/interfaces/game.interfaces";
+
+// NO NEED THESE IMPORTS !!
+import useGame from '../../hooks/useGame';
+import PlayerClass from "../../game/class/player.class";
+import BallClass from "../../game/class/ball.class";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
@@ -11,7 +15,7 @@ const canvasStyle: any = {
 };
 
 // ======== PRINT CANVAS SCORE AND CONTOUR ==============//
-function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number): [Player, Player] | null {
+function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number): [PlayerInterface, PlayerInterface] | null {
 	context.font='30px Arial';
 	context.fillStyle='#cba6f7';
 	context.beginPath();
@@ -79,22 +83,22 @@ function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, wid
 	context.closePath();
 }
 
-function renderGame(context: CanvasRenderingContext2D, ball: BallInterface, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number) {
-	renderBall(context, ball, width, height);
-	renderPlayer(context, p1, width, height);
-	renderPlayer(context, p2, width, height);
+function renderGame(context: CanvasRenderingContext2D, data: GameInterface, width: number, height: number) {
+	renderBall(context, data.ball, width, height);
+	renderPlayer(context, data.player1, width, height);
+	renderPlayer(context, data.player2, width, height);
 };
 
 // ============= COMPONENT ============= //
-const CanvasWithSock = () => {
+const Canvas = ({...props}) => {
 	
 	if (window === undefined)
 		return ;
 
-	// back
-	// const ball: Ball = new Ball();
-	// const p1: Player = new Player(true);
-	// const p2: Player = new Player(false);
+	const {move, stopMove, data} = useGame();
+	console.log("data", data);
+	if (!data)
+		return ;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
@@ -113,48 +117,37 @@ const CanvasWithSock = () => {
 		let animationId: number;
 		
 		const render = (): any => {
-
+			
 			blurEffect(context, width, height);
-
 			printMidLine(context, width, height);
+			renderGame(context, data, width, height);
 
-			renderGame(context, ball, p1, p2, width, height);
-
-			const result: any = printScore(context, p1, p2, width, height);
+			const result: any = printScore(context, data.player1, data.player2, width, height);
 			if (result) {
 				win(context, result, width, height);
 				return finish(result, animationId);
 			}
-
 			animationId = window.requestAnimationFrame(render);
 		}
 		render();
-
+		
 		return () => window.cancelAnimationFrame(animationId);
 
 	}, [width]);
-
+	
 	useEffect(() => {
 		function handleKeyDown(e: any) {
-			if (e.code === "ArrowDown") {
-				// send socket info
-					// p1.setVelocity(0.01); => exec in back logic
-			}
-			else if (e.code === "ArrowUp") {
-				// send socket info
-					// p1.setVelocity(-0.01); => exec in back logic
-			}
+			if (e.code === "ArrowDown")
+				move(e.code);
+			else if (e.code === "ArrowUp")
+				move(e.code);
 		}
 
 		function handleKeyRelease(e: any) {
-			if (e.code === "ArrowDown") {
-				// send socket info
-					// p1.killVelocity(); => exec in back logic
-			}
-			else if (e.code === "ArrowUp") {
-				// send socket info
-					// p1.killVelocity(); => exec in back logic
-			}
+			if (e.code === "ArrowDown")
+				stopMove(e.code);
+			else if (e.code === "ArrowUp")
+				stopMove(e.code);
 		}
 
 		function resize() {
@@ -176,4 +169,4 @@ const CanvasWithSock = () => {
 	);
 }
 
-export default CanvasWithSock;
+export default Canvas;

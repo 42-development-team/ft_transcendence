@@ -4,7 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
-
+import { GameService } from 'src/game/game.service';
+import { GameInterface } from 'src/game/interface/game.interfaces';
+import { GameDto } from 'src/game/dto/game.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -14,6 +16,7 @@ import { MembershipService } from 'src/membership/membership.service';
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     constructor(
         private chatroomService: ChatroomService,
+        private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService
         ) {}
@@ -101,25 +104,35 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         );
     }
     
+    // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
+    // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
-    async handleJoinGameRoom() {}
+    async handleJoinGameRoom(@MessageBody() body: any, @ConnectedSocket() socket) {
+        let data: GameInterface;
+
+        this.server.to('roomName').emit('updateGame', {data});
+    }
 
     @SubscribeMessage('leaveGameRoom')
     async handleLeaveGameRoom() {}
 
     @SubscribeMessage('move')
     async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
-        // find player
-        // player.setVelocity(); || killVelocity();
+        const {move} = body;
+        console.log(move);
+    }
+
+    @SubscribeMessage('stopMove')
+    async handleStopMove(@MessageBody() body: any, @ConnectedSocket() socket) {
+        const {stopMove} = body;
+        console.log(stopMove);
     }
 
     // Send the players positions + ball positions to correct room
-    // async sendGameData(roomName: string, gameData: GameDto) {
-    //     // calculGamePositions
-    //     // gameData contains game score????
-    //     this.server.to(roomName).emit('updateGame', {gameData});
-    // }
+    async sendGameData(roomName: string, gameData: GameDto) {
+        this.server.to(roomName).emit('updateGame', {gameData});
+    }
 
     // Should emit to room event 'GameOver' ??
 }

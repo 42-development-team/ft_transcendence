@@ -20,6 +20,7 @@ class PlayerClass {
     velocity: number = 0;
     angle: number = 60;
     points: number = 0;
+    socket: any
 
     score(): number {
         this.points++;
