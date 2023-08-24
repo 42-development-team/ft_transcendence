@@ -212,58 +212,69 @@ export default function useChannels() {
         return "";
     }
 
-    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        //Todo: add try catch to prevent console.log.error
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
-            credentials: "include",
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ password }),
-        });
-        if (!response.ok) {
+    const joinChannel = async (id: string, name: string, password?: string): Promise<any> => {
+        // Todo: fix catch
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            });
+            if (!response.ok) {
+                return response;
+            }
+            socket?.emit("joinRoom", name);
+            await fetchNewChannelContent(id);
+            await fetchChannelsInfo();
             return response;
         }
-        socket?.emit("joinRoom", name);
-        await fetchNewChannelContent(id);
-        await fetchChannelsInfo();
-        return response;
+        catch (err) {
+            console.log("Error joining channel: " + err);
+            return err;
+        }
     }
 
     // FETCHING
 
     const fetchNewChannelContent = async (id: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const channelContent = await response.json();
-        const fetchedChannel: ChannelModel = channelContent;
-        fetchedChannel.joined = true;
-        fetchedChannel.banned = false;
-        fetchedChannel.icon = '';
-        fetchedChannel.unreadMessages = 0;
-        fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
-            return {
-                id: member.id,
-                username: member.username,
-                isAdmin: member.isAdmin,
-                isOwner: member.isOwner,
-                isBanned: member.isBanned,
-                avatar: "",
-                // Todo: currentStatus
-                currentStatus: UserStatus.Offline,
-                // avatar: member.user.avatar,
-            }
-        });
-        fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
-            return {
-                id: message.id,
-                createdAt: message.createdAt,
-                content: message.content,
-                senderId: message.sender.id,
-                senderUsername: message.sender.username,
-            }
-        });
-        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+            const channelContent = await response.json();
+            const fetchedChannel: ChannelModel = channelContent;
+            fetchedChannel.joined = true;
+            fetchedChannel.banned = false;
+            fetchedChannel.icon = '';
+            fetchedChannel.unreadMessages = 0;
+            fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
+                return {
+                    id: member.id,
+                    username: member.username,
+                    isAdmin: member.isAdmin,
+                    isOwner: member.isOwner,
+                    isBanned: member.isBanned,
+                    avatar: "",
+                    // Todo: currentStatus
+                    currentStatus: UserStatus.Offline,
+                    // avatar: member.user.avatar,
+                }
+            });
+            fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
+                return {
+                    id: message.id,
+                    createdAt: message.createdAt,
+                    content: message.content,
+                    senderId: message.sender.id,
+                    senderUsername: message.sender.username,
+                }
+            });
+            setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+        }
+        catch (err) {
+            console.log("Error fetching channel content: " + err);
+        }
     }
     // FETCHING
     const fetchChannelsInfo = async () => {
