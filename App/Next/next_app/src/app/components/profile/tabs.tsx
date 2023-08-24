@@ -10,28 +10,33 @@ import getGames from "./getGames";
 export function UnderlineTabs( {userId}: {userId: string} ) {
   const [activeTab, setActiveTab] = useState("leaderboard");
   const [games, setGames] = useState<any>([]);
+  const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
 
   useEffect(() => {
-    const sessionUserId = sessionStorageUser();
+    let sessionUserId = null;
+    sessionUserId = sessionStorageUser();
 
     if (sessionUserId !== null && sessionUserId !== undefined) {
-      userId = sessionUserId as string;
+      setUserIdNumber(Number(sessionUserId) as number);
     }
-    fetchGame(userId);
+  const fetchGame = async (userIdNumber: number) => {
+    const games = await getGames({userId: userIdNumber});
+    setGames(await games);
+  }
+  
+  fetchGame(userIdNumber);
 
   }, []);
 
   useEffect(() => {
+
   }, [games]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
   };
 
-  const fetchGame = async (userId: string) => {
-    const games = await getGames({userId: Number(userId)})
-    setGames(await games);
-  }
+
 
   const data = [
     {
@@ -45,8 +50,6 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
       desc: `Here the Match-history Component(s) will be rendered`,
     },
   ];
-
-  //TODO: fetch data from backend
 
 
   const leaderBoardData = [{ avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
@@ -86,7 +89,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
-                <MatchHistory data={games} currentUserId={Number(userId)}/>
+                <MatchHistory data={games} currentUserId={Number(userIdNumber)}/>
               ) : (
                 <LeaderBoard data={leaderBoardData} currentUser={userId}/>
               )}

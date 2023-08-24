@@ -1,4 +1,3 @@
-'use client';
 
 const getGames = async ({userId}: {userId: number}) => {
     try {
