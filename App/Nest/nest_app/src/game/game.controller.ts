@@ -28,13 +28,21 @@ export class GameController {
         return newGame;
     }
 
-    /* R(ead) */
+    /* R(ead) */ //with game id
     @Get('info/:id')
     async getGame(@Param('id') id: number) {
         this.logger.log('Getting game');
         const game = await this.gameService.getGame(id);
         this.logger.log(`Successfully got game with ID ${game.id}`);
         return game;
+    }
+
+    @Get('info/:userId')
+    async getJSDocAugmentsTag(@Param('userId') userId: number) {
+        this.logger.log('Getting game');
+        const games = await this.gameService.getGames(userId);
+        this.logger.log(`Successfully got game with ID ${games}`);
+        return games;
     }
 
     /* U(pdate) */

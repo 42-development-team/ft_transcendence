@@ -27,9 +27,19 @@ export class GameService {
     /* R(ead) */
     async getGame(id: number) {
         const game = await this.prisma.game.findUniqueOrThrow({
+            include: { loser: true, winner: true},
             where: { id: id },
         });
         return game;
+    }
+
+
+    async getGames(userId: number) {
+        const user = await this.prisma.game.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: { loser: true, winner: true},
+            where: { users: { some: { id: userId } } },
+        });
     }
 
     /* U(pdate) */ //TODO: gameDuration
