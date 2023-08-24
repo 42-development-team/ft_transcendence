@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
+import MatchHistory from "./matchHistory";
+import LeaderBoard  from "./leaderboard";
 
 export function UnderlineTabs() {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -23,15 +25,37 @@ export function UnderlineTabs() {
     },
   ];
 
+  //TODO: fetch data from backend
+  const matchHistoryData = [{ win: true, score: 10, vs: "jeanClaude38" },
+  { win: false, score: 15, vs: "jeanmi" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "darksasuke" },
+  { win: true, score: 10, vs: "jeanClaude38" },
+  { win: true, score: 10, vs: "jeanClaude38" }];
+
+  const leaderBoardData = [{ avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
+  { avatar: "avatar", username: "aucaland", wdr: "10/10/1" },
+  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" }];
+
   const indicatorStyle = {
-    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out",
+    transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out,font-size 0.1s ease-in-out",
   };
   
   return (
-    <div className=" mt-[1vw] h-full rounded-lg transition hover:duration-[550ms] bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-40 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
       <Tabs value={activeTab}>
         <TabsHeader
-          className="rounded-none bg-transparent p-0 font-semibold"
+          className="text-xl rounded-none bg-transparent p-0 font-semibold h-[4vh]"
         >
           {data.map(({ label, value }) => (
             <Tab
@@ -40,8 +64,8 @@ export function UnderlineTabs() {
               onClick={() => handleClick(value)}
               style={indicatorStyle}
               className={`${
-                activeTab === value ? "text-blue-500" : " text-gray-400"
-              } border-b-2 ${
+                activeTab === value ? "text-blue-500 text-xl" : " text-gray-400"
+              } border-b-4 ${
                 activeTab === value ? "border-blue-500" : "border-gray-500"
               }`}
             >
@@ -49,10 +73,14 @@ export function UnderlineTabs() {
             </Tab>
           ))}
         </TabsHeader>
-        <TabsBody>
+        <TabsBody >
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
-              {desc} 
+              {activeTab === "match-history" ? (
+                <MatchHistory data={matchHistoryData}/>
+              ) : (
+                <LeaderBoard data={leaderBoardData} currentUser={"aucaland"}/>
+              )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
         </TabsBody>
