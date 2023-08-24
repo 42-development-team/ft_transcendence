@@ -14,18 +14,46 @@ interface ChatMemberListProps {
 const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
 
     const kick = async (kickedId: string) => {
-        // Todo: add try catch
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/kick`, {
-            credentials: "include",
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({kickedId}),
-        });
-        if (!response.ok) {
-            console.log("Error kicking user: " + response.status);
-            return;
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/kick`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({kickedId}),
+            });
+            if (!response.ok) {
+                console.log("Error kicking user: " + response.status);
+                // Todo: use alert to inform user
+                return;
+            }
+        }
+        catch (error) {
+            console.log("Error kicking user: " + error);
+                // Todo: use alert to inform user
+        }
+    }
+
+    const ban = async (bannedId: string) => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/kick`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({bannedId}),
+            });
+            if (!response.ok) {
+                console.log("Error banning user: " + response.status);
+                // Todo: use alert to inform user
+                return;
+            }
+        }
+        catch (error) {
+            console.log("Error banning user: " + error);
+                // Todo: use alert to inform user
         }
     }
 
@@ -57,27 +85,27 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         .filter(member => member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
 
     const BannedList = channel.bannedUsers == undefined 
         ? [] 
         : channel.bannedUsers.map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
-                kick={kick} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} leaveChannel={leaveChannel} />
         )
     )
 
