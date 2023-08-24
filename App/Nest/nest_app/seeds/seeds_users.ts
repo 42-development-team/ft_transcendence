@@ -3,37 +3,37 @@ export const users = [
     {
         login: "dfbusrain",
         username: "dfbsurain",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		currentStatus: "online",
     },
     {
         login: "fmjsaune",
         username: "fmsjaune",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		currentStatus: "online",
     },
     {
         login: "frchsateau",
         username: "rchfsateau",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		currentStatus: "online",
     },
     {
         login: "emafcsron",
         username: "emfsacron",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		currentStatus: "online",
     },
     {
         login: "oskfsour",
         username: "dofsckermetue",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		currentStatus: "offline",
     },
     {
         login: "aucaland",
         username: "aucaland",
-        avatar: "profil.jpg",
+        avatar: "noavatar.jpg",
 		    currentStatus: "offline",
     },
 
