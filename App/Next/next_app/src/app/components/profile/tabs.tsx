@@ -33,7 +33,7 @@ export function UnderlineTabs() {
   };
   
   return (
-    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-base hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-40 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
       <Tabs value={activeTab}>
         <TabsHeader
           className="text-xl rounded-none bg-transparent p-0 font-semibold h-[4vh]"
