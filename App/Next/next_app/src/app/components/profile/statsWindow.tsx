@@ -63,7 +63,8 @@ const StatsWindow = ({userId}: {userId: string} ) => {
             <Avatar
                 disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} userName={statsData.userName} userId={userId}>
             </Avatar>
-            <div className="w-full sm:ml-[2vw] font-semibold text-gray-400 text-center transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+            <div className="w-full sm:ml-[2vw] font-semibold text-gray-400 text-center transition hover:duration-[550ms] rounded-lg
+                bg-surface0 bg-opacity-70 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
                 <Stats userId={userId} stats={statsData}/>
             </div>
         </div>

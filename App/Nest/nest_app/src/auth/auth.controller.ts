@@ -46,7 +46,7 @@ export class AuthController {
                 httpOnly: true,
             }
             const jwt = await this.authService.getTokens(req.user, true);
-            // res.clearCookie("jwt") // => not needed because 
+            // res.clearCookie("jwt") // => not needed because
             // res.cookie automatically overwrites the existing cookie with the same name
             res.cookie("jwt", jwt.access_token, cookieOptions)
             .cookie("rt", jwt.refresh_token, cookieOptions);
@@ -58,8 +58,11 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Get('logout')
-    async logout(@Res() res: Response) {
+    async logout(@Res() res: Response, @Req() req: any) {
         try {
+			const userId: number = req.user.sub;
+			const user = this.userService.getUserFromId(userId);
+			this.authService.updateCurrentStatus(user, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }
@@ -111,7 +114,7 @@ export class AuthController {
                 user: req.user
             });
         }
-    }  
+    }
 
     @Public()
     @Get('firstLogin/doesUserNameExist/:username')
@@ -119,9 +122,9 @@ export class AuthController {
         try {
             const user = await this.userService.getUserFromUsername(username);
             const isUsernameTaken = !!user; // double negation to turn user into a boolean
-            //If the user object is not null or undefined (truthy), 
+            //If the user object is not null or undefined (truthy),
             // !!user will evaluate to true, indicating that the username is taken.
-            // If the user object is null or undefined (falsy), 
+            // If the user object is null or undefined (falsy),
             // !!user will evaluate to false, indicating that the username is available.
             res.status(HttpStatus.OK).send({ isUsernameTaken });
         } catch (error) {
@@ -154,9 +157,9 @@ export class AuthController {
             console.log('Parsed userId:', userId);
             console.log('New username:', updateData.newUsername);
 
-            
+
             const updatedUser = await this.userService.updateUsername(userId, updateData.newUsername);
-            
+
             console.log('Updated user:', updatedUser);
             return updatedUser;
         } catch (error) {
@@ -165,8 +168,8 @@ export class AuthController {
         }
     }
 
-    
-      
+
+
 
     @Public()
 	@Get('firstLogin/getUser/:userId')

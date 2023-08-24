@@ -19,6 +19,7 @@ export class UsersService {
                 username: createUserDto.username,
                 avatar: createUserDto.avatar,
                 twoFAsecret: createUserDto.twoFAsecret,
+				currentStatus: createUserDto.currentStatus,
             }
         });
         return user;
@@ -123,10 +124,15 @@ export class UsersService {
             isTwoFAEnabled: false,
             twoFAsecret: "",
             isFirstLogin: true,
+			currentStatus: "online",
             };
 
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
+		else {
+			if (user.currentStatus != "online")
+				user.currentStatus = "online";
+		}
         // console.log("user: ", user);
         return user;
     }

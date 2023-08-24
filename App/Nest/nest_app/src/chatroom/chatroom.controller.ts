@@ -24,11 +24,9 @@ export class ChatroomController {
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
         try {
-            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
-			// Todo: don't emit the chatroom password
-			// Maybe send an empty body
-            this.socketGateway.server.emit("NewChatRoom", newChatRoom);
-
+			const userId: number = req.user.sub;
+            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
+            this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
             response.status(HttpStatus.CREATED).send(newChatRoom);
         } catch (error) {
             response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -90,10 +88,6 @@ export class ChatroomController {
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
 		.then(() => {
-				const memberShipExist = this.membershipService.getMemberShipFromUserAndChannelId(userId, Number(id))
-				if (memberShipExist) {
-					this.membershipService.create(userId, Number(id));
-				}
 				response.send();
 			})
 			.catch(error => {
@@ -107,10 +101,9 @@ export class ChatroomController {
 		const kickedId: number = body.kickedId;
 		const kickedUserSocket = await this.userService.getUserSocketFromId(kickedId);
 		await this.chatroomService.kick(+id, userId, kickedId)
-			.then((res) => {
-				const roomName = res.name;
+			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {
@@ -123,9 +116,8 @@ export class ChatroomController {
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
 			.then((res) => {
-				const roomName = res.name;
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, roomName);
+				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {

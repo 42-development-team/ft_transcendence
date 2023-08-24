@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -29,7 +28,10 @@ export class MembershipService {
 	try {
 		const memberShip = await this.prisma.membership.findFirst({
 			where:
-				  { userId: userId, chatRoomId: channelId }
+				  { userId: userId, chatRoomId: channelId },
+			include: { 
+				user: true,
+			}
 		})
 		return memberShip;
 	}

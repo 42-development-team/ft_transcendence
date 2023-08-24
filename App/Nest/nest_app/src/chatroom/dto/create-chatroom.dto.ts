@@ -13,11 +13,4 @@ export class CreateChatroomDto {
     @IsOptional()
     @IsString()
     hashedPassword?: string;
-
-    @IsNotEmpty()
-    owner: number;
-
-    @IsNotEmpty()
-    @IsArray()
-    admins: number[];
 }
