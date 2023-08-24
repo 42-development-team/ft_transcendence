@@ -199,7 +199,9 @@ export class ChatroomService {
 			throw new Error('User is banned from this channel');
 		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		// Todo: return if already joined
+		if (isJoined) {
+			throw new Error('User is already a member of this channel');
+		}
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			if (!isJoined)
 				await this.connectUserToChatroom(userId, id);
@@ -274,11 +276,11 @@ export class ChatroomService {
 			throw new Error('Cannot kick owner of the channel');
 		}
 		// Add banned user to ban list
-		const test = await this.prisma.membership.updateMany({
+		const bannedUser = await this.prisma.membership.updateMany({
 			where: { userId: bannedId, chatRoomId: id },
 			data: { isBanned: true },
 		});
-		// Disconnect banned user from channel
+		return bannedUser;
 	}
 
 	async leave(id: number, userId: number) {
