@@ -1,4 +1,4 @@
-class Player {
+class PlayerClass {
     constructor(bool: boolean) {
         if (bool === true) {
             this.x = 0.01 + this.w;
@@ -46,17 +46,9 @@ class Player {
         }
     }
 
-    show(context: CanvasRenderingContext2D, width:  number, height: number) {
-        context.fillStyle = this.color;
-        context.beginPath();
-            context.fillRect(this.x * width - this.w * width / 2, this.y * height - this.h * height / 2, this.w * width, this.h * height);
-        context.closePath();
-    }
-
-    renderPlayer(context: CanvasRenderingContext2D, width: number, height: number) {
+    calculPlayerPosition() {
         this.move();
-        this.show(context, width, height);
     }
 }
 
-export default Player;
+export default PlayerClass;

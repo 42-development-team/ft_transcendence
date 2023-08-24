@@ -1,6 +1,7 @@
-import Player from './player.class';
+import PlayerClass from './player.class'
 
-class Ball {
+class BallClass {
+
     constructor() {
         this.reset();
     }
@@ -13,51 +14,25 @@ class Ball {
     speed: [number, number] = [0, 0];
     incr: number = 0;
 
-    bounce(p1: Player, p2: Player, width:  number, height: number) {
-        if (this.y - this.r <= 0 || this.y + this .r >= 1)
-        this.speed[1] *= -1;
-        this.paddleBounce(p1, p2, height);
-        this.score(p1, p2);
-    };
-
+    //========== BOUNCES =============//
+    //>>BORDER<<//
     borderBounce() {
         if (this.y - this.r <= 0 || this.y + this .r >= 1)
             this.speed[1] *= -1;
     }
 
-    score(p1: Player, p2: Player) {
-        if (this.x <= 0) {
-            p2.score();
-            this.reset();
-        }
-        else if(this.x >= 1) {
-            p1.score();
-            this.reset();
-        }
-    }
-
-    reset() {
-        this.x = 0.5;
-        this.y = 0.5;
-        let val = 1;
-        if (Math.random() < 0.5) {
-           val *= -1;
-        }
-        this.speed[0] = 0.3;
-        this.speed[1] = Math.random() * val;
-    }
-
-    paddleBounce(p1: Player, p2: Player, height: number) {
+    //>>PADDLE<//
+    paddleBounce(p1: PlayerClass, p2: PlayerClass) {
         if (this.speed[0] < 0)
-            this.paddleLeftBounce(p1, height);
-        else
-            this.paddleRightBounce(p2, height);
-    }
-
-    paddleLeftBounce(p: Player, height: number) {
+            this.paddleLeftBounce(p1);
+            else
+            this.paddleRightBounce(p2);
+        }
+        
+    paddleLeftBounce(p: PlayerClass) {
         let dx = Math.abs(this.x + this.r - p.x);
         let dy = Math.abs(this.y - p.y);
-
+        
         if (dx <= (this.r + p.w)) {
             if (dy <= (this.r + p.h / 2)) {
                 const coef = 10 * (this.y - p.y);
@@ -67,8 +42,9 @@ class Ball {
             }
         }
     };
-
-    paddleRightBounce(p: Player, height: number) {
+    
+    paddleRightBounce(p: PlayerClass) {
+        
         let dx = Math.abs(this.x - this.r - p.x);
         let dy = Math.abs(this.y - p.y);
 
@@ -81,32 +57,59 @@ class Ball {
             }
         }
     };
+    
+    bounce(p1: PlayerClass, p2: PlayerClass) {
+        this.borderBounce();
+        this.paddleBounce(p1, p2);
+        this.score(p1, p2);
+    };
 
+    //========== SCORE =============//
+    score(p1: PlayerClass, p2: PlayerClass) {
+        if (this.x <= 0) {
+            p2.score();
+            this.reset();
+        }
+        else if(this.x >= 1) {
+            p1.score();
+            this.reset();
+        }
+    }
+
+    //========== RESET BALL =============//
+    reset() {
+        this.x = 0.5;
+        this.y = 0.5;
+        let val = 1;
+        if (Math.random() < 0.5) {
+           val *= -1;
+        }
+        this.speed[0] = 0.3 * val;
+        this.speed[1] = Math.random() * val;
+    }
+
+    //========== MOVEMENT =============//
+    //>>ACCELERATION<<//
+    incrementSpeed() {
+        this.incr++;
+        if (this.incr === 10) {
+            this.speed[0] += 0.01 * this.speed[0];
+            this.incr = 0;
+        }
+    }
+
+    //>>UPDATE POSITION<<//
     update() {
         this.x += this.speed[0] / 100;
         this.y += this.speed[1] / 100;
     };
 
-    show(context: CanvasRenderingContext2D, width:  number, height: number) {
-        context.fillStyle = this.color;
-        context.beginPath();
-            context.arc(this.x * width, this.y * height , this.r * width, 0, this.pi2, false);
-            context.fill();
-            context.stroke();
-        context.closePath();
-    };
-
-    renderBall(context: CanvasRenderingContext2D, p1: Player, p2: Player, width: number, height: number) {
-        this.show(context, width, height);
-        this.bounce(p1, p2, width, height);
+    //>>CALCUL POSITION<<//
+    calculBallPosition(p1: PlayerClass, p2: PlayerClass) {
+        this.bounce(p1, p2);
         this.update();
-        this.incr++;
-        if (this.incr === 10) {
-            this.speed[0] += 0.01 * this.speed[0];
-            this.incr = 0;
-            console.log("incr");
-        }
+        this.incrementSpeed();
     };
 }
 
-export default Ball;
+export default BallClass;

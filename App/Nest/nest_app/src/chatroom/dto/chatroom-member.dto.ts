@@ -10,14 +10,6 @@ export class ChatroomMemberDto {
     username: string;
     
     @IsNotEmpty()
-    @IsString()
-    avatar: string;
-
-    @IsNotEmpty()
     @IsBoolean()
     isAdmin: boolean;
-
-    @IsNotEmpty()
-    @IsBoolean()
-    isOwner: boolean;
 }

@@ -4,7 +4,7 @@ export const memberShips = [
             connect: { id: 2 },
         },
         chatroom: {
-            connect: { id: 2 },
+            connect: { id: 1 },
         },
     },
     {
@@ -13,6 +13,70 @@ export const memberShips = [
         },
         chatroom: {
             connect: { id: 1 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 2 },
+        },
+        chatroom: {
+            connect: { id: 2 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 3 },
+        },
+        chatroom: {
+            connect: { id: 2 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 2 },
+        },
+        chatroom: {
+            connect: { id: 3 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 3 },
+        },
+        chatroom: {
+            connect: { id: 3 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 2 },
+        },
+        chatroom: {
+            connect: { id: 4 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 3 },
+        },
+        chatroom: {
+            connect: { id: 4 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 2 },
+        },
+        chatroom: {
+            connect: { id: 5 },
+        },
+    },
+    {
+        user: {
+            connect: { id: 3 },
+        },
+        chatroom: {
+            connect: { id: 5 },
         },
     },
 ];

@@ -3,6 +3,7 @@ import { Socket, Server } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
+import { MembershipService } from 'src/membership/membership.service';
 
 
 @Injectable()
@@ -14,6 +15,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     constructor(
         private chatroomService: ChatroomService,
         private userService: UsersService,
+        private memberShipService: MembershipService
         ) {}
     
     @WebSocketServer()
@@ -46,7 +48,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
         client.join(room);
-        const user = await this.chatroomService.getUserFromSocket(client);
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const chatRoomId = await this.chatroomService.getIdFromChannelName(room);
+        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
+        const user = membership.user;
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
         this.server.to(room).emit('newConnection', 
             {room, user}
@@ -74,14 +79,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // }
 
     @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(client: Socket, room: string) {
-        const user = await this.chatroomService.getUserFromSocket(client);
-        client.leave(room);
-        client.emit('leftRoom', {room});
-        console.log(`Client ${user.username} ${client.id} left room ${room}`);
-        this.server.to(room).emit('newDisconnection', {room, user});
+    async handleLeaveRoom(client: Socket, roomId: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        client.leave(roomName);
+        client.emit('leftRoom', {roomName});
+        console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
+        this.server.to(roomName).emit('newDisconnection', {roomName, userId});
     }
-
     @SubscribeMessage('message')
     async handleMessage(
         @MessageBody() body: any,
