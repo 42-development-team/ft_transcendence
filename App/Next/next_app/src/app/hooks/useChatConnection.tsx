@@ -18,7 +18,6 @@ export default function useChatConnection() {
     useEffect(() => {
         console.log('Connecting to socket.io server...');
         const socket = connect();
-        console.log('Connected to socket.io server');
         setSocket(socket);
 
         return () => {
@@ -26,6 +25,24 @@ export default function useChatConnection() {
             socket.close();
         }
     }, [])
+
+    useEffect(() => {
+        socket?.on('connect_error', (err) => {
+            console.log('Connection to socket.io server failed', err);
+        });
+        socket?.on('disconnect', (reason) => {
+            console.log('Disconnected from socket.io server', reason);
+        });
+        socket?.on('connect', () => {
+            console.log('Connected to socket.io server');
+        });
+
+        return () => {
+            socket?.off('connect_error');
+            socket?.off('disconnect');
+            socket?.off('connect');
+        }
+    }, [socket]);
     
     return socket;
 }
