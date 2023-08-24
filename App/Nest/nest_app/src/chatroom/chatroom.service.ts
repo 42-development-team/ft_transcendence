@@ -42,6 +42,7 @@ export class ChatroomService {
 			name: createdChatroom.name,
 			type: createdChatroom.type,
 			joined: true,
+			banned: false,
 		}
 		return chatRoomInfo;
 	}
@@ -55,13 +56,17 @@ export class ChatroomService {
 		// Convert to InfoChatroomDto - add joined field
 		const chatroomsDtoPromises: Promise<ChatroomInfoDto>[] = chatrooms.map(async chatrooms => {
 			const isJoined = await this.prisma.chatRoom.count({
-				where: { id: chatrooms.id, memberShips: { some: { userId: userId, isBanned: false } } },
+				where: { id: chatrooms.id, memberShips: { some: { userId: userId } } },
+			}) > 0;
+			const isBanned = await this.prisma.chatRoom.count({
+				where: { id: chatrooms.id, memberShips: { some: { userId: userId, isBanned: true } } },
 			}) > 0;
 			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
 				name: chatrooms.name,
 				type: chatrooms.type,
 				joined: isJoined,
+				banned: isBanned,
 			};
 			return current;
 		});
@@ -76,11 +81,15 @@ export class ChatroomService {
 		const isJoined = await this.prisma.chatRoom.count({
 			where: { id: id, memberShips: { some: { userId: userId, isBanned: false } } },
 		}) > 0;
+		const isBanned = await this.prisma.chatRoom.count({
+			where: { id: id, memberShips: { some: { userId: userId, isBanned: true } } },
+		}) > 0;
 		const chatroomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
 			name: chatRoom.name,
 			type: chatRoom.type,
 			joined: isJoined,
+			banned: isBanned,
 		}
 		return chatroomDto;
 	}

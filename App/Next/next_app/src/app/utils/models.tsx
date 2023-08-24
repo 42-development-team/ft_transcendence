@@ -6,6 +6,7 @@ export interface ChannelModel {
     icon: string
     type: string
     joined: boolean
+    banned: boolean
     messages?: MessageModel[]
     members?: ChannelMember[]
     unreadMessages: number

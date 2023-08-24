@@ -238,6 +238,7 @@ export default function useChannels() {
         const channelContent = await response.json();
         const fetchedChannel: ChannelModel = channelContent;
         fetchedChannel.joined = true;
+        fetchedChannel.banned = false;
         fetchedChannel.icon = '';
         fetchedChannel.unreadMessages = 0;
         fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
@@ -288,6 +289,7 @@ export default function useChannels() {
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
                 channel.joined = false;
+                channel.banned = false;
                 channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
