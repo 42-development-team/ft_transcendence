@@ -138,12 +138,28 @@ export default function useChannels() {
             console.log("Room not found");
             return;
         }
-        // Todo: update channel list display
         fetchChannelsInfo();
         // Remove channel from joined channels
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             newChannels.splice(channelIndex, 1);
+            return newChannels;
+        });
+    }
+
+    const handleBan = (body: any) => {
+        const { roomName, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        if (channelIndex == -1) {
+            console.log("Room not found");
+            return;
+        }
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+            if (memberIndex !== undefined && memberIndex !== -1) {
+                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
+            }
             return newChannels;
         });
     }
@@ -165,6 +181,9 @@ export default function useChannels() {
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
         });
+        socket?.on('newBan', (body: any) => {
+            handleBan(body);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -173,8 +192,9 @@ export default function useChannels() {
             socket?.off('newDisconnection');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
+            socket?.off('NewBan');
         }
-    }, [socket, joinedChannels]);
+    }, [socket, joinedChannels, channels]);
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {

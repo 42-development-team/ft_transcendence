@@ -92,6 +92,7 @@ export class ChatroomController {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
+
 	@Patch(':id/ban')
 	async ban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
@@ -100,7 +101,7 @@ export class ChatroomController {
 		await this.chatroomService.ban(+id, userId, bannedId)
 			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === bannedUserSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, id);
+				this.socketGateway.handleBan(clientSocket, bannedId, id);
 				response.send();
 			})
 			.catch(error => {
