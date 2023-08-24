@@ -1,4 +1,4 @@
-import { Controller, Delete, Get } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 import { Post, Body, Request, Patch } from '@nestjs/common';
@@ -29,11 +29,10 @@ export class GameController {
     }
 
     /* R(ead) */
-    @Get('info')
-    async getGame(@Request() req: any) {
+    @Get('info/:id')
+    async getGame(@Param('id') id: number) {
         this.logger.log('Getting game');
-        const userId: number = req.user.sub;
-        const game = await this.gameService.getGame(userId);
+        const game = await this.gameService.getGame(id);
         this.logger.log(`Successfully got game with ID ${game.id}`);
         return game;
     }
