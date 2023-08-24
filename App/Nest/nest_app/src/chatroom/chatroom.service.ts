@@ -107,6 +107,7 @@ export class ChatroomService {
 					username: member.user.username,
 					isAdmin: member.isAdmin,
 					isOwner: chatroom.owner.id === member.userId,
+					isBanned: member.isBanned,
 				};
 			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {

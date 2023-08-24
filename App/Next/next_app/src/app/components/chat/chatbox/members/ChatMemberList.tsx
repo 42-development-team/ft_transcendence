@@ -82,28 +82,28 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
 
     // Todo: sort by ASCII
     const OwnerList = channel.members
-        .filter(member => member.isOwner)
+        .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
     const MemberList = channel.members
-        .filter(member => !member.isAdmin && !member.isOwner)
+        .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
 
     const AdminList = channel.members
-        .filter(member => member.isAdmin && !member.isOwner)
+        .filter(member => member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} leaveChannel={leaveChannel} />
         ))
 
-    const BannedList = channel.bannedUsers == undefined 
-        ? [] 
-        : channel.bannedUsers.map((member) => (
+    const BannedList = channel.members
+            .filter(member => member.isBanned)
+            .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
                 kick={kick} ban={ban} leaveChannel={leaveChannel} />
         )

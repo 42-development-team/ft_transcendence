@@ -87,6 +87,7 @@ export default function useChannels() {
             username: user.username,
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
+            isBanned: user.isBanned,
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
@@ -245,6 +246,7 @@ export default function useChannels() {
                 username: member.username,
                 isAdmin: member.isAdmin,
                 isOwner: member.isOwner,
+                isBanned: member.isBanned,
                 avatar: "",
                 // Todo: currentStatus
                 currentStatus: UserStatus.Offline,
@@ -302,6 +304,7 @@ export default function useChannels() {
                         username: member.username,
                         isAdmin: member.isAdmin,
                         isOwner: member.isOwner,
+                        isBanned: member.isBanned,
                         //Todo: avatar
                         avatar: "",
                     }
