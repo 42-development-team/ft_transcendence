@@ -1,36 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
-import LeaderBoard  from "./leaderboard";
+import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 
-export function UnderlineTabs( {userId}: {userId: string} ) {
+export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
   const [games, setGames] = useState<any>([]);
+  const [loaded, setLoaded] = useState<any>(null);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let sessionUserId = null;
     sessionUserId = sessionStorageUser();
 
     if (sessionUserId !== null && sessionUserId !== undefined) {
       setUserIdNumber(Number(sessionUserId) as number);
     }
-  const fetchGame = async (userIdNumber: number) => {
-    const games = await getGames({userId: userIdNumber});
-    setGames(await games);
-  }
-  
-  fetchGame(userIdNumber);
+    const fetchGame = async (userIdNumber: number) => {
+      const getgames = await getGames({ userId: userIdNumber });
+      setGames(await getgames);
+      setLoaded(true);
+    }
 
-  }, []);
+    fetchGame(userIdNumber);
 
-  useEffect(() => {
-
-  }, [games]);
+  }, [loaded]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
@@ -62,7 +60,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
   const indicatorStyle = {
     transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out,font-size 0.1s ease-in-out",
   };
-  
+
   return (
     <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-40 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
       <Tabs value={activeTab}>
@@ -75,11 +73,9 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
               value={value}
               onClick={() => handleClick(value)}
               style={indicatorStyle}
-              className={`${
-                activeTab === value ? "text-blue-500 text-xl" : " text-gray-400"
-              } border-b-4 ${
-                activeTab === value ? "border-blue-500" : "border-gray-500"
-              }`}
+              className={`${activeTab === value ? "text-blue-500 text-xl" : " text-gray-400"
+                } border-b-4 ${activeTab === value ? "border-blue-500" : "border-gray-500"
+                }`}
             >
               {label}
             </Tab>
@@ -89,9 +85,9 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
-                <MatchHistory data={games} currentUserId={Number(userIdNumber)}/>
+                <MatchHistory data={games} currentUserId={Number(userIdNumber)} />
               ) : (
-                <LeaderBoard data={leaderBoardData} currentUser={userId}/>
+                <LeaderBoard data={leaderBoardData} currentUser={userId} />
               )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
