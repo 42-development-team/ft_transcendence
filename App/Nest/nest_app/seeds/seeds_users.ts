@@ -30,4 +30,11 @@ export const users = [
         avatar: "profil.jpg",
 		currentStatus: "offline",
     },
+    {
+        login: "aucaland",
+        username: "aucaland",
+        avatar: "profil.jpg",
+		    currentStatus: "offline",
+    },
+
   ];

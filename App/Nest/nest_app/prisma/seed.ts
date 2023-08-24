@@ -6,7 +6,7 @@ import { games } from "../seeds/seeds_games";
 import { UserStats } from "../seeds/seeds_userstats";
 import { memberShips } from "../seeds/seeds_memberships";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function seedFeeding() {
     await seedUsers();

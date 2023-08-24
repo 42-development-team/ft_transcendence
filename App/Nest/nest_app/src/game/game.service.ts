@@ -3,7 +3,6 @@ import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
-
 @Injectable()
 export class GameService {
     constructor(private prisma: PrismaService) {}
