@@ -37,7 +37,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
 
     const ban = async (bannedId: string) => {
         try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/kick`, {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/ban`, {
                 credentials: "include",
                 method: 'PATCH',
                 headers: {

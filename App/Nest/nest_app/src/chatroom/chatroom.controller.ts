@@ -3,7 +3,6 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-// import { CreateMembershipDto } from '../membership/dto/create-membership.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
@@ -15,7 +14,6 @@ import { UsersService } from 'src/users/users.service';
 export class ChatroomController {
 	constructor(
 		private chatroomService: ChatroomService,
-		private membershipService: MembershipService,
 		private socketGateway: SocketGateway,
 		private userService: UsersService,
 	) { }
@@ -88,6 +86,21 @@ export class ChatroomController {
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
 		.then(() => {
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+	@Patch(':id/ban')
+	async ban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const bannedId: number = body.bannedId;
+		const bannedUserSocket = await this.userService.getUserSocketFromId(bannedId);
+		await this.chatroomService.ban(+id, userId, bannedId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === bannedUserSocket);
+				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {

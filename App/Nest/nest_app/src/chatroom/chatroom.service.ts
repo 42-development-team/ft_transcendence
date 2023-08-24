@@ -9,14 +9,16 @@ import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 import { comparePassword } from '../utils/bcrypt';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class ChatroomService {
 	constructor(
 		private prisma: PrismaService,
 		private jwtService: JwtService,
-        private userService: UsersService,
+		private userService: UsersService,
 		private configService: ConfigService,
+		private membershipService: MembershipService,
 	) { }
 
 	// #region C(reate)
@@ -37,7 +39,7 @@ export class ChatroomService {
 				},
 			},
 		});
-		const chatRoomInfo : ChatroomInfoDto = {
+		const chatRoomInfo: ChatroomInfoDto = {
 			id: createdChatroom.id,
 			name: createdChatroom.name,
 			type: createdChatroom.type,
@@ -86,7 +88,7 @@ export class ChatroomService {
 	}
 
 	async getChannelNameFromId(chanelId: number): Promise<string> {
-		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({	where: { id: chanelId }, });
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({ where: { id: chanelId }, });
 		return chatRoom.name;
 	}
 
@@ -106,7 +108,7 @@ export class ChatroomService {
 					isAdmin: member.isAdmin,
 					isOwner: chatroom.owner.id === member.userId,
 				};
-			}),				
+			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
 				return {
 					id: message.id,
@@ -201,134 +203,157 @@ export class ChatroomService {
 		}
 	}
 
+	async isUserAdmin(userId: number, chatroomId: number) {
+		return await this.prisma.membership.count({
+			where: {
+				userId: userId,
+				chatRoomId: chatroomId,
+				isAdmin: true
+			}
+		}) > 0;
+	}
+
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 			include: {
-				 owner: true,
-				 memberShips: {
-					include: { user: true}
-				 }
-				},
-		});
-		// Check if target user is admin
-		try {
-			const isAdmin = await this.prisma.chatRoom.count({
-				where: { 
-					id: id, 
-					memberShips: { 
-						some: { 
-							userId: userId,
-							isAdmin: true 
-						}
-					},
+				owner: true,
+				memberShips: {
+					include: { user: true }
 				}
-			}) > 0;
-			console.log("admin: ", isAdmin);
-			if (!isAdmin) {
-				throw new Error('User is not an admin of this channel');
-			}
-		} catch (error) {
-			throw new Error(error);
-		}
+			},
+		});
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === kickedId;
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');
+		}
 		if (isTargetOwner) {
 			throw new Error('Cannot kick owner of the channel');
 		}
 		const kickedMembership = await this.prisma.membership.deleteMany({
 			where:
-				  { userId: kickedId, chatRoomId: id },
+				{ userId: kickedId, chatRoomId: id },
 		})
 		return kickedMembership;
 	}
 
-	async leave(id: number, userId: number) {
+	async ban(id: number, userId: number, bannedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-			include: { owner: true},
+			include: {
+				owner: true,
+				memberShips: {
+					include: { user: true }
+				}
+			},
 		});
-
-		// Todo: if owner transmit ownership to another member (admin)
-		// const isOwner = await this.prisma.chatRoom.count({
-		// 	where: { id: id, owner: { id: userId } },
-		// }) > 0;
-		const kickedMembership = await this.prisma.membership.deleteMany({
-			where:
-				  { userId: userId, chatRoomId: id },
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
+		const isTargetOwner = chatRoom.owner.id === bannedId;
+		// const isTargetAdmin = this.isUserAdmin(bannedId, id);	// Todo: can admins kick each other?
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');
+		}
+		if (isTargetOwner) {
+			throw new Error('Cannot kick owner of the channel');
+		}
+		// Add banned user to ban list
+		const test = await this.prisma.membership.updateMany({
+			where: { userId: bannedId, chatRoomId: id },
+			data: { isBanned: true },
 		});
-		return kickedMembership;
+		// Disconnect banned user from channel
 	}
+
+	async leave(id: number, userId: number) {
+			const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+				where: { id: id },
+				include: { owner: true },
+			});
+
+			// Todo: if owner transmit ownership to another member (admin)
+			// const isOwner = await this.prisma.chatRoom.count({
+			// 	where: { id: id, owner: { id: userId } },
+			// }) > 0;
+			const kickedMembership = await this.prisma.membership.deleteMany({
+				where:
+					{ userId: userId, chatRoomId: id },
+			});
+			return kickedMembership;
+		}
 
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
-		const newMessage = await this.prisma.message.create({
-			data: {
-				content: message,
-				senderId: userId,
-				chatRoomId: channelId,
-			},
-		});
-		const test = await this.prisma.message.findUnique({
-			where: { id: newMessage.id },
-			include: {
-				sender: true,
-			},
-		});
-		return test;
-	}
+			const newMessage = await this.prisma.message.create({
+				data: {
+					content: message,
+					senderId: userId,
+					chatRoomId: channelId,
+				},
+			});
+			const test = await this.prisma.message.findUnique({
+				where: { id: newMessage.id },
+				include: {
+					sender: true,
+				},
+			});
+			return test;
+		}
 
 	// #endregion
 
 	// #region D(elete)
 	remove(id: number) {
-		return `This action removes a #${id} chatroom`;
-	}
+			return `This action removes a #${id} chatroom`;
+		}
 
 	// #endregion
 	// #region Retrieve
 
 	async getUserIdFromSocket(socket: Socket){
-		const authToken = socket.handshake.headers.cookie.split(";");
-		const jwtToken = authToken[0].split("=")[1];
-		const secret = this.configService.get<string>('jwtSecret');
-		const payload = this.jwtService.verify(jwtToken, {secret: secret});
-		const userId = payload.sub;
-		if (userId) {
-			return userId;
-		}
+			const authToken = socket.handshake.headers.cookie.split(";");
+			const jwtToken = authToken[0].split("=")[1];
+			const secret = this.configService.get<string>('jwtSecret');
+			const payload = this.jwtService.verify(jwtToken, { secret: secret });
+			const userId = payload.sub;
+			if(userId) {
+				return userId;
+			}
 		// Todo: if userId is undefined or null?
 		return null;
-	}
+		}
 
     async getUserFromSocket(socket: Socket) {
-        const userId = await this.getUserIdFromSocket(socket);
-        if (userId) {
-            return this.userService.getUserFromId(userId);
-        }
-    }
+			const userId = await this.getUserIdFromSocket(socket);
+			if(userId) {
+				return this.userService.getUserFromId(userId);
+			}
+		}
 
-	async getPasswordFromChannelName(channelName: string): Promise<string | null> {
-        const chatRoom = await this.prisma.chatRoom.findFirst({
-            where: { name: channelName },
-        });
+	async getPasswordFromChannelName(channelName: string): Promise < string | null > {
+			const chatRoom = await this.prisma.chatRoom.findFirst({
+				where: { name: channelName },
+			});
 
-        if (chatRoom) {
-            return chatRoom.hashedPassword || null;
-        }
-
-        return null;
-    }
-
-    async getIdFromChannelName(channelName: string): Promise<number | null> {
-        const chatRoom = await this.prisma.chatRoom.findFirst({
-            where: { name: channelName },
-        });
-
-        if (chatRoom) {
-            return Number(chatRoom.id);
-        }
+			if(chatRoom) {
+				return chatRoom.hashedPassword || null;
+			}
 
         return null;
-    }
+		}
+
+    async getIdFromChannelName(channelName: string): Promise < number | null > {
+			const chatRoom = await this.prisma.chatRoom.findFirst({
+				where: { name: channelName },
+			});
+
+			if(chatRoom) {
+				return Number(chatRoom.id);
+			}
+
+        return null;
+		}
 
 	// #endregion
 }
