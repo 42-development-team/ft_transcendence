@@ -18,17 +18,21 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
     if (sessionUserId !== null && sessionUserId !== undefined) {
       userId = sessionUserId as string;
     }
-    setGames(getGames({userId: Number(userId)}));
+    fetchGame(userId);
 
   }, []);
 
   useEffect(() => {
-    console.log("games in i: ", games);
   }, [games]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
   };
+
+  const fetchGame = async (userId: string) => {
+    const games = await getGames({userId: Number(userId)})
+    setGames(await games);
+  }
 
   const data = [
     {
@@ -83,7 +87,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
           {data.map(({ value, desc }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
-                <MatchHistory currentUser={userId}/>
+                <MatchHistory data={games} currentUserId={Number(userId)}/>
               ) : (
                 <LeaderBoard data={leaderBoardData} currentUser={userId}/>
               )}

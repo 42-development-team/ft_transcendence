@@ -55,6 +55,7 @@ export class GameService {
 
             return {
                 id: game.id,
+                createdAt: game.createdAt,
                 gameDuration: game.gameDuration,
                 winnerScore: game.winnerScore,
                 loserScore: game.loserScore,
