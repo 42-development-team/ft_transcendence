@@ -110,11 +110,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     // Send the players positions + ball positions to correct room
-    async sendGameData(roomName: string, gameData: GameDto) {
-        // calculGamePositions
-        // gameData contains game score????
-        this.server.to(roomName).emit('updateGame', {gameData});
-    }
+    // async sendGameData(roomName: string, gameData: GameDto) {
+    //     // calculGamePositions
+    //     // gameData contains game score????
+    //     this.server.to(roomName).emit('updateGame', {gameData});
+    // }
 
     // Should emit to room event 'GameOver' ??
 }
