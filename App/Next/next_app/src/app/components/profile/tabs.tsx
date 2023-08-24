@@ -12,8 +12,7 @@ export function UnderlineTabs( {userId}: {userId: string} ) {
   const [games, setGames] = useState<any>([]);
 
   useEffect(() => {
-    let sessionUserId = null;
-    sessionUserId = sessionStorageUser();
+    const sessionUserId = sessionStorageUser();
 
     if (sessionUserId !== null && sessionUserId !== undefined) {
       userId = sessionUserId as string;

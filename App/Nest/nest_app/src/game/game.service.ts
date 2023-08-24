@@ -34,7 +34,6 @@ export class GameService {
         return game;
     }
 
-
     async getGames(userId: number): Promise<GetGameDto[]> {
         const games = await this.prisma.game.findMany({
             orderBy: { createdAt: 'desc' },

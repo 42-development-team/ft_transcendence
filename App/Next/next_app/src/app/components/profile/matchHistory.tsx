@@ -9,6 +9,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
 
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
+        console.log("sessionuserID", sessionStorage.getItem("userId"));
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
