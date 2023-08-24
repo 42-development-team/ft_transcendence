@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, MessageModel, UserStatus } from "../utils/models";
-import useChatConnection from "../hooks/useChatConnection"
+import useSocketConnection from "./useSocketConnection"
 import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
@@ -13,7 +13,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels() {
-    const socket = useChatConnection();
+    const socket = useSocketConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
@@ -87,6 +87,7 @@ export default function useChannels() {
             username: user.username,
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
+            isBanned: user.isBanned,
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
@@ -137,12 +138,28 @@ export default function useChannels() {
             console.log("Room not found");
             return;
         }
-        // Todo: update channel list display
         fetchChannelsInfo();
         // Remove channel from joined channels
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
             newChannels.splice(channelIndex, 1);
+            return newChannels;
+        });
+    }
+
+    const handleBan = (body: any) => {
+        const { roomName, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        if (channelIndex == -1) {
+            console.log("Room not found");
+            return;
+        }
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+            if (memberIndex !== undefined && memberIndex !== -1) {
+                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
+            }
             return newChannels;
         });
     }
@@ -164,6 +181,9 @@ export default function useChannels() {
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
         });
+        socket?.on('newBan', (body: any) => {
+            handleBan(body);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -172,8 +192,9 @@ export default function useChannels() {
             socket?.off('newDisconnection');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
+            socket?.off('NewBan');
         }
-    }, [socket, joinedChannels]);
+    }, [socket, joinedChannels, channels]);
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
@@ -211,56 +232,69 @@ export default function useChannels() {
         return "";
     }
 
-    const joinChannel = async (id: string, name: string, password?: string): Promise<Response> => {
-        //Todo: add try catch to prevent console.log.error
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
-            credentials: "include",
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ password }),
-        });
-        if (!response.ok) {
+    const joinChannel = async (id: string, name: string, password?: string): Promise<any> => {
+        // Todo: fix catch
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            });
+            if (!response.ok) {
+                return response;
+            }
+            socket?.emit("joinRoom", name);
+            await fetchNewChannelContent(id);
+            await fetchChannelsInfo();
             return response;
         }
-        socket?.emit("joinRoom", name);
-        await fetchNewChannelContent(id);
-        await fetchChannelsInfo();
-        return response;
+        catch (err) {
+            console.log("Error joining channel: " + err);
+            return err;
+        }
     }
 
     // FETCHING
 
     const fetchNewChannelContent = async (id: string) => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
-        const channelContent = await response.json();
-        const fetchedChannel: ChannelModel = channelContent;
-        fetchedChannel.joined = true;
-        fetchedChannel.icon = '';
-        fetchedChannel.unreadMessages = 0;
-        fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
-            return {
-                id: member.id,
-                username: member.username,
-                isAdmin: member.isAdmin,
-                isOwner: member.isOwner,
-                avatar: "",
-                // Todo: currentStatus
-                currentStatus: UserStatus.Offline,
-                // avatar: member.user.avatar,
-            }
-        });
-        fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
-            return {
-                id: message.id,
-                createdAt: message.createdAt,
-                content: message.content,
-                senderId: message.sender.id,
-                senderUsername: message.sender.username,
-            }
-        });
-        setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
+            const channelContent = await response.json();
+            const fetchedChannel: ChannelModel = channelContent;
+            fetchedChannel.joined = true;
+            fetchedChannel.banned = false;
+            fetchedChannel.icon = '';
+            fetchedChannel.unreadMessages = 0;
+            fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
+                return {
+                    id: member.id,
+                    username: member.username,
+                    isAdmin: member.isAdmin,
+                    isOwner: member.isOwner,
+                    isBanned: member.isBanned,
+                    avatar: "",
+                    // Todo: currentStatus
+                    currentStatus: UserStatus.Offline,
+                    // avatar: member.user.avatar,
+                }
+            });
+            fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
+                return {
+                    id: message.id,
+                    createdAt: message.createdAt,
+                    content: message.content,
+                    senderId: message.sender.id,
+                    senderUsername: message.sender.username,
+                }
+            });
+            setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+        }
+        catch (err) {
+            console.log("Error fetching channel content: " + err);
+        }
     }
     // FETCHING
     const fetchChannelsInfo = async () => {
@@ -286,6 +320,7 @@ export default function useChannels() {
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
                 channel.icon = '';
                 channel.joined = false;
+                channel.banned = false;
                 channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
@@ -302,6 +337,7 @@ export default function useChannels() {
                         username: member.username,
                         isAdmin: member.isAdmin,
                         isOwner: member.isOwner,
+                        isBanned: member.isBanned,
                         //Todo: avatar
                         avatar: "",
                     }

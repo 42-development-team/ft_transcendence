@@ -11,7 +11,7 @@ type ChannelProps = {
 }
 
 // Todo: Add channel icon
-const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChannel }: ChannelProps) => {
+const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, joinChannel }: ChannelProps) => {
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -65,14 +65,18 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined }, joinChanne
                     <h1 className="font-medium text-md">{name}</h1>
                 </div>
                 <div className="relative inline-block text-left">
-                    {isJoined
-                        ? <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-surface1 bg-text">
+                    {!banned && (isJoined
+                        ? <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-base bg-text">
                             Joined</div>
                         : <button
                             type="button"
                             className="inline-flex justify-center w-full rounded-full px-5 py-2 font-semibold text-sm bg-surface0 hover:bg-base"
                             onClick={onJoin}>
                             Join</button>
+                    )}
+                    {banned && 
+                        <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-base bg-red">
+                            Banned</div> 
                     }
                 </div>
             </div>

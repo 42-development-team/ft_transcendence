@@ -1,5 +1,4 @@
 'use client';
-
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
@@ -16,16 +15,16 @@ type ChatMemberActionsProps = {
     isMemberOwner: boolean
     isBanned?: boolean
     kickUser: () => void
+    banUser: () => void
     leaveChannel: () => void
 }
 
 // Todo: prevent double click on kick button
-const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, leaveChannel }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, banUser, leaveChannel }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
         sessionStorage.setItem("userId", userId);
-        if (sessionStorage.getItem("userId") === undefined) {
+        if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
-        }
         else
             window.location.href = "/profile";
     }
@@ -112,9 +111,9 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                             <DropDownActionRed onClick={kickUser}>
                                 Kick
                             </DropDownActionRed>
-                            <DropDownAction onClick={() => console.log('Ban')}>
+                            <DropDownActionRed onClick={banUser}>
                                 Ban
-                            </DropDownAction>
+                            </DropDownActionRed>
                         </>
                     }
                     {isCurrentUser &&

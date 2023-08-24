@@ -16,4 +16,8 @@ export class ChatroomInfoDto {
     @IsNotEmpty()
     @IsBoolean()
     joined: boolean;
+    
+    @IsNotEmpty()
+    @IsBoolean()
+    banned: boolean;
 }
