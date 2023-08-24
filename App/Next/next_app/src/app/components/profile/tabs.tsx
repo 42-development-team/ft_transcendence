@@ -13,7 +13,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   const [loaded, setLoaded] = useState<any>(null);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let sessionUserId = null;
     sessionUserId = sessionStorageUser();
 
