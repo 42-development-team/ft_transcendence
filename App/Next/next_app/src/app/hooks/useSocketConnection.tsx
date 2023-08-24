@@ -12,7 +12,7 @@ const connect = () => {
     })
 }
 
-export default function useChatConnection() {
+export default function useSocketConnection() {
     const [socket, setSocket] = useState<Socket>();
     
     useEffect(() => {
