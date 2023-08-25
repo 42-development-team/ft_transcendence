@@ -18,10 +18,11 @@ type ChatMemberActionsProps = {
     banUser: () => void
     unbanUser: () => void
     leaveChannel: () => void
+    sendDirectMessage: () => void
 }
 
 // Todo: prevent double click on kick button
-const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, banUser, unbanUser, leaveChannel }: ChatMemberActionsProps) => {
+const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, banUser, unbanUser, leaveChannel, sendDirectMessage }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
         sessionStorage.setItem("userId", userId);
         if (sessionStorage.getItem("userId") === undefined)
@@ -81,7 +82,7 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                     </Alert>
                     {!isCurrentUser &&
                     <>
-                        <DropDownAction onClick={() => console.log('Direct message')}>Direct message</DropDownAction>
+                        <DropDownAction onClick={sendDirectMessage}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => console.log('Play')}>Invite to play</DropDownAction>
                     </>
                     }
@@ -91,7 +92,6 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                     {adminActionsEnabled && isBanned &&
                         <DropDownActionRed onClick={unbanUser}>Unban</DropDownActionRed>
                     }
-
                     {adminActionsEnabled && !isBanned &&
                         <>
                             <DropDownActionRed onClick={kickUser}>Kick</DropDownActionRed>

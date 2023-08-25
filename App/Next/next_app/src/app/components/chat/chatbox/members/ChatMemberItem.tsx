@@ -11,12 +11,13 @@ type ChatMemberProps = {
     ban: (bannedId: string) => void
     unban: (unbannedId: string) => void
     leaveChannel: () => void
+    directMessage: (targetId: string) => void
 }
 
 // Todo: add status and avatar
 const ChatMemberItem = ({ 
     user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, kick, ban, unban, leaveChannel 
+    isCurrentUser, isBanned, kick, ban, unban, leaveChannel, directMessage 
 }: ChatMemberProps) => {
 
     const kickUser = () => {
@@ -30,6 +31,10 @@ const ChatMemberItem = ({
     const unbanUser = () => {
         if (unban == undefined) return;
         unban(id);
+    }
+    const sendDirectMessage = () => {
+        if (directMessage == undefined) return;
+        directMessage(id);
     }
 
     return (
@@ -48,7 +53,7 @@ const ChatMemberItem = ({
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} userId={id} unbanUser={unbanUser} />
+                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} userId={id} unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} />
         </div>
     )
 }
