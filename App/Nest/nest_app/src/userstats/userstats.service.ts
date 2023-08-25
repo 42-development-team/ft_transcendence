@@ -48,7 +48,6 @@ export class UserStatsService {
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
-			console.log("newUserStats READ:", newUserStats)
 			return statsDto;
 		}
 
@@ -72,7 +71,7 @@ export class UserStatsService {
 					win: userUpdateDto.win,
 					lose: userUpdateDto.lose,
 					totalScore: userUpdateDto.totalScore,
-					ratio: userUpdateDto.ratio,
+					ratio: userUpdateDto.win / userUpdateDto.played,
 					played: userUpdateDto.played,
 			},
 		});

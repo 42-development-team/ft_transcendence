@@ -6,11 +6,14 @@ import MatchHistory from "./matchHistory";
 import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
+import getStats from "./getStats";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
   const [games, setGames] = useState<any>([]);
-  const [loaded, setLoaded] = useState<any>(null);
+  const [stats, setStats] = useState<any>([]);
+  const [gamesLoaded, setGamesLoaded] = useState<Boolean>(false);
+  const [statsLoaded, setStatsLoaded] = useState<Boolean>(false);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
 
   useEffect(() => {
@@ -20,15 +23,23 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     if (sessionUserId !== null && sessionUserId !== undefined) {
       setUserIdNumber(Number(sessionUserId) as number);
     }
+
     const fetchGame = async (userIdNumber: number) => {
       const getgames = await getGames({ userId: userIdNumber });
       setGames(await getgames);
-      setLoaded(true);
+      setGamesLoaded(true);
+    }
+
+    const fetchStats = async (userIdNumber: number) => {
+      const getstats = await getStats({ userId: userIdNumber });
+      setStats(await getstats);
+      setStatsLoaded(true);
     }
 
     fetchGame(userIdNumber);
+    fetchStats(userIdNumber);
 
-  }, [loaded]);
+  }, [gamesLoaded, statsLoaded]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
@@ -40,22 +51,12 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     {
       label: "Leaderboard",
       value: "leaderboard",
-      desc: `Here the leaderboard Component(s) will be rendered`,
     },
     {
       label: "Match History",
       value: "match-history",
-      desc: `Here the Match-history Component(s) will be rendered`,
     },
   ];
-
-
-  const leaderBoardData = [{ avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
-  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
-  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
-  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" },
-  { avatar: "avatar", username: "aucaland", wdr: "10/10/1" },
-  { avatar: "avatar", username: "jeanClaude38", wdr: "10/10/1" }];
 
   const indicatorStyle = {
     transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out,font-size 0.1s ease-in-out",
@@ -87,7 +88,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               {activeTab === "match-history" ? (
                 <MatchHistory data={games} currentUserId={Number(userIdNumber)} />
               ) : (
-                <LeaderBoard data={leaderBoardData} currentUser={userId} />
+                <LeaderBoard data={stats} currentUser={userIdNumber} />
               )}
             </TabPanel>// TODO: Add leaderboard and match history
           ))}
