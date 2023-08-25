@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, ParseIntPipe, Request, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger'
 /*
 Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
@@ -12,7 +13,7 @@ import { UsersService } from './users.service';
 
 
 // Nestjs/swagger decorator to display the routes: localhost:4000/api
-@ApiTags('Users')  
+@ApiTags('Users')
 
 @Controller('users')
 export class UsersController {
@@ -45,6 +46,17 @@ export class UsersController {
         return this.userService.getUserFromId(Number(id));
     }
 
+	// @Get('/getCurrentStatus')
+    // async getStatus(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+	// 	try {
+	// 		const userId: number = req.user.sub;
+	// 		const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
+	// 		response.status(HttpStatus.FOUND).send(currentStatus);
+	// 		// return currentStatus;
+	// 	} catch (error) {
+	// 		response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+	// 	}
+    // }
 
     /* U(pdate) */
 

@@ -91,8 +91,8 @@ export default function useChannels() {
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
-        // console.log("newMember username = ", newMember.username);
-        // console.log("newMember current status: ", newMember.currentStatus);
+        console.log("newMember username = ", newMember.username);
+        console.log("newMember current status: ", newMember.currentStatus);
         const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
         if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
             setJoinedChannels(prevChannels => {

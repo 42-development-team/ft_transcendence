@@ -78,6 +78,14 @@ export class UsersService {
         }
     }
 
+	async getCurrentStatusFromId(id: number): Promise<string> {
+        const user = await this.prisma.user.findUniqueOrThrow({
+            where: { id: id },
+        });
+        const userCurrentStatus = user.currentStatus;
+        return userCurrentStatus;
+    }
+
     /* U(pdate) */
 
     async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {
