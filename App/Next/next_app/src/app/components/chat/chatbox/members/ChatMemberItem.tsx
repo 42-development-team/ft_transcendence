@@ -22,33 +22,33 @@ const ChatMemberItem = ({
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
-	// useEffect(() => {
-	// 	const fetchedUserStatus = async () => {
-	// 		try {
-	// 			const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus`, {
-	// 				credentials: "include",
-	// 				method: 'GET',
-	// 				headers: {
-	// 					'Content-Type': 'application/json'
-	// 				},
-	// 			});
-	// 			const data = await response.json();
-	// 			setUserStatus(data.currentStatus);
-	// 		} catch (error) {
-	// 		console.error('Error fetching user current status');
-	// 	}
-	// };
-	// 	fetchedUserStatus();
-	// }, [id]);
+	useEffect(() => {
+		const fetchedUserStatus = async () => {
+			try {
+				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus`, {
+					credentials: "include",
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				});
+				const data = await response.json();
+				setUserStatus(data.currentStatus);
+			} catch (error) {
+			console.error('Error fetching user current status');
+		}
+	};
+		fetchedUserStatus();
+	}, [id]);
 
-    // const kickUser = () => {
-    //     if (kick == undefined) return;
-    //     kick(id);
-    // }
-    // const banUser = () => {
-    //     if (ban == undefined) return;
-    //     ban(id);
-    // }
+    const kickUser = () => {
+        if (kick == undefined) return;
+        kick(id);
+    }
+    const banUser = () => {
+        if (ban == undefined) return;
+        ban(id);
+    }
 
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
