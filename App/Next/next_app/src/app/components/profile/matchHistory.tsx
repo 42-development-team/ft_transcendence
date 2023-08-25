@@ -43,7 +43,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
                                     {item.createdAt.slice(0, 10)}
                                 </div>
                                 <div className="flex justify-center">
-                                    {item.createdAt.slice(11, 19)}
+                                    {item.createdAt.slice(11, 16)}
                                 </div>
                             </div>
                         </span>
