@@ -35,6 +35,7 @@ export class UserStatsService {
 		let statsDto = {
 			userId: user.id,
 			userName: userName,
+			avatar: user.avatar,
 			winStreak: 0,
 			win: 0,
 			lose: 0,
@@ -51,6 +52,7 @@ export class UserStatsService {
 			return statsDto;
 		}
 
+		statsDto.avatar = user.avatar;
 		statsDto.winStreak = user.userStats.winStreak;
 		statsDto.win = user.userStats.win;
 		statsDto.lose = user.userStats.lose;
@@ -61,11 +63,12 @@ export class UserStatsService {
 		return statsDto;
 	}
 
-	async getLeaderBoard(userId: number) {
+	async getLeaderBoard(userId: number) : Promise<UserStatsDto[]>{
 		const user = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
 			where: { id: userId },
 		});
+		const username = user.username;
 		if (user.userStats === undefined || !user.userStats) {
 			const newUserStats = await this.createUserStats({ userId: userId });
 			if (!newUserStats) {
@@ -73,9 +76,23 @@ export class UserStatsService {
 			}
 		}
 		const leaderBoard = await this.prisma.userStats.findMany({
+			include: { user: true },
 			orderBy: { totalScore: 'desc' },
 		});
-		return leaderBoard;
+		const leaderBoardDto = leaderBoard.map((userStats) => {
+			return {
+				userId: userStats.userId,
+				userName: userStats.user.username,
+				avatar: userStats.user.avatar,
+				winStreak: userStats.winStreak,
+				win: userStats.win,
+				lose: userStats.lose,
+				totalScore: userStats.totalScore,
+				ratio: userStats.ratio,
+				played: userStats.played,
+			};
+		});
+		return leaderBoardDto;
 	}
 
 	/* U(pdate) */

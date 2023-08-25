@@ -14,6 +14,8 @@ const Avatar = (
         disableImageResize = false,
         userName = null,
         userId = null,
+        width = 212,
+        height = 212,
     }
     :
     {
@@ -24,6 +26,8 @@ const Avatar = (
         disableImageResize?: boolean;
         userName?: string | null;
         userId?: string | null;
+        width?: number;
+        height?: number;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -65,8 +69,8 @@ const Avatar = (
                         <Image
                             src={imageUrlGetFromCloudinary as string || imageUrl as string}
                             alt="Selected Avatar"
-                            width={212}
-                            height={212}
+                            width={width}
+                            height={height}
                             className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`}
                         />
                     </div>
@@ -76,8 +80,8 @@ const Avatar = (
                         <Image
                             src="https://img.freepik.com/free-icon/user_318-563642.jpg"
                             alt="Default Avatar"
-                            width={212}
-                            height={212}
+                            width={width}
+                            height={height}
                             className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`}
                         />
                     </div>
