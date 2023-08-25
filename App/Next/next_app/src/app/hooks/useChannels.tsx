@@ -122,7 +122,6 @@ export default function useChannels() {
         // Remove user from channel
         setJoinedChannels(prevChannels => {
             const newChannels = [...prevChannels];
-            // newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
             const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
             if (memberIndex !== undefined && memberIndex !== -1) {
                 (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
@@ -164,6 +163,23 @@ export default function useChannels() {
         });
     }
 
+    const handleUnban = (body: any) => {
+        const { roomName, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        if (channelIndex == -1) {
+            console.log("Room not found");
+            return;
+        }
+        setJoinedChannels(prevChannels => {
+            const newChannels = [...prevChannels];
+            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+            if (memberIndex !== undefined && memberIndex !== -1) {
+                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = false;
+            }
+            return newChannels;
+        });
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
@@ -184,6 +200,9 @@ export default function useChannels() {
         socket?.on('newBan', (body: any) => {
             handleBan(body);
         });
+        socket?.on('newUnban', (body: any) => {
+            handleUnban(body);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -193,6 +212,7 @@ export default function useChannels() {
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
             socket?.off('NewBan');
+            socket?.off('NewUnban');
         }
     }, [socket, joinedChannels, channels]);
 

@@ -280,11 +280,29 @@ export class ChatroomService {
 		return bannedUser;
 	}
 
+	async unban(id: number, userId: number, unbannedId: number) {
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isTargetBanned = await this.prisma.membership.count({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		}) > 0;
+		if (!isTargetBanned) {
+			throw new Error('User is not banned in this channel');
+		}
+		if (!isAdmin) {
+			throw new Error('You need channel admin rights to unban a user');
+		}
+		// Remove banned user from membership lsit
+		const unbannedUser = await this.prisma.membership.deleteMany({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		});
+		return unbannedUser;
+	}
+
 	async leave(id: number, userId: number) {
-			const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
-				where: { id: id },
-				include: { owner: true },
-			});
+			// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			// 	where: { id: id },
+			// 	include: { owner: true },
+			// });
 
 			// Todo: if owner transmit ownership to another member (admin)
 			// const isOwner = await this.prisma.chatRoom.count({

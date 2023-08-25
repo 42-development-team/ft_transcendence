@@ -84,8 +84,21 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             client.leave(roomName);
             client.emit('leftRoom', { roomName });
             console.log(`Client ${userId} (${client.id}) banned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} banned from room ${roomName}`);
         }
         this.server.to(roomName).emit('newBan', {roomName, userId});
+    }
+
+    async handleUnban(client: Socket, userId: number, roomId: string ) {
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.emit('NewChatRoom', { roomName });
+            console.log(`Client ${userId} (${client.id}) unbanned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} unbanned from room ${roomName}`);
+        }
+        this.server.to(roomName).emit('newUnban', {roomName, userId});
     }
 
     @SubscribeMessage('leaveRoom')

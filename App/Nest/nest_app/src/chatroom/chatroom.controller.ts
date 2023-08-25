@@ -97,11 +97,39 @@ export class ChatroomController {
 	async ban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const bannedId: number = body.bannedId;
-		const bannedUserSocket = await this.userService.getUserSocketFromId(bannedId);
+		let bannedUserSocket = undefined;
+		try {
+			bannedUserSocket = await this.userService.getUserSocketFromId(bannedId);
+		}
+		catch (error) {
+			console.log("banned user not connected");
+		}
 		await this.chatroomService.ban(+id, userId, bannedId)
 			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === bannedUserSocket);
 				this.socketGateway.handleBan(clientSocket, bannedId, id);
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/unban')
+	async unban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const unbannedId: number = body.bannedId;
+		let unbannedUserSocket = undefined;
+		try {
+			unbannedUserSocket = await this.userService.getUserSocketFromId(unbannedId);
+		}
+		catch (error) {
+			console.log("unbanned user not connected");
+		}
+		await this.chatroomService.unban(+id, userId, unbannedId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === unbannedUserSocket);
+				this.socketGateway.handleUnban(clientSocket, unbannedId, id);
 				response.send();
 			})
 			.catch(error => {
