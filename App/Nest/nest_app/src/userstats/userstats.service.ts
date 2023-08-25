@@ -61,6 +61,23 @@ export class UserStatsService {
 		return statsDto;
 	}
 
+	async getLeaderBoard(userId: number) {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			include: { userStats: true },
+			where: { id: userId },
+		});
+		if (user.userStats === undefined || !user.userStats) {
+			const newUserStats = await this.createUserStats({ userId: userId });
+			if (!newUserStats) {
+				throw new Error("UserStats Creation failed");
+			}
+		}
+		const leaderBoard = await this.prisma.userStats.findMany({
+			orderBy: { totalScore: 'desc' },
+		});
+		return leaderBoard;
+	}
+
 	/* U(pdate) */
 	async updateUserStats( userId: number, userUpdateDto: UserStatsDto ) {
 		const updatedStats = await this.prisma.userStats.update({

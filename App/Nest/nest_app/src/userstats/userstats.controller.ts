@@ -40,6 +40,21 @@ export class UserstatsController {
 		}
 	}
 
+	@Get('info/leaderBoard/:userId')
+	async getLeaderBoard(@Param('userId') userId: string, @Res() response: any) {
+		try {
+			const id = Number(userId);
+			const leaderBoard = await this.userstatsService.getLeaderBoard(id);
+
+			this.logger.log("Successfully get leaderBoard:", leaderBoard)
+			await response.status(HttpStatus.OK).send(JSON.stringify(leaderBoard));
+		} catch (error) {
+			this.logger.log("Failed to get userStats:", error.message)
+			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+	}
+
+
 	/* U(pdate) */
 	@Patch('update/:id')
 	async updateUserStats(@Param('id') id: number, @Body() userUpdateDto: UserStatsDto, @Res() response: any) {

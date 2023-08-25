@@ -7,6 +7,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
     const data = props.data;
     const currentUserId = props.currentUser;
     const [ openAlert, setOpenAlert ] = useState(false);
+    console.log("data: ", data);
     
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
@@ -26,11 +27,11 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                         <Avatar 
                             imageUrlGetFromCloudinary={item.avatarUrl} disableChooseAvatar={true} disableImageResize={true} userName={item.username} userId={item.userId} 
                         />
-                        <div className="flex flex-col justify-center">
+                        <button className="flex flex-col justify-center" onClick={() => onProfileClick(item.userId)}>
                             {item.username}
-                        </div>
+                        </button>
                         <div className="flex flex-col justify-center">
-							<div>W/D/R(%)</div>
+							<div>Total Score</div>
                             <div>{item.totalScore}</div>
                         </div>
                     </span>

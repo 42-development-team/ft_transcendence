@@ -6,7 +6,7 @@ import MatchHistory from "./matchHistory";
 import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
-import getStats from "./getStats";
+import getStatsLeaderBoard from "./getStatsLeaderBoard";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -31,7 +31,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     }
 
     const fetchStats = async (userIdNumber: number) => {
-      const getstats = await getStats({ userId: userIdNumber });
+      const getstats = await getStatsLeaderBoard({ userId: userIdNumber });
       setStats(await getstats);
       setStatsLoaded(true);
     }
@@ -83,7 +83,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
           ))}
         </TabsHeader>
         <TabsBody >
-          {data.map(({ value, desc }) => (
+          {data.map(({ value }) => (
             <TabPanel key={value} value={value} className="text-gray-400">
               {activeTab === "match-history" ? (
                 <MatchHistory data={games} currentUserId={Number(userIdNumber)} />
