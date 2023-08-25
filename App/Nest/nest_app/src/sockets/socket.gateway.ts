@@ -109,7 +109,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
     async handleJoinGameRoom(client: Socket, room: string) {
+
         client.join(room);
+        // keep this logic ?
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         const gameRoomId = await this.gameService.getIdFromGameName(room);
         const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
@@ -123,6 +125,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('leaveGameRoom')
     async handleLeaveGameRoom() {}
 
+    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
         const {move} = body;

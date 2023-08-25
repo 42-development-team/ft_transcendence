@@ -7,7 +7,7 @@ export default function useGame() {
 	
 	const socket = useChatConnection();
 	const [data, setData] = useState<GameInterface>();
-	const [activeGames, setActiveGames] = useState<GameModel[]>([]);
+	const [activeGames, setActiveGames] = useState<GameModel[]>([]); // check db model and redo this properly
 
 	const handleNewGameConnection = (body: any) => {
 		const { room, user } = body;
@@ -60,11 +60,12 @@ export default function useGame() {
 			console.log("move event - useGame.tsx");
 			console.log("body:", JSON.stringify(body, null, 2));
 			// update data
+			// launch the loop here ?
 
 		});
 
 		socket?.on('newGameConnection', (body: any) => {
-			handleNewGameConnection(body);
+			handleNewGameConnection(body); // get data from this ???
 		});
 
 		return () => {
@@ -72,6 +73,8 @@ export default function useGame() {
 		};
 	}, [socket]);
 
+
+	// TODO keep this logic but match it with db model
 	const joinGameRoom = async () => {
 		activeGames.forEach( game => {
 			if (game.slot < 2) {
