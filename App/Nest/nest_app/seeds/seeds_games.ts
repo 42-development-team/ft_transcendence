@@ -3,7 +3,7 @@ export const games = [
         users: {
             connect: [
                 { id: 1 },
-                { id: 2 },
+                { id: 6 },
             ],
         },
         gameDuration: 10,
@@ -11,7 +11,7 @@ export const games = [
             connect: { id: 1 },
         },
         loser: {
-            connect: { id: 2 },
+            connect: { id: 6 },
         },
         winnerScore: 10,
         loserScore: 5,
@@ -19,12 +19,12 @@ export const games = [
     {
         users: {
             connect: [
+                { id: 6 },
                 { id: 4 },
-                { id: 1 },
             ],
         },
         winner: {
-            connect: { id: 1 },
+            connect: { id: 6 },
         },
         loser: {
             connect: { id: 4 },
@@ -36,13 +36,13 @@ export const games = [
     {
         users: {
             connect: [
-                { id: 3 },
+                { id: 6 },
                 { id: 2 },
             ],
         },
         gameDuration: 5,
         winner: {
-            connect: { id: 3 },
+            connect: { id: 6 },
         },
         loser: {
             connect: { id: 2 },
@@ -51,16 +51,52 @@ export const games = [
     {
         users: {
             connect: [
-                { id: 2 },
+                { id: 6 },
                 { id: 4 },
             ],
         },
         gameDuration: 3,
         winner: {
-            connect: { id: 4 },
+            connect: { id: 6 },
         },
         loser: {
-            connect: { id: 2 },
+            connect: { id: 4 },
         },
+        winnerScore: 2,
+        loserScore: 0,
+    },
+    {
+        users: {
+            connect: [
+                { id: 6 },
+                { id: 3 },
+            ],
+        },
+        gameDuration: 3,
+        winner: {
+            connect: { id: 3 },
+        },
+        loser: {
+            connect: { id: 6 },
+        },
+        winnerScore: 2,
+        loserScore: 0,
+    },
+    {
+        users: {
+            connect: [
+                { id: 6 },
+                { id: 3 },
+            ],
+        },
+        gameDuration: 10,
+        winner: {
+            connect: { id: 3 },
+        },
+        loser: {
+            connect: { id: 6 },
+        },
+        winnerScore: 2,
+        loserScore: 0,
     },
 ];

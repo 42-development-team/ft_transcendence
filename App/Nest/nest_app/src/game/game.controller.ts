@@ -1,7 +1,8 @@
-import { Controller, Delete, Get } from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
-import { Post, Body, Request, Patch } from '@nestjs/common';
+import { Post, Body, Patch } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateGameDto } from './dto/create-game.dto';
 import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
@@ -28,14 +29,23 @@ export class GameController {
         return newGame;
     }
 
-    /* R(ead) */
-    @Get('info')
-    async getGame(@Request() req: any) {
+    /* R(ead) */ //with game id
+    @Get('info/:id')
+    async getGame(@Param('id') id: string) {
+        const gameId = parseInt(id);
         this.logger.log('Getting game');
-        const userId: number = req.user.sub;
-        const game = await this.gameService.getGame(userId);
+        const game = await this.gameService.getGame(gameId);
         this.logger.log(`Successfully got game with ID ${game.id}`);
         return game;
+    }
+
+    @Get('infoGames/:userId')
+    async getGames(@Param('userId') userId: string, @Res() res: Response) {
+        const id = parseInt(userId);
+        this.logger.log('Getting games');
+        const games = await this.gameService.getGames(id);
+        this.logger.log(`Successfully got games of user with ID ${id}`);
+        res.status(HttpStatus.OK).send(games);
     }
 
     /* U(pdate) */
