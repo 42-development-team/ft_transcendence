@@ -193,28 +193,19 @@ export class ChatroomService {
 			include: { memberShips: true },
 		});
 
-		console.log(JSON.stringify(chatRoom, null, 2));
 		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
 		if (isBanned) {
 			throw new Error('User is banned from this channel');
 		}
-		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		if (isJoined) {
-			throw new Error('User is already a member of this channel');
-		}
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			if (!isJoined)
-				await this.connectUserToChatroom(userId, id);
+			return await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
-			if (isValid) {
-				if (!isJoined) {
-					await this.connectUserToChatroom(userId, id);
-				}
-			} else {
+			if (!isValid) {
 				throw new Error('Wrong password');
 			}
+			return await this.connectUserToChatroom(userId, id);
 		}
 	}
 

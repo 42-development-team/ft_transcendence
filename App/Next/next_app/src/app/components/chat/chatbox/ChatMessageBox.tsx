@@ -32,7 +32,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <ChatMemberButton onClick={() => updateChatBarState(ChatBarState.ChatMembersOpen)} />
             </ChatHeader>
-            <div ref={chatMessageBoxRef} className='overflow-auto h-[87vh]'>
+            <div ref={chatMessageBoxRef} className='overflow-auto h-[78vh]'>
                 {MessageList}
             </div>
             <ChatMessageBoxFooter onSend={sendMessage} />
