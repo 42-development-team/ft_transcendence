@@ -11,8 +11,8 @@ services:
     env_file:
       - .env
     volumes:
-      - front_vol:/app
-    ports: 
+      - ft_transcendence_front_vol:/app
+    ports:
       - 3000:3000
     networks:
       - transcendence
@@ -28,8 +28,8 @@ services:
     env_file:
       - .env
     volumes:
-      - back_vol:/app
-    ports: 
+      - ft_transcendence_back_vol:/app
+    ports:
       - 4000:4000
       - 5555:5555
     networks:
@@ -40,7 +40,7 @@ services:
     image: postgres
     container_name: database
     volumes:
-      - database_vol:/var/lib/postgresql/data
+      - ft_transcendence_database_vol:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -52,22 +52,21 @@ services:
     restart: always
 
 volumes:
-
-  front_vol:
+  ft_transcendence_front_vol:
     driver: local
     driver_opts:
-      device: ./App/Next
+      device: ${PWD}/App/Next
       o: bind
       type: none
 
-  back_vol:
+  ft_transcendence_back_vol:
     driver: local
     driver_opts:
-      device: ./App/Nest
+      device: ${PWD}/App/Nest
       o: bind
       type: none
-  
-  database_vol:
+
+  ft_transcendence_database_vol:
 
 networks:
   transcendence:
