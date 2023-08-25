@@ -194,18 +194,24 @@ export class ChatroomService {
 		});
 
 		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
+		console.log("isBanned: " + isBanned);
 		if (isBanned) {
 			throw new Error('User is banned from this channel');
 		}
+		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
+		console.log("type: " + chatRoom.type);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			return await this.connectUserToChatroom(userId, id);
+			if (!isJoined)
+				return await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (!isValid) {
 				throw new Error('Wrong password');
 			}
-			return await this.connectUserToChatroom(userId, id);
+			if (!isJoined) {
+				return await this.connectUserToChatroom(userId, id);
+			}
 		}
 	}
 
