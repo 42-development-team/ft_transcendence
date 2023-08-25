@@ -46,17 +46,17 @@ export class UsersController {
         return this.userService.getUserFromId(Number(id));
     }
 
-	// @Get('/getCurrentStatus')
-    // async getStatus(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
-	// 	try {
-	// 		const userId: number = req.user.sub;
-	// 		const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
-	// 		response.status(HttpStatus.FOUND).send(currentStatus);
-	// 		// return currentStatus;
-	// 	} catch (error) {
-	// 		response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-	// 	}
-    // }
+	@Get('/getCurrentStatus')
+    async getStatus(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+		try {
+			const userId: number = req.user.sub;
+			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
+			response.status(HttpStatus.FOUND).send(currentStatus);
+			// return currentStatus;
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+    }
 
     /* U(pdate) */
 
