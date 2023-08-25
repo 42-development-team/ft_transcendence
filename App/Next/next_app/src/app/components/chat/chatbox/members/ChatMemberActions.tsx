@@ -80,7 +80,10 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                         {<p>User not found</p>}
                     </Alert>
                     {!isCurrentUser &&
+                    <>
+                        <DropDownAction onClick={() => console.log('Direct message')}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => console.log('Play')}>Invite to play</DropDownAction>
+                    </>
                     }
                     {ownerActionsEnabled && !isBanned &&
                         <DropDownAction onClick={() => console.log('set as admin')}>Set as admin</DropDownAction>
