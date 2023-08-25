@@ -24,9 +24,10 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                 <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-sapphire to-base' 
                     : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
                     <span className="flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 px-2">
-                        <Avatar 
+                        {/* <Avatar 
                             imageUrlGetFromCloudinary={item.avatarUrl} disableChooseAvatar={true} disableImageResize={true} userName={item.username} userId={item.userId} 
-                        />
+                        /> */}
+                        <div>Avatar</div>
                         <button className="flex flex-col justify-center" onClick={() => onProfileClick(item.userId)}>
                             {item.username}
                         </button>

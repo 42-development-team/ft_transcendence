@@ -12,8 +12,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
   const [games, setGames] = useState<any>([]);
   const [stats, setStats] = useState<any>([]);
-  const [gamesLoaded, setGamesLoaded] = useState<Boolean>(false);
-  const [statsLoaded, setStatsLoaded] = useState<Boolean>(false);
+  const [gamesLoaded, setGamesLoaded] = useState<any>(false);
+  const [statsLoaded, setStatsLoaded] = useState<any>(false);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
 
   useEffect(() => {
@@ -36,8 +36,15 @@ export function UnderlineTabs({ userId }: { userId: string }) {
       setStatsLoaded(true);
     }
 
-    fetchGame(userIdNumber);
-    fetchStats(userIdNumber);
+    try {
+      fetchGame(userIdNumber);
+      fetchStats(userIdNumber);
+      console.log("gamesInTabs:", games);
+      console.log("statsInTabs:", stats);
+
+    } catch (error) {
+      console.log("Error response when fetching userstats/info:", error);
+    }
 
   }, [gamesLoaded, statsLoaded]);
 

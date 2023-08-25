@@ -1,7 +1,7 @@
 
 const getStatsLeaderBoard = async ( {userId}: {userId: number} ) => {
     try {
-        const response = await fetch(`${process.env.BACK_URL}/userstats/info/leaderBoard${userId}`, {
+        const response = await fetch(`${process.env.BACK_URL}/userstats/info/leaderBoard/${userId}`, {
             credentials: "include",
             method: "GET",
         })
