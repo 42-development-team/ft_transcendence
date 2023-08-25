@@ -193,27 +193,22 @@ export class ChatroomService {
 			include: { memberShips: true },
 		});
 
-		console.log(JSON.stringify(chatRoom, null, 2));
 		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
 		if (isBanned) {
 			throw new Error('User is banned from this channel');
 		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		if (isJoined) {
-			throw new Error('User is already a member of this channel');
-		}
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			if (!isJoined)
-				await this.connectUserToChatroom(userId, id);
+				return await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
-			if (isValid) {
-				if (!isJoined) {
-					await this.connectUserToChatroom(userId, id);
-				}
-			} else {
+			if (!isValid) {
 				throw new Error('Wrong password');
+			}
+			if (!isJoined) {
+				return await this.connectUserToChatroom(userId, id);
 			}
 		}
 	}
@@ -283,11 +278,29 @@ export class ChatroomService {
 		return bannedUser;
 	}
 
+	async unban(id: number, userId: number, unbannedId: number) {
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isTargetBanned = await this.prisma.membership.count({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		}) > 0;
+		if (!isTargetBanned) {
+			throw new Error('User is not banned in this channel');
+		}
+		if (!isAdmin) {
+			throw new Error('You need channel admin rights to unban a user');
+		}
+		// Remove banned user from membership lsit
+		const unbannedUser = await this.prisma.membership.deleteMany({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		});
+		return unbannedUser;
+	}
+
 	async leave(id: number, userId: number) {
-			const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
-				where: { id: id },
-				include: { owner: true },
-			});
+			// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			// 	where: { id: id },
+			// 	include: { owner: true },
+			// });
 
 			// Todo: if owner transmit ownership to another member (admin)
 			// const isOwner = await this.prisma.chatRoom.count({
