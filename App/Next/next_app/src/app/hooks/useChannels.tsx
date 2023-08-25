@@ -52,7 +52,6 @@ export default function useChannels() {
 
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -64,21 +63,18 @@ export default function useChannels() {
             senderUsername: newMessage.sender.username,
         }
 
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            if (currentChannelId != newChannels[channelIndex].id) {
-                newChannels[channelIndex].unreadMessages++;
-            }
-            newChannels[channelIndex].messages?.push(messageModel);
-            return newChannels;
-        });
+        const newChannels = [...joinedChannels];
+        if (currentChannelId != newChannels[channelIndex].id) {
+            newChannels[channelIndex].unreadMessages++;
+        }
+        newChannels[channelIndex].messages?.push(messageModel);
+        setJoinedChannels(newChannels);
     }
 
     const handleNewConnectionOnChannel = (body: any) => {
         const { room, user } = body;
         const channelIndex: number = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -91,24 +87,16 @@ export default function useChannels() {
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
-        // console.log("newMember username = ", newMember.username);
-        // console.log("newMember current status: ", newMember.currentStatus);
         const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
         if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
-            setJoinedChannels(prevChannels => {
-                const newChannels = joinedChannels ? [...prevChannels] : [];
-                // if (newChannels[channelIndex]?.members){
-                (newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
-                // }
-                return newChannels;
-            })
+            const newChannels = [...joinedChannels];
+            (newChannels[channelIndex].members as ChannelMember[])[existingMemberIndex].currentStatus = newMember.currentStatus;
+            setJoinedChannels(newChannels);
         }
         else {
-            setJoinedChannels(prevChannels => {
-                const newChannels = [...prevChannels];
-                newChannels[channelIndex].members?.push(newMember);
-                return newChannels;
-            });
+            const newChannels = [...joinedChannels];
+            newChannels[channelIndex].members?.push(newMember);
+            setJoinedChannels(newChannels);
         }
     }
 
@@ -116,52 +104,56 @@ export default function useChannels() {
         const { roomName, userId } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
         // Remove user from channel
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            // newChannels[channelIndex].members = newChannels[channelIndex].members?.filter((member: ChannelMember) => member.id != userId);
-            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-            if (memberIndex !== undefined && memberIndex !== -1) {
-                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
-            }
-            return newChannels;
-        });
+        const newChannels = [...joinedChannels];
+        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+        if (memberIndex !== undefined && memberIndex !== -1) {
+            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+        }
+        setJoinedChannels(newChannels);
     }
 
     const handleLeftRoom = (body: any) => {
         const { roomName } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("Room not found");
             return;
         }
         fetchChannelsInfo();
-        // Remove channel from joined channels
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            newChannels.splice(channelIndex, 1);
-            return newChannels;
-        });
+        const newChannels = [...joinedChannels];
+        newChannels.splice(channelIndex, 1);
+        setJoinedChannels(newChannels);
     }
 
     const handleBan = (body: any) => {
         const { roomName, userId } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("Room not found");
             return;
         }
-        setJoinedChannels(prevChannels => {
-            const newChannels = [...prevChannels];
-            const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-            if (memberIndex !== undefined && memberIndex !== -1) {
-                (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
-            }
-            return newChannels;
-        });
+        const newChannels = [...joinedChannels];
+        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+        if (memberIndex !== undefined && memberIndex !== -1) {
+            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
+        }
+        setJoinedChannels(newChannels);
+    }
+
+    const handleUnban = (body: any) => {
+        const { roomName, userId } = body;
+        console.log(JSON.stringify(body, null, 2));
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        if (channelIndex == -1) {
+            return;
+        }
+        const newChannels = [...joinedChannels];
+        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
+        if (memberIndex !== undefined && memberIndex !== -1) {
+            newChannels[channelIndex].members?.splice(memberIndex, 1);
+        }
+        setJoinedChannels(newChannels);
     }
 
     useEffect(() => {
@@ -184,6 +176,9 @@ export default function useChannels() {
         socket?.on('newBan', (body: any) => {
             handleBan(body);
         });
+        socket?.on('newUnban', (body: any) => {
+            handleUnban(body);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -193,13 +188,14 @@ export default function useChannels() {
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
             socket?.off('NewBan');
+            socket?.off('NewUnban');
         }
     }, [socket, joinedChannels, channels]);
+    // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
-            // Channel creation
             let hashedPassword;
             if (newChannelInfo.password)
                 hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
@@ -224,7 +220,7 @@ export default function useChannels() {
 
             // Channel joining
             console.log(JSON.stringify(newChannel, null, 2));
-            const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -361,12 +357,12 @@ export default function useChannels() {
     }, [socket, joinedChannels]);
 
     return {
+        socket,
         channels,
         joinedChannels,
         createNewChannel,
         joinChannel,
         sendToChannel,
-        socket,
         setCurrentChannelId
     }
 }
