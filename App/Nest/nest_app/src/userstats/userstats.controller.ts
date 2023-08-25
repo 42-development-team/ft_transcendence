@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, Req, Res } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { UserStatsService } from "./userstats.service";
 import { UserIdDto } from "./dto/user-id.dto";
@@ -9,15 +9,19 @@ ApiTags('Userstats')
 export class UserstatsController {
 	constructor(private userstatsService: UserStatsService) { }
 
+	logger = new Logger ('GameController');
+
 	/* C(reate) */
 	@Post('create')
 	async createUserStats(@Body() userIdDto: UserIdDto, @Res() response: any) {
 		try {
 			const newUserStats = await this.userstatsService.createUserStats(userIdDto);
 
-			response.status(HttpStatus.CREATED);
+			this.logger.log("newUserStats CREATE:", newUserStats)
+			await response.status(HttpStatus.CREATED);
 		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			this.logger.log("newUserStats CREATE error:", error.message)
+			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
 
@@ -28,9 +32,10 @@ export class UserstatsController {
 			const id: number = Number(userId);
 			const statsDto = await this.userstatsService.getUserStats(id);
 
-			console.log("stats READ in get:", statsDto)
+			this.logger.log("statsDto READ:", statsDto)
 			await response.status(HttpStatus.OK).send(JSON.stringify(statsDto));
 		} catch (error) {
+			this.logger.log("statsDto READ error:", error.message)
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
@@ -41,9 +46,11 @@ export class UserstatsController {
 		try {
 			this.userstatsService.updateUserStats(id, userUpdateDto);
 
-			response.status(HttpStatus.OK);
+			this.logger.log("statsDto UPDATE:", userUpdateDto)
+			await response.status(HttpStatus.OK);
 		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			this.logger.log("statsDto UPDATE error:", error.message)
+			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
 
@@ -54,9 +61,11 @@ export class UserstatsController {
 		try {
 			this.userstatsService.deleteUserStats(userIdDto);
 
-			response.status(HttpStatus.OK);
+			this.logger.log("statsDto DELETE:", userIdDto)
+			await response.status(HttpStatus.OK);
 		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			this.logger.log("statsDto DELETE error:", error.message)
+			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
 
