@@ -30,11 +30,16 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
 
 const NavLinks = ({logout} : {logout: () => void}) => {
     const router = useRouter();
+    const onProfilClick = () => {
+    if (sessionStorage.getItem("userId"))
+        sessionStorage.removeItem("userId");
+        router.push('/profile');
+    }
     return (
         <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownActionLarge onClick={() => router.push('/profile')}>
+                    <DropDownActionLarge onClick={() => onProfilClick()}>
                         Profile
                     </DropDownActionLarge >
                     <DropDownActionLarge onClick={() => router.push('/settings')}>

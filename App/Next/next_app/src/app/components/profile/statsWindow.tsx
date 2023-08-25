@@ -14,11 +14,11 @@ const StatsWindow = ({userId}: {userId: string} ) => {
     useEffect(() => {
         let sessionUserId = null;
         sessionUserId = sessionStorageUser();
-        console.log("sessionUserId: ", sessionUserId);
 
         if (sessionUserId !== null && sessionUserId !== undefined) {
             userId = sessionUserId as string;
         }
+
         const getAvatar = async () => {
             const response = await fetch(`${process.env.BACK_URL}/avatars/${userId}`, {
                 credentials: "include",
