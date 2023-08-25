@@ -52,7 +52,6 @@ export default function useChannels() {
 
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -76,7 +75,6 @@ export default function useChannels() {
         const { room, user } = body;
         const channelIndex: number = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
 
@@ -89,8 +87,6 @@ export default function useChannels() {
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
-        // console.log("newMember username = ", newMember.username);
-        // console.log("newMember current status: ", newMember.currentStatus);
         const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
         if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
             const newChannels = [...joinedChannels];
@@ -108,7 +104,6 @@ export default function useChannels() {
         const { roomName, userId } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("Room not found - joinedChannels.length = " + joinedChannels.length);
             return;
         }
         // Remove user from channel
@@ -124,11 +119,9 @@ export default function useChannels() {
         const { roomName } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("HandleLeftRoom Room not found");
             return;
         }
         fetchChannelsInfo();
-        // Remove channel from joined channels
         const newChannels = [...joinedChannels];
         newChannels.splice(channelIndex, 1);
         setJoinedChannels(newChannels);
@@ -138,7 +131,6 @@ export default function useChannels() {
         const { roomName, userId } = body;
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("HandleBan Room not found");
             return;
         }
         const newChannels = [...joinedChannels];
@@ -154,8 +146,6 @@ export default function useChannels() {
         console.log(JSON.stringify(body, null, 2));
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
         if (channelIndex == -1) {
-            console.log("HandleUnban Room not found");
-            console.log(JSON.stringify(joinedChannels, null, 2));
             return;
         }
         const newChannels = [...joinedChannels];
@@ -201,11 +191,11 @@ export default function useChannels() {
             socket?.off('NewUnban');
         }
     }, [socket, joinedChannels, channels]);
+    // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     // API requests
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
-            // Channel creation
             let hashedPassword;
             if (newChannelInfo.password)
                 hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
@@ -230,7 +220,7 @@ export default function useChannels() {
 
             // Channel joining
             console.log(JSON.stringify(newChannel, null, 2));
-            const joinResponse = await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);
@@ -367,12 +357,12 @@ export default function useChannels() {
     }, [socket, joinedChannels]);
 
     return {
+        socket,
         channels,
         joinedChannels,
         createNewChannel,
         joinChannel,
         sendToChannel,
-        socket,
         setCurrentChannelId
     }
 }
