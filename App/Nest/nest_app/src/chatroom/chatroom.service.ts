@@ -194,12 +194,10 @@ export class ChatroomService {
 		});
 
 		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
-		console.log("isBanned: " + isBanned);
 		if (isBanned) {
 			throw new Error('User is banned from this channel');
 		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		console.log("type: " + chatRoom.type);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			if (!isJoined)
 				return await this.connectUserToChatroom(userId, id);
