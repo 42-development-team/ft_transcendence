@@ -108,10 +108,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
-    async handleJoinGameRoom(@MessageBody() body: any, @ConnectedSocket() socket) {
-        let data: GameInterface;
-
-        this.server.to('roomName').emit('updateGame', {data});
+    async handleJoinGameRoom(client: Socket, room: string) {
+        client.join(room);
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const gameRoomId = await this.gameService.getIdFromGameName(room);
+        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
+        const user = membership.user;
+        console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
+        this.server.to(room).emit('newGameConnection', 
+            {room, user}
+        );
     }
 
     @SubscribeMessage('leaveGameRoom')
