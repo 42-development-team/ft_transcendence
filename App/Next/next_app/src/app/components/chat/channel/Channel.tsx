@@ -1,7 +1,7 @@
 import styles from '../Chat.module.css';
 import Image from "next/image";
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel } from '@/app/utils/models';
+import { ChannelModel, ChannelType } from '@/app/utils/models';
 import { useEffect } from 'react';
 
 type ChannelProps = {
@@ -25,8 +25,8 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
         <li className={styles.channelItem}>
             <button onClick={handleClick} 
                 className={`
-                    ${type == "public" && "bg-blue text-base"} 
-                    ${type == "protected" && "bg-yellow text-base"}
+                    ${type == ChannelType.Public && "bg-blue text-base"} 
+                    ${type == ChannelType.Protected && "bg-yellow text-base"}
                     rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
                     <p className='text-xs'>{name}</p> :

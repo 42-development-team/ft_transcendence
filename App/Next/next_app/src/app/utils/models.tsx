@@ -4,12 +4,19 @@ export interface ChannelModel {
     createdAt: string   //useful?
     creatorId: string   //useful?
     icon: string
-    type: string
+    type: ChannelType
     joined: boolean
     banned: boolean
     messages?: MessageModel[]
     members?: ChannelMember[]
     unreadMessages: number
+}
+
+export enum ChannelType {
+    Public = "public",
+    Private = "private",
+    Protected = "protected",
+    DirectMessage = "direct_message",
 }
 
 // Todo: use enum for channel type ?

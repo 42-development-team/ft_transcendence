@@ -6,6 +6,7 @@ import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
 import PasswordInputField from '../PasswordInputField';
 import ChatHeader from '../chatbox/ChatHeader';
+import { ChannelType } from '@/app/utils/models';
 
 interface CreateChannelProps {
 	userId: string;
@@ -20,7 +21,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	const { updateChatBarState, openChannel } = useChatBarContext();
 	const [showPasswordInput, setShowPasswordInput] = useState(false);
 	const [channelName, setChannelName] = useState('');
-	const [channelType, setChannelType] = useState('public');
+	const [channelType, setChannelType] = useState<string>(ChannelType.Public);
 	const [password, setPassword] = useState('');
 	const [lockInterface, setLockInterface] = useState(false);
 
@@ -29,20 +30,20 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = event.target.value;
 		setChannelType(selectedType);
-		setShowPasswordInput(selectedType === 'protected');
+		setShowPasswordInput(selectedType === ChannelType.Protected);
 	};
 
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		// Todo: check for unique channel name
 		event.preventDefault();
 		if (channelName === '') return;
-		if (channelType === 'protected' && password === '') return;
+		if (channelType === ChannelType.Protected && password === '') return;
 		setLockInterface(true);
 		setShowPasswordInput(false);
 		const newChannelInfo: NewChannelInfo = {
 			name: channelName,
 			type: channelType,
-			password: channelType === 'protected' ? password : undefined,
+			password: channelType === ChannelType.Protected ? password : undefined,
 			owner: Number(userId),
 			admins: [Number(userId)],
 		};
