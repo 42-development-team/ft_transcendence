@@ -20,7 +20,7 @@ const ChatMemberItem = ({
     user: { username, avatar, isAdmin, isOwner, id },
     isCurrentUser, isBanned, kick, ban, leaveChannel
 }: ChatMemberProps) => {
-	// const [userStatus, setUserStatus] = useState(UserStatus.Offline);
+	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
 	// useEffect(() => {
 	// 	const fetchedUserStatus = async () => {
