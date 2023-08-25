@@ -33,7 +33,7 @@ export class UserstatsController {
 			const statsDto = await this.userstatsService.getUserStats(id);
 
 			this.logger.log("Successfully get userStats:", statsDto)
-			await response.status(HttpStatus.OK).send(JSON.stringify(statsDto));
+			await response.status(HttpStatus.OK).send(statsDto);
 		} catch (error) {
 			this.logger.log("Failed to get userStats:", error.message)
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -47,7 +47,7 @@ export class UserstatsController {
 			const leaderBoard = await this.userstatsService.getLeaderBoard(id);
 
 			this.logger.log("Successfully get leaderBoard:", leaderBoard)
-			await response.status(HttpStatus.OK).send(JSON.stringify(leaderBoard));
+			await response.status(HttpStatus.OK).send(leaderBoard);
 		} catch (error) {
 			this.logger.log("Failed to get userStats:", error.message)
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
