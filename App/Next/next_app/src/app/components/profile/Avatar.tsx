@@ -71,13 +71,13 @@ const Avatar = (
                         />
                     </div>
                 ) : (
-                    <div>
+                    <div className="flex justify-center">
                         {/* Display default avatar */}
                         <Image
                             src="https://img.freepik.com/free-icon/user_318-563642.jpg"
                             alt="Default Avatar"
-                            width={200}
-                            height={200}
+                            width={212}
+                            height={212}
                             className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`}
                         />
                     </div>
