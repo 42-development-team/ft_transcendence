@@ -6,7 +6,6 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
-import { MembershipService } from '../membership/membership.service';
 import { UsersService } from 'src/users/users.service';
 
 @ApiTags('ChatRoom')

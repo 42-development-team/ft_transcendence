@@ -7,7 +7,7 @@ export class CreateChatroomDto {
 
     @IsNotEmpty()
     @IsString()
-    @IsIn(['public', 'private', 'protected'], { message: 'Invalid channel type' })
+    @IsIn(['public', 'private', 'protected', 'direct_message'], { message: 'Invalid channel type' })
     type: string;
 
     @IsOptional()
