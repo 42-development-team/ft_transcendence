@@ -9,10 +9,11 @@ import { Tooltip } from '@material-tailwind/react';
 interface ChatMemberListProps {
     channel: ChannelModel
     userId: string
+    directMessage: (receiverId: string, senderId: string) => void
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
 
     const kick = async (kickedId: string) => {
         try {
@@ -79,18 +80,8 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
                 // Todo: use alert to inform user
         }
     }
-
-    const directMessage = async (targetId: string) => {
-        try {
-            console.log("Direct message between " + userId + " and " + targetId);
-            // Check if the room exist
-            // Create room if it doesn't exist
-            // Redirect to the room
-            
-        }
-        catch (error) {
-            console.log("Error sending direct message: " + error);
-        }
+    const handleDirectMessage = (receiverId: string) => {
+        directMessage(receiverId, userId);
     }
 
     const leaveChannel = async () => {
@@ -122,14 +113,14 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={directMessage} />
+                directMessage={handleDirectMessage} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={directMessage} />
+                directMessage={handleDirectMessage} />
         ))
 
     const AdminList = channel.members
@@ -137,7 +128,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={directMessage} />
+                directMessage={handleDirectMessage} />
         ))
 
     const BannedList = channel.members
@@ -145,7 +136,7 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
             .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={directMessage} />
+                directMessage={handleDirectMessage} />
         )
     )
 

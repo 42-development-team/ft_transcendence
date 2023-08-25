@@ -27,6 +27,7 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
                 className={`
                     ${type == ChannelType.Public && "bg-blue text-base"} 
                     ${type == ChannelType.Protected && "bg-yellow text-base"}
+                    ${type == ChannelType.DirectMessage && "bg-green text-base"}
                     rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
                     <p className='text-xs'>{name}</p> :

@@ -22,7 +22,7 @@ export class ChatroomService {
 	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
-		const { name, type, hashedPassword } = createChatroomDto;
+		const { name, type, hashedPassword, receiverId } = createChatroomDto;
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
@@ -37,6 +37,15 @@ export class ChatroomService {
 				},
 			},
 		});
+		// Connect the second user to the chatroom if it is a direct message
+		if (type === 'direct_message') {
+			const connectSecondUser = await this.prisma.membership.create({
+				data: {
+					user: { connect: { id: Number(receiverId) } },
+					chatroom: { connect: { id: createdChatroom.id } },
+				},
+			});
+		}
 		const chatRoomInfo: ChatroomInfoDto = {
 			id: createdChatroom.id,
 			name: createdChatroom.name,

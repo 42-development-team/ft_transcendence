@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsIn, IsOptional, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsIn, IsOptional } from 'class-validator';
 
 export class CreateChatroomDto {
     @IsNotEmpty()
@@ -13,4 +13,8 @@ export class CreateChatroomDto {
     @IsOptional()
     @IsString()
     hashedPassword?: string;
+    
+    @IsOptional()
+    @IsString()
+    receiverId?: string;
 }

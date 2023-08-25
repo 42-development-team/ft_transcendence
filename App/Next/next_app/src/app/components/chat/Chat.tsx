@@ -20,7 +20,11 @@ interface ChatBarProps {
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel, setCurrentChannelId } = useChannels();
+    const { 
+        channels, joinedChannels, 
+        createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
+        directMessage
+    } = useChannels();
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
     const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
@@ -55,6 +59,7 @@ const Chat = ({ userId }: ChatBarProps) => {
         }   
     }, [joinedChannels]);
 
+    // Todo: if direct message channel exists, open it
     return (
         <div className='flex h-full'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
@@ -64,7 +69,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                    <ChatMemberList channel={currentChannel} userId={userId}/>
+                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />

@@ -44,8 +44,6 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 			name: channelName,
 			type: channelType,
 			password: channelType === ChannelType.Protected ? password : undefined,
-			owner: Number(userId),
-			admins: [Number(userId)],
 		};
 		const createdChannelId = await createNewChannel(newChannelInfo);
 

@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelMember, ChannelModel, MessageModel, UserStatus } from "../utils/models";
+import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
 import useSocketConnection from "./useSocketConnection"
 import bcrypt from 'bcryptjs';
 
@@ -8,8 +8,7 @@ export interface NewChannelInfo {
     name: string;
     type: string;
     password?: string;
-    owner: number;
-    admins: number[];
+    receiverId?: string;
 }
 
 export default function useChannels() {
@@ -194,7 +193,30 @@ export default function useChannels() {
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     // API requests
+
+    const directMessage = async (receiverId: string, senderId: string) => {
+        console.log("Direct message between " + receiverId + " and " + senderId);
+        // Check if the room exist
+        const targetChannel = joinedChannels.find(c => {
+            c.type == ChannelType.DirectMessage && c.members?.find(member => member.id == receiverId && member.id == senderId)
+        });
+        if (targetChannel == undefined) {
+            // Create the room
+            console.log("Create the direct message room");
+            const test = await createNewChannel({
+                name: "direct_message_" + receiverId + "_" + senderId,
+                type: ChannelType.DirectMessage,
+                receiverId: receiverId.toString(),
+            });
+            console.log("Created room: " + test);
+        }
+
+        // Create room if it doesn't exist
+        // Redirect to the room
+    }
+
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
+        console.log("Create new channel, " + JSON.stringify(newChannelInfo, null, 2));
         try {
             let hashedPassword;
             if (newChannelInfo.password)
@@ -209,17 +231,15 @@ export default function useChannels() {
                     name: newChannelInfo.name,
                     type: newChannelInfo.type,
                     hashedPassword: hashedPassword,
-                    owner: newChannelInfo.owner,
-                    admins: newChannelInfo.admins,
+                    receiverId: newChannelInfo.receiverId,
                 }),
             });
             if (!response.ok) {
-                throw new Error('Failed to create the channel');
+                throw new Error('Failed to create the channel ' + response.statusText);
             }
             const newChannel = await response.json();
 
             // Channel joining
-            console.log(JSON.stringify(newChannel, null, 2));
             await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
@@ -363,7 +383,8 @@ export default function useChannels() {
         createNewChannel,
         joinChannel,
         sendToChannel,
-        setCurrentChannelId
+        setCurrentChannelId,
+        directMessage,
     }
 }
 
