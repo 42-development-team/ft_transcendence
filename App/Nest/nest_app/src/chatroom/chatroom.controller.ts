@@ -118,7 +118,7 @@ export class ChatroomController {
 	@Patch(':id/unban')
 	async unban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const unbannedId: number = body.bannedId;
+		const unbannedId: number = body.unbannedId;
 		let unbannedUserSocket = undefined;
 		try {
 			unbannedUserSocket = await this.userService.getUserSocketFromId(unbannedId);
