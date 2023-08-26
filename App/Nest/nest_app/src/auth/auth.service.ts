@@ -62,7 +62,7 @@ export class AuthService {
 
     async updateCurrentStatus(user: any, userId: number, status: string) {
 		// user.currentStatus = status;
-		console.log("user id in updateCurrentStatus in service: ", userId);
+		// console.log("user id in updateCurrentStatus in service: ", userId);
             await this.prisma.user.update({
                 where: { id: userId},
                 data: { currentStatus: status },

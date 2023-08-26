@@ -78,9 +78,9 @@ const Chat = ({ userId }: ChatBarProps) => {
                 {chatBarState == ChatBarState.CreateChannelOpen &&
                     <CreateChannel userId={userId} createNewChannel={createNewChannel} />
                 }
-				<button className='bg-red' onClick={() => console.log(JSON.stringify(joinedChannels, null, 2))} >
+				{/* <button className='bg-red' onClick={() => console.log(JSON.stringify(joinedChannels, null, 2))} >
 					Test
-				</button>
+				</button> */}
 
             </UserRoleProvider>
         </div>

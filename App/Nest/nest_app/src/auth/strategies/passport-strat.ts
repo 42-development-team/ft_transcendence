@@ -27,7 +27,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
 
         try {
 			// console.log("client id = ", this.clientID);
-			console.log("profile id = ", profile.id);
+			// console.log("profile id = ", profile.id);
             const user = this.usersService.createOrFindUser(profile.username);
             return cb(null, user);
         }

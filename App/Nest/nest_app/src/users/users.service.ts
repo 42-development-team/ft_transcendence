@@ -44,7 +44,7 @@ export class UsersService {
     }
 
     async getUserSocketFromId(id: number): Promise<string> {
-        console.log("getUserSocketFromId:" + id);
+        // console.log("getUserSocketFromId:" + id);
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
@@ -124,7 +124,7 @@ export class UsersService {
 
     async createOrFindUser(login: string): Promise<CreateUserDto & { id?: number }> {
         let user = await this.getUserFromLogin(login);
-		console.log("Logging in user current status= ", user.currentStatus);
+		// console.log("Logging in user current status= ", user.currentStatus);
         if (!user) {
             const createUserDto: CreateUserDto = {
                 login: login,
@@ -139,7 +139,7 @@ export class UsersService {
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {
-			console.log("current user != online for user: ", user.username);
+			// console.log("current user != online for user: ", user.username);
             user.currentStatus = "online";
 			await this.prisma.user.update({
                 where: { login: user.login},
