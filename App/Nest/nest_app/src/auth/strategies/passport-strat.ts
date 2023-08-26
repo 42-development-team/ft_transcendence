@@ -19,11 +19,15 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
             clientSecret: configService.get<string>('transcendenceSecret'),
             callbackURL: configService.get<string>('redirectUri'),
         });
+		// this.clientID = configService.get<string>('transcendenceToken');
     }
+
 
     async validate(accessToken: string, refreshToken: string, profile: any, cb): Promise<any> {
 
         try {
+			// console.log("client id = ", this.clientID);
+			// console.log("profile id = ", profile.id);
             const user = this.usersService.createOrFindUser(profile.username);
             return cb(null, user);
         }

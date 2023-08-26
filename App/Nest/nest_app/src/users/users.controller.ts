@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, ParseIntPipe, Request, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger'
 /*
 Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
@@ -9,14 +10,16 @@ their input/output parameters, authentication requirements, response formats, an
 */
 import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
+import { Public } from '../auth/public.routes';
 
 
 // Nestjs/swagger decorator to display the routes: localhost:4000/api
-@ApiTags('Users')  
+@ApiTags('Users')
 
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) {}
+
 
     logger = new Logger ('UsersController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
@@ -44,7 +47,18 @@ export class UsersController {
         this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
-
+	@Public()
+	@Get('/getCurrentStatus/:id')
+    async getStatus(@Param('id') id: string, @Res() response: Response) {
+		try {
+			const userId: number = parseInt(id);
+			// console.log("userId in get Current Status: ", userId);
+			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
+			response.status(HttpStatus.OK).json(currentStatus);
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+    }
 
     /* U(pdate) */
 
