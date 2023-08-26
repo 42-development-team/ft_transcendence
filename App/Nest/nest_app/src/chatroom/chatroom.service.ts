@@ -22,7 +22,7 @@ export class ChatroomService {
 	// #region C(reate)
 
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
-		const { name, type, hashedPassword, receiverId } = createChatroomDto;
+		const { name, type, hashedPassword } = createChatroomDto;
 		const createdChatroom = await this.prisma.chatRoom.create({
 			data: {
 				name,
@@ -45,6 +45,19 @@ export class ChatroomService {
 			banned: false,
 		}
 		return chatRoomInfo;
+	}
+
+	async checkForExistingDirectMessageChannel(userId: number, receiverId: number) {
+		const chatRoom = await this.prisma.chatRoom.findFirstOrThrow({
+			where: {
+				type: 'direct_message',
+				AND: [
+					{ memberShips: { some: { userId: userId } } },
+					{ memberShips: { some: { userId: receiverId } } },
+				]
+			}
+		});
+		return chatRoom;
 	}
 	// #endregion
 

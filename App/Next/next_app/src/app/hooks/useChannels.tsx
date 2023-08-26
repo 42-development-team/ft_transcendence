@@ -157,7 +157,6 @@ export default function useChannels() {
 
     const handleNewDirectMessageChannel = (body: any) => {
         const { id, name } = body;
-        console.log("Direct message received: " + JSON.stringify(body, null, 2));
         joinChannel(id, name);
     }
 
@@ -210,7 +209,7 @@ export default function useChannels() {
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
         if (targetChannel == undefined) {
-            // Create the room=
+            // Create the room
             const test = await createNewChannel({
                 name: "direct_message_" + receiverId + "_" + senderId,
                 type: ChannelType.DirectMessage,
