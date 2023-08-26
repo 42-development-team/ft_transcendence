@@ -8,7 +8,7 @@ type ChannelProps = {
     channel: ChannelModel
 }
 
-const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps) => {
+const DirectMessageChannel = ({channel :{name, icon, type, id, unreadMessages, directMessageTargetUsername}}: ChannelProps) => {
     const { openChannel, openChannelId } = useChatBarContext();
 
     const handleClick = () => {
@@ -30,7 +30,7 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
                     ${type == ChannelType.DirectMessage && "bg-green text-base"}
                     rounded-[inherit] w-[inherit] h-[inherit] relative`}>
                 {icon === '' ?
-                    <p className='text-xs'>{name}</p> :
+                    <p className='text-xs'>{directMessageTargetUsername}</p> :
                     <Image alt="Channel Icon" fill src={icon} 
                     sizes=" 100vw, 100vw"
                     className="rounded-[inherit]" />
@@ -47,4 +47,4 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
     );
 }
 
-export default Channel;
+export default DirectMessageChannel;

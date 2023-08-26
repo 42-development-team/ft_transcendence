@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsIn, IsOptional, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsIn, IsOptional } from 'class-validator';
 
 export class CreateChatroomDto {
     @IsNotEmpty()
@@ -7,10 +7,14 @@ export class CreateChatroomDto {
 
     @IsNotEmpty()
     @IsString()
-    @IsIn(['public', 'private', 'protected'], { message: 'Invalid channel type' })
+    @IsIn(['public', 'private', 'protected', 'direct_message'], { message: 'Invalid channel type' })
     type: string;
 
     @IsOptional()
     @IsString()
     hashedPassword?: string;
+    
+    @IsOptional()
+    @IsString()
+    receiverId?: string;
 }

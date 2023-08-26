@@ -1,4 +1,4 @@
-import { ChannelModel } from "@/app/utils/models";
+import { ChannelModel, ChannelType } from "@/app/utils/models";
 import { useChatBarContext, ChatBarState } from "@/app/context/ChatBarContextProvider";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Alert } from '@material-tailwind/react';
@@ -16,7 +16,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     const { updateChatBarState } = useChatBarContext();
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [password, setPassword] = useState('');
-    const [newChannelType, setNewChannelType] = useState(channel.type);
+    const [newChannelType, setNewChannelType] = useState<ChannelType>(channel.type);
     const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false)
 
@@ -32,7 +32,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
 
         // Change channel password
         // Todo: add alert if password is empty
-        if (channel.type === 'protected' || newChannelType === 'protected') {
+        if (channel.type === ChannelType.Protected || newChannelType === ChannelType.Protected) {
             if (password === '') {
                 setError(true);
                 setOpenAlert(true);
@@ -52,7 +52,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     }
 
     useEffect(() => {
-        setShowPasswordInput(newChannelType == "protected" || (channel.type == "protected" && newChannelType == channel.type));
+        setShowPasswordInput(newChannelType == ChannelType.Protected || (channel.type == ChannelType.Protected && newChannelType == channel.type.toString()));
     }, [newChannelType])
 
     return (
@@ -85,19 +85,19 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     )
 }
 
-const ChangeChannelTypeButtons = ({ newChannelType, setChannelType }: { newChannelType: string, setChannelType: Dispatch<SetStateAction<string>> }) => {
+const ChangeChannelTypeButtons = ({ newChannelType, setChannelType }: { newChannelType: string, setChannelType: Dispatch<SetStateAction<ChannelType>> }) => {
     return (
         <div className="flex flex-col my-4">
             <span className='text-sm font-bold'>
                 Change Channel Type
             </span>
-            <ChannelTypeButton onClick={() => setChannelType("public")} disable={newChannelType == "public"}>
+            <ChannelTypeButton onClick={() => setChannelType(ChannelType.Public)} disable={newChannelType == ChannelType.Public}>
                 Set as Public
             </ChannelTypeButton>
-            <ChannelTypeButton onClick={() => setChannelType("protected")} disable={newChannelType == "protected"}>
+            <ChannelTypeButton onClick={() => setChannelType(ChannelType.Protected)} disable={newChannelType == ChannelType.Protected}>
                 Set as Protected
             </ChannelTypeButton>
-            <ChannelTypeButton onClick={() => setChannelType("private")} disable={newChannelType == "private"}>
+            <ChannelTypeButton onClick={() => setChannelType(ChannelType.Private)} disable={newChannelType == ChannelType.Private}>
                 Set as Private (invisible)
             </ChannelTypeButton>
         </div>

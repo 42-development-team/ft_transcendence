@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ChannelMember, ChannelModel, MessageModel, UserStatus } from "../utils/models";
+import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
 import useSocketConnection from "./useSocketConnection"
 import bcrypt from 'bcryptjs';
 
@@ -8,11 +8,10 @@ export interface NewChannelInfo {
     name: string;
     type: string;
     password?: string;
-    owner: number;
-    admins: number[];
+    receiverId?: string;
 }
 
-export default function useChannels() {
+export default function useChannels(userId: string) {
     const socket = useSocketConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
@@ -112,7 +111,7 @@ export default function useChannels() {
         const newChannels = [...joinedChannels];
         const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
         if (memberIndex !== undefined && memberIndex !== -1) {
-            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+            newChannels[channelIndex].members?.splice(memberIndex, 1);
         }
         setJoinedChannels(newChannels);
     }
@@ -158,15 +157,20 @@ export default function useChannels() {
         setJoinedChannels(newChannels);
     }
 
+    const handleNewDirectMessageChannel = (body: any) => {
+        const { id, name } = body;
+        joinChannel(id, name);
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
         });
-        socket?.on('newConnection', (body: any) => {
+        socket?.on('newConnectionOnChannel', (body: any) => {
             handleNewConnectionOnChannel(body);
         });
-        socket?.on('newDisconnection', (body: any) => {
+        socket?.on('newDisconnectionOnChannel', (body: any) => {
             handleDisconnectionOnChannel(body);
         });
         socket?.on('leftRoom', (body: any) => {
@@ -181,6 +185,9 @@ export default function useChannels() {
         socket?.on('newUnban', (body: any) => {
             handleUnban(body);
         });
+        socket?.on('directMessage', (body: any) => {
+            handleNewDirectMessageChannel(body);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -191,11 +198,29 @@ export default function useChannels() {
             socket?.off('NewChatRoom');
             socket?.off('NewBan');
             socket?.off('NewUnban');
+            socket?.off('directMessage');
         }
     }, [socket, joinedChannels, channels]);
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
-    // API requests
+    const directMessage = async (receiverId: string, senderId: string) =>  {
+        // Check if the room exist
+        const targetChannel = joinedChannels.find(c => 
+            c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
+        );
+        if (targetChannel == undefined) {
+            const newChannelId = await createNewChannel({
+                name: "direct_message_" + receiverId + "_" + senderId,
+                type: ChannelType.DirectMessage,
+                receiverId: receiverId.toString(),
+            });
+            return newChannelId;
+        }
+        else {
+            return targetChannel.id;
+        }
+    }
+
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             let hashedPassword;
@@ -211,17 +236,13 @@ export default function useChannels() {
                     name: newChannelInfo.name,
                     type: newChannelInfo.type,
                     hashedPassword: hashedPassword,
-                    owner: newChannelInfo.owner,
-                    admins: newChannelInfo.admins,
+                    receiverId: newChannelInfo.receiverId,
                 }),
             });
             if (!response.ok) {
-                throw new Error('Failed to create the channel');
+                throw new Error('Failed to create the channel ' + response.statusText);
             }
             const newChannel = await response.json();
-
-            // Channel joining
-            console.log(JSON.stringify(newChannel, null, 2));
             await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
             return newChannel.id;
         } catch (error) {
@@ -288,6 +309,10 @@ export default function useChannels() {
                     senderUsername: message.sender.username,
                 }
             });
+            if (fetchedChannel.type == ChannelType.DirectMessage) {
+                const targetMember = fetchedChannel.members?.find(m => m.id != userId);
+                fetchedChannel.directMessageTargetUsername = targetMember?.username;
+            }
             setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
         }
         catch (err) {
@@ -340,6 +365,10 @@ export default function useChannels() {
                         avatar: "",
                     }
                 });
+                if (channel.type == ChannelType.DirectMessage) {
+                    const targetMember = channel.members?.find((m: { id: string; }) => m.id != userId);
+                    channel.directMessageTargetUsername = targetMember?.username;
+                }
                 return channel;
             });
             setJoinedChannels(fetchedChannels);
@@ -365,7 +394,8 @@ export default function useChannels() {
         createNewChannel,
         joinChannel,
         sendToChannel,
-        setCurrentChannelId
+        setCurrentChannelId,
+        directMessage,
     }
 }
 

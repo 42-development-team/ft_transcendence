@@ -46,6 +46,19 @@ export class ChatroomService {
 		}
 		return chatRoomInfo;
 	}
+
+	async checkForExistingDirectMessageChannel(userId: number, receiverId: number) {
+		const chatRoom = await this.prisma.chatRoom.findFirstOrThrow({
+			where: {
+				type: 'direct_message',
+				AND: [
+					{ memberShips: { some: { userId: userId } } },
+					{ memberShips: { some: { userId: receiverId } } },
+				]
+			}
+		});
+		return chatRoom;
+	}
 	// #endregion
 
 	// #region R(ead)
@@ -107,7 +120,6 @@ export class ChatroomService {
 			name: chatroom.name,
 			type: chatroom.type,
 			ownerId: chatroom.ownerId,
-			// members: [],
 			members: (chatroom.memberShips === undefined) ? [] : chatroom.memberShips.map(member => {
 				return {
 					id: member.userId,
@@ -198,19 +210,14 @@ export class ChatroomService {
 			throw new Error('User is banned from this channel');
 		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			if (!isJoined)
-				return await this.connectUserToChatroom(userId, id);
-		}
-		else if (chatRoom.type === 'protected') {
+		if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (!isValid) {
 				throw new Error('Wrong password');
 			}
-			if (!isJoined) {
-				return await this.connectUserToChatroom(userId, id);
-			}
 		}
+		if (!isJoined)
+			return await this.connectUserToChatroom(userId, id);
 	}
 
 	async isUserAdmin(userId: number, chatroomId: number) {
