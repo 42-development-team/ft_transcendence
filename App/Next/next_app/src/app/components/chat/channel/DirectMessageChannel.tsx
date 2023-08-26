@@ -2,7 +2,7 @@ import styles from '../Chat.module.css';
 import Image from "next/image";
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import { ChannelModel, ChannelType } from '@/app/utils/models';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 type ChannelProps = {
     channel: ChannelModel

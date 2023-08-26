@@ -26,8 +26,8 @@ const Chat = ({ userId }: ChatBarProps) => {
         directMessage
     } = useChannels(userId);
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
-    const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
-    const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
+    const [ isCurrentUserAdmin, setIsCurrentUserAdmin ] = useState<boolean>(false);
+    const [ isCurrentUserOwner, setIsCurrentUserOwner ] = useState<boolean>(false);
     
     let currentUser = undefined;
 

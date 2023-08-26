@@ -201,21 +201,21 @@ export default function useChannels(userId: string) {
     }, [socket, joinedChannels, channels]);
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
-    // API requests
-
-    const directMessage = async (receiverId: string, senderId: string) => {
+    const directMessage = async (receiverId: string, senderId: string) =>  {
         // Check if the room exist
         const targetChannel = joinedChannels.find(c => 
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
         if (targetChannel == undefined) {
-            // Create the room
-            const test = await createNewChannel({
+            const newChannelId = await createNewChannel({
                 name: "direct_message_" + receiverId + "_" + senderId,
                 type: ChannelType.DirectMessage,
                 receiverId: receiverId.toString(),
             });
-            console.log("Created room: " + test);
+            return newChannelId;
+        }
+        else {
+            return targetChannel.id;
         }
     }
 

@@ -9,11 +9,12 @@ import { Tooltip } from '@material-tailwind/react';
 interface ChatMemberListProps {
     channel: ChannelModel
     userId: string
-    directMessage: (receiverId: string, senderId: string) => void
+    directMessage: (receiverId: string, senderId: string) => Promise<string>
 }
 
 // Todo: extract functions to another file
 const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
+    const {openChannel, updateChatBarState} = useChatBarContext();
 
     const kick = async (kickedId: string) => {
         try {
@@ -80,8 +81,9 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
                 // Todo: use alert to inform user
         }
     }
-    const handleDirectMessage = (receiverId: string) => {
-        directMessage(receiverId, userId);
+    const handleDirectMessage = async (receiverId: string) => {
+        const id = await directMessage(receiverId, userId);
+        openChannel(id);
     }
 
     const leaveChannel = async () => {
@@ -95,7 +97,6 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
     }
 
-    const { updateChatBarState } = useChatBarContext();
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
         return <></>
