@@ -7,6 +7,7 @@ import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 import getStatsLeaderBoard from "./getStatsLeaderBoard";
+import { error } from "console";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -39,7 +40,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     try {
       fetchGame(userIdNumber);
       fetchStats(userIdNumber);
-
+      if (stats === undefined)
+        throw new Error();
     } catch (error) {
       console.log("Error response when fetching userstats/info:", error);
     }
@@ -79,8 +81,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               value={value}
               onClick={() => handleClick(value)}
               style={indicatorStyle}
-              className={`${activeTab === value ? "text-blue-500 text-xl" : " text-gray-400"
-                } border-b-4 ${activeTab === value ? "border-blue-500" : "border-gray-500"
+              className={`${activeTab === value ? "text-mauve text-xl" : " text-gray-400"
+                } border-b-4 ${activeTab === value ? "border-mauve" : "border-gray-500"
                 }`}
             >
               {label}
