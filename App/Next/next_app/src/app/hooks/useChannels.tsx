@@ -204,7 +204,7 @@ export default function useChannels() {
 
     // API requests
 
-    const directMessage = async (receiverId: string, senderId: string) => {=
+    const directMessage = async (receiverId: string, senderId: string) => {
         // Check if the room exist
         //
         const targetChannel = joinedChannels.find(c => {
