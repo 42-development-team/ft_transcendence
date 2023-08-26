@@ -22,7 +22,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
 
     return (
         <div className="p-6 h-[50vh] overflow-auto">
-            { nodata ? (
+            { !nodata ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
                     <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-base'
