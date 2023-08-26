@@ -61,8 +61,9 @@ export class AuthController {
     async logout(@Res() res: Response, @Req() req: any) {
         try {
 			const userId: number = req.user.sub;
+			// console.log("userId user logging out: ", userId);
 			const user = this.userService.getUserFromId(userId);
-			this.authService.updateCurrentStatus(user, "offline");
+			this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }

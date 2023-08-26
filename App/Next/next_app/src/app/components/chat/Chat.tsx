@@ -56,10 +56,9 @@ const Chat = ({ userId }: ChatBarProps) => {
             console.log("Current channel not found");
             updateChatBarState(ChatBarState.Closed);
             setCurrentChannelId("");
-        }   
+        }
     }, [joinedChannels]);
 
-    // Todo: if direct message channel exists, open it
     return (
         <div className='flex h-full'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
@@ -83,6 +82,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                 {chatBarState == ChatBarState.CreateChannelOpen &&
                     <CreateChannel userId={userId} createNewChannel={createNewChannel} />
                 }
+
             </UserRoleProvider>
         </div>
     )
