@@ -55,9 +55,9 @@
 
 /* Pong loader */
 .shapes-5 {
-    width: 40px;
-    height: 40px;
-    color: #f03355;
+    width: 44px;
+    height: 44px;
+    color: #89dceb;
     position: relative;
 }
 
@@ -70,7 +70,7 @@
         conic-gradient(from 0deg, #0000, currentColor 1deg 120deg, #0000 121deg) top right,
         conic-gradient(from 120deg, #0000, currentColor 1deg 120deg, #0000 121deg) bottom,
         conic-gradient(from 240deg, #0000, currentColor 1deg 120deg, #0000 121deg) top left;
-    background-size: 40px 40px;
+    background-size: 44px 44px;
     background-repeat: no-repeat;
     animation: sp5 2s infinite cubic-bezier(0.3, 1, 0, 1);
 }
