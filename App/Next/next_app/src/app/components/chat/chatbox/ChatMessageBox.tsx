@@ -1,11 +1,12 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel } from '@/app/utils/models';
+import { ChannelModel, ChannelType } from '@/app/utils/models';
 import ChatMessageBoxFooter from './ChatMessageBoxFooter';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatMessage from './ChatMessage';
 import ChatHeader from './ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
+import { useEffect, useState } from 'react';
 
 interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
@@ -14,6 +15,8 @@ interface ChatMessagesBoxProps {
 
 const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     const {updateChatBarState} = useChatBarContext();
+    const [channelTitle, setChannelTitle] = useState<string>(channel.name);
+
     const sendMessage = (message: string) => {
         sendToChannel(channel, message);
     }
@@ -27,15 +30,26 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
         <ChatMessage key={message.id} message={message} />
     ))
 
+    useEffect(() => {
+        if (channel.type == ChannelType.DirectMessage && channel.directMessageTargetUsername != undefined)
+            setChannelTitle(channel.directMessageTargetUsername);
+        else
+            setChannelTitle(channel.name);
+    }, [channel]);
+
     return (
         <div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
-            <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
-                <ChatMemberButton onClick={() => updateChatBarState(ChatBarState.ChatMembersOpen)} />
+            <ChatHeader title={channelTitle} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
+                {channel.type == ChannelType.DirectMessage ?
+                    <div></div>
+                    :
+                    <ChatMemberButton onClick={() => updateChatBarState(ChatBarState.ChatMembersOpen)} />
+                }
             </ChatHeader>
-            <div ref={chatMessageBoxRef} className='overflow-auto h-[78vh]'>
+            <div ref={chatMessageBoxRef} className='overflow-auto h-[86vh]'>
                 {MessageList}
             </div>
-            <ChatMessageBoxFooter onSend={sendMessage} />
+            <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} />
         </div>
     )
 };

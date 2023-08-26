@@ -24,7 +24,7 @@ const Chat = ({ userId }: ChatBarProps) => {
         channels, joinedChannels, 
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
         directMessage
-    } = useChannels();
+    } = useChannels(userId);
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
     const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
@@ -63,7 +63,7 @@ const Chat = ({ userId }: ChatBarProps) => {
     return (
         <div className='flex h-full'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
-                <ChatSideBar channels={joinedChannels} userId={userId} />
+                <ChatSideBar channels={joinedChannels} />
                 {/* Main Panel */}
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />

@@ -10,6 +10,7 @@ export interface ChannelModel {
     messages?: MessageModel[]
     members?: ChannelMember[]
     unreadMessages: number
+    directMessageTargetUsername?: string
 }
 
 export enum ChannelType {

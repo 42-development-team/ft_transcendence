@@ -11,7 +11,7 @@ export interface NewChannelInfo {
     receiverId?: string;
 }
 
-export default function useChannels() {
+export default function useChannels(userId: string) {
     const socket = useSocketConnection();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
@@ -307,6 +307,10 @@ export default function useChannels() {
                     senderUsername: message.sender.username,
                 }
             });
+            if (fetchedChannel.type == ChannelType.DirectMessage) {
+                const targetMember = fetchedChannel.members?.find(m => m.id != userId);
+                fetchedChannel.directMessageTargetUsername = targetMember?.username;
+            }
             setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
         }
         catch (err) {
@@ -359,6 +363,10 @@ export default function useChannels() {
                         avatar: "",
                     }
                 });
+                if (channel.type == ChannelType.DirectMessage) {
+                    const targetMember = channel.members?.find((m: { id: string; }) => m.id != userId);
+                    channel.directMessageTargetUsername = targetMember?.username;
+                }
                 return channel;
             });
             setJoinedChannels(fetchedChannels);
