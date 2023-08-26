@@ -109,7 +109,7 @@ export default function useChannels() {
         const newChannels = [...joinedChannels];
         const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
         if (memberIndex !== undefined && memberIndex !== -1) {
-            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].currentStatus = UserStatus.Offline;
+            newChannels[channelIndex].members?.splice(memberIndex, 1);
         }
         setJoinedChannels(newChannels);
     }
@@ -165,10 +165,10 @@ export default function useChannels() {
         socket?.on('new-message', (body: any) => {
             receiveMessage(body);
         });
-        socket?.on('newConnection', (body: any) => {
+        socket?.on('newConnectionOnChannel', (body: any) => {
             handleNewConnectionOnChannel(body);
         });
-        socket?.on('newDisconnection', (body: any) => {
+        socket?.on('newDisconnectionOnChannel', (body: any) => {
             handleDisconnectionOnChannel(body);
         });
         socket?.on('leftRoom', (body: any) => {

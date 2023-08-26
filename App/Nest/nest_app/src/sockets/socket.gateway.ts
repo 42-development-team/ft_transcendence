@@ -53,7 +53,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
         const user = membership.user;
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
-        this.server.to(room).emit('newConnection', 
+        this.server.to(room).emit('newConnectionOnChannel', 
             {room, user}
         );
     }
@@ -108,7 +108,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         client.leave(roomName);
         client.emit('leftRoom', {roomName});
         console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
-        this.server.to(roomName).emit('newDisconnection', {roomName, userId});
+        this.server.to(roomName).emit('newDisconnectionOnChannel', {roomName, userId});
     }
 
     @SubscribeMessage('message')
