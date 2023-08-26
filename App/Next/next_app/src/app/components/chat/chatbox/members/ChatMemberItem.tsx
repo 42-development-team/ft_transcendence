@@ -26,22 +26,25 @@ const ChatMemberItem = ({
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
 			try {
-				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus`, {
-					credentials: "include",
+				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
+					// credentials: "include",
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 				});
 				const data = await response.json();
-				setUserStatus(data.currentStatus);
-				console.log("user status in useEffect= ", userStatus);
+				setUserStatus(data);
 			} catch (error) {
-			console.error('Error fetching user current status');
-		}
-	};
+				console.error('Error fetching user current status');
+			}
+		};
 		fetchedUserStatus();
 	}, [id]);
+
+	useEffect(() => {
+		console.log("userStatus in useEffect= ", userStatus);
+	}, [userStatus]);
 
     const kickUser = () => {
         if (kick == undefined) return;

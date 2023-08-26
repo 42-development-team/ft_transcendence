@@ -24,7 +24,7 @@ const Chat = ({ userId }: ChatBarProps) => {
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
     const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
-    
+
     let currentUser = undefined;
 
     useEffect(() => {
@@ -52,7 +52,7 @@ const Chat = ({ userId }: ChatBarProps) => {
             console.log("Current channel not found");
             updateChatBarState(ChatBarState.Closed);
             setCurrentChannelId("");
-        }   
+        }
     }, [joinedChannels]);
 
     return (
@@ -78,6 +78,10 @@ const Chat = ({ userId }: ChatBarProps) => {
                 {chatBarState == ChatBarState.CreateChannelOpen &&
                     <CreateChannel userId={userId} createNewChannel={createNewChannel} />
                 }
+				<button className='bg-red' onClick={() => console.log(JSON.stringify(joinedChannels, null, 2))} >
+					Test
+				</button>
+
             </UserRoleProvider>
         </div>
     )

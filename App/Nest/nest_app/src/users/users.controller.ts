@@ -10,6 +10,7 @@ their input/output parameters, authentication requirements, response formats, an
 */
 import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
+import { Public } from '../auth/public.routes';
 
 
 // Nestjs/swagger decorator to display the routes: localhost:4000/api
@@ -18,6 +19,7 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) {}
+
 
     logger = new Logger ('UsersController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
@@ -45,14 +47,14 @@ export class UsersController {
         this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
-
-	@Get('/getCurrentStatus')
-    async getStatus(@Param('id') id: string, @Request() req: any, @Res() response: Response) {
+	@Public()
+	@Get('/getCurrentStatus/:id')
+    async getStatus(@Param('id') id: string, @Res() response: Response) {
 		try {
-			const userId: number = req.user.sub;
+			const userId: number = parseInt(id);
+			console.log("userId in get Current Status: ", userId);
 			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
 			response.status(HttpStatus.OK).json(currentStatus);
-			// return currentStatus;
 		} catch (error) {
 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
