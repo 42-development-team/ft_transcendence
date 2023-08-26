@@ -7,11 +7,9 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
     const data = props.data;
     const currentUserId = props.currentUser;
     const [ openAlert, setOpenAlert ] = useState(false);
-    console.log("data: ", data);
     
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
-        console.log("sessionuserID", sessionStorage.getItem("userId"));
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
