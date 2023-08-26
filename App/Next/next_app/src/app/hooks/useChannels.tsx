@@ -206,10 +206,9 @@ export default function useChannels() {
 
     const directMessage = async (receiverId: string, senderId: string) => {
         // Check if the room exist
-        //
-        const targetChannel = joinedChannels.find(c => {
-            c.type == ChannelType.DirectMessage && c.members?.find(member => member.id == receiverId && member.id == senderId)
-        });
+        const targetChannel = joinedChannels.find(c => 
+            c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
+        );
         if (targetChannel == undefined) {
             // Create the room=
             const test = await createNewChannel({
