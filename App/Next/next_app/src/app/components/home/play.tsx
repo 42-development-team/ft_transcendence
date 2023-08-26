@@ -5,19 +5,21 @@ import CustomBtn from '../CustomBtn'
 
 const Play = () => {
 
-  const [buttonText, setButtonText] = useState('Play')
-  const [loading, setLoading] = useState(false)
-  const [disable, setDisable] = useState(false)
+	const [buttonText, setButtonText] = useState('Play')
+	const [loading, setLoading] = useState(false)
+	const [disable, setDisable] = useState(false)
 
-  const matchmaking = async () => {
-	setLoading(true)
-	setDisable(true)
-	setButtonText("Calling racket master...")
-	//TODO: handle matchmaking
-  }
+	const matchmaking = async () => {
+		setLoading(true)
+		setDisable(true)
+		setButtonText("Calling racket master...")
+		//TODO: handle matchmaking
+	}
 
-  const cancelMatchmaking = async () => {
-	setLoading(false)
+	const cancelMatchmaking = async () => {
+		setLoading(false)
+		setDisable(false)
+		setButtonText("Play")
 	}
 
 	return (
