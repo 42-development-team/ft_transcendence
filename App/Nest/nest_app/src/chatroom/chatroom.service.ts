@@ -120,7 +120,6 @@ export class ChatroomService {
 			name: chatroom.name,
 			type: chatroom.type,
 			ownerId: chatroom.ownerId,
-			// members: [],
 			members: (chatroom.memberShips === undefined) ? [] : chatroom.memberShips.map(member => {
 				return {
 					id: member.userId,

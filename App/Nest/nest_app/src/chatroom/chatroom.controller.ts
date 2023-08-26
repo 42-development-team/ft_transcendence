@@ -36,18 +36,15 @@ export class ChatroomController {
 
 	async createDirectMessageChannel(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
 		try {
-			console.log("createDirectMessageChannel");
 			const userId: number = req.user.sub;
 			try {
 				const exisitingDirectMessageChatroom = await this.chatroomService.checkForExistingDirectMessageChannel(userId, Number(createChatroomDto.receiverId));
 				if (exisitingDirectMessageChatroom) {
-					console.log("Channel already exists: " + JSON.stringify(exisitingDirectMessageChatroom, null, 2));
 					response.status(HttpStatus.CREATED).send(exisitingDirectMessageChatroom);
 					return;
 				}
 			}
 			catch (error) {
-				console.log("Creating channel");
 				const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
 				const connectSecondUser = await this.chatroomService.connectUserToChatroom(Number(createChatroomDto.receiverId), newChatRoom.id);
 				this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
