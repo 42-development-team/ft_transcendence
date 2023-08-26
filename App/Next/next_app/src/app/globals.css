@@ -52,3 +52,42 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Pong loader */
+.shapes-5 {
+    width: 40px;
+    height: 40px;
+    color: #f03355;
+    position: relative;
+}
+
+.shapes-5:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+        conic-gradient(from 0deg, #0000, currentColor 1deg 120deg, #0000 121deg) top right,
+        conic-gradient(from 120deg, #0000, currentColor 1deg 120deg, #0000 121deg) bottom,
+        conic-gradient(from 240deg, #0000, currentColor 1deg 120deg, #0000 121deg) top left;
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
+    animation: sp5 2s infinite cubic-bezier(0.3, 1, 0, 1);
+}
+
+@keyframes sp5 {
+    33% {
+        inset: -8px;
+        transform: rotate(0deg)
+    }
+
+    66% {
+        inset: -8px;
+        transform: rotate(180deg)
+    }
+
+    100% {
+        inset: 0;
+        transform: rotate(180deg)
+    }
+}
