@@ -2,6 +2,9 @@ import { ChannelMember } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 import { getStatusColor } from "@/app/utils/getStatusColor";
+import {useState, useEffect} from "react";
+import { UserStatus } from "@/app/utils/models";
+
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -14,10 +17,34 @@ type ChatMemberProps = {
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({ 
-    user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, kick, ban, unban, leaveChannel 
+const ChatMemberItem = ({
+    user: { username, avatar, isAdmin, isOwner, id },
+    isCurrentUser, isBanned, kick, ban, unban, leaveChannel
 }: ChatMemberProps) => {
+	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
+
+	useEffect(() => {
+		const fetchedUserStatus = async () => {
+			try {
+				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
+					// credentials: "include",
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				});
+				const data = await response.json();
+				setUserStatus(data);
+			} catch (error) {
+				console.error('Error fetching user current status');
+			}
+		};
+		fetchedUserStatus();
+	}, [id]);
+
+	useEffect(() => {
+		console.log("userStatus in useEffect= ", userStatus);
+	}, [userStatus]);
 
     const kickUser = () => {
         if (kick == undefined) return;
@@ -42,7 +69,7 @@ const ChatMemberItem = ({
                         : null
                     }
                     <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
-                        <div className={`w-3 h-3 rounded-full ${getStatusColor(currentStatus)}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
