@@ -56,7 +56,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
             </div>
             ) : (
                 <div className="flex flex-col h-full justify-center">
-                        <span className="flex justify-center text-[5rem] text-gray-700">
+                        <span className="flex justify-center text-[5rem] text-gray-700 leading-[5rem]">
                             No games played
                         </span>
                 </div>
