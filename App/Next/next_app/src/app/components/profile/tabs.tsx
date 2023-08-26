@@ -39,8 +39,6 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     try {
       fetchGame(userIdNumber);
       fetchStats(userIdNumber);
-      console.log("gamesInTabs:", games);
-      console.log("statsInTabs:", stats);
 
     } catch (error) {
       console.log("Error response when fetching userstats/info:", error);
@@ -97,7 +95,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               ) : (
                 <LeaderBoard data={stats} currentUser={userIdNumber} />
               )}
-            </TabPanel>// TODO: Add leaderboard and match history
+            </TabPanel>
           ))}
         </TabsBody>
       </Tabs>
