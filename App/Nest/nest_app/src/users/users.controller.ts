@@ -51,7 +51,7 @@ export class UsersController {
 		try {
 			const userId: number = req.user.sub;
 			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
-			response.status(HttpStatus.FOUND).send(currentStatus);
+			response.status(HttpStatus.OK).json(currentStatus);
 			// return currentStatus;
 		} catch (error) {
 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

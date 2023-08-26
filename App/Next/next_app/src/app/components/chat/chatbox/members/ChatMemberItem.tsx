@@ -34,6 +34,7 @@ const ChatMemberItem = ({
 				});
 				const data = await response.json();
 				setUserStatus(data.currentStatus);
+				console.log("user status in useEffect= ", userStatus);
 			} catch (error) {
 			console.error('Error fetching user current status');
 		}
