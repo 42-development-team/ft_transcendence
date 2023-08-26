@@ -10,7 +10,7 @@ import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 const Navbar = () => {
     const {isLoggedIn, logout} = useAuthcontext();
     return (
-        <div className="h-[4vh] flex items-center justify-between bg-base p-1  drop-shadow-xl">
+        <div className="h-[5vh] flex items-center justify-between bg-base p-1  drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
             {isLoggedIn && <NavLinks logout={logout}/> }
         </div>
@@ -30,11 +30,16 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
 
 const NavLinks = ({logout} : {logout: () => void}) => {
     const router = useRouter();
+    const onProfilClick = () => {
+    if (sessionStorage.getItem("userId"))
+        sessionStorage.removeItem("userId");
+        router.push('/profile');
+    }
     return (
         <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownActionLarge onClick={() => router.push('/profile')}>
+                    <DropDownActionLarge onClick={() => onProfilClick()}>
                         Profile
                     </DropDownActionLarge >
                     <DropDownActionLarge onClick={() => router.push('/settings')}>

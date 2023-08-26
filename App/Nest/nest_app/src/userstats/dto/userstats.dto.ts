@@ -2,6 +2,7 @@
 export class UserStatsDto {
 
 	userName: string;
+	avatar: string;
 	userId: number = 0;
 	winStreak: number = 0;
 	win: number = 0;

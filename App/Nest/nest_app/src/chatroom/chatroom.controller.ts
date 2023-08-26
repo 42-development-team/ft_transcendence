@@ -3,7 +3,6 @@ import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
-// import { CreateMembershipDto } from '../membership/dto/create-membership.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
@@ -15,7 +14,6 @@ import { UsersService } from 'src/users/users.service';
 export class ChatroomController {
 	constructor(
 		private chatroomService: ChatroomService,
-		private membershipService: MembershipService,
 		private socketGateway: SocketGateway,
 		private userService: UsersService,
 	) { }
@@ -87,7 +85,51 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-		.then(() => {
+			.then(() => {
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/ban')
+	async ban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const bannedId: number = body.bannedId;
+		let bannedUserSocket = undefined;
+		try {
+			bannedUserSocket = await this.userService.getUserSocketFromId(bannedId);
+		}
+		catch (error) {
+			console.log("banned user not connected");
+		}
+		await this.chatroomService.ban(+id, userId, bannedId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === bannedUserSocket);
+				this.socketGateway.handleBan(clientSocket, bannedId, id);
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/unban')
+	async unban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const unbannedId: number = body.unbannedId;
+		let unbannedUserSocket = undefined;
+		try {
+			unbannedUserSocket = await this.userService.getUserSocketFromId(unbannedId);
+		}
+		catch (error) {
+			console.log("unbanned user not connected");
+		}
+		await this.chatroomService.unban(+id, userId, unbannedId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === unbannedUserSocket);
+				this.socketGateway.handleUnban(clientSocket, unbannedId, id);
 				response.send();
 			})
 			.catch(error => {

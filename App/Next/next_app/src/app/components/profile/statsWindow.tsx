@@ -8,29 +8,26 @@ const StatsWindow = ({userId}: {userId: string} ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [statsData, setStatsData] = useState<any>("null");
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
+    const [statsLoaded, setStatsLoaded] = useState<boolean>(false);
+    const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
 
 
     useEffect(() => {
         let sessionUserId = null;
         sessionUserId = sessionStorageUser();
-        console.log("sessionUserId: ", sessionUserId);
 
         if (sessionUserId !== null && sessionUserId !== undefined) {
             userId = sessionUserId as string;
         }
+
         const getAvatar = async () => {
             const response = await fetch(`${process.env.BACK_URL}/avatars/${userId}`, {
                 credentials: "include",
                 method: "GET",
             });
-            if (!response.ok) {
-                console.log("Error response status:", response.status);
-                console.log("Error response text:", response.text());
-                return (response.status);
-            }
             const data = await response.json();
-            setImageUrl(data.avatar);
+            setImageUrl(await data.avatar);
+            setAvatarLoaded(true);
             return (data.avatar);
         }
 
@@ -39,19 +36,18 @@ const StatsWindow = ({userId}: {userId: string} ) => {
                 credentials: "include",
                 method: "GET",
             });
-            if (!response.ok) {
-                console.log("Error response status when fetching userstats/info:", response.status);
-                console.log("Error response text when fetching userstats/info:", response.text());
-                return (response.status);
-            }
             const data = await response.json();
-            setStatsData(data);
-            setIsLoaded(true);
+            setStatsData(await data);
+            setStatsLoaded(true);
         }
 
-        getAvatar();
-        getStats();
-    }, []);
+        try {
+            getAvatar();
+            getStats();
+        } catch (error) {
+            console.log("Error response when fetching userstats/info:", error);
+        }
+    }, [statsLoaded, avatarLoaded]);
     
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
         setAvatarFile(childAvatarFile);

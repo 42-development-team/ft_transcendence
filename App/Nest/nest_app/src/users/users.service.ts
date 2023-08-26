@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto';
-import { Prisma, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly prisma: PrismaService,
-    ) {}
+    ) { }
 
     /* C(reate) */
 
@@ -19,7 +19,7 @@ export class UsersService {
                 username: createUserDto.username,
                 avatar: createUserDto.avatar,
                 twoFAsecret: createUserDto.twoFAsecret,
-				currentStatus: createUserDto.currentStatus,
+                currentStatus: createUserDto.currentStatus,
             }
         });
         return user;
@@ -37,15 +37,16 @@ export class UsersService {
 
     async getUserFromId(id: number): Promise<CreateUserDto> {
         const user = await this.prisma.user.findUniqueOrThrow({
-            where: { id },
+            where: { id: id },
         });
         const userDto = plainToClass(CreateUserDto, user);
         return userDto;
     }
 
     async getUserSocketFromId(id: number): Promise<string> {
+        console.log("getUserSocketFromId:" + id);
         const user = await this.prisma.user.findUniqueOrThrow({
-            where: { id },
+            where: { id: id },
         });
         return user.socketId;
     }
@@ -53,7 +54,7 @@ export class UsersService {
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {
             const user = await this.prisma.user.findUniqueOrThrow({
-                where: { username },
+                where: { username: username },
             });
             const userDto = plainToClass(CreateUserDto, user);
             return userDto;
@@ -67,7 +68,7 @@ export class UsersService {
         try {
 
             const user = await this.prisma.user.findUniqueOrThrow({
-                where: { login },
+                where: { login: login },
             });
             const userDto = plainToClass(CreateUserDto, user);
             return userDto;
@@ -81,7 +82,7 @@ export class UsersService {
 
     async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { id },
+            where: { id: id },
             data: { username: updatedUsername },
         });
         return updatedUser;
@@ -89,7 +90,7 @@ export class UsersService {
 
     async updateAvatar(id: number, updatedAvatar: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { id },
+            where: { id: id },
             data: { avatar: updatedAvatar },
         });
         return updatedUser;
@@ -97,17 +98,17 @@ export class UsersService {
 
     async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
-            where: { id },
+            where: { id: id },
             data: { socketId: updatedSocketId },
         });
         return updatedUser;
     }
 
-      /* D(elete) */
+    /* D(elete) */
 
     async deleteUser(id: number): Promise<void> {
         await this.prisma.user.delete({
-            where: { id },
+            where: { id: id },
         });
     }
 
@@ -118,22 +119,20 @@ export class UsersService {
 
         if (!user) {
             const createUserDto: CreateUserDto = {
-            login: login,
-            username: login,
-            avatar: "noavatar.jpg",
-            isTwoFAEnabled: false,
-            twoFAsecret: "",
-            isFirstLogin: true,
-			currentStatus: "online",
+                login: login,
+                username: login,
+                avatar: "noavatar.jpg",
+                isTwoFAEnabled: false,
+                twoFAsecret: "",
+                isFirstLogin: true,
+                currentStatus: "online",
             };
 
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
-		else {
-			if (user.currentStatus != "online")
-				user.currentStatus = "online";
-		}
-        // console.log("user: ", user);
+        else if (user.currentStatus != "online") {
+                user.currentStatus = "online";
+        }
         return user;
     }
 

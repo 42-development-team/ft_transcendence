@@ -81,6 +81,29 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //     }
     // }
 
+    async handleBan(client: Socket, userId: number, roomId: string ) {
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.leave(roomName);
+            client.emit('leftRoom', { roomName });
+            console.log(`Client ${userId} (${client.id}) banned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} banned from room ${roomName}`);
+        }
+        this.server.to(roomName).emit('newBan', {roomName, userId});
+    }
+
+    async handleUnban(client: Socket, userId: number, roomId: string ) {
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.emit('NewChatRoom', { roomName });
+            console.log(`Client ${userId} (${client.id}) unbanned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} unbanned from room ${roomName}`);
+        }
+        this.server.to(roomName).emit('newUnban', {roomName, userId});
+    }
+
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
         const userId = await this.chatroomService.getUserIdFromSocket(client);
@@ -90,6 +113,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
         this.server.to(roomName).emit('newDisconnection', {roomName, userId});
     }
+
     @SubscribeMessage('message')
     async handleMessage(
         @MessageBody() body: any,

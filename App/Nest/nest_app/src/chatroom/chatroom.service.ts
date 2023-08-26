@@ -15,7 +15,7 @@ export class ChatroomService {
 	constructor(
 		private prisma: PrismaService,
 		private jwtService: JwtService,
-        private userService: UsersService,
+		private userService: UsersService,
 		private configService: ConfigService,
 	) { }
 
@@ -37,11 +37,12 @@ export class ChatroomService {
 				},
 			},
 		});
-		const chatRoomInfo : ChatroomInfoDto = {
+		const chatRoomInfo: ChatroomInfoDto = {
 			id: createdChatroom.id,
 			name: createdChatroom.name,
 			type: createdChatroom.type,
 			joined: true,
+			banned: false,
 		}
 		return chatRoomInfo;
 	}
@@ -57,11 +58,15 @@ export class ChatroomService {
 			const isJoined = await this.prisma.chatRoom.count({
 				where: { id: chatrooms.id, memberShips: { some: { userId: userId } } },
 			}) > 0;
+			const isBanned = await this.prisma.chatRoom.count({
+				where: { id: chatrooms.id, memberShips: { some: { userId: userId, isBanned: true } } },
+			}) > 0;
 			const current: ChatroomInfoDto = {
 				id: chatrooms.id,
 				name: chatrooms.name,
 				type: chatrooms.type,
 				joined: isJoined,
+				banned: isBanned,
 			};
 			return current;
 		});
@@ -74,19 +79,23 @@ export class ChatroomService {
 			where: { id: id },
 		});
 		const isJoined = await this.prisma.chatRoom.count({
-			where: { id: id, memberShips: { some: { userId: userId } } },
+			where: { id: id, memberShips: { some: { userId: userId, isBanned: false } } },
+		}) > 0;
+		const isBanned = await this.prisma.chatRoom.count({
+			where: { id: id, memberShips: { some: { userId: userId, isBanned: true } } },
 		}) > 0;
 		const chatroomDto: ChatroomInfoDto = {
 			id: chatRoom.id,
 			name: chatRoom.name,
 			type: chatRoom.type,
 			joined: isJoined,
+			banned: isBanned,
 		}
 		return chatroomDto;
 	}
 
 	async getChannelNameFromId(chanelId: number): Promise<string> {
-		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({	where: { id: chanelId }, });
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({ where: { id: chanelId }, });
 		return chatRoom.name;
 	}
 
@@ -105,8 +114,9 @@ export class ChatroomService {
 					username: member.user.username,
 					isAdmin: member.isAdmin,
 					isOwner: chatroom.owner.id === member.userId,
+					isBanned: member.isBanned,
 				};
-			}),				
+			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
 				return {
 					id: message.id,
@@ -122,7 +132,7 @@ export class ChatroomService {
 		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
-			where: { memberShips: { some: { userId: userId } } },
+			where: { memberShips: { some: { userId: userId, isBanned: false } } },
 			include: {
 				messages: {
 					include: { sender: true }
@@ -153,7 +163,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isJoined = chatroom.memberShips.some(member => member.userId === userId);
+		const isJoined = chatroom.memberShips.some(member => member.userId === userId && member.isBanned == false);
 		if (!isJoined) {
 			throw new Error('User is not a member of this channel');
 		}
@@ -183,83 +193,128 @@ export class ChatroomService {
 			include: { memberShips: true },
 		});
 
-		console.log(JSON.stringify(chatRoom, null, 2));
+		const isBanned = chatRoom.memberShips.some(memberShip => memberShip.userId === userId && memberShip.isBanned == true);
+		if (isBanned) {
+			throw new Error('User is banned from this channel');
+		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
 		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
 			if (!isJoined)
-				await this.connectUserToChatroom(userId, id);
+				return await this.connectUserToChatroom(userId, id);
 		}
 		else if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
-			if (isValid) {
-				if (!isJoined) {
-					await this.connectUserToChatroom(userId, id);
-				}
-			} else {
+			if (!isValid) {
 				throw new Error('Wrong password');
 			}
+			if (!isJoined) {
+				return await this.connectUserToChatroom(userId, id);
+			}
 		}
+	}
+
+	async isUserAdmin(userId: number, chatroomId: number) {
+		return await this.prisma.membership.count({
+			where: {
+				userId: userId,
+				chatRoomId: chatroomId,
+				isAdmin: true,
+				isBanned: false
+			}
+		}) > 0;
 	}
 
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
 			include: {
-				 owner: true,
-				 memberShips: {
-					include: { user: true}
-				 }
-				},
-		});
-		// Check if target user is admin
-		try {
-			const isAdmin = await this.prisma.chatRoom.count({
-				where: { 
-					id: id, 
-					memberShips: { 
-						some: { 
-							userId: userId,
-							isAdmin: true 
-						}
-					},
+				owner: true,
+				memberShips: {
+					include: { user: true }
 				}
-			}) > 0;
-			console.log("admin: ", isAdmin);
-			if (!isAdmin) {
-				throw new Error('User is not an admin of this channel');
-			}
-		} catch (error) {
-			throw new Error(error);
-		}
+			},
+		});
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === kickedId;
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');
+		}
 		if (isTargetOwner) {
 			throw new Error('Cannot kick owner of the channel');
 		}
 		const kickedMembership = await this.prisma.membership.deleteMany({
 			where:
-				  { userId: kickedId, chatRoomId: id },
+				{ userId: kickedId, chatRoomId: id },
 		})
 		return kickedMembership;
 	}
 
-	async leave(id: number, userId: number) {
+	async ban(id: number, userId: number, bannedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
-			include: { owner: true},
+			include: {
+				owner: true,
+				memberShips: {
+					include: { user: true }
+				}
+			},
 		});
-
-		// Todo: if owner transmit ownership to another member (admin)
-		// const isOwner = await this.prisma.chatRoom.count({
-		// 	where: { id: id, owner: { id: userId } },
-		// }) > 0;
-		const kickedMembership = await this.prisma.membership.deleteMany({
-			where:
-				  { userId: userId, chatRoomId: id },
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
+		const isTargetOwner = chatRoom.owner.id === bannedId;
+		// const isTargetAdmin = this.isUserAdmin(bannedId, id);	// Todo: can admins kick each other?
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');
+		}
+		if (isTargetOwner) {
+			throw new Error('Cannot kick owner of the channel');
+		}
+		// Add banned user to ban list
+		const bannedUser = await this.prisma.membership.updateMany({
+			where: { userId: bannedId, chatRoomId: id },
+			data: { isBanned: true },
 		});
-		return kickedMembership;
+		return bannedUser;
 	}
 
+	async unban(id: number, userId: number, unbannedId: number) {
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isTargetBanned = await this.prisma.membership.count({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		}) > 0;
+		if (!isTargetBanned) {
+			throw new Error('User is not banned in this channel');
+		}
+		if (!isAdmin) {
+			throw new Error('You need channel admin rights to unban a user');
+		}
+		// Remove banned user from membership lsit
+		const unbannedUser = await this.prisma.membership.deleteMany({
+			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
+		});
+		return unbannedUser;
+	}
+
+	async leave(id: number, userId: number) {
+			// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			// 	where: { id: id },
+			// 	include: { owner: true },
+			// });
+
+			// Todo: if owner transmit ownership to another member (admin)
+			// const isOwner = await this.prisma.chatRoom.count({
+			// 	where: { id: id, owner: { id: userId } },
+			// }) > 0;
+			const kickedMembership = await this.prisma.membership.deleteMany({
+				where:
+					{ userId: userId, chatRoomId: id },
+			});
+			return kickedMembership;
+		}
+
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
+		// Todo: if user is banned refuse
 		const newMessage = await this.prisma.message.create({
 			data: {
 				content: message,
@@ -290,9 +345,9 @@ export class ChatroomService {
 		const authToken = socket.handshake.headers.cookie.split(";");
 		const jwtToken = authToken[0].split("=")[1];
 		const secret = this.configService.get<string>('jwtSecret');
-		const payload = this.jwtService.verify(jwtToken, {secret: secret});
+		const payload = this.jwtService.verify(jwtToken, { secret: secret });
 		const userId = payload.sub;
-		if (userId) {
+		if(userId) {
 			return userId;
 		}
 		// Todo: if userId is undefined or null?
@@ -300,35 +355,35 @@ export class ChatroomService {
 	}
 
     async getUserFromSocket(socket: Socket) {
-        const userId = await this.getUserIdFromSocket(socket);
-        if (userId) {
-            return this.userService.getUserFromId(userId);
-        }
-    }
+		const userId = await this.getUserIdFromSocket(socket);
+		if(userId) {
+			return this.userService.getUserFromId(userId);
+		}
+	}
 
-	async getPasswordFromChannelName(channelName: string): Promise<string | null> {
-        const chatRoom = await this.prisma.chatRoom.findFirst({
-            where: { name: channelName },
-        });
+	async getPasswordFromChannelName(channelName: string): Promise < string | null > {
+		const chatRoom = await this.prisma.chatRoom.findFirst({
+			where: { name: channelName },
+		});
 
-        if (chatRoom) {
-            return chatRoom.hashedPassword || null;
-        }
+		if(chatRoom) {
+			return chatRoom.hashedPassword || null;
+		}
+
+		return null;
+	}
+
+    async getIdFromChannelName(channelName: string): Promise < number | null > {
+		const chatRoom = await this.prisma.chatRoom.findFirst({
+			where: { name: channelName },
+		});
+
+		if(chatRoom) {
+			return Number(chatRoom.id);
+		}
 
         return null;
-    }
-
-    async getIdFromChannelName(channelName: string): Promise<number | null> {
-        const chatRoom = await this.prisma.chatRoom.findFirst({
-            where: { name: channelName },
-        });
-
-        if (chatRoom) {
-            return Number(chatRoom.id);
-        }
-
-        return null;
-    }
+	}
 
 	// #endregion
 }
