@@ -57,6 +57,28 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         }
     }
 
+    const unban = async (unbannedId: string) => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/unban`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({unbannedId}),
+            });
+            if (!response.ok) {
+                console.log("Error unbanning user: " + response.status);
+                // Todo: use alert to inform user
+                return;
+            }
+        }
+        catch (error) {
+            console.log("Error unbanning user: " + error);
+                // Todo: use alert to inform user
+        }
+    }
+
     const leaveChannel = async () => {
         const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/leave`, {
             credentials: "include",
@@ -85,27 +107,27 @@ const ChatMemberList = ({ channel, userId }: ChatMemberListProps) => {
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} ban={ban} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} ban={ban} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
-                kick={kick} ban={ban} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel} />
         ))
 
     const BannedList = channel.members
             .filter(member => member.isBanned)
             .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
-                kick={kick} ban={ban} leaveChannel={leaveChannel} />
+                kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel} />
         )
     )
 
