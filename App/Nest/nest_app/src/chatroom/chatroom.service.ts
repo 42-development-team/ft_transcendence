@@ -37,15 +37,6 @@ export class ChatroomService {
 				},
 			},
 		});
-		// Connect the second user to the chatroom if it is a direct message
-		if (type === 'direct_message') {
-			const connectSecondUser = await this.prisma.membership.create({
-				data: {
-					user: { connect: { id: Number(receiverId) } },
-					chatroom: { connect: { id: createdChatroom.id } },
-				},
-			});
-		}
 		const chatRoomInfo: ChatroomInfoDto = {
 			id: createdChatroom.id,
 			name: createdChatroom.name,
@@ -207,19 +198,14 @@ export class ChatroomService {
 			throw new Error('User is banned from this channel');
 		}
 		const isJoined = chatRoom.memberShips.some(memberShip => memberShip.userId === userId);
-		if (chatRoom.type === 'public' || chatRoom.type === 'private') {
-			if (!isJoined)
-				return await this.connectUserToChatroom(userId, id);
-		}
-		else if (chatRoom.type === 'protected') {
+		if (chatRoom.type === 'protected') {
 			const isValid = await comparePassword(password, chatRoom.hashedPassword);
 			if (!isValid) {
 				throw new Error('Wrong password');
 			}
-			if (!isJoined) {
-				return await this.connectUserToChatroom(userId, id);
-			}
 		}
+		if (!isJoined)
+			return await this.connectUserToChatroom(userId, id);
 	}
 
 	async isUserAdmin(userId: number, chatroomId: number) {
