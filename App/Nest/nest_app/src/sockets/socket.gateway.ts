@@ -50,8 +50,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         client.join(room);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         const chatRoomId = await this.chatroomService.getIdFromChannelName(room);
-        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
-        const user = membership.user;
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
         this.server.to(room).emit('newConnectionOnChannel', 
             {room, user}
@@ -99,6 +98,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log(`Client ${userId} unbanned from room ${roomName}`);
         }
         this.server.to(roomName).emit('newUnban', {roomName, userId});
+    }
+
+    async handleAdminUpdate(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            console.log(`Client ${userId} (${client.id}) updated admin status in room ${room}`);
+        } else {
+            console.log(`Client ${userId} updated admin status in room ${room}`);
+        }
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
     @SubscribeMessage('leaveRoom')

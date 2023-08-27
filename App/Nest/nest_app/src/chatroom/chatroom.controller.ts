@@ -179,17 +179,52 @@ export class ChatroomController {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
+
 	@Patch(':id/leave')
 	async leave(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
-			.then((res) => {
+			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/setAdmin')
+	async setAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const newAdminId: number = body.newAdminId;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.setAdmin(+id, userId, newAdminId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleAdminUpdate(clientSocket, newAdminId, id);
+				response.send();
+			})
+			.catch(error => {
+				// Todo: socket event
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/removeAdmin')
+	async removeAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const removedAdminId: number = body.removedAdminId;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.removeAdmin(+id, userId, removedAdminId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleAdminUpdate(clientSocket, removedAdminId, id);
+				response.send();
+			})
+			.catch(error => {
+				// Todo: socket event
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
