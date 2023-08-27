@@ -48,7 +48,6 @@ export default function useChannels(userId: string) {
 
     const receiveMessage = (body: any) => {
         const { newMessage } = body;
-
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
             return;
@@ -61,7 +60,6 @@ export default function useChannels(userId: string) {
             senderId: newMessage.senderId,
             senderUsername: newMessage.sender.username,
         }
-
         const newChannels = [...joinedChannels];
         if (currentChannelId != newChannels[channelIndex].id) {
             newChannels[channelIndex].unreadMessages++;
@@ -105,7 +103,6 @@ export default function useChannels(userId: string) {
         if (channelIndex == -1) {
             return;
         }
-        // Remove user from channel
         const newChannels = [...joinedChannels];
         const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
         if (memberIndex !== undefined && memberIndex !== -1) {
@@ -165,7 +162,6 @@ export default function useChannels(userId: string) {
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
-        // Check if the room exist
         const targetChannel = joinedChannels.find(c => 
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
@@ -238,7 +234,6 @@ export default function useChannels(userId: string) {
     }
 
     // FETCHING
-
     const fetchNewChannelContent = async (id: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
@@ -359,4 +354,3 @@ export default function useChannels(userId: string) {
         directMessage,
     }
 }
-
