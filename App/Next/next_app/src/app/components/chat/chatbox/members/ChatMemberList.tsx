@@ -16,7 +16,6 @@ interface ChatMemberListProps {
 const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 
-
     // Chat actions functions
     const kick = async (kickedId: string) => {
         try {
@@ -120,6 +119,25 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
     }
 
+    const removeAdmin = async (removedAdminId: string) => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/removeAdmin`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({removedAdminId}),
+            });
+            if (!response.ok) {
+                console.log("Error removing admin role: " + response.status);
+            }
+        }
+        catch (error) {
+            console.log("Error removing admin role: " + error);
+        }
+    }
+
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -134,19 +152,24 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 
     // Chat member list
     // Todo: sort by ASCII
+
+    // Todo: filter props : ex (admin need remove Admin)
+    // ban need remove unban
     const OwnerList = channel.members
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage} setAsAdmin={setAsAdmin} />
+                directMessage={handleDirectMessage} 
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage} setAsAdmin={setAsAdmin} />
+                directMessage={handleDirectMessage} 
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
         ))
 
     const AdminList = channel.members
@@ -154,7 +177,8 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage} setAsAdmin={setAsAdmin} />
+                directMessage={handleDirectMessage} 
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
         ))
 
     const BannedList = channel.members
@@ -162,7 +186,8 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true} 
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage} setAsAdmin={setAsAdmin} />
+                directMessage={handleDirectMessage} 
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
         )
     )
 

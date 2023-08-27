@@ -15,12 +15,15 @@ type ChatMemberProps = {
     leaveChannel: () => void
     directMessage: (targetId: string) => void
     setAsAdmin: (newAdminId: string) => void
+    removeAdmin: (removedAdminId: string) => void
 }
 
 // Todo: add status and avatar
 const ChatMemberItem = ({ 
     user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, kick, ban, unban, leaveChannel, directMessage, setAsAdmin 
+    isCurrentUser, isBanned, 
+    kick, ban, unban, leaveChannel, directMessage,
+    setAsAdmin, removeAdmin 
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
@@ -65,6 +68,11 @@ const ChatMemberItem = ({
         setAsAdmin(id);
     }
 
+    const unsetAdmin = () => {
+        if (setAsAdmin == undefined) return;
+        removeAdmin(id);
+    }
+
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -83,7 +91,7 @@ const ChatMemberItem = ({
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id} 
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} 
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
-                setAdmin={setAdmin} />
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
         </div>
     )
 }
