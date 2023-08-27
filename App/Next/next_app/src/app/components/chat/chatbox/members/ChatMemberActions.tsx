@@ -19,10 +19,15 @@ type ChatMemberActionsProps = {
     unbanUser: () => void
     leaveChannel: () => void
     sendDirectMessage: () => void
+    setAdmin: () => void
 }
 
 // Todo: prevent double click on kick button
-const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, kickUser, banUser, unbanUser, leaveChannel, sendDirectMessage }: ChatMemberActionsProps) => {
+const ChatMemberActions = (
+    { 
+        userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, 
+        kickUser, banUser, unbanUser, leaveChannel, sendDirectMessage, setAdmin
+    }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
         sessionStorage.setItem("userId", userId);
         if (sessionStorage.getItem("userId") === undefined)
@@ -32,13 +37,12 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
     }
     
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const [ isOpen, setIsOpen ] = useState(false);
     const [ openAlert, setOpenAlert ] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
     const adminActionsEnabled: boolean = !isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !isMemberAdmin;
-
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
@@ -87,7 +91,7 @@ const ChatMemberActions = ({ userId, isCurrentUser, isMemberAdmin, isMemberOwner
                     </>
                     }
                     {ownerActionsEnabled && !isBanned &&
-                        <DropDownAction onClick={() => console.log('set as admin')}>Set as admin</DropDownAction>
+                        <DropDownAction onClick={setAdmin}>Set as admin</DropDownAction>
                     }
                     {adminActionsEnabled && isBanned &&
                         <DropDownActionRed onClick={unbanUser}>Unban</DropDownActionRed>

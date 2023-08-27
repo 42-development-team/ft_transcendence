@@ -1,10 +1,9 @@
 import { ChannelMember } from "@/app/utils/models";
+import { getStatusColor } from "@/app/utils/getStatusColor";
+import { useState, useEffect } from "react";
+import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { getStatusColor } from "@/app/utils/getStatusColor";
-import {useState, useEffect} from "react";
-import { UserStatus } from "@/app/utils/models";
-
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -15,12 +14,13 @@ type ChatMemberProps = {
     unban: (unbannedId: string) => void
     leaveChannel: () => void
     directMessage: (targetId: string) => void
+    setAsAdmin: (targetId: string) => void
 }
 
 // Todo: add status and avatar
 const ChatMemberItem = ({ 
     user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, kick, ban, unban, leaveChannel, directMessage 
+    isCurrentUser, isBanned, kick, ban, unban, leaveChannel, directMessage, setAsAdmin 
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
@@ -64,6 +64,11 @@ const ChatMemberItem = ({
         directMessage(id);
     }
 
+    const setAdmin = () => {
+        if (setAsAdmin == undefined) return;
+        setAsAdmin(id);
+    }
+
     return (
         <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
@@ -79,8 +84,10 @@ const ChatMemberItem = ({
                 </div>
                 <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} userId={id} unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} />
+            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id} 
+                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} 
+                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
+                setAdmin={setAdmin} />
         </div>
     )
 }
