@@ -20,7 +20,6 @@ model User {
 	chatRoomsCreated ChatRoom[] @relation("chatCreated")
 	gamesLosed       Game[]     @relation("gamesLosed")
 	gamesWon         Game[]     @relation("gamesWon")
-	messageReceived  Message[]  @relation("ReceivedMessages")
 	messagesSent     Message[]  @relation("SentMessages")
 	userStats        UserStats?
 	games            Game[]     @relation("gamesPlayed")
@@ -35,10 +34,8 @@ model Message {
 	updatedAt  DateTime  @updatedAt
 	content    String
 	senderId   Int
-	receiverId Int?
 	chatRoomId Int?
 	chatRoom   ChatRoom? @relation("chatMessages", fields: [chatRoomId], references: [id])
-	receiver   User?     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 	sender     User      @relation("SentMessages", fields: [senderId], references: [id])
 }
 
