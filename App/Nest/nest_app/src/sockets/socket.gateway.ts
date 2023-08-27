@@ -57,36 +57,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         );
     }
 
-    /*
-        if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
-        for now not considered the best choice in order to keep HTTP status response and separation of concerns
-    */
-    // @SubscribeMessage('joinRoom')
-    // async joinRoom(@ConnectedSocket() client: Socket, room: string) {
-    //     console.log("room name got when emit joinroom: ", room);
-    //     const userId = await this.chatroomService.getUserIdFromSocket(client);
-    //     const password = await this.chatroomService.getPasswordFromChannelName(room);
-    //     const channelId = await this.chatroomService.getIdFromChannelName(room);
-
-    //     try {
-    //         const updateResult = await this.chatroomService.join(channelId, userId, password);
-    //         client.join(room);
-    //         console.log(`Client ${client.id} joined room ${room}`);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
-
     async handleBan(client: Socket, userId: number, roomId: string ) {
-        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
         if (client) {
-            client.leave(roomName);
-            client.emit('leftRoom', { roomName });
-            console.log(`Client ${userId} (${client.id}) banned from room ${roomName}`);
+            client.leave(room);
+            client.emit('leftRoom', { roomName: room });
+            console.log(`Client ${userId} (${client.id}) banned from room ${room}`);
         } else {
-            console.log(`Client ${userId} banned from room ${roomName}`);
+            console.log(`Client ${userId} banned from room ${room}`);
         }
-        this.server.to(roomName).emit('newBan', {roomName, userId});
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
     async handleUnban(client: Socket, userId: number, roomId: string ) {
@@ -134,6 +115,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             {newMessage, room}
         );
     }
+    
+    /*
+        if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
+        for now not considered the best choice in order to keep HTTP status response and separation of concerns
+    */
+    // @SubscribeMessage('joinRoom')
+    // async joinRoom(@ConnectedSocket() client: Socket, room: string) {
+    //     console.log("room name got when emit joinroom: ", room);
+    //     const userId = await this.chatroomService.getUserIdFromSocket(client);
+    //     const password = await this.chatroomService.getPasswordFromChannelName(room);
+    //     const channelId = await this.chatroomService.getIdFromChannelName(room);
 
+    //     try {
+    //         const updateResult = await this.chatroomService.join(channelId, userId, password);
+    //         client.join(room);
+    //         console.log(`Client ${client.id} joined room ${room}`);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 }
 

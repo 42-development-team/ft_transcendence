@@ -126,20 +126,6 @@ export default function useChannels(userId: string) {
         setJoinedChannels(newChannels);
     }
 
-    const handleBan = (body: any) => {
-        const { roomName, userId } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
-        if (channelIndex == -1) {
-            return;
-        }
-        const newChannels = [...joinedChannels];
-        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-        if (memberIndex !== undefined && memberIndex !== -1) {
-            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
-        }
-        setJoinedChannels(newChannels);
-    }
-
     const handleUnban = (body: any) => {
         const { roomName, userId } = body;
         console.log(JSON.stringify(body, null, 2));
@@ -177,9 +163,6 @@ export default function useChannels(userId: string) {
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
         });
-        socket?.on('newBan', (body: any) => {
-            handleBan(body);
-        });
         socket?.on('newUnban', (body: any) => {
             handleUnban(body);
         });
@@ -194,7 +177,6 @@ export default function useChannels(userId: string) {
             socket?.off('newDisconnection');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
-            socket?.off('NewBan');
             socket?.off('NewUnban');
             socket?.off('directMessage');
         }
