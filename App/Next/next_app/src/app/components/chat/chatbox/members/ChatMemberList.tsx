@@ -102,7 +102,6 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 
     const setAsAdmin = async (newAdminId: string) => {
         // Todo: alerts
-        console.log("Set user as admin: " + newAdminId);
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/setAdmin`, {
                 credentials: "include",
