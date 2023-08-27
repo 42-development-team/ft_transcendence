@@ -20,7 +20,6 @@ export class ChatroomService {
 	) { }
 
 	// #region C(reate)
-
 	async createChatRoom(createChatroomDto: CreateChatroomDto, ownerId: number) {
 		const { name, type, hashedPassword } = createChatroomDto;
 		const createdChatroom = await this.prisma.chatRoom.create({
@@ -230,6 +229,27 @@ export class ChatroomService {
 			}
 		}) > 0;
 	}
+	
+	async setAdmin(id: number, userId: number, adminId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: {
+				owner: true,
+				memberShips: true
+			},
+		});
+		const isAdmin = this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');	
+		}
+		const newAdmin = await this.prisma.membership.updateMany({
+			where: { userId: adminId, chatRoomId: id },
+			data: { isAdmin: true },
+		});
+		return newAdmin;
+	}
+		
 
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({

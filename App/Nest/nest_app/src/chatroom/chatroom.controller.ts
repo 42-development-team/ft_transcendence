@@ -179,17 +179,32 @@ export class ChatroomController {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
+
 	@Patch(':id/leave')
 	async leave(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
-			.then((res) => {
+			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/setAdmin')
+	async setAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const newAdminId: number = body.newAdminId;
+		await this.chatroomService.setAdmin(+id, userId, newAdminId)
+			.then(() => {
+				response.send();
+			})
+			.catch(error => {
+				// Todo: socket event
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
 	}
