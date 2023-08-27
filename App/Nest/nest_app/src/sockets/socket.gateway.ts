@@ -103,8 +103,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleAdminUpdate(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
-            // Todo: necessary??
-            // client.emit('NewChatRoom', { roomName });
             console.log(`Client ${userId} (${client.id}) updated admin status in room ${room}`);
         } else {
             console.log(`Client ${userId} updated admin status in room ${room}`);

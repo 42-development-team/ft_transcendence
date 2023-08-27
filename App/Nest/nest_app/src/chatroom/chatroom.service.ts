@@ -249,6 +249,31 @@ export class ChatroomService {
 		});
 		return newAdmin;
 	}
+
+	async removeAdmin(id: number, userId: number, adminId: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: {
+				owner: true,
+				memberShips: true
+			},
+		});
+		const isOwner = chatRoom.owner.id === userId;
+		if (!isOwner) {
+			throw new Error('User is not the owner of this channel');	
+		}
+		const isTargetAdmin = await this.prisma.membership.count({
+			where: { userId: adminId, chatRoomId: id, isAdmin: true },
+		}) > 0;
+		if (!isTargetAdmin) {
+			throw new Error('User is not an admin of this channel');
+		}
+		const removeAdmin = await this.prisma.membership.updateMany({
+			where: { userId: adminId, chatRoomId: id },
+			data: { isAdmin: false },
+		});
+		return removeAdmin;
+	}
 		
 
 	async kick(id: number, userId: number, kickedId: number) {
