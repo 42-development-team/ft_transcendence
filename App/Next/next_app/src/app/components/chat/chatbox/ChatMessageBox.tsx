@@ -1,6 +1,6 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel, ChannelType } from '@/app/utils/models';
+import { ChannelModel, ChannelType, MessageModel } from '@/app/utils/models';
 import ChatMessageBoxFooter from './ChatMessageBoxFooter';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatMessage from './ChatMessage';
@@ -12,6 +12,7 @@ interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
     channel: ChannelModel;
 }
+
 
 const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     const {updateChatBarState} = useChatBarContext();
@@ -26,9 +27,22 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     
     const { chatMessageBoxRef } = useChatScrolling<HTMLDivElement>(channel.messages);
 
+    const getColor = (message: MessageModel) => {
+        const user = channel.members?.find(member => member.username == message.senderUsername);
+        if (user?.isOwner) {
+            return '#f38ba8';
+            // return '#fab387';
+        } else if (user?.isAdmin) {
+            return '#c6a0f6';
+        } else if (user?.isBanned) {
+            return '#838ba7';
+        }
+        return '#f5e0dc';
+    }
+
     let MessageList = channel.messages?.map((message) => (
-        <ChatMessage key={message.id} message={message} />
-    ))
+        <ChatMessage key={message.id} message={message} color={getColor(message)} />
+        ))
 
     useEffect(() => {
         if (channel.type == ChannelType.DirectMessage && channel.directMessageTargetUsername != undefined)
