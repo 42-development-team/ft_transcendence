@@ -1,11 +1,12 @@
 import { MessageModel } from "@/app/utils/models";
 
 type MessageProps = {
-    message: MessageModel
+    message: MessageModel,
+    color: string
 }
 
-const ChatMessage = ({message: {senderUsername, content}}: MessageProps) => {
-    const color = 'darkorchid';
+const ChatMessage = ({message: {senderUsername, content}, color}: MessageProps) => {
+    // const color = 'darkorchid';
     const Author = (
         <span className="font-semibold" style={{color: color }}>
             {senderUsername}
