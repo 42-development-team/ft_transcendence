@@ -14,7 +14,7 @@ type ChatMemberProps = {
     unban: (unbannedId: string) => void
     leaveChannel: () => void
     directMessage: (targetId: string) => void
-    setAsAdmin: (targetId: string) => void
+    setAsAdmin: (newAdminId: string) => void
 }
 
 // Todo: add status and avatar
@@ -42,10 +42,6 @@ const ChatMemberItem = ({
 		};
 		fetchedUserStatus();
 	}, [id]);
-
-	useEffect(() => {
-		console.log("userStatus in useEffect= ", userStatus);
-	}, [userStatus]);
 
     const kickUser = () => {
         if (kick == undefined) return;

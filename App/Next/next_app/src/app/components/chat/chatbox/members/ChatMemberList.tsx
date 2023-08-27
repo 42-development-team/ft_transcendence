@@ -100,9 +100,9 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
     }
 
-    const setAsAdmin = async (targetId: string) => {
+    const setAsAdmin = async (newAdminId: string) => {
         // Todo: alerts
-        console.log("Set user as admin: " + targetId);
+        console.log("Set user as admin: " + newAdminId);
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/setAdmin`, {
                 credentials: "include",
@@ -110,7 +110,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({targetId}),
+                body: JSON.stringify({newAdminId}),
             });
             if (!response.ok) {
                 console.log("Error setting user as admin: " + response.status);
