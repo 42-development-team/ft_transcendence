@@ -48,7 +48,6 @@ export default function useChannels(userId: string) {
 
     const receiveMessage = (body: any) => {
         const { newMessage } = body;
-
         const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.id === newMessage.chatRoomId);
         if (channelIndex == -1) {
             return;
@@ -61,7 +60,6 @@ export default function useChannels(userId: string) {
             senderId: newMessage.senderId,
             senderUsername: newMessage.sender.username,
         }
-
         const newChannels = [...joinedChannels];
         if (currentChannelId != newChannels[channelIndex].id) {
             newChannels[channelIndex].unreadMessages++;
@@ -100,12 +98,11 @@ export default function useChannels(userId: string) {
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
-        const { roomName, userId } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        const { room, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             return;
         }
-        // Remove user from channel
         const newChannels = [...joinedChannels];
         const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
         if (memberIndex !== undefined && memberIndex !== -1) {
@@ -115,43 +112,14 @@ export default function useChannels(userId: string) {
     }
 
     const handleLeftRoom = (body: any) => {
-        const { roomName } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        const { room } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             return;
         }
         fetchChannelsInfo();
         const newChannels = [...joinedChannels];
         newChannels.splice(channelIndex, 1);
-        setJoinedChannels(newChannels);
-    }
-
-    const handleBan = (body: any) => {
-        const { roomName, userId } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
-        if (channelIndex == -1) {
-            return;
-        }
-        const newChannels = [...joinedChannels];
-        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-        if (memberIndex !== undefined && memberIndex !== -1) {
-            (newChannels[channelIndex].members as ChannelMember[])[memberIndex].isBanned = true;
-        }
-        setJoinedChannels(newChannels);
-    }
-
-    const handleUnban = (body: any) => {
-        const { roomName, userId } = body;
-        console.log(JSON.stringify(body, null, 2));
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
-        if (channelIndex == -1) {
-            return;
-        }
-        const newChannels = [...joinedChannels];
-        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-        if (memberIndex !== undefined && memberIndex !== -1) {
-            newChannels[channelIndex].members?.splice(memberIndex, 1);
-        }
         setJoinedChannels(newChannels);
     }
 
@@ -177,12 +145,6 @@ export default function useChannels(userId: string) {
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
         });
-        socket?.on('newBan', (body: any) => {
-            handleBan(body);
-        });
-        socket?.on('newUnban', (body: any) => {
-            handleUnban(body);
-        });
         socket?.on('directMessage', (body: any) => {
             handleNewDirectMessageChannel(body);
         });
@@ -194,15 +156,12 @@ export default function useChannels(userId: string) {
             socket?.off('newDisconnection');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
-            socket?.off('NewBan');
-            socket?.off('NewUnban');
             socket?.off('directMessage');
         }
     }, [socket, joinedChannels, channels]);
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
-        // Check if the room exist
         const targetChannel = joinedChannels.find(c => 
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
@@ -275,7 +234,6 @@ export default function useChannels(userId: string) {
     }
 
     // FETCHING
-
     const fetchNewChannelContent = async (id: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
@@ -396,4 +354,3 @@ export default function useChannels(userId: string) {
         directMessage,
     }
 }
-
