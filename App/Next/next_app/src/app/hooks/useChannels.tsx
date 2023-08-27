@@ -100,8 +100,8 @@ export default function useChannels(userId: string) {
     }
 
     const handleDisconnectionOnChannel = (body: any) => {
-        const { roomName, userId } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        const { room, userId } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             return;
         }
@@ -115,29 +115,14 @@ export default function useChannels(userId: string) {
     }
 
     const handleLeftRoom = (body: any) => {
-        const { roomName } = body;
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
+        const { room } = body;
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
         if (channelIndex == -1) {
             return;
         }
         fetchChannelsInfo();
         const newChannels = [...joinedChannels];
         newChannels.splice(channelIndex, 1);
-        setJoinedChannels(newChannels);
-    }
-
-    const handleUnban = (body: any) => {
-        const { roomName, userId } = body;
-        console.log(JSON.stringify(body, null, 2));
-        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === roomName);
-        if (channelIndex == -1) {
-            return;
-        }
-        const newChannels = [...joinedChannels];
-        const memberIndex = newChannels[channelIndex].members?.findIndex((member: ChannelMember) => member.id === userId);
-        if (memberIndex !== undefined && memberIndex !== -1) {
-            newChannels[channelIndex].members?.splice(memberIndex, 1);
-        }
         setJoinedChannels(newChannels);
     }
 
@@ -163,9 +148,6 @@ export default function useChannels(userId: string) {
         socket?.on('NewChatRoom', (body: any) => {
             fetchChannelsInfo();
         });
-        socket?.on('newUnban', (body: any) => {
-            handleUnban(body);
-        });
         socket?.on('directMessage', (body: any) => {
             handleNewDirectMessageChannel(body);
         });
@@ -177,7 +159,6 @@ export default function useChannels(userId: string) {
             socket?.off('newDisconnection');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
-            socket?.off('NewUnban');
             socket?.off('directMessage');
         }
     }, [socket, joinedChannels, channels]);
