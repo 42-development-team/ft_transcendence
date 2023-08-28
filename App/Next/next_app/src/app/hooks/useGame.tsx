@@ -56,6 +56,7 @@ export default function useGame() {
 	return {
 		move,
 		stopMove,
+		joinGameRoom,
 		data,
 	}
 }
