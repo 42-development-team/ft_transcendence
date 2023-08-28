@@ -102,9 +102,10 @@ export class ChatroomController {
 	}
 
 	/* U(pdate) */
-	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto) {
-		return this.chatroomService.update(+id, updateChatroomDto);
+	@Patch(':id/update')
+	update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto, @Request() req: any, @Res() response: Response) {
+		const userId: number = req.user.sub;
+		return this.chatroomService.update(+id, updateChatroomDto, userId);
 	}
 
 	@Patch(':id/join')

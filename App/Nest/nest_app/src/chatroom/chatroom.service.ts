@@ -184,8 +184,8 @@ export class ChatroomService {
 
 
 	// #region U(pdate)
-	update(id: number, updateChatroomDto: UpdateChatroomDto) {
-		return `This action updates a #${id} chatroom`;
+	update(id: number, updateChatroomDto: UpdateChatroomDto, userId: number) {
+		console.log("User id: " + userId + " is updating channel id: " + id + " with data: " + JSON.stringify(updateChatroomDto, null, 2));
 	}
 
 	async connectUserToChatroom(userId: number, chatroomId: number) {
