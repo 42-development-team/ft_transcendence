@@ -12,7 +12,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels(userId: string) {
-    const socket = useSocketContext();
+    const { socket } = useSocketContext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
@@ -134,6 +134,7 @@ export default function useChannels(userId: string) {
             receiveMessage(body);
         });
         socket?.on('newConnectionOnChannel', (body: any) => {
+			console.log("socket on newConnectionOnChannel: ", socket);
             handleNewConnectionOnChannel(body);
         });
         socket?.on('newDisconnectionOnChannel', (body: any) => {
