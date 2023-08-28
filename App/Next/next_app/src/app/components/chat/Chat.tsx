@@ -20,11 +20,15 @@ interface ChatBarProps {
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
     const { friends } = useFriends();
-    const { channels, joinedChannels, createNewChannel, joinChannel, sendToChannel, setCurrentChannelId } = useChannels();
+    const { 
+        channels, joinedChannels, 
+        createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
+        directMessage
+    } = useChannels(userId);
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
-    const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState<boolean>(false);
-    const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
-
+    const [ isCurrentUserAdmin, setIsCurrentUserAdmin ] = useState<boolean>(false);
+    const [ isCurrentUserOwner, setIsCurrentUserOwner ] = useState<boolean>(false);
+    
     let currentUser = undefined;
 
     useEffect(() => {
@@ -58,13 +62,13 @@ const Chat = ({ userId }: ChatBarProps) => {
     return (
         <div className='flex h-full'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
-                <ChatSideBar channels={joinedChannels} userId={userId} />
+                <ChatSideBar channels={joinedChannels} />
                 {/* Main Panel */}
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                    <ChatMemberList channel={currentChannel} userId={userId}/>
+                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />
@@ -78,9 +82,6 @@ const Chat = ({ userId }: ChatBarProps) => {
                 {chatBarState == ChatBarState.CreateChannelOpen &&
                     <CreateChannel userId={userId} createNewChannel={createNewChannel} />
                 }
-				{/* <button className='bg-red' onClick={() => console.log(JSON.stringify(joinedChannels, null, 2))} >
-					Test
-				</button> */}
 
             </UserRoleProvider>
         </div>

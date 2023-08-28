@@ -47,17 +47,75 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
-        client.join(room);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         const chatRoomId = await this.chatroomService.getIdFromChannelName(room);
-        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
-        const user = membership.user;
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
-        this.server.to(room).emit('newConnection',
+        this.server.to(room).emit('newConnectionOnChannel', 
             {room, user}
         );
+        client.join(room);
     }
 
+    async handleBan(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        if (client) {
+            client.leave(room);
+            client.emit('leftRoom', { room });
+            console.log(`Client ${userId} (${client.id}) banned from room ${room}`);
+        } else {
+            console.log(`Client ${userId} banned from room ${room}`);
+        }
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
+    async handleUnban(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.emit('NewChatRoom', { room });
+            console.log(`Client ${userId} (${client.id}) unbanned from room ${room}`);
+        } else {
+            console.log(`Client ${userId} unbanned from room ${room}`);
+        }
+        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
+    }
+
+    async handleAdminUpdate(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            console.log(`Client ${userId} (${client.id}) updated admin status in room ${room}`);
+        } else {
+            console.log(`Client ${userId} updated admin status in room ${room}`);
+        }
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
+    @SubscribeMessage('leaveRoom')
+    async handleLeaveRoom(client: Socket, roomId: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        client.leave(room);
+        client.emit('leftRoom', {room});
+        console.log(`Client ${userId} (${client.id}) left room ${room}`);
+        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
+    }
+
+    @SubscribeMessage('message')
+    async handleMessage(
+        @MessageBody() body: any,
+        @ConnectedSocket() client: Socket
+        ) : Promise<void> {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const {roomId, message} = body;
+        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        const room = await this.chatroomService.getChannelNameFromId(roomId);
+        this.server.to(room).emit('new-message',
+            {newMessage, room}
+        );
+    }
+    
     /*
         if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
         for now not considered the best choice in order to keep HTTP status response and separation of concerns
@@ -77,53 +135,5 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //         console.error(error);
     //     }
     // }
-
-    async handleBan(client: Socket, userId: number, roomId: string ) {
-        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        if (client) {
-            client.leave(roomName);
-            client.emit('leftRoom', { roomName });
-            console.log(`Client ${userId} (${client.id}) banned from room ${roomName}`);
-        } else {
-            console.log(`Client ${userId} banned from room ${roomName}`);
-        }
-        this.server.to(roomName).emit('newBan', {roomName, userId});
-    }
-
-    async handleUnban(client: Socket, userId: number, roomId: string ) {
-        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        if (client) {
-            client.emit('NewChatRoom', { roomName });
-            console.log(`Client ${userId} (${client.id}) unbanned from room ${roomName}`);
-        } else {
-            console.log(`Client ${userId} unbanned from room ${roomName}`);
-        }
-        this.server.to(roomName).emit('newUnban', {roomName, userId});
-    }
-
-    @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(client: Socket, roomId: string) {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        client.leave(roomName);
-        client.emit('leftRoom', {roomName});
-        console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
-        this.server.to(roomName).emit('newDisconnection', {roomName, userId});
-    }
-
-    @SubscribeMessage('message')
-    async handleMessage(
-        @MessageBody() body: any,
-        @ConnectedSocket() client: Socket
-        ) : Promise<void> {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const {roomId, message} = body;
-        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
-        const room = await this.chatroomService.getChannelNameFromId(roomId);
-        this.server.to(room).emit('new-message',
-            {newMessage, room}
-        );
-    }
-
 }
 

@@ -1,4 +1,4 @@
-import { ChannelModel } from "@/app/utils/models";
+import { ChannelModel, ChannelType } from "@/app/utils/models";
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import { useEffect, useState } from "react";
 import JoinChannelItem from "./JoinChannelItem";
@@ -20,17 +20,17 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
 
     const displayChannels = async () => {
         const publicChannelsComp = channels
-            .filter((channel: any) => channel.type === "public")
+            .filter((channel: any) => channel.type === ChannelType.Public)
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         const privateChannelsComp = channels
-            .filter((channel: any) => channel.type === "private")
+            .filter((channel: any) => channel.type === ChannelType.Private)
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         const protectedChannelsComp = channels
-            .filter((channel: any) => channel.type === "protected")
+            .filter((channel: any) => channel.type === ChannelType.Protected)
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));

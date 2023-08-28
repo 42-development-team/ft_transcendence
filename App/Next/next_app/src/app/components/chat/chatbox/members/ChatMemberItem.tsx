@@ -1,10 +1,9 @@
 import { ChannelMember } from "@/app/utils/models";
+import { getStatusColor } from "@/app/utils/getStatusColor";
+import { useState, useEffect } from "react";
+import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { getStatusColor } from "@/app/utils/getStatusColor";
-import {useState, useEffect} from "react";
-import { UserStatus } from "@/app/utils/models";
-
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -14,12 +13,17 @@ type ChatMemberProps = {
     ban: (bannedId: string) => void
     unban: (unbannedId: string) => void
     leaveChannel: () => void
+    directMessage: (targetId: string) => void
+    setAsAdmin: (newAdminId: string) => void
+    removeAdmin: (removedAdminId: string) => void
 }
 
 // Todo: add status and avatar
-const ChatMemberItem = ({
-    user: { username, avatar, isAdmin, isOwner, id },
-    isCurrentUser, isBanned, kick, ban, unban, leaveChannel
+const ChatMemberItem = ({ 
+    user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
+    isCurrentUser, isBanned, 
+    kick, ban, unban, leaveChannel, directMessage,
+    setAsAdmin, removeAdmin 
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
@@ -42,10 +46,6 @@ const ChatMemberItem = ({
 		fetchedUserStatus();
 	}, [id]);
 
-	useEffect(() => {
-		console.log("userStatus in useEffect= ", userStatus);
-	}, [userStatus]);
-
     const kickUser = () => {
         if (kick == undefined) return;
         kick(id);
@@ -57,6 +57,32 @@ const ChatMemberItem = ({
     const unbanUser = () => {
         if (unban == undefined) return;
         unban(id);
+    }
+    const sendDirectMessage = () => {
+        if (directMessage == undefined) return;
+        directMessage(id);
+    }
+
+    const setAdmin = () => {
+        if (setAsAdmin == undefined) return;
+        setAsAdmin(id);
+    }
+
+    const unsetAdmin = () => {
+        if (setAsAdmin == undefined) return;
+        removeAdmin(id);
+    }
+
+    const getColor = () => {
+        if (isOwner) {
+            return 'text-[#f38ba8]';
+            // return '#fab387';
+        } else if (isAdmin) {
+            return 'text-[#c6a0f6]';
+        } else if (isBanned) {
+            return 'text-[#838ba7]';
+        }
+        return 'text-[#f5e0dc]';
     }
 
     return (
@@ -72,10 +98,12 @@ const ChatMemberItem = ({
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${isCurrentUser && "text-peach font-semibold"} pl-[0.15rem]`}>{username}</h1>
+                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned}
-                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} userId={id} unbanUser={unbanUser} />
+            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id} 
+                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} 
+                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
         </div>
     )
 }
