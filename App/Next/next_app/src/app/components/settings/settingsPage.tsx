@@ -5,6 +5,7 @@ import UpdateAvatar from "../auth/utils/updateAvatar";
 import Avatar from "../profile/Avatar";
 import ValidateBtn from "../ValidateBtn";
 import { get } from "http";
+import { useEffectTimer } from "../auth/utils/useEffectTimer";
 
 const SettingsPage = ({
 		userId,
@@ -20,6 +21,8 @@ const SettingsPage = ({
 
 	const [message, setMessage] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
+	const [isVisibleTimer, setIsVisibleTimer] = useState(false);
+	const [isVisibleTimerAvatar, setIsVisibleTimerAvatar] = useState(false);
 	const [validateAvatarEnabled, setValidateAvatarEnabled] = useState(false);
 	const [validateUsernameEnabled, setValidateUsernameEnabled] = useState(false);
 	const [placeHolder, setPlaceHolder] = useState('');
@@ -27,6 +30,7 @@ const SettingsPage = ({
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [inputUserName, setInputUserName] = useState('');
 	const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
+	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -40,14 +44,18 @@ const SettingsPage = ({
 			return (data.avatar);
 		}
 		try {
-			getAvatar();
 			getUserName(userId);
+			getAvatar();
 
 
 		} catch (error) {
 			console.log(error);
 		}
 	}, [avatarLoaded]);
+
+	useEffectTimer(isVisibleTimer, 2600, setIsVisibleTimer);
+	useEffectTimer(isVisibleTimerAvatar, 2600, setIsVisibleTimerAvatar);
+	useEffectTimer(updatedUsername, 2600, setUpdatedUsername);
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
@@ -81,7 +89,10 @@ const SettingsPage = ({
 				console.log("Error updating username:", usernameUpdateResponse.status);
 			}
 			setValidateUsernameEnabled(false);
-			//TODO Alert username updated
+			setMessage("Username updated successfully");
+			setIsVisibleTimer(true);
+			setIsVisible(false);	
+			setUpdatedUsername(true);
 		} catch (error) {
 			console.log("Error updating username:", error);
 		}
@@ -89,9 +100,14 @@ const SettingsPage = ({
 
 	const handleClickAvatar = async () => {
 		try {
+			setValidateAvatarEnabled(false);
+			setMessage("Updating avatar...");
+			setIsVisibleTimerAvatar(true);
 			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			setMessage("Avatar updated successfully");
 		} catch (error) {
 			console.log("Error during avatar upload:", error);
+			setMessage("Error during avatar upload");
 		}
 	};
 
@@ -139,6 +155,8 @@ const SettingsPage = ({
 	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
+		if (childAvatarFile !== null && childImageUrl !== null)
+			setValidateAvatarEnabled(true);
 	}
 
 	return (
@@ -164,7 +182,13 @@ const SettingsPage = ({
 						</div>
 						:
 						<div className=" text-red-700 text-center">
-							{isVisible && <p>{message}</p>}
+							{isVisible  && <p>{message}</p>}
+						</div>
+				}
+				{
+					!validateUsernameEnabled &&
+						<div className=" text-green-400 text-center mb-2">
+							{isVisibleTimer && <p>{message}</p>}
 						</div>
 				}
 				<div className="flex justify-center mt-2">
@@ -178,13 +202,19 @@ const SettingsPage = ({
 			<Avatar
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
-			{validateAvatarEnabled &&
-				<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
-					<div className='mt-5 font-bold text-xl'>
-						Validate
-					</div>
-				</ValidateBtn>
+			{
+				!validateAvatarEnabled &&
+				<div className=" text-green-400 text-center mb-2">
+					{isVisibleTimerAvatar && <p>{message}</p>}
+				</div>
 			}
+			<div className="flex justify-center mb-6">
+				{validateAvatarEnabled &&
+					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
+						Validate
+					</ValidateBtn>
+				}
+			</div>
 		</div>
 	)
 }
