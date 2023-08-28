@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
+import { useRouter } from "next/router";
+import { useAuthcontext } from "@/app/context/AuthContext";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -17,13 +19,12 @@ type ChatMemberProps = {
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
 }
-
 // Todo: add status and avatar
-const ChatMemberItem = ({ 
-    user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, 
+const ChatMemberItem = ({
+	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
+    isCurrentUser, isBanned,
     kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin 
+    setAsAdmin, removeAdmin
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 
@@ -45,6 +46,29 @@ const ChatMemberItem = ({
 		};
 		fetchedUserStatus();
 	}, [id]);
+
+	const { socket } = useAuthcontext();
+	const router = useRouter();
+
+	// todo
+	// reload just when the user logging in or out is a channel member
+	useEffect(() => {
+		const handleUserLoggedIn = () => {
+			router.reload();
+		};
+
+		const handleUserLoggedOut = () => {
+			router.reload();
+		};
+
+		socket?.on("userLoggedIn", handleUserLoggedIn);
+  		socket?.on("userLoggedOut", handleUserLoggedOut);
+
+		return () => {
+			socket?.off("userLoggedIn", handleUserLoggedIn);
+  			socket?.off("userLoggedOut", handleUserLoggedOut);
+		}
+	}, [])
 
     const kickUser = () => {
         if (kick == undefined) return;
@@ -100,8 +124,8 @@ const ChatMemberItem = ({
                 </div>
                 <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id} 
-                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} 
+            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id}
+                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
         </div>
