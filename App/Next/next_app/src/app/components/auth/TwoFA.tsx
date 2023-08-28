@@ -196,7 +196,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 				</CustomBtn>
 			</div>
 			<div className="flex flex-row justify-center">
-				<div className="ml-12 my-4 flex-shrink self-center">
+				<div className="ml-12 self-center">
 					<QrCodeDisplay
 						imageUrl={imageUrl}
 						displayBox={displayBox}>
