@@ -3,7 +3,7 @@ import React from "react";
 import {AuthContextProvider} from "@/app/context/AuthContext";
 import Navbar from "@/components/navbar/Navbar";
 import { ChatBarContextProvider } from './context/ChatBarContextProvider';
-import { SocketContextProvider } from './context/SocketContext';
+// import { SocketContextProvider } from './context/SocketContext';
 
 export const metadata = {
   title: 'Pongolin',
@@ -16,11 +16,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
-  // const jwt = getJWTCookie();
   return (
     <html lang="en">
       <body className="flex flex-col h-screen">
-	  <SocketContextProvider>
+	  {/* <SocketContextProvider> */}
           <AuthContextProvider>
             <ChatBarContextProvider>
               <Navbar />
@@ -31,7 +30,7 @@ export default function RootLayout({
               {/* <p>{jwt?.value}</p> */}
             </ChatBarContextProvider>
           </AuthContextProvider>
-		</SocketContextProvider>
+		{/* </SocketContextProvider> */}
       </body>
     </html>
   )

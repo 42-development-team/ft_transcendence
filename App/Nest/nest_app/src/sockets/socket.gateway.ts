@@ -26,14 +26,36 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
      // why "(client: Socket)" ? because client is an instance of Socket class
-    async handleConnection(client: Socket){
-        console.log('Client connected: ' + client.id);
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        await this.userService.updateSocketId(userId, client.id);
-        this.clients.push(client);
-        // todo: Check for verifiedJWT in socket and disconnect if not OK
-        // and retrieve all the channels the user is member of
-    }
+    // async handleConnection(client: Socket){
+    //     console.log('Client connected: ' + client.id);
+    //     const userId = await this.chatroomService.getUserIdFromSocket(client);
+	// 	if (userId) {
+	// 		await this.userService.updateSocketId(userId, client.id);
+	// 	  }
+    //     this.clients.push(client);
+    //     // todo: Check for verifiedJWT in socket and disconnect if not OK
+    //     // and retrieve all the channels the user is member of
+    // }
+
+	async handleConnection(client: Socket) {
+		if(await this.chatroomService.getUserIdFromSocket(client)){
+			const userId = await this.chatroomService.getUserIdFromSocket(client);
+			if (userId) {
+			  console.log('Client connected: ' + client.id);
+			  await this.userService.updateSocketId(userId, client.id);
+			  this.clients.push(client);
+			  // todo: Check for verifiedJWT in socket and disconnect if not OK
+			  // and retrieve all the channels the user is a member of
+			} else {
+			  console.log('User not authenticated');
+			  client.disconnect();
+			}
+		}
+		else {
+			console.log('User not authenticated');
+			client.disconnect();
+		}
+	  }
 
     // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
     async handleDisconnect(client: Socket){
@@ -51,7 +73,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const chatRoomId = await this.chatroomService.getIdFromChannelName(room);
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
-        this.server.to(room).emit('newConnectionOnChannel', 
+        this.server.to(room).emit('newConnectionOnChannel',
             {room, user}
         );
         client.join(room);
@@ -115,7 +137,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             {newMessage, room}
         );
     }
-    
+
     /*
         if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
         for now not considered the best choice in order to keep HTTP status response and separation of concerns

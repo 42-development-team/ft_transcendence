@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-import { useSocketContext } from "../context/SocketContext";
+// import { useSocketContext } from "../context/SocketContext";
+import { useAuthcontext } from "../context/AuthContext";
 import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
@@ -12,7 +13,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels(userId: string) {
-    const { socket } = useSocketContext();
+    const { socket } = useAuthcontext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");

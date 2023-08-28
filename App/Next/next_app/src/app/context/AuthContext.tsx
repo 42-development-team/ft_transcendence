@@ -1,5 +1,7 @@
 "use client";
 import { useContext, createContext, useState, useEffect } from "react";
+import { io, Socket } from 'socket.io-client';
+import useSocketConnection from "../hooks/useSocketConnection";
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -8,6 +10,7 @@ type AuthContextType = {
     uniqueLogin: string;
     userId: string;
     refreshJWT: () => void;
+	socket: Socket | undefined,
 }
 
 const AuthContextDefaultValues: AuthContextType = {
@@ -17,6 +20,7 @@ const AuthContextDefaultValues: AuthContextType = {
     uniqueLogin: "",
     userId: "",
     refreshJWT: async () => { },
+	socket: undefined,
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
@@ -24,9 +28,12 @@ const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
 const JWT_REFRESH_INTERVAL = 25 * 60 * 1000;
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+	const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
+	const [socket, setSocket] = useState<Socket | undefined>(undefined);
+	// const socket = isLoggedIn? useSocketConnection() : undefined;
+	const ENDPOINT = `${process.env.BACK_URL}`
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -36,6 +43,14 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         return () => clearInterval(intervalId);
     }, []);
 
+	useEffect(() => {
+		console.log("isLoggedIn value in authContext: ", isLoggedIn);
+	}, [isLoggedIn]);
+
+	useEffect(() => {
+		if (isLoggedIn)
+			initializeSocket();
+	}, [isLoggedIn]);
 
     const fetchProfile = async () => {
         try {
@@ -81,8 +96,45 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         setUserId("");
     }
 
+
+	const connect = () => {
+    	return io(ENDPOINT, {
+        withCredentials: true,
+        reconnectionAttempts: 1,
+        transports: ['websocket'],
+    	})
+	}
+
+	useEffect(() => {
+        socket?.on('connect_error', (err) => {
+            console.log('Connection to socket.io server failed', err);
+        });
+        socket?.on('disconnect', (reason) => {
+            console.log('Disconnected from socket.io server', reason);
+        });
+        socket?.on('connect', () => {
+            console.log('Connected to socket.io server');
+        });
+
+        return () => {
+            socket?.off('connect_error');
+            socket?.off('disconnect');
+            socket?.off('connect');
+        }
+    }, [socket]);
+
+	const initializeSocket = () => {
+		console.log('Connecting to socket.io server...');
+		const socket = connect();
+		setSocket(socket);
+		return () => {
+			console.log('Disconnecting from socket.io server...');
+			socket.close();
+		}
+	};
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT, socket }}>
             {children}
         </AuthContext.Provider>
     )
