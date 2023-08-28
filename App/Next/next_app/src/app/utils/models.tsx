@@ -6,9 +6,9 @@ export interface ChannelModel {
     icon: string
     type: string
     joined: boolean
+    banned: boolean
     messages?: MessageModel[]
     members?: ChannelMember[]
-    bannedUsers?: ChannelMember[]
     unreadMessages: number
 }
 
@@ -28,6 +28,7 @@ export interface ChannelMember {
     username: string
     isAdmin: boolean
     isOwner: boolean
+    isBanned: boolean
     avatar: string
 	currentStatus: UserStatus
 }

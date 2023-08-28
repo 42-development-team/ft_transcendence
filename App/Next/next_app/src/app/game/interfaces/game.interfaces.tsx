@@ -6,6 +6,8 @@ export interface PlayerInterface {
 	w: number,
 	h: number,
     points: number,
+	velocity: number,
+	angle: number,
 }
 
 export interface BallInterface {
@@ -15,6 +17,7 @@ export interface BallInterface {
 	r: number,
 	pi2: number,
 	speed: [number, number],
+	incr: number,
 }
 
 export interface GameInterface {

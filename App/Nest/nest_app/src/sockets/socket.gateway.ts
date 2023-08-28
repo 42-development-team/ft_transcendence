@@ -81,6 +81,29 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //     }
     // }
 
+    async handleBan(client: Socket, userId: number, roomId: string ) {
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.leave(roomName);
+            client.emit('leftRoom', { roomName });
+            console.log(`Client ${userId} (${client.id}) banned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} banned from room ${roomName}`);
+        }
+        this.server.to(roomName).emit('newBan', {roomName, userId});
+    }
+
+    async handleUnban(client: Socket, userId: number, roomId: string ) {
+        const roomName = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            client.emit('NewChatRoom', { roomName });
+            console.log(`Client ${userId} (${client.id}) unbanned from room ${roomName}`);
+        } else {
+            console.log(`Client ${userId} unbanned from room ${roomName}`);
+        }
+        this.server.to(roomName).emit('newUnban', {roomName, userId});
+    }
+
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
         const userId = await this.chatroomService.getUserIdFromSocket(client);
@@ -90,6 +113,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log(`Client ${userId} (${client.id}) left room ${roomName}`);
         this.server.to(roomName).emit('newDisconnection', {roomName, userId});
     }
+
     @SubscribeMessage('message')
     async handleMessage(
         @MessageBody() body: any,
@@ -108,15 +132,24 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
-    async handleJoinGameRoom(@MessageBody() body: any, @ConnectedSocket() socket) {
-        let data: GameInterface;
+    async handleJoinGameRoom(client: Socket, room: string) {
 
-        this.server.to('roomName').emit('updateGame', {data});
+        client.join(room);
+        // keep this logic ?
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const gameRoomId = await this.gameService.getIdFromGameName(room);
+        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
+        const user = membership.user;
+        console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
+        this.server.to(room).emit('newGameConnection', 
+            {room, user}
+        );
     }
 
     @SubscribeMessage('leaveGameRoom')
     async handleLeaveGameRoom() {}
 
+    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
         const {move} = body;

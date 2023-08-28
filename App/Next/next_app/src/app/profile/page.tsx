@@ -24,7 +24,7 @@ export default async function Profile() {
             <Chat userId={userId}/>
             <div className="mx-[7vw] my-[4vw] flex flex-col flex-grow">
                     <StatsWindow userId={userId} />
-                    <UnderlineTabs />
+                    <UnderlineTabs userId={userId}/>
             </div>
         </div>
     )
