@@ -8,6 +8,7 @@ import { GameService } from 'src/game/game.service';
 import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
+import { forEachChild } from 'typescript';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -26,7 +27,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     server: Server;
 
     clients: Socket[] = [];
-    games: GameRoomDto[] = [];
+    gameRooms: GameRoomDto[] = [];
     queued: UserIdDto[] = [];
 
      // The client object is an instance of the Socket class provided by the Socket.io library.
@@ -125,44 +126,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
-    @SubscribeMessage('joinGameRoom')
+    @SubscribeMessage('joinQueue')
     async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
         this.queued.push(userId);
+        console.log(userId + " have joined queue!");
+        console.log("queueList:", this.queued);
         if (this.queued.length >= 2) {
             const newGameRoom: GameRoomDto = {
-                gameId: this.games.length,
+                gameId: this.gameRooms.length,
                 roomName: this.queued[0].userId + "_" + this.queued[1].userId,
-                playerOneId: this.queued[0].userId, 
+                playerOneId: this.queued[0].userId,
                 playerTwoId: this.queued[1].userId,
                 data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
             }
-            // 
+            this.leaveQueue(userId);
         }
-        // const roomName = gameId + "_" + userId;
 
-        // const newGame: GameRoomDto = {
-        //     // gameId: gameId,
-        //     roomName: roomName,
-        //     playerOneId: userId,
-        //     // playerTwoId: ,
-        // }
-        // player.join(roomName);
-        // // keep this logic ?
-        // const user = await this.chatroomService.getUserFromSocket(player);
-        // // const userId = await this.chatroomService.getUserIdFromSocket(client);
-        // // const gameRoomId = await this.gameService.getIdFromGameName(room);
-        // // const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
-        // // const user = membership.user;
         // console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
         // this.server.to(roomName).emit('newGameConnection', 
         //     {roomName, newGame}
         // );
     }
 
-    @SubscribeMessage('leaveGameRoom')
-    async handleLeaveGameRoom() {}
+    // @SubscribeMessage('leaveGameRoom')
+    // async handleLeaveGameRoom(userSocket: Socket) {
+        // const userId = await this.chatroomService.getUserIdFromSocket(userSocket);
+        // this.gameRooms.forEach(game => {
+            // if (game.playerOneId === userId || game.playerTwoId === userId) {
+            //     this.gameRooms.splice()
+            // }
+        // })
+    // }
 
     // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
@@ -176,7 +172,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const {stopMove} = body;
         console.log(stopMove);
     }
-
+    
+    @SubscribeMessage('leaveQueue')
+    leaveQueue(userId: UserIdDto) {
+        console.log(userId + " leaved queue!");
+        console.log("queueList:", this.queued);
+        const playerIndex = this.queued.indexOf(userId);
+        this.queued.splice(playerIndex, 1);
+    }
 
     setGameData(playerOneId: number, playerTwoId: number): GameDto{
         let player1: PlayerDto = {

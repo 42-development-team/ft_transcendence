@@ -34,14 +34,13 @@ export default function useGame() {
 
 
 	// TODO keep this logic but match it with db model
-	const joinGameRoom = async () => {
-		// activeGames.forEach( game => {
-		// 	if (game.slot < 2) {
-				// socket?.emit("joinGameRoom", game.id);
-				// 	game.slot++;
-			// }
-		// });
-		socket?.emit("joinGameRoom", 0);
+	
+	const joinQueue = async () => {
+		socket?.emit("joinQueue", 0);
+	}
+
+	const leaveGameRoom = async () => {
+		socket?.emit("leaveQueue");
 	}
 
 	const move = async (event: string) => {
