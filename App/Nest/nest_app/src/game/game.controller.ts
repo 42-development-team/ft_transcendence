@@ -9,10 +9,17 @@ import { UpdateGameDto } from './dto/update-game.dto';
 import { JoinGameDto } from './dto/join-game.dto';
 import { DeleteGameDto } from './dto/delete-game.dto';
 
+//===========
+import { SocketGateway } from "src/sockets/socket.gateway";
+
+
 @ApiTags('Game')
 @Controller('game')
 export class GameController {
-    constructor(private gameService: GameService) {}
+    constructor(
+        private gameService: GameService,
+        private socketGateway: SocketGateway,
+    ) {}
 
     logger = new Logger ('GameController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 

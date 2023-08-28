@@ -9,7 +9,7 @@ export class BallDto {
 }
 
 export class PlayerDto {
-	name: string;
+	id: number;
 	color: string;
 	x: number;
 	y: number;

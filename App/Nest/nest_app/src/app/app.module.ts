@@ -9,7 +9,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
-// import { SocketGateway } from '../sockets/socket.gateway';
 import { TwoFAController } from '../auth/2FA/2FA.controller';
 import { TwoFAService } from '../auth/2FA/2FA.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -25,6 +24,9 @@ import { GameController } from 'src/game/game.controller';
 import { GameService } from 'src/game/game.service';
 import { UserStatsService } from '../userstats/userstats.service';
 import { UserstatsController } from '../userstats/userstats.controller';
+
+//=============
+// import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
   imports: [
@@ -61,11 +63,11 @@ import { UserstatsController } from '../userstats/userstats.controller';
     UsersService,
     ChatroomService,
     PrismaService,
-    // SocketGateway,
     TwoFAService,
     CloudinaryService,
     GameService,
     UserStatsService,
+    // SocketGateway,
   ],
 })
 export class AppModule {}

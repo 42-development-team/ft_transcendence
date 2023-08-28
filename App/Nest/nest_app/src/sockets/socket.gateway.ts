@@ -5,9 +5,9 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameInterface } from 'src/game/interface/game.interfaces';
-import { GameDto } from 'src/game/dto/game-data.dto';
-import { JoinGameRoomDto } from 'src/game/dto/create-room.dto';
+import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
+import { GameRoomDto } from 'src/game/dto/create-room.dto';
+import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -26,6 +26,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     server: Server;
 
     clients: Socket[] = [];
+    games: GameRoomDto[] = [];
+    queued: UserIdDto[] = [];
 
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
@@ -124,28 +126,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
-    async handleJoinGameRoom(player: Socket, gameId: number) {
+    async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        const roomName = gameId + "_" + userId;
-
-        const newGame: JoinGameRoomDto = {
-            gameId: gameId,
-            roomName: roomName,
-            playerOneId: userId,
-            // playerTwoId: ,
+        this.queued.push(userId);
+        if (this.queued.length >= 2) {
+            const newGameRoom: GameRoomDto = {
+                gameId: this.games.length,
+                roomName: this.queued[0].userId + "_" + this.queued[1].userId,
+                playerOneId: this.queued[0].userId, 
+                playerTwoId: this.queued[1].userId,
+                data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
+            }
+            // 
         }
-        player.join(roomName);
-        // keep this logic ?
-        const user = await this.chatroomService.getUserFromSocket(player);
-        // const userId = await this.chatroomService.getUserIdFromSocket(client);
-        // const gameRoomId = await this.gameService.getIdFromGameName(room);
-        // const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
-        // const user = membership.user;
-        console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
-        this.server.to(roomName).emit('newGameConnection', 
-            {roomName, newGame}
-        );
+        // const roomName = gameId + "_" + userId;
+
+        // const newGame: GameRoomDto = {
+        //     // gameId: gameId,
+        //     roomName: roomName,
+        //     playerOneId: userId,
+        //     // playerTwoId: ,
+        // }
+        // player.join(roomName);
+        // // keep this logic ?
+        // const user = await this.chatroomService.getUserFromSocket(player);
+        // // const userId = await this.chatroomService.getUserIdFromSocket(client);
+        // // const gameRoomId = await this.gameService.getIdFromGameName(room);
+        // // const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
+        // // const user = membership.user;
+        // console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
+        // this.server.to(roomName).emit('newGameConnection', 
+        //     {roomName, newGame}
+        // );
     }
 
     @SubscribeMessage('leaveGameRoom')
@@ -164,13 +177,64 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log(stopMove);
     }
 
+
+    setGameData(playerOneId: number, playerTwoId: number): GameDto{
+        let player1: PlayerDto = {
+			id: playerOneId,
+			color: '#cba6f7aa',
+    		x: 0.02,
+    		y: 0.5,
+    		w: 0.01,
+    		h: 0.15,
+    		velocity: 0,
+    		angle: 60,
+    		points: 0,
+		}
+
+		let player2: PlayerDto = {
+			id: playerTwoId,
+			color: '#cba6f7aa',
+    		x: 0.98,
+    		y: 0.5,
+    		w: 0.01,
+    		h: 0.15,
+    		velocity: 0,
+    		angle: 60,
+    		points: 0,
+		}
+
+		let ball: BallDto = {
+			color: '#cba6f7',
+    		x: 0.5,
+    		y: 0.5,
+    		r: 0.01,
+    		pi2: Math.PI * 2,
+    		speed: [0, 0],
+    		incr: 0,
+		}
+
+		let data: GameDto = {
+			player1: player1,
+			player2: player2,
+			ball: ball,
+		}
+
+        return data;
+    }
+
     // Send the players positions + ball positions to correct room
     async sendGameData(roomName: string, gameData: GameDto) {
         this.server.to(roomName).emit('updateGame', {gameData});
     }
 
     // Should emit to room event 'GameOver' ??
-    
+
+
+
+
+
+
+
     /*
         if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
         for now not considered the best choice in order to keep HTTP status response and separation of concerns

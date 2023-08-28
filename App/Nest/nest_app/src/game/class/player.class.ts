@@ -53,7 +53,7 @@ class PlayerClass {
         let player: PlayerDto;
 
         player.color = this.color;
-        player.name = this.name;
+        // player.name = this.name;
         player.x = this.x;
         player.y = this.y;
         player.h = this.h;

@@ -3,17 +3,18 @@ import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
-
-import { SocketGateway } from "src/sockets/socket.gateway";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
+
+//===========
+// import { SocketGateway } from "src/sockets/socket.gateway";
 
 @Injectable()
 export class GameService {
     constructor(
         private prisma: PrismaService,
-        private socketGateway: SocketGateway,
+        // private socketGateway: SocketGateway,
     ) {}
 
     /* C(reate) */
@@ -249,7 +250,7 @@ export class GameService {
         // TODO Check disconnected sockets
         while (data.player1.points < 11 && data.player2.points < 11) {
             data = await this.calculateGame(data);
-            this.socketGateway.sendGameData('roomName', data);
+            // this.socketGateway.sendGameData('roomName', data);
             const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
             sleep(1/60);
         }

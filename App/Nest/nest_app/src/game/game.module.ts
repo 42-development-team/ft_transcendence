@@ -4,10 +4,19 @@ import { GameController } from './game.controller';
 import { UsersModule } from "../users/users.module";
 import { PrismaService } from 'src/prisma/prisma.service';
 
+//==================
+import { SocketGateway } from 'src/sockets/socket.gateway';
+import { ChatroomService } from '../chatroom/chatroom.service';
+import { MembershipService } from 'src/membership/membership.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ChatroomModule } from 'src/chatroom/chatroom.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
+
+
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, ChatroomModule, JwtModule, PrismaModule],
   controllers: [GameController],
-  providers: [GameService, PrismaService],
-  exports: [GameService]
+  providers: [GameService, SocketGateway, MembershipService],
+  exports: [GameService, SocketGateway]
 })
 export class GameModule {}
