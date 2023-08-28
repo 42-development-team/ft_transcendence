@@ -248,7 +248,7 @@ export class ChatroomService {
 			}
 		}) > 0;
 	}
-	
+
 	async setAdmin(id: number, userId: number, adminId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: { id: id },
@@ -260,7 +260,7 @@ export class ChatroomService {
 		const isAdmin = this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		if (!isAdmin && !isOwner) {
-			throw new Error('User is not an admin of this channel');	
+			throw new Error('User is not an admin of this channel');
 		}
 		const newAdmin = await this.prisma.membership.updateMany({
 			where: { userId: adminId, chatRoomId: id },
@@ -279,7 +279,7 @@ export class ChatroomService {
 		});
 		const isOwner = chatRoom.owner.id === userId;
 		if (!isOwner) {
-			throw new Error('User is not the owner of this channel');	
+			throw new Error('User is not the owner of this channel');
 		}
 		const isTargetAdmin = await this.prisma.membership.count({
 			where: { userId: adminId, chatRoomId: id, isAdmin: true },
@@ -293,7 +293,7 @@ export class ChatroomService {
 		});
 		return removeAdmin;
 	}
-		
+
 
 	async kick(id: number, userId: number, kickedId: number) {
 		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
@@ -413,15 +413,18 @@ export class ChatroomService {
 	// #region Retrieve
 
 	async getUserIdFromSocket(socket: Socket){
-		const authToken = socket.handshake.headers.cookie.split(";");
-		const jwtToken = authToken[0].split("=")[1];
-		const secret = this.configService.get<string>('jwtSecret');
-		const payload = this.jwtService.verify(jwtToken, { secret: secret });
-		const userId = payload.sub;
-		if(userId) {
-			return userId;
+		if (socket){
+			const authToken = socket.handshake.headers.cookie.split(";");
+			const jwtToken = authToken[0].split("=")[1];
+			const secret = this.configService.get<string>('jwtSecret');
+			const payload = this.jwtService.verify(jwtToken, { secret: secret });
+			const userId = payload.sub;
+			if(userId) {
+				return userId;
+			}
+			// Todo: if userId is undefined or null?
+			return null;
 		}
-		// Todo: if userId is undefined or null?
 		return null;
 	}
 

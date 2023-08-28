@@ -15,7 +15,6 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
-  // const jwt = getJWTCookie();
   return (
     <html lang="en">
       <body className="flex flex-col h-screen">
