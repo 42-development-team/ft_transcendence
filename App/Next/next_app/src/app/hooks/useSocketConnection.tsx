@@ -17,7 +17,7 @@ export default function useSocketConnection() {
 	const {isLoggedIn} = useAuthcontext();
 
     useEffect(() => {
-		// if (isLoggedIn){
+		if (isLoggedIn){
 			console.log('Connecting to socket.io server...');
 			const socket = connect();
 			setSocket(socket);
@@ -25,7 +25,7 @@ export default function useSocketConnection() {
 				console.log('Disconnecting from socket.io server...');
 				socket.close();
 			}
-		// }
+		}
     }, [isLoggedIn])
 
     useEffect(() => {
