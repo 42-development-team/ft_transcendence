@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { useRouter } from "next/router";
 import { useAuthcontext } from "@/app/context/AuthContext";
 
 type ChatMemberProps = {
@@ -27,6 +26,8 @@ const ChatMemberItem = ({
     setAsAdmin, removeAdmin
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
+	const { socket } = useAuthcontext();
+	const [ statusChange, setStatusChange ] = useState(false);
 
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
@@ -45,20 +46,18 @@ const ChatMemberItem = ({
 			}
 		};
 		fetchedUserStatus();
-	}, [id]);
+	}, [id, statusChange]);
 
-	const { socket } = useAuthcontext();
-	const router = useRouter();
 
 	// todo
 	// reload just when the user logging in or out is a channel member
 	useEffect(() => {
 		const handleUserLoggedIn = () => {
-			router.reload();
+			setStatusChange(true);
 		};
 
 		const handleUserLoggedOut = () => {
-			router.reload();
+			setStatusChange(prevStatusChange => !prevStatusChange);
 		};
 
 		socket?.on("userLoggedIn", handleUserLoggedIn);
@@ -68,7 +67,7 @@ const ChatMemberItem = ({
 			socket?.off("userLoggedIn", handleUserLoggedIn);
   			socket?.off("userLoggedOut", handleUserLoggedOut);
 		}
-	}, [])
+	}, [socket, statusChange])
 
     const kickUser = () => {
         if (kick == undefined) return;
