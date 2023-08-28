@@ -1,3 +1,5 @@
+"use client";
+
 import { Spinner } from '@material-tailwind/react'
 import { useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
@@ -9,6 +11,7 @@ const Play = () => {
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
+	const joinQueue = useGame().joinQueue;
 
 	const matchmaking = async () => {
 		setLoading(true)
@@ -37,7 +40,7 @@ const Play = () => {
 				) : (
 					<CustomBtnPlay
 						disable={disable}
-						onClick={matchmaking}>
+						onClick={joinQueue}>
 						{!loading && buttonText}
 					</CustomBtnPlay>
 				)}
