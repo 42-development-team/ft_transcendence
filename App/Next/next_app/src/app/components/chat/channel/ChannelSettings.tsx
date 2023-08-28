@@ -22,6 +22,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [lockSubmit, setLockSubmit] = useState(true);
 
     const updateChannel = async (channelId: string, updatedChannel: NewChannelInfo) => {
         try {
@@ -45,11 +46,11 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
         }
     }
 
-    // Todo: lock submit button if nothing changed
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         const CLOSE_DELAY = 1500;
         e.preventDefault();
         setError(false);
+        if (lockSubmit) return;
 
         let updatedChannel : NewChannelInfo = {
             name: channel.name,
@@ -85,7 +86,6 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                 return ;
             }
         }
-        // Todo: only if success
         setOpenAlert(true);
         await delay(CLOSE_DELAY);
         updateChatBarState(ChatBarState.ChatOpen);
@@ -93,7 +93,8 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
 
     useEffect(() => {
         setShowPasswordInput(newChannelType === ChannelType.Protected);
-    }, [newChannelType]);
+        setLockSubmit(newChannelType === channel.type && password === '');
+    }, [newChannelType, password]);
 
     return (
         <div className='w-full min-w-[400px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
@@ -104,7 +105,8 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     {showPasswordInput &&
                         <PasswordInputField value={password} setValue={setPassword} />
                     }
-                    <button type="submit" className={`button-mauve p-4`} >
+                    <button type="submit" className={`button-mauve p-4 disabled:pointer-events-none disabled:opacity-50`} 
+                    disabled={lockSubmit}>
                         Submit
                     </button>
                 </form>
