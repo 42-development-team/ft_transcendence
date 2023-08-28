@@ -7,6 +7,8 @@ import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
 import PasswordInputField from "../PasswordInputField";
 import { delay } from "@/app/utils/delay";
 import ChatHeader from "../chatbox/ChatHeader";
+import { NewChannelInfo } from "@/app/hooks/useChannels";
+import bcrypt from 'bcryptjs';
 
 type ChannelSettingsProps = {
     channel: ChannelModel
@@ -18,20 +20,41 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     const [password, setPassword] = useState('');
     const [newChannelType, setNewChannelType] = useState<ChannelType>(channel.type);
     const [openAlert, setOpenAlert] = useState(false);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(false);
 
+    const updateChannel = async (channelId: string, updatedChannel: NewChannelInfo) => {
+        // Note: return value?
+        try {
+            let response = await fetch(`${process.env.BACK_URL}/chatroom/${channelId}/update`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ updatedChannel }),
+            });
+            let data = await response.json();
+            console.log("Update returned:", data);
+        }
+        catch (err) {
+            // Todo: manage errors
+            console.log(err);
+        }
+    }
+
+    // Todo: lock submit button if nothing changed
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         const CLOSE_DELAY = 1250;
         e.preventDefault();
         setError(false);
-        // Change channel Type
-        if (newChannelType != channel.type) {
-            console.log("Change channel type to:", newChannelType);
-            // Todo: update channel Type
-        }
 
-        // Change channel password
-        // Todo: add alert if password is empty
+        let updatedChannel : NewChannelInfo = {
+            name: channel.name,
+            type: channel.type,
+            hashedPassword: '',
+        }
+        
+        // Change channel Password
         if (channel.type === ChannelType.Protected || newChannelType === ChannelType.Protected) {
             if (password === '') {
                 setError(true);
@@ -41,11 +64,18 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                 return;
             }
             console.log("Change password to:", password)
-            // Todo: update password
+            updatedChannel.hashedPassword = await bcrypt.hash(password, 10);
+        }
+        // Change channel Type
+        if (newChannelType != channel.type) {
+            console.log("Change channel type to:", newChannelType);
+            updatedChannel.type = newChannelType;
         }
 
-        // Todo: Fetch backend to update channel
-
+        if (updatedChannel.hashedPassword != '' || updatedChannel.type != channel.type) {
+            updateChannel(channel.id, updatedChannel);
+        }
+        // Todo: only if success
         setOpenAlert(true);
         await delay(CLOSE_DELAY);
         updateChatBarState(ChatBarState.ChatOpen);
