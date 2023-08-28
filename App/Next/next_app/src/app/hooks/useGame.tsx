@@ -39,7 +39,7 @@ export default function useGame() {
 		socket?.emit("joinQueue", 0);
 	}
 
-	const leaveGameRoom = async () => {
+	const leaveQueue = async () => {
 		socket?.emit("leaveQueue");
 	}
 
@@ -55,7 +55,8 @@ export default function useGame() {
 	return {
 		move,
 		stopMove,
-		joinGameRoom,
+		leaveQueue,
+		joinQueue,
 		data,
 	}
 }

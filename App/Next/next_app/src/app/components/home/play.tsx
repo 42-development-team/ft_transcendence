@@ -15,7 +15,7 @@ const Play = () => {
 		setLoading(true)
 		setDisable(true)
 		setButtonText("Calling racket master...")
-		useGame().joinGameRoom();
+		useGame().joinQueue();
 
 		//TODO: handle matchmaking
 	}
