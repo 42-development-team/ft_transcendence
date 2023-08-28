@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-import useSocketConnection from "./useSocketConnection"
+import { useSocketContext } from "../context/SocketContext";
 import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
@@ -12,7 +12,7 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels(userId: string) {
-    const socket = useSocketConnection();
+    const socket = useSocketContext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
@@ -162,7 +162,7 @@ export default function useChannels(userId: string) {
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
-        const targetChannel = joinedChannels.find(c => 
+        const targetChannel = joinedChannels.find(c =>
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
         if (targetChannel == undefined) {
