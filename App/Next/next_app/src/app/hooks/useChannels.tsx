@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 export interface NewChannelInfo {
     name: string;
     type: string;
-    password?: string;
+    hashedPassword?: string;
     receiverId?: string;
 }
 
@@ -183,8 +183,8 @@ export default function useChannels(userId: string) {
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             let hashedPassword;
-            if (newChannelInfo.password)
-                hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
+            if (newChannelInfo.hashedPassword)
+                hashedPassword = await bcrypt.hash(newChannelInfo.hashedPassword, 10);
             let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
@@ -202,7 +202,7 @@ export default function useChannels(userId: string) {
                 throw new Error('Failed to create the channel ' + response.statusText);
             }
             const newChannel = await response.json();
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.hashedPassword);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);

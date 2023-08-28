@@ -1,6 +1,6 @@
 "use client";
 import { ChangeEvent, useState, useEffect } from 'react';
-import FirstLoginBtn from '../FirstLoginBtn';
+import ValidateBtn from '../ValidateBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
@@ -31,7 +31,6 @@ const FirstLoginPageComponent = ({
 
 
     useEffect(() => {
- 
         try {
             getUserName(userId);
         } catch (error) {
@@ -173,11 +172,11 @@ const FirstLoginPageComponent = ({
         waiting2fa &&
           <TwoFA userId={userId}></TwoFA>
       }
-      <FirstLoginBtn onClick={handleClick} disable={!validateEnabled} >
+      <ValidateBtn onClick={handleClick} disable={!validateEnabled} >
         <div className='mt-5 font-bold text-xl'>
           Validate
         </div>
-      </FirstLoginBtn>
+      </ValidateBtn>
     </div>
   )
 }
