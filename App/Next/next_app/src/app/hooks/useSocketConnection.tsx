@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { io, Socket } from 'socket.io-client'
-
-const ENDPOINT = `${process.env.BACK_URL}` 
+import { io, Socket } from 'socket.io-client';
+import { useAuthcontext } from "../context/AuthContext";
+const ENDPOINT = `${process.env.BACK_URL}`
 
 const connect = () => {
     return io(ENDPOINT, {
@@ -14,17 +14,19 @@ const connect = () => {
 
 export default function useSocketConnection() {
     const [socket, setSocket] = useState<Socket>();
-    
-    useEffect(() => {
-        console.log('Connecting to socket.io server...');
-        const socket = connect();
-        setSocket(socket);
+	const {isLoggedIn} = useAuthcontext();
 
-        return () => {
-            console.log('Disconnecting from socket.io server...');
-            socket.close();
-        }
-    }, [])
+    useEffect(() => {
+		// if (isLoggedIn){
+			console.log('Connecting to socket.io server...');
+			const socket = connect();
+			setSocket(socket);
+			return () => {
+				console.log('Disconnecting from socket.io server...');
+				socket.close();
+			}
+		// }
+    }, [isLoggedIn])
 
     useEffect(() => {
         socket?.on('connect_error', (err) => {
@@ -43,6 +45,6 @@ export default function useSocketConnection() {
             socket?.off('connect');
         }
     }, [socket]);
-    
+
     return socket;
 }
