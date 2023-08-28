@@ -33,7 +33,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 			  console.log('Client connected: ' + client.id);
 			  await this.userService.updateSocketId(userId, client.id);
 			  this.clients.push(client);
-			  this.server.emit("userLoggedIn");
+			  this.server.emit("userLoggedIn", { userId });
 			  // todo: Check for verifiedJWT in socket and disconnect if not OK
 			  // and retrieve all the channels the user is a member of
 			}
@@ -50,7 +50,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
-		this.server.emit("userLoggedOut");
+		this.server.emit("userLoggedOut", { userId });
         // add logic for:
         // remove
     }
