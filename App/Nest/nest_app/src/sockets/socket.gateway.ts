@@ -28,7 +28,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     clients: Socket[] = [];
     gameRooms: GameRoomDto[] = [];
-    queued: UserIdDto[] = [];
 
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
@@ -126,23 +125,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
-    @SubscribeMessage('joinQueue')
+    @SubscribeMessage('joinRoomGame')
     async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        this.queued.push(userId);
-        console.log(userId + " have joined queue!");
-        console.log("queueList:", this.queued);
-        if (this.queued.length >= 2) {
-            const newGameRoom: GameRoomDto = {
-                gameId: this.gameRooms.length,
-                roomName: this.queued[0].userId + "_" + this.queued[1].userId,
-                playerOneId: this.queued[0].userId,
-                playerTwoId: this.queued[1].userId,
-                data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
-            }
-            this.leaveQueue(userId);
-        }
 
         // console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
         // this.server.to(roomName).emit('newGameConnection', 
@@ -160,6 +146,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         // })
     // }
 
+    // @SubscribeMessage('leaveQueue')
+    // leaveQueue(userId: UserIdDto) {
+    //     console.log(userId + " leaved queue!");
+    //     console.log("queueList:", this.queued);
+    //     const playerIndex = this.queued.indexOf(userId);
+    //     this.queued.splice(playerIndex, 1);
+    // }
+
+
     // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
@@ -172,66 +167,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const {stopMove} = body;
         console.log(stopMove);
     }
-    
-    @SubscribeMessage('leaveQueue')
-    leaveQueue(userId: UserIdDto) {
-        console.log(userId + " leaved queue!");
-        console.log("queueList:", this.queued);
-        const playerIndex = this.queued.indexOf(userId);
-        this.queued.splice(playerIndex, 1);
-    }
-
-    setGameData(playerOneId: number, playerTwoId: number): GameDto{
-        let player1: PlayerDto = {
-			id: playerOneId,
-			color: '#cba6f7aa',
-    		x: 0.02,
-    		y: 0.5,
-    		w: 0.01,
-    		h: 0.15,
-    		velocity: 0,
-    		angle: 60,
-    		points: 0,
-		}
-
-		let player2: PlayerDto = {
-			id: playerTwoId,
-			color: '#cba6f7aa',
-    		x: 0.98,
-    		y: 0.5,
-    		w: 0.01,
-    		h: 0.15,
-    		velocity: 0,
-    		angle: 60,
-    		points: 0,
-		}
-
-		let ball: BallDto = {
-			color: '#cba6f7',
-    		x: 0.5,
-    		y: 0.5,
-    		r: 0.01,
-    		pi2: Math.PI * 2,
-    		speed: [0, 0],
-    		incr: 0,
-		}
-
-		let data: GameDto = {
-			player1: player1,
-			player2: player2,
-			ball: ball,
-		}
-
-        return data;
-    }
 
     // Send the players positions + ball positions to correct room
-    async sendGameData(roomName: string, gameData: GameDto) {
+    async sendGameData(roomName: string, roomData: GameRoomDto) {
+        const gameData: GameDto = roomData.data;
         this.server.to(roomName).emit('updateGame', {gameData});
     }
 
     // Should emit to room event 'GameOver' ??
-
 
 
 
