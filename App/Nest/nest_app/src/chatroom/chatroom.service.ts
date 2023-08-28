@@ -184,8 +184,22 @@ export class ChatroomService {
 
 
 	// #region U(pdate)
-	update(id: number, updateChatroomDto: UpdateChatroomDto, userId: number) {
-		console.log("User id: " + userId + " is updating channel id: " + id + " with data: " + JSON.stringify(updateChatroomDto, null, 2));
+	async update(roomId: number, updateChatroomDto: UpdateChatroomDto, userId: number) {
+		// Todo: check if user is admin of channel / owner?
+		// Update the channel with new data
+		try {
+			const result = await this.prisma.chatRoom.update({
+				where: { id: roomId },
+				data: {
+					type: updateChatroomDto.type,
+					hashedPassword: updateChatroomDto.hashedPassword,
+				},
+			})
+			return result;
+		}
+		catch (err) {
+			throw new Error('Error updating channel' + err);
+		}
 	}
 
 	async connectUserToChatroom(userId: number, chatroomId: number) {

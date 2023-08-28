@@ -31,10 +31,13 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ updatedChannel }),
+                body: JSON.stringify({
+                    name: updatedChannel.name,
+                    type: updatedChannel.type,
+                    hashedPassword: updatedChannel.hashedPassword == '' ? null : updatedChannel.hashedPassword,
+                }),
             });
-            let data = await response.json();
-            console.log("Update returned:", data);
+            return response;
         }
         catch (err) {
             // Todo: manage errors
@@ -73,7 +76,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
         }
 
         if (updatedChannel.hashedPassword != '' || updatedChannel.type != channel.type) {
-            updateChannel(channel.id, updatedChannel);
+            await updateChannel(channel.id, updatedChannel);
         }
         // Todo: only if success
         setOpenAlert(true);
