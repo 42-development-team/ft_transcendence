@@ -1,4 +1,4 @@
-import { BallDto } from '../dto/ball.dto';
+import { BallDto }  from '../dto/game-data.dto';
 import PlayerClass from './player.class';
 
 class BallClass {

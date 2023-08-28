@@ -5,7 +5,7 @@ import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
 
 import { SocketGateway } from "src/sockets/socket.gateway";
-import { BallDto, GameDto, PlayerDto } from "./dto/game.dto";
+import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 

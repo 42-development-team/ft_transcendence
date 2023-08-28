@@ -6,7 +6,8 @@ import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
 import { GameInterface } from 'src/game/interface/game.interfaces';
-import { GameDto } from 'src/game/dto/game.dto';
+import { GameDto } from 'src/game/dto/game-data.dto';
+import { JoinGameRoomDto } from 'src/game/dto/create-room.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -123,17 +124,27 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinGameRoom')
-    async handleJoinGameRoom(client: Socket, room: string) {
+    async handleJoinGameRoom(player: Socket, gameId: number) {
 
-        client.join(room);
+        const userId = await this.chatroomService.getUserIdFromSocket(player);
+        const roomName = gameId + "_" + userId;
+
+        const newGame: JoinGameRoomDto = {
+            gameId: gameId,
+            roomName: roomName,
+            playerOneId: userId,
+            // playerTwoId: ,
+        }
+        player.join(roomName);
         // keep this logic ?
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const gameRoomId = await this.gameService.getIdFromGameName(room);
-        const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
-        const user = membership.user;
-        console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
-        this.server.to(room).emit('newGameConnection', 
-            {room, user}
+        const user = await this.chatroomService.getUserFromSocket(player);
+        // const userId = await this.chatroomService.getUserIdFromSocket(client);
+        // const gameRoomId = await this.gameService.getIdFromGameName(room);
+        // const membership = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
+        // const user = membership.user;
+        console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
+        this.server.to(roomName).emit('newGameConnection', 
+            {roomName, newGame}
         );
     }
 
@@ -180,4 +191,3 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //     }
     // }
 }
-

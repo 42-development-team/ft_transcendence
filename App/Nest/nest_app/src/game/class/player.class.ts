@@ -1,4 +1,4 @@
-import { PlayerDto } from "../dto/player.dto";
+import { PlayerDto } from "../dto/game-data.dto";
 
 class PlayerClass {
     constructor(bool: boolean) {
