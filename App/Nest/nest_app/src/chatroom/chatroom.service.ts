@@ -185,7 +185,12 @@ export class ChatroomService {
 
 	// #region U(pdate)
 	async update(roomId: number, updateChatroomDto: UpdateChatroomDto, userId: number) {
-		// Todo: check if user is admin of channel / owner?
+		const isOwner = await this.prisma.chatRoom.count({
+			where: { id: roomId, owner: { id: userId } },
+		}) > 0;
+		if (!isOwner) {
+			throw new Error('User is not the owner of this channel');
+		}
 		// Update the channel with new data
 		try {
 			const result = await this.prisma.chatRoom.update({

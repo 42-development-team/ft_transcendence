@@ -106,13 +106,12 @@ export class ChatroomController {
 	async update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto, @Request() req: any, @Res() response: Response) {
 		const userId: number = req.user.sub;
 		try {
-			console.log("inut: ", JSON.stringify(updateChatroomDto, null, 2));
-			const result = await this.chatroomService.update(+id, updateChatroomDto, userId);
+			await this.chatroomService.update(+id, updateChatroomDto, userId);
 			// Todo: emit on socket
-			response.send(result);
+			response.send('success');
 		}
 		catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			response.send(error.message);
 		}
 	}
 

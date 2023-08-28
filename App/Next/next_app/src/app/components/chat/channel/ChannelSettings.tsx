@@ -21,9 +21,9 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     const [newChannelType, setNewChannelType] = useState<ChannelType>(channel.type);
     const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const updateChannel = async (channelId: string, updatedChannel: NewChannelInfo) => {
-        // Note: return value?
         try {
             let response = await fetch(`${process.env.BACK_URL}/chatroom/${channelId}/update`, {
                 credentials: "include",
@@ -36,18 +36,18 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     type: updatedChannel.type,
                     hashedPassword: updatedChannel.hashedPassword == '' ? null : updatedChannel.hashedPassword,
                 }),
-            });
-            return response;
+            })
+            return response.text();
         }
         catch (err) {
-            // Todo: manage errors
             console.log(err);
+            return "Something went wrong";
         }
     }
 
     // Todo: lock submit button if nothing changed
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        const CLOSE_DELAY = 1250;
+        const CLOSE_DELAY = 1500;
         e.preventDefault();
         setError(false);
 
@@ -58,25 +58,32 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
         }
         
         // Change channel Password
-        if (channel.type === ChannelType.Protected || newChannelType === ChannelType.Protected) {
+        if (newChannelType === ChannelType.Protected) {
             if (password === '') {
                 setError(true);
                 setOpenAlert(true);
+                setErrorMessage('Password can not be empty');
                 await delay(CLOSE_DELAY);
                 setOpenAlert(false);
                 return;
             }
-            console.log("Change password to:", password)
             updatedChannel.hashedPassword = await bcrypt.hash(password, 10);
         }
         // Change channel Type
         if (newChannelType != channel.type) {
-            console.log("Change channel type to:", newChannelType);
             updatedChannel.type = newChannelType;
         }
 
+        // Update channel and check result
         if (updatedChannel.hashedPassword != '' || updatedChannel.type != channel.type) {
-            await updateChannel(channel.id, updatedChannel);
+            const result = await updateChannel(channel.id, updatedChannel);
+            if (result != "success") {
+                if (result)
+                    setErrorMessage(result);
+                setError(true);
+                setOpenAlert(true);
+                return ;
+            }
         }
         // Todo: only if success
         setOpenAlert(true);
@@ -85,8 +92,8 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     }
 
     useEffect(() => {
-        setShowPasswordInput(newChannelType == ChannelType.Protected || (channel.type == ChannelType.Protected && newChannelType == channel.type.toString()));
-    }, [newChannelType])
+        setShowPasswordInput(newChannelType === ChannelType.Protected);
+    }, [newChannelType]);
 
     return (
         <div className='w-full min-w-[400px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
@@ -94,7 +101,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
             <div className="p-4 mb-4 flex-col">
                 <ChangeChannelTypeButtons newChannelType={newChannelType} setChannelType={setNewChannelType} />
                 <form onSubmit={handleSubmit} >
-                    {(channel.type === 'protected' || showPasswordInput) &&
+                    {showPasswordInput &&
                         <PasswordInputField value={password} setValue={setPassword} />
                     }
                     <button type="submit" className={`button-mauve p-4`} >
@@ -111,7 +118,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     mount: { y: 0 },
                     unmount: { y: 100 },
                 }}>
-                {error && <p>Password can not be empty</p>}
+                {error && <p>{errorMessage}</p>}
                 {!error && <p>{channel.name} has been updated</p>}
             </Alert>
         </div>
