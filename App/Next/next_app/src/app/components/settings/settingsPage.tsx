@@ -80,6 +80,8 @@ const SettingsPage = ({
 			} else {
 				console.log("Error updating username:", usernameUpdateResponse.status);
 			}
+			setValidateUsernameEnabled(false);
+			//TODO Alert username updated
 		} catch (error) {
 			console.log("Error updating username:", error);
 		}
