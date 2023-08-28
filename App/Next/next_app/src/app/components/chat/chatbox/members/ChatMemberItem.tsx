@@ -53,17 +53,20 @@ const ChatMemberItem = ({
 	// reload just when the user logging in or out is a channel member
 	useEffect(() => {
 		const handleUserLoggedIn = () => {
-			setStatusChange(true);
+			console.log('User logged in');
+			statusChange? setStatusChange(false) : setStatusChange(true);
 		};
 
 		const handleUserLoggedOut = () => {
-			setStatusChange(prevStatusChange => !prevStatusChange);
+			console.log('User logged out');
+			statusChange? setStatusChange(false) : setStatusChange(true);
 		};
 
 		socket?.on("userLoggedIn", handleUserLoggedIn);
   		socket?.on("userLoggedOut", handleUserLoggedOut);
 
 		return () => {
+			console.log('Cleanup function called');
 			socket?.off("userLoggedIn", handleUserLoggedIn);
   			socket?.off("userLoggedOut", handleUserLoggedOut);
 		}
