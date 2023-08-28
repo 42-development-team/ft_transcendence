@@ -4,21 +4,25 @@ import { useState } from "react";
 
 const matchHistory = ( props: { data: any, currentUserId: number } ) => {
     const data = props.data;
+    let nodata = false;
     const currentUserId = props.currentUserId;
     const [ openAlert, setOpenAlert ] = useState(false);
 
+    if (data === undefined || data === null) {
+        nodata = true;
+    }
+
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
-        console.log("sessionuserID", sessionStorage.getItem("userId"));
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
             window.location.href = "/profile";
     }
-    console.log("data: ", data);
 
     return (
         <div className="p-6 h-[50vh] overflow-auto">
+            { !nodata ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
                     <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-base'
@@ -50,6 +54,13 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
                     </div>
                 ))}
             </div>
+            ) : (
+                <div className="flex flex-col h-full justify-center">
+                        <span className="flex justify-center text-[5rem] text-gray-700 leading-[5rem]">
+                            No games played
+                        </span>
+                </div>
+            )}
         </div>
     )
 }
