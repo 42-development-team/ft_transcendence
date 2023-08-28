@@ -117,7 +117,7 @@ const Canvas = ({...props}) => {
 		let animationId: number;
 		
 		const render = (): any => {
-			
+
 			blurEffect(context, width, height);
 			printMidLine(context, width, height);
 			renderGame(context, data, width, height);

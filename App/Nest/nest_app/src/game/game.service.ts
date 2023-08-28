@@ -207,8 +207,9 @@ export class GameService {
     }
 
     //=================================================//
-    //================== UPDATE GAME ====================//
+    //================== UPDATE GAME ==================//
     //=================================================//
+
     async update(data: GameDto) {
         // TODO Check disconnected sockets
         while (data.player1.points < 11 && data.player2.points < 11) {
