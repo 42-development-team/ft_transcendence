@@ -184,8 +184,27 @@ export class ChatroomService {
 
 
 	// #region U(pdate)
-	update(id: number, updateChatroomDto: UpdateChatroomDto) {
-		return `This action updates a #${id} chatroom`;
+	async update(roomId: number, updateChatroomDto: UpdateChatroomDto, userId: number) {
+		const isOwner = await this.prisma.chatRoom.count({
+			where: { id: roomId, owner: { id: userId } },
+		}) > 0;
+		if (!isOwner) {
+			throw new Error('User is not the owner of this channel');
+		}
+		// Update the channel with new data
+		try {
+			const result = await this.prisma.chatRoom.update({
+				where: { id: roomId },
+				data: {
+					type: updateChatroomDto.type,
+					hashedPassword: updateChatroomDto.hashedPassword,
+				},
+			})
+			return result;
+		}
+		catch (err) {
+			throw new Error('Error updating channel' + err);
+		}
 	}
 
 	async connectUserToChatroom(userId: number, chatroomId: number) {
