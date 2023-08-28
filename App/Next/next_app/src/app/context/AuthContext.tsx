@@ -1,7 +1,6 @@
 "use client";
 import { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
-import useSocketConnection from "../hooks/useSocketConnection";
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -32,7 +31,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
-	// const socket = isLoggedIn? useSocketConnection() : undefined;
 	const ENDPOINT = `${process.env.BACK_URL}`
 
     useEffect(() => {
