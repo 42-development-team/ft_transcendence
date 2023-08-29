@@ -138,7 +138,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
         this.queued.push({userId});
-        
+
         if (this.queued.length >= 2) {
             const player1Id: number = this.queued[0].userId;
             const player2Id: number = this.queued[1].userId;
