@@ -76,7 +76,7 @@ export class MembershipService {
 					user: true,
 				}
 			});
-			memberShip ? true : false;
+			return memberShip ? true : false;
 		}
 		catch (error) {
 			console.log(error.message);

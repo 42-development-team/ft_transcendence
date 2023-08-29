@@ -8,6 +8,7 @@ import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { UsersService } from 'src/users/users.service';
 import { MembershipService } from '../membership/membership.service';
+import { Public } from '../auth/public.routes';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -103,6 +104,7 @@ export class ChatroomController {
 			});
 	}
 
+	@Public()
 	@Get('/isMember')
 	async isMember(
 		@Query('userId') userId: string,
@@ -116,6 +118,7 @@ export class ChatroomController {
 					parseInt(userId),
 					parseInt(channelId)
 				);
+				console.log("isMember = ", isMember);
 				response.status(HttpStatus.OK).json(isMember);
 			} catch (error) {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

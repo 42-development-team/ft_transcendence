@@ -56,6 +56,7 @@ const ChatMemberItem = ({
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
 			console.log('User logged in');
+			console.log('userId', userId);
 			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
 			url.searchParams.append('userId', userId);
 			url.searchParams.append('channelId', channelId);
@@ -71,7 +72,7 @@ const ChatMemberItem = ({
 			if (data) {
 				setStatusChange(usePrevious => !usePrevious);
 			}
-			// statusChange? setStatusChange(true) : setStatusChange(false);
+			statusChange? setStatusChange(true) : setStatusChange(false);
 		};
 
 		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
