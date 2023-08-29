@@ -7,6 +7,7 @@ import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { UsersService } from 'src/users/users.service';
+import { MembershipService } from '../membership/membership.service';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -15,6 +16,7 @@ export class ChatroomController {
 		private chatroomService: ChatroomService,
 		private socketGateway: SocketGateway,
 		private userService: UsersService,
+		private membershipService: MembershipService,
 	) { }
 
 	/* C(reate) */
@@ -95,6 +97,21 @@ export class ChatroomController {
 		await this.chatroomService.getChannelContent(+id, userId)
 			.then(chatRoom => {
 				response.send(chatRoom);
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Get('/isMember')
+	async isMember(@Request() req: any, @Res() response: Response) {
+		const userId = parseInt(req.userId);
+		console.log ("userId logging in in isMember handler: ", userId);
+		const channelId = parseInt(req.chanelId);
+		console.log ("channelId logging in in isMember handler: ", channelId);
+		await this.membershipService.getMemberShipFromUserAndChannelId(userId, channelId)
+			.then(chatRoom => {
+				response.send(chatRoom? true : false);
 			})
 			.catch(error => {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

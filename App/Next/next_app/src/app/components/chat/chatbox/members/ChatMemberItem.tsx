@@ -54,24 +54,29 @@ const ChatMemberItem = ({
 	}, [statusChange]);
 
 	useEffect(() => {
-		const statusChangeMonitor = async () => {
+		const statusChangeMonitor = async (userId: string) => {
 			console.log('User logged in');
-			const response = await fetch(`${process.env.BACK_URL}/chatroom/isMember/${channelId}`, {
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/isMember`, {
+				credentials: "include",
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-                    userId: { id },
+                    userId: userId,
+					channelId: { channelId },
                 }),
 			});
 			const data = await response.json();
-			setStatusChange(usePrevious => !usePrevious);
+			if (data) {
+				setStatusChange(usePrevious => !usePrevious);
+			}
 			// statusChange? setStatusChange(true) : setStatusChange(false);
 		};
 
-		socket?.on("userLoggedIn", statusChangeMonitor);
-  		socket?.on("userLoggedOut", statusChangeMonitor);
+		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
+		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
+  		// socket?.on("userLoggedOut", statusChangeMonitor);
 
 		return () => {
 			console.log('Cleanup function called');
