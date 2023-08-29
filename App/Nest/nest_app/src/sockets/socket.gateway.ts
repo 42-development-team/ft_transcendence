@@ -34,7 +34,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 			this.clients.push(client);
 			const userStatus = await this.userService.getCurrentStatusFromId(userId);
 			this.server.emit("userLoggedIn", { userStatus });
-				console.log("userStatus in handleConnection: ", userStatus);
 				// todo: Check for verifiedJWT in socket and disconnect if not OK
 				// and retrieve all the channels the user is a member of
 		} else {
@@ -51,7 +50,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.clients = this.clients.filter(c => c.id !== client.id);
 		const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userStatus });
-		console.log("userStatus in handleDisconnection: ", userStatus);
     }
 
     @SubscribeMessage('joinRoom')
