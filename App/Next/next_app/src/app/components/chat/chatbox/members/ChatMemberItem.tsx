@@ -11,6 +11,7 @@ type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
     isBanned?: boolean
+	channelId: string
     kick: (kickedId: string) => void
     ban: (bannedId: string) => void
     unban: (unbannedId: string) => void
@@ -24,7 +25,7 @@ const ChatMemberItem = ({
 	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
     isCurrentUser, isBanned,
     kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin
+    setAsAdmin, removeAdmin, channelId
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -53,14 +54,28 @@ const ChatMemberItem = ({
 	}, [statusChange]);
 
 	useEffect(() => {
-		const statusChangeMonitor= () => {
+		const statusChangeMonitor = async (userId: string) => {
 			console.log('User logged in');
-			setStatusChange(usePrevious => !usePrevious);
-			// statusChange? setStatusChange(true) : setStatusChange(false);
+			console.log('userId', userId);
+			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
+			url.searchParams.append('userId', userId);
+			url.searchParams.append('channelId', channelId);
+			const response = await fetch(url.toString(), {
+				credentials: "include",
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			});
+			const data = await response.json();
+			console.log("data returned after isMember fetch: ", data);
+			if (data) {
+				setStatusChange(usePrevious => !usePrevious);
+			}
 		};
 
-		socket?.on("userLoggedIn", statusChangeMonitor);
-  		socket?.on("userLoggedOut", statusChangeMonitor);
+		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
+		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
 			console.log('Cleanup function called');
