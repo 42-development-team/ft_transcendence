@@ -56,18 +56,18 @@ const ChatMemberItem = ({
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
 			console.log('User logged in');
-			const response = await fetch(`${process.env.BACK_URL}/chatroom/isMember`, {
+			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
+			url.searchParams.append('userId', userId);
+			url.searchParams.append('channelId', channelId);
+			const response = await fetch(url.toString(), {
 				credentials: "include",
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({
-                    userId: userId,
-					channelId: { channelId },
-                }),
 			});
 			const data = await response.json();
+			console.log("data returned after isMember fetch: ", data);
 			if (data) {
 				setStatusChange(usePrevious => !usePrevious);
 			}

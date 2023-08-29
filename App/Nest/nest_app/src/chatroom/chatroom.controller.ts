@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, HttpStatus, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
@@ -104,12 +104,15 @@ export class ChatroomController {
 	}
 
 	@Get('/isMember')
-	async isMember(@Request() req: any, @Res() response: Response) {
-		const userId = parseInt(req.userId);
+	async isMember(
+		@Query('userId') userId: string,
+		@Query('channelId') channelId: string,
+		@Request() req: any,
+		@Res() response: Response) {
 		console.log ("userId logging in in isMember handler: ", userId);
-		const channelId = parseInt(req.chanelId);
 		console.log ("channelId logging in in isMember handler: ", channelId);
-		await this.membershipService.getMemberShipFromUserAndChannelId(userId, channelId)
+		await this.membershipService
+			.getMemberShipFromUserAndChannelId(parseInt(userId), parseInt(channelId))
 			.then(chatRoom => {
 				response.send(chatRoom? true : false);
 			})
