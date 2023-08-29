@@ -4,7 +4,6 @@ import { GameController } from './game.controller';
 import { UsersModule } from "../users/users.module";
 
 //==================
-import { SocketGateway } from 'src/sockets/socket.gateway';
 import { MembershipService } from 'src/membership/membership.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ChatroomModule } from 'src/chatroom/chatroom.module';
