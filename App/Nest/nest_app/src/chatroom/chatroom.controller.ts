@@ -102,9 +102,17 @@ export class ChatroomController {
 	}
 
 	/* U(pdate) */
-	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto) {
-		return this.chatroomService.update(+id, updateChatroomDto);
+	@Patch(':id/update')
+	async update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto, @Request() req: any, @Res() response: Response) {
+		const userId: number = req.user.sub;
+		try {
+			await this.chatroomService.update(+id, updateChatroomDto, userId);
+			// Todo: emit on socket
+			response.send('success');
+		}
+		catch (error) {
+			response.send(error.message);
+		}
 	}
 
 	@Patch(':id/join')

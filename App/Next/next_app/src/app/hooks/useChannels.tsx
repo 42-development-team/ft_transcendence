@@ -1,18 +1,19 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-import useSocketConnection from "./useSocketConnection"
+// import { useSocketContext } from "../context/SocketContext";
+import { useAuthcontext } from "../context/AuthContext";
 import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
     name: string;
     type: string;
-    password?: string;
+    hashedPassword?: string;
     receiverId?: string;
 }
 
 export default function useChannels(userId: string) {
-    const socket = useSocketConnection();
+    const { socket } = useAuthcontext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
@@ -134,6 +135,7 @@ export default function useChannels(userId: string) {
             receiveMessage(body);
         });
         socket?.on('newConnectionOnChannel', (body: any) => {
+			console.log("socket on newConnectionOnChannel: ", socket);
             handleNewConnectionOnChannel(body);
         });
         socket?.on('newDisconnectionOnChannel', (body: any) => {
@@ -162,7 +164,7 @@ export default function useChannels(userId: string) {
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
-        const targetChannel = joinedChannels.find(c => 
+        const targetChannel = joinedChannels.find(c =>
             c.type == "direct_message" && c.members?.some(member => member.id == receiverId)
         );
         if (targetChannel == undefined) {
@@ -181,8 +183,8 @@ export default function useChannels(userId: string) {
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {
         try {
             let hashedPassword;
-            if (newChannelInfo.password)
-                hashedPassword = await bcrypt.hash(newChannelInfo.password, 10);
+            if (newChannelInfo.hashedPassword)
+                hashedPassword = await bcrypt.hash(newChannelInfo.hashedPassword, 10);
             let response = await fetch(`${process.env.BACK_URL}/chatroom/new`, {
                 credentials: "include",
                 method: 'POST',
@@ -200,7 +202,7 @@ export default function useChannels(userId: string) {
                 throw new Error('Failed to create the channel ' + response.statusText);
             }
             const newChannel = await response.json();
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.password);
+            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.hashedPassword);
             return newChannel.id;
         } catch (error) {
             console.error('error creating channel', error);

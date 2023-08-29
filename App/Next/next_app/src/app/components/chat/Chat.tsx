@@ -82,7 +82,6 @@ const Chat = ({ userId }: ChatBarProps) => {
                 {chatBarState == ChatBarState.CreateChannelOpen &&
                     <CreateChannel userId={userId} createNewChannel={createNewChannel} />
                 }
-
             </UserRoleProvider>
         </div>
     )
