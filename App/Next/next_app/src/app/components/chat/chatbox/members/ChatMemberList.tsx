@@ -170,7 +170,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
     const AdminList = channel.members
@@ -179,7 +179,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
     const BannedList = channel.members
@@ -188,7 +188,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         )
     )
 
