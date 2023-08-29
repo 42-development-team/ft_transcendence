@@ -40,10 +40,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 			await this.userService.updateSocketId(userId, client.id);
 			this.clients.push(client);
 			const userStatus = await this.userService.getCurrentStatusFromId(userId);
-			this.server.emit("userLoggedIn", { userStatus });
-				console.log("userStatus in handleConnection: ", userStatus);
-				// todo: Check for verifiedJWT in socket and disconnect if not OK
-				// and retrieve all the channels the user is a member of
+			this.server.emit("userLoggedIn", { userId });
+			// todo: Check for verifiedJWT in socket and disconnect if not OK
+			// and retrieve all the channels the user is a member of
 		} else {
 			console.log('User not authenticated');
 			client.disconnect();
@@ -57,8 +56,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
 		const userStatus = await this.userService.getCurrentStatusFromId(userId);
-		this.server.emit("userLoggedOut", { userStatus });
-		console.log("userStatus in handleDisconnection: ", userStatus);
+		this.server.emit("userLoggedOut", { userId });
     }
 
     @SubscribeMessage('joinRoom')
