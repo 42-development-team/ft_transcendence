@@ -9,6 +9,7 @@ import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 import { forEachChild } from 'typescript';
+import { User } from '@prisma/client';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -155,18 +156,21 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
+        const {player1Id} : UserIdDto = this.queued[0].userId;
+        const {player2Id} : UserIdDto = this.queued[1].userId;
         this.queued.push(userId);
         console.log(userId + " have joined queue!");
-        console.log("queueList:", this.queued);
+        console.log("queueList after joined:", this.queued);
         if (this.queued.length >= 2) {
             const newGameRoom: GameRoomDto = {
                 gameId: this.gameRooms.length,
-                roomName: this.queued[0].userId + "_" + this.queued[1].userId,
-                playerOneId: this.queued[0].userId,
-                playerTwoId: this.queued[1].userId,
+                roomName: player1Id + "_" + this.queued[1].userId,
+                playerOneId: player1Id,
+                playerTwoId: player2Id,
                 data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
             }
-            this.leaveQueue(userId);
+            this.leaveQueue(player1Id);
+            console.log("newGameRoom:", newGameRoom);
         }
 
         // console.log(`Client ${user.username} (${player.id}) joined room ${roomName}`);
@@ -200,10 +204,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     
     @SubscribeMessage('leaveQueue')
     leaveQueue(userId: UserIdDto) {
-        console.log(userId + " leaved queue!");
-        console.log("queueList:", this.queued);
         const playerIndex = this.queued.indexOf(userId);
         this.queued.splice(playerIndex, 1);
+        console.log(userId + " leaved queue!");
+        console.log("queueList after leave:", this.queued);
     }
 
     setGameData(playerOneId: number, playerTwoId: number): GameDto{

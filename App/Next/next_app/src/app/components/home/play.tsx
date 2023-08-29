@@ -12,12 +12,13 @@ const Play = () => {
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const joinQueue = useGame().joinQueue;
+	const {joinQueue, leaveQueue } = useGame();
 
 	const matchmaking = async () => {
 		setLoading(true)
 		setDisable(true)
 		setButtonText("Calling racket master...")
+		joinQueue();
 
 		//TODO: handle matchmaking
 	}
@@ -26,6 +27,8 @@ const Play = () => {
 		setLoading(false)
 		setDisable(false)
 		setButtonText("Play")
+		leaveQueue();
+		
 	}
 
 	return (
@@ -41,7 +44,7 @@ const Play = () => {
 				) : (
 					<CustomBtnPlay
 						disable={disable}
-						onClick={joinQueue}>
+						onClick={matchmaking}>
 						{!loading && buttonText}
 					</CustomBtnPlay>
 				)}
