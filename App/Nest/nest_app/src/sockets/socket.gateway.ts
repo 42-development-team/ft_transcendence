@@ -52,7 +52,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
-		const userStatus = this.userService.getCurrentStatusFromId(userId);
+		const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userStatus });
 		console.log("userStatus in handleDisconnection: ", userStatus);
         // add logic for:
