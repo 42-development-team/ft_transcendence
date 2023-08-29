@@ -152,6 +152,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
                 data: this.gameService.setGameData(player1Id, player2Id),
             }
 
+            // add room to rooms list
+            this.gameRooms.push(newGameRoom);
+
             // Create room instance and join room
             player?.join(newGameRoom.roomName);
             const player2SocketId = await this.userService.getUserSocketFromId(player2Id);
@@ -162,8 +165,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.handleLeaveQueue(this.queued[1]);
 
             // send game data to players
-            this.gameRooms.push(newGameRoom);
-
             this.server.to(newGameRoom.roomName).emit('redirect', {roomId: newGameRoom.id}); // => which event to send first ??
             // this.server.to(newGameRoom.roomName).emit('updateGame', {newGameRoom}); // => which event to send first ??
         }

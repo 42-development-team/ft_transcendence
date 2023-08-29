@@ -1,8 +1,11 @@
 
-import Canvas from '../components/game/canvasModified';
+import Canvas from '../components/game/canvas';
 
-const Game = () => {
+const Game = ({...props}) => {
 	
+	const { id } = props;
+	console.log('id:', id);
+
 	return (
 		<Canvas />
 	);

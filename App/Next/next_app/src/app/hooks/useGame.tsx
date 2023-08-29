@@ -23,11 +23,11 @@ export default function useGame() {
 			// launch the loop here ?
 		});
 		
-		socket?.on('redirect', (body: any) => {
-			console.log("get redirected");
-			console.log("body:", JSON.stringify(body, null, 2));
-			router.push("/game");
-		});
+		// socket?.on('redirect', (body: any) => {
+		// 	console.log("get redirected");
+		// 	console.log("body:", JSON.stringify(body, null, 2));
+		//	router.push("/game");
+		// });
 
 		socket?.on('newGameConnection', (body: any) => {
 			handleNewGameConnection(body); // get data from this ???
