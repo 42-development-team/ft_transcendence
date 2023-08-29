@@ -154,10 +154,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId = await this.chatroomService.getUserIdFromSocket(player);
         this.queued.push({userId});
         
-        // ====================================== //
-        console.log(userId + " have joined queue!");
-        console.log("queueList after joined:", this.queued);
-        
         if (this.queued.length >= 2) {
             const player1Id: number = this.queued[0].userId;
             const player2Id: number = this.queued[1].userId;
@@ -173,32 +169,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
             // Create room instance and join room
             player?.join(newGameRoom.roomName);
-            console.log("p2:", player2Id);
             const player2SocketId = await this.userService.getUserSocketFromId(player2Id);
 			this.clients.find(c => c.id == player2SocketId)?.join(newGameRoom.roomName);
 
             // pop player from queue list
-            this.leaveQueue(this.queued[0]);
-            this.leaveQueue(this.queued[1]);
-
-            // ====================================== //
-            console.log("newGameRoom:", newGameRoom);
-            console.log("queueList after leaveQueue:", this.queued);
+            this.handleLeaveQueue(this.queued[0]);
+            this.handleLeaveQueue(this.queued[1]);
 
             // send game data to players
             this.server.to(newGameRoom.roomName).emit('updateGame', newGameRoom); // => which event to send first ??
         }
     }
-
-    // @SubscribeMessage('leaveGameRoom')
-    // async handleLeaveGameRoom(userSocket: Socket) {
-        // const userId = await this.chatroomService.getUserIdFromSocket(userSocket);
-        // this.gameRooms.forEach(game => {
-            // if (game.playerOneId === userId || game.playerTwoId === userId) {
-            //     this.gameRooms.splice()
-            // }
-        // })
-    // }
 
     // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
@@ -212,13 +193,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const {stopMove} = body;
         console.log(stopMove);
     }
-    
-    // @SubscribeMessage('leaveQueue')
-    leaveQueue(userId: UserIdDto) {
+
+    @SubscribeMessage('leaveQueue')
+    handleLeaveQueue(userId: UserIdDto) {
         const playerIndex = this.queued.indexOf(userId);
         this.queued.splice(playerIndex, 1);
-        console.log(userId + " leaved queue!");
-        console.log("queueList after leave:", this.queued);
     }
 
     // Send the players positions + ball positions to correct room
