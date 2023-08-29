@@ -4,90 +4,90 @@ generator client {
 
 datasource db {
 	provider = "postgresql"
-	url      = env("DATABASE_URL")
+	url = env("DATABASE_URL")
 }
 
 model User {
-	id               Int        @id @default(autoincrement())
-	createdAt        DateTime   @default(now())
-	updatedAt        DateTime   @updatedAt
-	avatar           String?
-	username         String?    @unique
-	login            String     @unique
-	isTwoFAEnabled   Boolean    @default(false)
-	twoFAsecret      String?
-	isFirstLogin     Boolean    @default(true)
-	chatRoomsCreated ChatRoom[] @relation("chatCreated")
-	gamesLosed       Game[]     @relation("gamesLosed")
-	gamesWon         Game[]     @relation("gamesWon")
-	messagesSent     Message[]  @relation("SentMessages")
-	userStats        UserStats?
-	games            Game[]     @relation("gamesPlayed")
-	memberShips	     Membership[]	@relation("membershipUser")
-	socketId         String?  	@unique
-	currentStatus	   String
+	id					Int				@id @default(autoincrement())
+	createdAt			DateTime		@default(now())
+	updatedAt			DateTime		@updatedAt
+	avatar				String?
+	username			String?			@unique
+	login				String			@unique
+	isTwoFAEnabled		Boolean			@default(false)
+	twoFAsecret			String?
+	isFirstLogin		Boolean			@default(true)
+	chatRoomsCreated	ChatRoom[]		@relation("chatCreated")
+	gamesLosed			Game[]			@relation("gamesLosed")
+	gamesWon			Game[]			@relation("gamesWon")
+	messagesSent		Message[]		@relation("SentMessages")
+	userStats			UserStats?
+	games				Game[]			@relation("gamesPlayed")
+	memberShips			Membership[]	@relation("membershipUser")
+	socketId			String?			@unique
+	currentStatus		String
 }
 
 model Message {
-	id         Int       @id @default(autoincrement())
-	createdAt  DateTime  @default(now())
-	updatedAt  DateTime  @updatedAt
-	content    String
-	senderId   Int
-	chatRoomId Int?
-	chatRoom   ChatRoom? @relation("chatMessages", fields: [chatRoomId], references: [id])
-	sender     User      @relation("SentMessages", fields: [senderId], references: [id])
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime 	@default(now())
+	updatedAt	DateTime	@updatedAt
+	content		String
+	senderId	Int
+	chatRoomId	Int?
+	chatRoom	ChatRoom?	@relation("chatMessages", fields: [chatRoomId], references: [id])
+	sender		User		@relation("SentMessages", fields: [senderId], references: [id])
 }
 
 model ChatRoom {
-	id             Int       		@id @default(autoincrement())
-	createdAt      DateTime  		@default(now())
-	updatedAt      DateTime  		@updatedAt
-	name           String
-	type           String
-	hashedPassword String?
-	creatorId      Int
-	owner          User      		@relation("chatCreated", fields: [creatorId], references: [id])
-	messages       Message[] 		@relation("chatMessages")
+	id				Int				@id @default(autoincrement())
+	createdAt		DateTime		@default(now())
+	updatedAt		DateTime		@updatedAt
+	name			String			@unique
+	type			String
+	hashedPassword	String?
+	creatorId		Int
+	owner			User			@relation("chatCreated", fields: [creatorId], references: [id])
+	messages		Message[]		@relation("chatMessages")
 	memberShips		Membership[]	@relation("membership")
 }
 
 model Membership {
 	id			Int			@id @default(autoincrement())
-	createdAt 	DateTime 	@default(now())
-	updatedAt 	DateTime 	@updatedAt
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
 	isAdmin		Boolean		@default(false)
-	isBanned		Boolean		@default(false)
+	isBanned	Boolean		@default(false)
 	userId		Int
-	chatRoomId 	Int
-	user			User	 	@relation("membershipUser", fields: [userId], references: [id])
-	chatroom		ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
+	chatRoomId	Int
+	user		User		@relation("membershipUser", fields: [userId], references: [id])
+	chatroom	ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
 }
 
 model UserStats {
-	id         Int      @id @default(autoincrement())
-	createdAt  DateTime @default(now())
-	updatedAt  DateTime @updatedAt
-	winStreak  Int      @default(0)
-	win        Int      @default(0)
-	ratio      Float    @default(0)
-	played     Int      @default(0)
-	totalScore Int      @default(0)
-	lose       Int      @default(0)
-	userId     Int      @unique
-	user       User     @relation(fields: [userId], references: [id])
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+	winStreak	Int			@default(0)
+	win			Int			@default(0)
+	ratio		Float		@default(0)
+	played		Int			@default(0)
+	totalScore	Int			@default(0)
+	lose		Int			@default(0)
+	userId		Int			@unique
+	user		User		@relation(fields: [userId], references: [id])
 }
 
 model Game {
-	id                Int      @id @default(autoincrement())
-	createdAt         DateTime @default(now())
-	updatedAt         DateTime @updatedAt
-	users             User[]   @relation("gamesPlayed")
-	loser             User?    @relation("gamesLosed", fields: [gameLosedId], references: [id])
-	gameLosedId       Int?
-	winner            User?    @relation("gamesWon", fields: [gameWonId], references: [id])
-	gameWonId         Int?
-	winnerScore       Int      @default(0)
-	loserScore        Int      @default(0)
-	gameDuration      Int      @default(0)
+	id				Int			@id @default(autoincrement())
+	createdAt		DateTime	@default(now())
+	updatedAt		DateTime	@updatedAt
+	users			User[]		@relation("gamesPlayed")
+	loser			User?		@relation("gamesLosed", fields: [gameLosedId], references: [id])
+	gameLosedId		Int?
+	winner			User?		@relation("gamesWon", fields: [gameWonId], references: [id])
+	gameWonId		Int?
+	winnerScore		Int			@default(0)
+	loserScore		Int			@default(0)
+	gameDuration	Int			@default(0)
 }

@@ -4,6 +4,7 @@ import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextPro
 import { delay } from '@/app/utils/delay';
 import { Alert } from '@material-tailwind/react';
 import { AlertSuccessIcon } from '../../alert/AlertSuccessIcon';
+import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
 import PasswordInputField from '../PasswordInputField';
 import ChatHeader from '../chatbox/ChatHeader';
 import { ChannelType } from '@/app/utils/models';
@@ -25,6 +26,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	const [password, setPassword] = useState('');
 	const [lockInterface, setLockInterface] = useState(false);
 
+	const [error, setError] = useState(false);
 	const [openAlert, setOpenAlert] = useState(false);
 
 	const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -34,7 +36,8 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	};
 
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-		// Todo: check for unique channel name
+		setOpenAlert(false);
+		setError(false);
 		event.preventDefault();
 		if (channelName === '') return;
 		if (channelType === ChannelType.Protected && password === '') return;
@@ -46,6 +49,14 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 			hashedPassword: channelType === ChannelType.Protected ? password : undefined,
 		};
 		const createdChannelId = await createNewChannel(newChannelInfo);
+
+		if (createdChannelId === 'error') {
+			setOpenAlert(true);
+			setError(true);
+			await delay(CLOSE_DELAY);
+			setLockInterface(false);
+			return;
+		}
 
 		// Close the form after short delay
 		setOpenAlert(true);
@@ -76,11 +87,14 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 					className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all" 
 					variant='gradient'
 					open={openAlert}
-					icon={<AlertSuccessIcon />}
+					icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
 					animate={{
 						mount: { y: 0 },
 						unmount: { y: 100 },
-					}}>{channelName} has been created</Alert>
+					}}>
+						{!error && <p>{channelName} has been created</p>}
+     		        	{error && <p>Channel name already exists</p>}
+					</Alert>
 			</div>
 		</div>
 	);
