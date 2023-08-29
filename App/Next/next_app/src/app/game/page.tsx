@@ -1,15 +1,11 @@
 
-import CanvasWithSock from '../components/game/canvasModified';
-import CanvasWithoutSock from '../components/game/canvasToModify';
+import Canvas from '../components/game/canvasModified';
 
 const Game = () => {
-
+	
 	return (
-		<CanvasWithoutSock />
+		<Canvas />
 	);
-	// return (
-	// 	<CanvasWithSock />
-	// ); => replace with this return when game socket is ok
 }
 	
 export default Game;

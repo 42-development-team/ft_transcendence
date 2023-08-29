@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useState, KeyboardEventHandler } from "react";
-import BallClass from "@/app/game/class/ball.class";
-import PlayerClass from "@/app/game/class/player.class";
+import PlayerClass from "../../game/class/player.class";
+import BallClass from "../../game/class/ball.class";
 
 const canvasStyle: any = {
 	backgroundColor: '#4B3C4E',
@@ -16,6 +16,8 @@ function printScore(context: CanvasRenderingContext2D, p1: PlayerClass, p2: Play
 		context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
 		context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
 	context.closePath();
+
+	// do this in back logic
 	if (p1.points === 11)
 		return [p1, p2];
 	else if (p2.points === 11)

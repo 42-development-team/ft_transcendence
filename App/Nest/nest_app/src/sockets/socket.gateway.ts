@@ -4,7 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
-
+import { GameService } from 'src/game/game.service';
+import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
+import { GameRoomDto } from 'src/game/dto/create-room.dto';
+import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -14,14 +17,18 @@ import { MembershipService } from 'src/membership/membership.service';
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     constructor(
         private chatroomService: ChatroomService,
+        private gameService: GameService,
         private userService: UsersService,
-        private memberShipService: MembershipService
+        private memberShipService: MembershipService,
         ) {}
+
 
     @WebSocketServer()
     server: Server;
 
     clients: Socket[] = [];
+    gameRooms: GameRoomDto[] = [];
+    queued: UserIdDto[] = [];
 
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
@@ -123,6 +130,74 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         );
     }
 
+    // =========================================================================== //
+    // ============================ GAME EVENTS ================================== //
+    // =========================================================================== //
+    @SubscribeMessage('joinQueue')
+    async handleJoinQueue(player: Socket) {
+
+        const userId = await this.chatroomService.getUserIdFromSocket(player);
+        this.queued.push({userId});
+
+        if (this.queued.length >= 2) {
+            const player1Id: number = this.queued[0].userId;
+            const player2Id: number = this.queued[1].userId;
+
+            // create room data
+            const newGameRoom: GameRoomDto = {
+                gameId: this.gameRooms.length,
+                roomName: player1Id + "_" + player2Id,
+                playerOneId: player1Id,
+                playerTwoId: player2Id,
+                data: this.gameService.setGameData(player1Id, player2Id),
+            }
+
+            // Create room instance and join room
+            player?.join(newGameRoom.roomName);
+            const player2SocketId = await this.userService.getUserSocketFromId(player2Id);
+			this.clients.find(c => c.id == player2SocketId)?.join(newGameRoom.roomName);
+
+            // pop player from queue list
+            this.handleLeaveQueue(this.queued[0]);
+            this.handleLeaveQueue(this.queued[1]);
+
+            // send game data to players
+            this.server.to(newGameRoom.roomName).emit('updateGame', newGameRoom); // => which event to send first ??
+        }
+    }
+
+    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
+    @SubscribeMessage('move')
+    async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
+        const {move} = body;
+        console.log(move);
+    }
+
+    @SubscribeMessage('stopMove')
+    async handleStopMove(@MessageBody() body: any, @ConnectedSocket() socket) {
+        const {stopMove} = body;
+        console.log(stopMove);
+    }
+
+    @SubscribeMessage('leaveQueue')
+    handleLeaveQueue(userId: UserIdDto) {
+        const playerIndex = this.queued.indexOf(userId);
+        this.queued.splice(playerIndex, 1);
+    }
+
+    // Send the players positions + ball positions to correct room
+    async sendGameData(roomName: string, gameData: GameDto) {
+        this.server.to(roomName).emit('updateGame', {gameData});
+    }
+
+    // Should emit to room event 'GameOver' ??
+
+
+
+
+
+
+
     /*
         if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
         for now not considered the best choice in order to keep HTTP status response and separation of concerns
@@ -143,4 +218,3 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     //     }
     // }
 }
-
