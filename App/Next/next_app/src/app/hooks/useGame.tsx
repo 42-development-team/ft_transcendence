@@ -20,7 +20,6 @@ export default function useGame() {
 			console.log("body:", JSON.stringify(body, null, 2));
 			// update data
 			// launch the loop here ?
-
 		});
 
 		socket?.on('newGameConnection', (body: any) => {
