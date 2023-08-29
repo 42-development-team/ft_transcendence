@@ -4,7 +4,7 @@ import { BallInterface, GameInterface, PlayerInterface } from "../game/interface
 import { useAuthcontext } from "../context/AuthContext";
 
 export default function useGame() {
-	
+
 	const {socket} = useAuthcontext();
 	const [data, setData] = useState<GameInterface>();
 	// const [activeGames, setActiveGames] = useState<GameModel[]>([]); // check db model and redo this properly
