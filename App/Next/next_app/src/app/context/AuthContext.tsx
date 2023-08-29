@@ -92,6 +92,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         // Todo: update user status
         setUniqueLogin("");
         setUserId("");
+		socket?.disconnect();
     }
 
 

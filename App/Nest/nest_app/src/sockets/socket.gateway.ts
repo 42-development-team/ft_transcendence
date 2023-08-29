@@ -26,45 +26,32 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
      // The client object is an instance of the Socket class provided by the Socket.io library.
      // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
      // why "(client: Socket)" ? because client is an instance of Socket class
-    // async handleConnection(client: Socket){
-    //     console.log('Client connected: ' + client.id);
-    //     const userId = await this.chatroomService.getUserIdFromSocket(client);
-	// 	if (userId) {
-	// 		await this.userService.updateSocketId(userId, client.id);
-	// 	  }
-    //     this.clients.push(client);
-    //     // todo: Check for verifiedJWT in socket and disconnect if not OK
-    //     // and retrieve all the channels the user is member of
-    // }
-
 	async handleConnection(client: Socket) {
-		if(await this.chatroomService.getUserIdFromSocket(client)){
-			const userId = await this.chatroomService.getUserIdFromSocket(client);
-			if (userId) {
-			  console.log('Client connected: ' + client.id);
-			  await this.userService.updateSocketId(userId, client.id);
-			  this.clients.push(client);
-			  // todo: Check for verifiedJWT in socket and disconnect if not OK
-			  // and retrieve all the channels the user is a member of
-			} else {
-			  console.log('User not authenticated');
-			  client.disconnect();
-			}
-		}
-		else {
+		const userId = await this.chatroomService.getUserIdFromSocket(client);
+		if (userId) {
+			console.log('Client connected: ' + client.id);
+			await this.userService.updateSocketId(userId, client.id);
+			this.clients.push(client);
+			const userStatus = await this.userService.getCurrentStatusFromId(userId);
+			this.server.emit("userLoggedIn", { userStatus });
+				console.log("userStatus in handleConnection: ", userStatus);
+				// todo: Check for verifiedJWT in socket and disconnect if not OK
+				// and retrieve all the channels the user is a member of
+		} else {
 			console.log('User not authenticated');
 			client.disconnect();
 		}
-	  }
+	}
 
     // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
     async handleDisconnect(client: Socket){
-        console.log('Client disconnected: ' + client.id);
+		console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
-        // add logic for:
-        // remove
+		const userStatus = await this.userService.getCurrentStatusFromId(userId);
+		this.server.emit("userLoggedOut", { userStatus });
+		console.log("userStatus in handleDisconnection: ", userStatus);
     }
 
     @SubscribeMessage('joinRoom')
