@@ -156,8 +156,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        const {player1Id} : UserIdDto = this.queued[0].userId;
-        const {player2Id} : UserIdDto = this.queued[1].userId;
+        const player1Id : UserIdDto = this.queued[0].userId;
+        const player2Id : UserIdDto = this.queued[1].userId;
         this.queued.push(userId);
         console.log(userId + " have joined queue!");
         console.log("queueList after joined:", this.queued);
