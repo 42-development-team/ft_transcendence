@@ -151,7 +151,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
 
     @SubscribeMessage('joinQueue')
-    async handleJoinGameRoom(player: Socket) {
+    async handleJoinQueue(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
         this.queued.push({userId});
