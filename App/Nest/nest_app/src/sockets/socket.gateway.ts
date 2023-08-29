@@ -20,7 +20,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-        ) {console.log("SocketGateway constructor");}
+        ) {}
 
 
     @WebSocketServer()
@@ -152,7 +152,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleJoinQueue(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        this.queued.push(userId);
+        this.queued.push({userId});
         
         // ====================================== //
         console.log(userId + " have joined queue!");
@@ -173,8 +173,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
             // Create room instance and join room
             player?.join(newGameRoom.roomName);
-            const receiverSocketId = await this.userService.getUserSocketFromId(player2Id);
-			this.clients.find(c => c.id == receiverSocketId)?.join(newGameRoom.roomName);
+            console.log("p2:", player2Id);
+            const player2SocketId = await this.userService.getUserSocketFromId(player2Id);
+			this.clients.find(c => c.id == player2SocketId)?.join(newGameRoom.roomName);
 
             // pop player from queue list
             this.leaveQueue(this.queued[0]);

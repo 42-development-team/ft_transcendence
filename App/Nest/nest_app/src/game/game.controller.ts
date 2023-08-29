@@ -26,7 +26,7 @@ export class GameController {
         private gameService: GameService,
         private userService: UsersService,
         private socketGateway: SocketGateway,
-        ) {}
+    ) {}
     private queued: UserIdDto[] = [];
 
     logger = new Logger ('GameController'); // instanciating Lgger class to use it for debugging instead of console.log etc
