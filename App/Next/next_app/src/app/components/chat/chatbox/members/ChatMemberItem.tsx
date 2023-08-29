@@ -5,6 +5,7 @@ import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 import { useAuthcontext } from "@/app/context/AuthContext";
+import { usePrevious } from "@material-tailwind/react";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -33,7 +34,6 @@ const ChatMemberItem = ({
 		const fetchedUserStatus = async () => {
 			try {
 				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
-					// credentials: "include",
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json'
@@ -53,24 +53,19 @@ const ChatMemberItem = ({
 	}, [statusChange]);
 
 	useEffect(() => {
-		const handleUserLoggedIn = () => {
+		const statusChangeMonitor= () => {
 			console.log('User logged in');
-			statusChange? setStatusChange(true) : setStatusChange(false);
+			setStatusChange(usePrevious => !usePrevious);
+			// statusChange? setStatusChange(true) : setStatusChange(false);
 		};
 
-		const handleUserLoggedOut = () => {
-			console.log('User logged out');
-			statusChange? setStatusChange(false) : setStatusChange(true);
-			console.log("status change in handleUserLoggedOut: ", statusChange);
-		};
-
-		socket?.on("userLoggedIn", handleUserLoggedIn);
-  		socket?.on("userLoggedOut", handleUserLoggedOut);
+		socket?.on("userLoggedIn", statusChangeMonitor);
+  		socket?.on("userLoggedOut", statusChangeMonitor);
 
 		return () => {
 			console.log('Cleanup function called');
-			socket?.off("userLoggedIn", handleUserLoggedIn);
-  			socket?.off("userLoggedOut", handleUserLoggedOut);
+			socket?.off("userLoggedIn", statusChangeMonitor);
+  			socket?.off("userLoggedOut", statusChangeMonitor);
 		}
 	}, [socket])
 
