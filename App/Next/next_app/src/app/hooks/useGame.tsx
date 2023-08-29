@@ -1,11 +1,11 @@
 "use client";
-import useSocketConnection from "./useSocketConnection";
 import { useEffect, useState } from "react";
 import { BallInterface, GameInterface, PlayerInterface } from "../game/interfaces/game.interfaces";
+import { useAuthcontext } from "../context/AuthContext";
 
 export default function useGame() {
 	
-	const socket = useSocketConnection();
+	const {socket} = useAuthcontext();
 	const [data, setData] = useState<GameInterface>();
 	// const [activeGames, setActiveGames] = useState<GameModel[]>([]); // check db model and redo this properly
 
