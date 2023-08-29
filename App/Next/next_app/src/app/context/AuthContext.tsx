@@ -49,15 +49,14 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	useEffect(() => {
 		const handleTabClosing = (event: BeforeUnloadEvent) => {
-			console.log("ARE YOU SURE?");
 		};
 		setHandleTabClosing(() => handleTabClosing)
 	}, []);
 
 	useEffect(() => {
 		const tabClosingEventListener = (event: BeforeUnloadEvent) => {
-			handleTabClosing?.(event);
 			if (isLoggedIn){
+				handleTabClosing?.(event);
 				logout();
 			}
 		};

@@ -109,16 +109,17 @@ export class ChatroomController {
 		@Query('channelId') channelId: string,
 		@Request() req: any,
 		@Res() response: Response) {
-		console.log ("userId logging in in isMember handler: ", userId);
-		console.log ("channelId logging in in isMember handler: ", channelId);
-		await this.membershipService
-			.getMemberShipFromUserAndChannelId(parseInt(userId), parseInt(channelId))
-			.then(chatRoom => {
-				response.send(chatRoom? true : false);
-			})
-			.catch(error => {
+			try {
+				console.log ("userId logging in in isMember handler: ", userId);
+				console.log ("channelId logging in in isMember handler: ", channelId);
+				const isMember = await this.membershipService.isChannelMember(
+					parseInt(userId),
+					parseInt(channelId)
+				);
+				response.status(HttpStatus.OK).json(isMember);
+			} catch (error) {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-			});
+			}
 	}
 
 	/* U(pdate) */
