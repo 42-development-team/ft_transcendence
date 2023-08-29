@@ -57,7 +57,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	useEffect(() => {
 		const tabClosingEventListener = (event: BeforeUnloadEvent) => {
 			handleTabClosing?.(event);
-			logout();
+			if (isLoggedIn){
+				logout();
+			}
 		};
 		window.addEventListener('beforeunload', tabClosingEventListener);
 
