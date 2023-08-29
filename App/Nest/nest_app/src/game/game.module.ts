@@ -9,12 +9,13 @@ import { MembershipService } from 'src/membership/membership.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ChatroomModule } from 'src/chatroom/chatroom.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { ChatroomService } from 'src/chatroom/chatroom.service';
 
 
 @Module({
   imports: [UsersModule, ChatroomModule, JwtModule, PrismaModule],
   controllers: [GameController],
-  providers: [GameService, SocketGateway, MembershipService],
-  exports: [GameService, SocketGateway]
+  providers: [GameService, MembershipService, ChatroomService],
+  exports: [GameService]
 })
 export class GameModule {}
