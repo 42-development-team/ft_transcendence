@@ -39,8 +39,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 				  // todo: Check for verifiedJWT in socket and disconnect if not OK
 				  // and retrieve all the channels the user is a member of
 			}
-		}
-		else {
+		} else {
 			console.log('User not authenticated');
 			client.disconnect();
 		}

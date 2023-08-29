@@ -48,26 +48,9 @@ const ChatMemberItem = ({
 		fetchedUserStatus();
 	}, [id, statusChange]);
 
-
-	// todo
-	// reload just when the user logging in or out is a channel member
-	// useEffect(() => {
-
-	// 	const statusMonitor = (currentStatus: any) => {
-	// 		setUserStatus(currentStatus);
-	// 	}
-
-	// 	socket?.on('UserLoggedIn', (body: any) => {
-	// 		statusMonitor(body.currentStatus);
-	// 		console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
-	// 	});
-
-	// 	socket?.on('UserLoggedOut', (body: any) => {
-	// 		statusMonitor(body.currentStatus);
-	// 		console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
-	// 	});
-
-	// }, [socket, userStatus]);
+	useEffect(() => {
+		console.log("status change: ", statusChange);
+	}, [statusChange]);
 
 	useEffect(() => {
 		const handleUserLoggedIn = () => {
@@ -78,6 +61,7 @@ const ChatMemberItem = ({
 		const handleUserLoggedOut = () => {
 			console.log('User logged out');
 			statusChange? setStatusChange(false) : setStatusChange(true);
+			console.log("status change in handleUserLoggedOut: ", statusChange);
 		};
 
 		socket?.on("userLoggedIn", handleUserLoggedIn);
