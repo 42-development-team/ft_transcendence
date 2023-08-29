@@ -22,7 +22,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService
-        ) {}
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -149,35 +149,34 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
-0    // =========================================================================== //
-    // ============================ GAME EVENTS ================================== //
-    // =========================================================================== //
+
     @SubscribeMessage('joinQueue')
     async handleJoinGameRoom(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        this.queued.push(userId);
+        this.queued.push({userId});
         
         // ====================================== //
         console.log(userId + " have joined queue!");
         console.log("queueList after joined:", this.queued);
         
         if (this.queued.length >= 2) {
-            const player1Id : UserIdDto = this.queued[0];
-            const player2Id : UserIdDto = this.queued[1];
+            const player1Id: number = this.queued[0].userId;
+            const player2Id: number = this.queued[1].userId;
+
             
             const newGameRoom: GameRoomDto = {
                 gameId: this.gameRooms.length,
-                roomName: player1Id.userId + "_" + player2Id.userId,
-                playerOneId: player1Id.userId,
-                playerTwoId: player2Id.userId,
-                data: this.gameService.setGameData(player1Id.userId, player2Id.userId),
+                roomName: player1Id + "_" + player2Id,
+                playerOneId: player1Id,
+                playerTwoId: player2Id,
+                data: this.gameService.setGameData(player1Id, player2Id),
             }
 
             player?.join(newGameRoom.roomName);
 
-            this.leaveQueue(player1Id);
-            this.leaveQueue(player2Id);
+            this.leaveQueue(this.queued[0]);
+            this.leaveQueue(this.queued[1]);
 
             // ====================================== //
             console.log("newGameRoom:", newGameRoom);
