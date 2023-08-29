@@ -4,7 +4,6 @@ import { Spinner } from '@material-tailwind/react'
 import { useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import CustomBtn from '../CustomBtn'
-import useGame from '@/app/hooks/useGame'
 import { join } from 'path'
 
 const Play = () => {
