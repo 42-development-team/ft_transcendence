@@ -12,7 +12,7 @@ const Play = () => {
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {joinQueue, leaveQueue } = useGame();
+	const {joinQueue, leaveQueue} = useGame();
 
 	const matchmaking = async () => {
 		setLoading(true)

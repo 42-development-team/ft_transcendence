@@ -55,7 +55,7 @@ export class GameController {
         // secure if userId 1 and 2 are the same
         if (this.queued.length >= 1) {
             const newGameRoom: GameRoomDto = {
-                gameId: 0,
+                id: 0,
                 // roomName: this.queued[0].userId + "_" + this.queued[1].userId,
                 roomName: this.queued[0].userId + "_9",
                 playerOneId: this.queued[0].userId,

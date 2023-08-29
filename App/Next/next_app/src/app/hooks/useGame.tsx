@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import { BallInterface, GameInterface, PlayerInterface } from "../game/interfaces/game.interfaces";
 import { useAuthcontext } from "../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function useGame() {
 
 	const {socket} = useAuthcontext();
 	const [data, setData] = useState<GameInterface>();
-	// const [activeGames, setActiveGames] = useState<GameModel[]>([]); // check db model and redo this properly
+	const router = useRouter();
 
 	const handleNewGameConnection = (body: any) => {
 		const { room, user } = body;
@@ -20,6 +21,11 @@ export default function useGame() {
 			console.log("body:", JSON.stringify(body, null, 2));
 			// update data
 			// launch the loop here ?
+		});
+		
+		socket?.on('redirect', (body: any) => {
+			console.log("get redirected");
+			router.push("/game");
 		});
 
 		socket?.on('newGameConnection', (body: any) => {
