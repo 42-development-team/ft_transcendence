@@ -172,11 +172,11 @@ const FirstLoginPageComponent = ({
         waiting2fa &&
           <TwoFA userId={userId}></TwoFA>
       }
-      <ValidateBtn onClick={handleClick} disable={!validateEnabled} >
-        <div className='mt-5 font-bold text-xl'>
+      <div className="flex justify-center mb-6 mt-4">
+        <ValidateBtn onClick={handleClick} disable={!validateEnabled} >
           Validate
-        </div>
-      </ValidateBtn>
+        </ValidateBtn>
+      </div>
     </div>
   )
 }
