@@ -5,6 +5,7 @@ import { useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import CustomBtn from '../CustomBtn'
 import { join } from 'path'
+import useGame from '@/app/hooks/useGame';
 
 const Play = () => {
 

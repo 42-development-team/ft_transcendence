@@ -35,12 +35,12 @@ export default function useGame() {
 
 	// TODO keep this logic but match it with db model
 	
-	const joinRoomGame = async () => {
-		socket?.emit("joinRoomGame", 0);
+	const joinQueue = async () => {
+		socket?.emit("joinQueue", 0);
 	}
 
-	const leaveRoomGame = async () => {
-		socket?.emit("leaveRoomGame");
+	const leaveQueue = async () => {
+		socket?.emit("leaveQueue");
 	}
 
 	const move = async (event: string) => {
@@ -55,8 +55,8 @@ export default function useGame() {
 	return {
 		move,
 		stopMove,
-		leaveRoomGame,
-		joinRoomGame,
+		leaveQueue,
+		joinQueue,
 		data,
 	}
 }
