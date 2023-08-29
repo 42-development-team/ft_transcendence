@@ -25,7 +25,7 @@ const ChatMemberItem = ({
 	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
     isCurrentUser, isBanned,
     kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin
+    setAsAdmin, removeAdmin, channelId
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -54,8 +54,18 @@ const ChatMemberItem = ({
 	}, [statusChange]);
 
 	useEffect(() => {
-		const statusChangeMonitor= () => {
+		const statusChangeMonitor = async () => {
 			console.log('User logged in');
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/isMember/${channelId}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+                    userId: { id },
+                }),
+			});
+			const data = await response.json();
 			setStatusChange(usePrevious => !usePrevious);
 			// statusChange? setStatusChange(true) : setStatusChange(false);
 		};
