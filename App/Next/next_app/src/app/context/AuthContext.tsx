@@ -46,6 +46,18 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			initializeSocket();
 	}, [isLoggedIn]);
 
+	useEffect(() => {
+		const handleTabClosing = (event: BeforeUnloadEvent) => {
+			event?.preventDefault();
+			event.returnValue = "Do you really want to quit PONG ?";
+		};
+		window.addEventListener('beforeunload', handleTabClosing);
+
+		return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		};
+	}, []);
+
     const fetchProfile = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
