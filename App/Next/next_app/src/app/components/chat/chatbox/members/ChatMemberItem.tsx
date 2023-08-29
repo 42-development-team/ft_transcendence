@@ -11,6 +11,7 @@ type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
     isBanned?: boolean
+	channelId: string
     kick: (kickedId: string) => void
     ban: (bannedId: string) => void
     unban: (unbannedId: string) => void
