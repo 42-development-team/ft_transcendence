@@ -32,7 +32,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [userId, setUserId] = useState<string>("");
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
 	const ENDPOINT = `${process.env.BACK_URL}`;
-	// const [handleTabClosing, setHandleTabClosing] = useState<((event:BeforeUnloadEvent) => void) | undefined>(undefined);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -47,25 +46,19 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			initializeSocket();
 	}, [isLoggedIn]);
 
-	// useEffect(() => {
-	// 	const handleTabClosing = (event: BeforeUnloadEvent) => {
-	// 	};
-	// 	setHandleTabClosing(() => handleTabClosing)
-	// }, []);
-
-	// useEffect(() => {
-	// 	const tabClosingEventListener = (event: BeforeUnloadEvent) => {
-	// 	if (isLoggedIn){
-	// 		    handleTabClosing?.(event);
-	// 		    logout();
-	// 		}
-	// 	};
-	// 	window.addEventListener('beforeunload', tabClosingEventListener);
-
-	// 	return () => {
-	// 		window.removeEventListener('beforeunload', tabClosingEventListener);
-	// 	};
-	// }, [handleTabClosing]);
+	useEffect(() => {
+		if (isLoggedIn) {
+		  const handleTabClosing = (event: BeforeUnloadEvent) => {
+			logout();
+		};
+		if (isLoggedIn) {
+			window.addEventListener('beforeunload', handleTabClosing);
+		}
+		  return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		  };
+		}
+	  }, [isLoggedIn]);
 
     const fetchProfile = async () => {
         try {
