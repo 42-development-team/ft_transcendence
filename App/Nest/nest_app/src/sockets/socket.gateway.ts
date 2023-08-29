@@ -55,8 +55,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 		const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userStatus });
 		console.log("userStatus in handleDisconnection: ", userStatus);
-        // add logic for:
-        // remove
     }
 
     @SubscribeMessage('joinRoom')

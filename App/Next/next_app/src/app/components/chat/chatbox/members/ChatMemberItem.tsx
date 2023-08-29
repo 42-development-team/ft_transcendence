@@ -46,49 +46,49 @@ const ChatMemberItem = ({
 			}
 		};
 		fetchedUserStatus();
-	}, [id, userStatus]);
+	}, [id, statusChange]);
 
 
 	// todo
 	// reload just when the user logging in or out is a channel member
-	useEffect(() => {
-
-		const statusMonitor = (currentStatus: any) => {
-			setUserStatus(currentStatus);
-		}
-
-		socket?.on('UserLoggedIn', (body: any) => {
-			statusMonitor(body.currentStatus);
-			console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
-		});
-
-		socket?.on('UserLoggedOut', (body: any) => {
-			statusMonitor(body.currentStatus);
-			console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
-		});
-
-	}, [socket, userStatus]);
-
 	// useEffect(() => {
-	// 	const handleUserLoggedIn = () => {
-	// 		console.log('User logged in');
-	// 		statusChange? setStatusChange(false) : setStatusChange(true);
-	// 	};
 
-	// 	const handleUserLoggedOut = () => {
-	// 		console.log('User logged out');
-	// 		statusChange? setStatusChange(false) : setStatusChange(true);
-	// 	};
-
-	// 	socket?.on("userLoggedIn", handleUserLoggedIn);
-  	// 	socket?.on("userLoggedOut", handleUserLoggedOut);
-
-	// 	return () => {
-	// 		console.log('Cleanup function called');
-	// 		socket?.off("userLoggedIn", handleUserLoggedIn);
-  	// 		socket?.off("userLoggedOut", handleUserLoggedOut);
+	// 	const statusMonitor = (currentStatus: any) => {
+	// 		setUserStatus(currentStatus);
 	// 	}
-	// }, [socket, statusChange])
+
+	// 	socket?.on('UserLoggedIn', (body: any) => {
+	// 		statusMonitor(body.currentStatus);
+	// 		console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
+	// 	});
+
+	// 	socket?.on('UserLoggedOut', (body: any) => {
+	// 		statusMonitor(body.currentStatus);
+	// 		console.log("currentStatus in userLoggedIn event listener in Front: ", body.currentStatus);
+	// 	});
+
+	// }, [socket, userStatus]);
+
+	useEffect(() => {
+		const handleUserLoggedIn = () => {
+			console.log('User logged in');
+			statusChange? setStatusChange(true) : setStatusChange(false);
+		};
+
+		const handleUserLoggedOut = () => {
+			console.log('User logged out');
+			statusChange? setStatusChange(false) : setStatusChange(true);
+		};
+
+		socket?.on("userLoggedIn", handleUserLoggedIn);
+  		socket?.on("userLoggedOut", handleUserLoggedOut);
+
+		return () => {
+			console.log('Cleanup function called');
+			socket?.off("userLoggedIn", handleUserLoggedIn);
+  			socket?.off("userLoggedOut", handleUserLoggedOut);
+		}
+	}, [socket])
 
     const kickUser = () => {
         if (kick == undefined) return;
