@@ -42,10 +42,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }, []);
 
 	useEffect(() => {
-		console.log("isLoggedIn value in authContext: ", isLoggedIn);
-	}, [isLoggedIn]);
-
-	useEffect(() => {
 		if (isLoggedIn)
 			initializeSocket();
 	}, [isLoggedIn]);
