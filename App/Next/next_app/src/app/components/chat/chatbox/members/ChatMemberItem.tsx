@@ -72,12 +72,10 @@ const ChatMemberItem = ({
 			if (data) {
 				setStatusChange(usePrevious => !usePrevious);
 			}
-			statusChange? setStatusChange(true) : setStatusChange(false);
 		};
 
 		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
 		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
-  		// socket?.on("userLoggedOut", statusChangeMonitor);
 
 		return () => {
 			console.log('Cleanup function called');
