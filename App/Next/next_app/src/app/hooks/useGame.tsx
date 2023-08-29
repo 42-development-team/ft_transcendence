@@ -25,6 +25,7 @@ export default function useGame() {
 		
 		socket?.on('redirect', (body: any) => {
 			console.log("get redirected");
+			console.log("body:", JSON.stringify(body, null, 2));
 			router.push("/game");
 		});
 

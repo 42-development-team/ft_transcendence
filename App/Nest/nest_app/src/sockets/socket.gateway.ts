@@ -164,7 +164,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             // send game data to players
             this.gameRooms.push(newGameRoom);
 
-            this.server.to(newGameRoom.roomName).emit('redirect', newGameRoom.id); // => which event to send first ??
+            this.server.to(newGameRoom.roomName).emit('redirect', {roomId: newGameRoom.id}); // => which event to send first ??
             // this.server.to(newGameRoom.roomName).emit('updateGame', {newGameRoom}); // => which event to send first ??
         }
     }

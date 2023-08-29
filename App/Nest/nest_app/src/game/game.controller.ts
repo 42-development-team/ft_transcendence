@@ -27,7 +27,6 @@ export class GameController {
         private userService: UsersService,
         private socketGateway: SocketGateway,
     ) {}
-    private queued: UserIdDto[] = [];
 
     logger = new Logger ('GameController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
@@ -42,35 +41,6 @@ export class GameController {
         const newGame = await this.gameService.createGame(createGameDto);
         this.logger.log(`Successfully created game with ID ${newGame.id}`);
         return newGame;
-    }
-
-    @Post('queue')
-    async queue(@GetCurrentUserId() userId: number, res: Response) {
-
-        this.queued.push({userId});
-
-        console.log("=======game-controller.ts========")
-        console.log(userId + " have joined queue!");
-        console.log("queueList:", this.queued);
-        // secure if userId 1 and 2 are the same
-        if (this.queued.length >= 1) {
-            const newGameRoom: GameRoomDto = {
-                id: 0,
-                // roomName: this.queued[0].userId + "_" + this.queued[1].userId,
-                roomName: this.queued[0].userId + "_9",
-                playerOneId: this.queued[0].userId,
-                // playerTwoId: this.queued[1].userId,
-                playerTwoId: 9,
-                data: this.setGameData(this.queued[0].userId, 9),
-                // data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
-            }
-
-            // const playerOne = await this.userService.getUserFromId(this.queued[0].userId);
-            // const playerTwo = await this.userService.getUserFromId(this.queued[1].userId);
-
-            // this.socketGateway.sendGameData(newGameRoom.roomName, newGameRoom);
-            // leave queue
-        }
     }
 
     /* R(ead) */ //with game id
