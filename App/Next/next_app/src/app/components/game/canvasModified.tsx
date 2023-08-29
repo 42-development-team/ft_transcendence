@@ -95,7 +95,7 @@ const Canvas = ({...props}) => {
 	if (window === undefined)
 		return ;
 
-	const {move, stopMove, data} = useGame();
+	const {move, stopMove, data} = props;
 	console.log("data", data);
 	if (!data)
 		return ;
