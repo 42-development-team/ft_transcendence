@@ -135,7 +135,6 @@ export default function useChannels(userId: string) {
             receiveMessage(body);
         });
         socket?.on('newConnectionOnChannel', (body: any) => {
-			console.log("socket on newConnectionOnChannel: ", socket);
             handleNewConnectionOnChannel(body);
         });
         socket?.on('newDisconnectionOnChannel', (body: any) => {
@@ -198,8 +197,9 @@ export default function useChannels(userId: string) {
                     receiverId: newChannelInfo.receiverId,
                 }),
             });
-            if (!response.ok) {
-                throw new Error('Failed to create the channel ' + response.statusText);
+            const responseText = await response.text();
+            if (responseText == "error") {
+                return responseText;
             }
             const newChannel = await response.json();
             await joinChannel(newChannel.id, newChannel.name, newChannelInfo.hashedPassword);

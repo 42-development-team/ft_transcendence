@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
+import { useAuthcontext } from "@/app/context/AuthContext";
+import { usePrevious } from "@material-tailwind/react";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -17,21 +19,21 @@ type ChatMemberProps = {
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
 }
-
 // Todo: add status and avatar
-const ChatMemberItem = ({ 
-    user: { username, avatar, isAdmin, isOwner, id, currentStatus }, 
-    isCurrentUser, isBanned, 
+const ChatMemberItem = ({
+	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
+    isCurrentUser, isBanned,
     kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin 
+    setAsAdmin, removeAdmin
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
+	const { socket } = useAuthcontext();
+	const [ statusChange, setStatusChange ] = useState(false);
 
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
 			try {
 				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
-					// credentials: "include",
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json'
@@ -44,7 +46,28 @@ const ChatMemberItem = ({
 			}
 		};
 		fetchedUserStatus();
-	}, [id]);
+	}, [id, statusChange]);
+
+	useEffect(() => {
+		console.log("status change: ", statusChange);
+	}, [statusChange]);
+
+	useEffect(() => {
+		const statusChangeMonitor= () => {
+			console.log('User logged in');
+			setStatusChange(usePrevious => !usePrevious);
+			// statusChange? setStatusChange(true) : setStatusChange(false);
+		};
+
+		socket?.on("userLoggedIn", statusChangeMonitor);
+  		socket?.on("userLoggedOut", statusChangeMonitor);
+
+		return () => {
+			console.log('Cleanup function called');
+			socket?.off("userLoggedIn", statusChangeMonitor);
+  			socket?.off("userLoggedOut", statusChangeMonitor);
+		}
+	}, [socket])
 
     const kickUser = () => {
         if (kick == undefined) return;
@@ -100,8 +123,8 @@ const ChatMemberItem = ({
                 </div>
                 <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id} 
-                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel} 
+            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id}
+                kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
         </div>
