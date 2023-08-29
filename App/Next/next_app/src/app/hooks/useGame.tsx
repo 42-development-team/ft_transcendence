@@ -16,7 +16,7 @@ export default function useGame() {
 	// init data with p1, p2 and ball infos
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
-			console.log("move event - useGame.tsx");
+			console.log("updateGame event - useGame.tsx");
 			console.log("body:", JSON.stringify(body, null, 2));
 			// update data
 			// launch the loop here ?
