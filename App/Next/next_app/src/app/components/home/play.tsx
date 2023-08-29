@@ -1,18 +1,25 @@
+"use client";
+
 import { Spinner } from '@material-tailwind/react'
 import { useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import CustomBtn from '../CustomBtn'
+import { join } from 'path'
+import useGame from '@/app/hooks/useGame';
 
 const Play = () => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
+	const {joinQueue, leaveQueue } = useGame();
 
 	const matchmaking = async () => {
 		setLoading(true)
 		setDisable(true)
 		setButtonText("Calling racket master...")
+		joinQueue();
+
 		//TODO: handle matchmaking
 	}
 
@@ -20,6 +27,8 @@ const Play = () => {
 		setLoading(false)
 		setDisable(false)
 		setButtonText("Play")
+		leaveQueue();
+		
 	}
 
 	return (
