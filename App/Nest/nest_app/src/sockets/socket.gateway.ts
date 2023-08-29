@@ -8,8 +8,6 @@ import { GameService } from 'src/game/game.service';
 import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
-import { forEachChild } from 'typescript';
-import { User } from '@prisma/client';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -21,8 +19,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private chatroomService: ChatroomService,
         private gameService: GameService,
         private userService: UsersService,
-        private memberShipService: MembershipService
-    ) {}
+        private memberShipService: MembershipService,
+        ) {console.log("SocketGateway constructor");}
+
 
     @WebSocketServer()
     server: Server;
@@ -149,12 +148,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
-
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket) {
 
         const userId = await this.chatroomService.getUserIdFromSocket(player);
-        this.queued.push({userId});
+        this.queued.push(userId);
         
         // ====================================== //
         console.log(userId + " have joined queue!");
