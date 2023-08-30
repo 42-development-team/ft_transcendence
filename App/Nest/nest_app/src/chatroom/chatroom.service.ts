@@ -368,6 +368,13 @@ export class ChatroomService {
 		return unbannedUser;
 	}
 
+	async invite(id: number, userId: number, invitedId: number) {
+		// check if invitedId is already member of the channel
+
+		const invitedMembership = await this.connectUserToChatroom(invitedId, id);
+		return invitedMembership;
+	}
+
 	async leave(id: number, userId: number) {
 			// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
 			// 	where: { id: id },

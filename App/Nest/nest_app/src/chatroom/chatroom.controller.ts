@@ -261,6 +261,22 @@ export class ChatroomController {
 			});
 	}
 
+	@Patch(':id/invite')
+	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const invitedId: number = body.invitedId;
+		const invitedUserSocket = await this.userService.getUserSocketFromId(invitedId);
+		await this.chatroomService.invite(+id, userId, invitedId)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				// this.socketGateway.handleInvite(clientSocket, id);
+				response.send();
+			})
+			.catch(error => {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
 	/* D(elete) */
 	@Delete(':id')
 	remove(@Param('id') id: string) {
