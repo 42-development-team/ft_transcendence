@@ -38,7 +38,7 @@ const Play = ({...props}) => {
 				{loading? (
 					<div className='flex flex-col'>
 						<div className='flex flex-row justify-center'>
-							<div className='flex shapes-5 ' style={{ opacity: 1 }}></div>
+							<div className='flex shapes-5' style={{ opacity: 1 }}></div>
 						</div>
 							<div className='flex text-center text-[1.4rem] mt-6 italic font-extralight'>{buttonText}</div>
 					</div>
@@ -54,7 +54,7 @@ const Play = ({...props}) => {
 				<div className='flex flex-row justify-center'>
 					<div className='flex '>
 					<CustomBtnPlay onClick={cancelMatchmaking} width={110} height={60} color='bg-red-500' disable={false} anim={false}>
-						X
+						Cancel
 					</CustomBtnPlay>
 					</div>
 				</div>

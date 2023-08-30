@@ -26,10 +26,11 @@ const CustomBtn = (
             id={id}
             disabled={disable}
             style={{opacity: disable? 0.5 : 1}}
-            className={` ${anim && ' text-[2rem] focus:ring-4 shadow-lg transform active:scale-75 transition-transform'}
-			${disable && 'bg-transparent'}
-			h-[${height}px] w-[${width}px] font-bold text-2xl rounded-lg text-base ${color} disabled:pointer-events-none
-			hover:bg-pink drop-shadow-xl m-4 p-3 flex justify-center items-center`}
+            className={` ${anim && ' text-lg focus:ring-4 shadow-lg transform active:scale-75 transition-transform'}
+			h-[${height}px] w-[${width}px] font-bold text-2xl rounded-lg text-base ${color} 
+            disabled:pointer-events-none disabled:bg-transparent
+			hover:bg-pink 
+            drop-shadow-xl m-4 p-3`}
             onClick={onClick}>
             {children}
         </button>
