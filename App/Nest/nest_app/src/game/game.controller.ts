@@ -22,12 +22,11 @@ import { UsersService } from 'src/users/users.service';
 @Controller('game')
 export class GameController {
     constructor(
-        private configService: ConfigService,
+        // private configService: ConfigService,
         private gameService: GameService,
-        private userService: UsersService,
-        private socketGateway: SocketGateway,
+        // private userService: UsersService,
+        // private socketGateway: SocketGateway,
     ) {}
-    private queued: UserIdDto[] = [];
 
     logger = new Logger ('GameController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
@@ -42,35 +41,6 @@ export class GameController {
         const newGame = await this.gameService.createGame(createGameDto);
         this.logger.log(`Successfully created game with ID ${newGame.id}`);
         return newGame;
-    }
-
-    @Post('queue')
-    async queue(@GetCurrentUserId() userId: number, res: Response) {
-
-        this.queued.push({userId});
-
-        console.log("=======game-controller.ts========")
-        console.log(userId + " have joined queue!");
-        console.log("queueList:", this.queued);
-        // secure if userId 1 and 2 are the same
-        if (this.queued.length >= 1) {
-            const newGameRoom: GameRoomDto = {
-                gameId: 0,
-                // roomName: this.queued[0].userId + "_" + this.queued[1].userId,
-                roomName: this.queued[0].userId + "_9",
-                playerOneId: this.queued[0].userId,
-                // playerTwoId: this.queued[1].userId,
-                playerTwoId: 9,
-                data: this.setGameData(this.queued[0].userId, 9),
-                // data: this.setGameData(this.queued[0].userId, this.queued[1].userId),
-            }
-
-            // const playerOne = await this.userService.getUserFromId(this.queued[0].userId);
-            // const playerTwo = await this.userService.getUserFromId(this.queued[1].userId);
-
-            // this.socketGateway.sendGameData(newGameRoom.roomName, newGameRoom);
-            // leave queue
-        }
     }
 
     /* R(ead) */ //with game id
@@ -116,49 +86,5 @@ export class GameController {
         const gameDeleted = await this.gameService.deleteGame(deleteGameDto);
         this.logger.log(`Successfully deleted game with ID ${deleteGameDto.gameId}`);
         return gameDeleted;
-    }
-
-    setGameData(playerOneId: number, playerTwoId: number): GameDto{
-        let player1: PlayerDto = {
-			id: playerOneId,
-			color: '#cba6f7aa',
-    		x: 0.02,
-    		y: 0.5,
-    		w: 0.01,
-    		h: 0.15,
-    		velocity: 0,
-    		angle: 60,
-    		points: 0,
-		}
-
-		let player2: PlayerDto = {
-			id: playerTwoId,
-			color: '#cba6f7aa',
-    		x: 0.98,
-    		y: 0.5,
-    		w: 0.01,
-    		h: 0.15,
-    		velocity: 0,
-    		angle: 60,
-    		points: 0,
-		}
-
-		let ball: BallDto = {
-			color: '#cba6f7',
-    		x: 0.5,
-    		y: 0.5,
-    		r: 0.01,
-    		pi2: Math.PI * 2,
-    		speed: [0, 0],
-    		incr: 0,
-		}
-
-		let data: GameDto = {
-			player1: player1,
-			player2: player2,
-			ball: ball,
-		}
-
-        return data;
     }
 }

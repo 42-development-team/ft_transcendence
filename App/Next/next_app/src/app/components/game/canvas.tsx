@@ -3,11 +3,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { GameInterface, PlayerInterface, BallInterface } from "../../game/interfaces/game.interfaces";
 
-// NO NEED THESE IMPORTS !!
-import useGame from '../../hooks/useGame';
-import PlayerClass from "../../game/class/player.class";
-import BallClass from "../../game/class/ball.class";
-
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
 	backgroundColor: '#4B3C4E',
@@ -95,8 +90,8 @@ const Canvas = ({...props}) => {
 	if (window === undefined)
 		return ;
 
+	// const {move, stopMove, data} = props;
 	const {move, stopMove, data} = props;
-	console.log("data", data);
 	if (!data)
 		return ;
 

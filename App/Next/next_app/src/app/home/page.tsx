@@ -4,6 +4,8 @@ import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthcontext } from "../context/AuthContext";
 import Play from "../components/home/play";
+import Game from "../game/page";
+import useGame from "../hooks/useGame";
 
 export default function Home() {
   const { login, userId } = useAuthcontext();
@@ -11,12 +13,21 @@ export default function Home() {
     login();
   }, []);
 
+	const {move, stopMove, leaveQueue, joinQueue, inGame, data} = useGame();
+
+  console.log('inGame boool:', inGame);
+
   return (
     <div className="flex flex-auto w-full h-full">
       <Chat userId={userId} />
-      <div className="w-full p-4 h-full flex items-center justify-center">
-        <Play /> 
-      </div>
+      {!inGame &&
+        <div className="w-full p-4 h-full flex items-center justify-center">
+          <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
+        </div>
+      }
+      {inGame &&
+        <Game move={move} stopMove={stopMove} data={data}/>
+      }
     </div>
   );
 }

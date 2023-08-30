@@ -197,13 +197,12 @@ export default function useChannels(userId: string) {
                     receiverId: newChannelInfo.receiverId,
                 }),
             });
-            const responseText = await response.text();
+            const responseText = await response.json();
             if (responseText == "error") {
                 return responseText;
             }
-            const newChannel = await response.json();
-            await joinChannel(newChannel.id, newChannel.name, newChannelInfo.hashedPassword);
-            return newChannel.id;
+            await joinChannel(responseText.id, responseText.name, newChannelInfo.hashedPassword);
+            return responseText.id;
         } catch (error) {
             console.error('error creating channel', error);
         }
