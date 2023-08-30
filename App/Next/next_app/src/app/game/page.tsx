@@ -1,10 +1,12 @@
 
-import Canvas from '../components/game/canvasModified';
+import Canvas from '../components/game/canvas';
 
-const Game = () => {
+const Game = ({...props}) => {
 	
+	const {move, stopMove, data} = props;
+
 	return (
-		<Canvas />
+		<Canvas move={move} stopMove={stopMove} data={data}/>
 	);
 }
 	
