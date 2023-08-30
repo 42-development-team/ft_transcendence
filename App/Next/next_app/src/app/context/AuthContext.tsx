@@ -42,28 +42,40 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }, []);
 
 	useEffect(() => {
-		if (isLoggedIn)
-			initializeSocket();
-	}, [isLoggedIn]);
+		if (isLoggedIn && userId)
+			initializeSocket(userId);
+	}, [isLoggedIn, userId]);
 
-	// useEffect(() => {
-	// 	if (isLoggedIn) {
-	// 	  const handleTabClosing = (event: BeforeUnloadEvent) => {
-	// 		logout();
-	// 	};
-	// 	if (isLoggedIn) {
-	// 		window.addEventListener('beforeunload', handleTabClosing);
-	// 	}
-	// 	  return () => {
-	// 		window.removeEventListener('beforeunload', handleTabClosing);
-	// 	  };
-	// 	}
-	//   }, [isLoggedIn]);
+	useEffect(() => {
+		if (isLoggedIn) {
+			const message = 'Important: Please click on \'Save\' button to leave this page.';
+			const handleTabClosing = (event: BeforeUnloadEvent) => {
+			fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+                credentials: "include",
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    currentStatus: "offline",
+                }),
+            });
+
+		};
+		if (isLoggedIn) {
+			window.addEventListener('beforeunload', handleTabClosing);
+		}
+		  return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		  };
+		}
+	  }, [isLoggedIn, userId]);
+
 
     const fetchProfile = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
-            const data = await response.json();;
+            const data = await response.json();
             let newLogin: string = data.login as string;
             setUniqueLogin(newLogin);
             let newUserId: string = data.sub as string;
@@ -132,10 +144,23 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         }
     }, [socket]);
 
-	const initializeSocket = () => {
+	const initializeSocket = async (userId: string) => {
 		console.log('Connecting to socket.io server...');
 		const socket = connect();
 		setSocket(socket);
+		// fetch to verify userStatus is online. If not update it to online
+		if (userId){
+			fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+				credentials: "include",
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					currentStatus: "online",
+				}),
+			});
+		}
 		return () => {
 			console.log('Disconnecting from socket.io server...');
 			socket.close();

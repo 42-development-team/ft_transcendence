@@ -112,6 +112,13 @@ export class UsersService {
         return updatedUser;
     }
 
+    async updateStatus(id: number, newStatus: string) {
+        await this.prisma.user.update({
+            where: { id: id },
+            data: { currentStatus: newStatus },
+        });
+    }
+
     /* D(elete) */
 
     async deleteUser(id: number): Promise<void> {
