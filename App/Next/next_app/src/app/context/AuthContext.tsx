@@ -46,19 +46,19 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			initializeSocket();
 	}, [isLoggedIn]);
 
-	useEffect(() => {
-		if (isLoggedIn) {
-		  const handleTabClosing = (event: BeforeUnloadEvent) => {
-			logout();
-		};
-		if (isLoggedIn) {
-			window.addEventListener('beforeunload', handleTabClosing);
-		}
-		  return () => {
-			window.removeEventListener('beforeunload', handleTabClosing);
-		  };
-		}
-	  }, [isLoggedIn]);
+	// useEffect(() => {
+	// 	if (isLoggedIn) {
+	// 	  const handleTabClosing = (event: BeforeUnloadEvent) => {
+	// 		logout();
+	// 	};
+	// 	if (isLoggedIn) {
+	// 		window.addEventListener('beforeunload', handleTabClosing);
+	// 	}
+	// 	  return () => {
+	// 		window.removeEventListener('beforeunload', handleTabClosing);
+	// 	  };
+	// 	}
+	//   }, [isLoggedIn]);
 
     const fetchProfile = async () => {
         try {
