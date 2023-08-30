@@ -46,6 +46,24 @@ export class UsersController {
         this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
+
+    @Get('/usernameExist/:username')
+    async usernameExist(@Param('username') username: string, @Res() res: Response) {
+        try {
+            const user = await this.userService.getUserFromUsername(username);
+            const isUsernameTaken = !!user; // double negation to turn user into a boolean
+            //If the user object is not null or undefined (truthy),
+            // !!user will evaluate to true, indicating that the username is taken.
+            // If the user object is null or undefined (falsy),
+            // !!user will evaluate to false, indicating that the username is available.
+            res.status(HttpStatus.OK).send({ isUsernameTaken });
+        } catch (error) {
+            console.error('Error checking username availability:', error.message);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
+        }
+    }
+
+
 	@Public()
 	@Get('/getCurrentStatus/:id')
     async getStatus(@Param('id') id: string, @Res() response: Response) {

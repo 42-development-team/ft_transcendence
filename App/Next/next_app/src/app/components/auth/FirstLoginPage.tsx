@@ -4,6 +4,8 @@ import ValidateBtn from '../ValidateBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
+import { useRouter } from 'next/navigation';
+
 
 const FirstLoginPageComponent = ({
     userId,
@@ -20,15 +22,13 @@ const FirstLoginPageComponent = ({
     const [message, setMessage]                 = useState('');
     const [isVisible, setIsVisible]             = useState(false);
     const [validateEnabled, setValidateEnabled] = useState(true);
+    const [redirecting, setRedirecting]         = useState(false);
     const [placeHolder, setPlaceHolder]         = useState('');
     const [waiting2fa, setWaiting2fa]           = useState(true);
     const [avatarFile, setAvatarFile]           = useState<File | null>(null);
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
     const [inputUserName, setInputUserName] = useState('');
-
-
-    // let inputUserName: string | null;
-
+    const Router = useRouter();
 
     useEffect(() => {
         try {
@@ -51,16 +51,17 @@ const FirstLoginPageComponent = ({
     }
 
     const redirectToHome = () => {
-        if (validateEnabled) {
-            setMessage("Redirecting...");
-            window.location.href = `${process.env.FRONT_URL}/home`;
-        }
+      setMessage("Redirecting...");
+      Router.push('/home');
     }
       
   /* handle validate click, so username update and avagtar update in cloudinary */
   const handleClick = async () => {
     try {
       setWaiting2fa(false);
+      setRedirecting(true);
+      setMessage("Updating avatar/username...")
+      setIsVisible(true);
       await UpdateAvatar(avatarFile, userId, setImageUrl);
       const updateData = {
         newUsername: inputUserName,
@@ -74,12 +75,7 @@ const FirstLoginPageComponent = ({
       },
     });
     
-    if (usernameUpdateResponse.ok) {
-      console.log("Username updated successfully");
-    } else {
-      console.log("Error updating username:", usernameUpdateResponse.status);
-    }
-
+    setMessage("Avatar/username successfully updated");
     const jwtUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
 
     if (jwtUpdateResponse.ok) {
@@ -155,7 +151,7 @@ const FirstLoginPageComponent = ({
           className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
         />
         {
-          validateEnabled ?
+          validateEnabled || redirecting ?
             <div className=" text-green-400 text-center">
               {isVisible && <p>{message}</p>}
             </div>

@@ -4,8 +4,10 @@ import { ChangeEvent, useEffect, useState } from "react";
 import UpdateAvatar from "../auth/utils/updateAvatar";
 import Avatar from "../profile/Avatar";
 import ValidateBtn from "../ValidateBtn";
-import { get } from "http";
 import { useEffectTimer } from "../auth/utils/useEffectTimer";
+import getUserNameById from "../utils/getUserNameById";
+import UpdateUsernameById from "../utils/updateUsernameById";
+import DoesUserNameExist from "../utils/DoesUsernameExist";
 
 const SettingsPage = ({
 		userId,
@@ -31,6 +33,8 @@ const SettingsPage = ({
 	const [inputUserName, setInputUserName] = useState('');
 	const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
 	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
+	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
+	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -59,14 +63,14 @@ const SettingsPage = ({
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
-		const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
-			method: "GET",
-		});
-		const data = await response.json();
-		if (!data.ok)
-			console.log(data.error);
-		setPlaceHolder(data.username);
-		setInputUserName(data.username);
+		try {
+			const username = await getUserNameById(userId);
+			setPlaceHolder(username);
+			setInputUserName(username);
+
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	const handleClickUsername = async () => {
@@ -75,25 +79,16 @@ const SettingsPage = ({
 				newUsername: inputUserName,
 				userId: userId,
 			};
-			const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-				method: "PUT",
-				body: JSON.stringify(updateData),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			if (usernameUpdateResponse.ok) {
-				console.log("Username updated successfully");
-			} else {
-				console.log("Error updating username:", usernameUpdateResponse.status);
-			}
+			setUpdatingUsername(true);
+			await UpdateUsernameById(updateData.newUsername, updateData.userId);
 			setValidateUsernameEnabled(false);
 			setMessage("Username updated successfully");
 			setIsVisibleTimer(true);
+			setUpdatingUsername(false);
 			setIsVisible(false);	
 			setUpdatedUsername(true);
 		} catch (error) {
+			setMessage("Error updating username");
 			console.log("Error updating username:", error);
 		}
 	}
@@ -101,10 +96,12 @@ const SettingsPage = ({
 	const handleClickAvatar = async () => {
 		try {
 			setValidateAvatarEnabled(false);
+			setUpdatingAvatar(true);
 			setMessage("Updating avatar...");
 			setIsVisibleTimerAvatar(true);
 			await UpdateAvatar(avatarFile, userId, setImageUrl);
 			setMessage("Avatar updated successfully");
+			setUpdatingAvatar(false);
 		} catch (error) {
 			console.log("Error during avatar upload:", error);
 			setMessage("Error during avatar upload");
@@ -128,10 +125,7 @@ const SettingsPage = ({
 				return;
 			}
 
-			const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
-				method: "GET",
-			});
-			const data = await response.json();
+			const data = await DoesUserNameExist(newinputUserName);
 			const isUserAlreadyTaken = data.isUsernameTaken;
 			const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
@@ -164,6 +158,7 @@ const SettingsPage = ({
 			<div className="flex flex-col w-full p-4">
 				<p className="flex flex-row font-bold justify-center">Choose your username</p>
 				<div className="flex flex-row justify-center">
+					{ !updatingUsername &&
 					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
 						id="username"
 						onChange={(e) => handleOnChange(e)}
@@ -172,6 +167,7 @@ const SettingsPage = ({
 						type="text"
 						className="flex flex-row justify-center m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
 					/>
+					}
 				</div>
 			</div>
 			<div className="flex flex-col justify-center">
@@ -186,13 +182,13 @@ const SettingsPage = ({
 						</div>
 				}
 				{
-					!validateUsernameEnabled &&
+					!validateUsernameEnabled && updatedUsername &&
 						<div className=" text-green-400 text-center mb-2">
 							{isVisibleTimer && <p>{message}</p>}
 						</div>
 				}
 				<div className="flex justify-center mt-2">
-					{validateUsernameEnabled &&
+					{validateUsernameEnabled && !updatingAvatar &&
 						<ValidateBtn onClick={handleClickUsername} disable={!validateUsernameEnabled} >
 							Validate
 						</ValidateBtn>
@@ -203,13 +199,13 @@ const SettingsPage = ({
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			{
-				!validateAvatarEnabled &&
+				!validateAvatarEnabled && updatingAvatar &&
 				<div className=" text-green-400 text-center mb-2">
 					{isVisibleTimerAvatar && <p>{message}</p>}
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{validateAvatarEnabled &&
+				{validateAvatarEnabled && !updatedUsername &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>
