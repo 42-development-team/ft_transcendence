@@ -43,7 +43,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }, []);
 
 	useEffect(() => {
-		if (isLoggedIn)
+		if (isLoggedIn && userId)
 			initializeSocket(userId);
 	}, [isLoggedIn, userId]);
 
