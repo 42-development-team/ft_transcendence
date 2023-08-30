@@ -1,7 +1,6 @@
 "use client";
 import { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
-import jQuery from "jquery";
 
 type AuthContextType = {
     isLoggedIn: boolean;
