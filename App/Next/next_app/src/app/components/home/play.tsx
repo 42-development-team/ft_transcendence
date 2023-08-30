@@ -12,7 +12,7 @@ const Play = () => {
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {joinQueue, leaveQueue} = useGame();
+	const {joinQueue, leaveQueue, inGame} = useGame();
 
 	const matchmaking = async () => {
 		setLoading(true)
@@ -28,8 +28,10 @@ const Play = () => {
 		setDisable(false)
 		setButtonText("Play")
 		leaveQueue();
-		
+
 	}
+
+	console.log("inGame boolean:", inGame);
 
 	return (
 		<div className='flex flex-col '>

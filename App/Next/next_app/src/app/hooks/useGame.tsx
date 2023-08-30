@@ -8,6 +8,7 @@ export default function useGame() {
 
 	const {socket} = useAuthcontext();
 	const [data, setData] = useState<GameInterface>();
+	const [inGame, setInGame] = useState<boolean>(false);
 	const router = useRouter();
 
 	const handleNewGameConnection = (body: any) => {
@@ -21,6 +22,10 @@ export default function useGame() {
 			console.log("body:", JSON.stringify(body, null, 2));
 			// update data
 			// launch the loop here ?
+		});
+
+		socket?.on('matchIsReady', (body: any) => {
+			setInGame(true);
 		});
 		
 		// socket?.on('redirect', (body: any) => {
@@ -63,6 +68,7 @@ export default function useGame() {
 		stopMove,
 		leaveQueue,
 		joinQueue,
+		inGame,
 		data,
 	}
 }
