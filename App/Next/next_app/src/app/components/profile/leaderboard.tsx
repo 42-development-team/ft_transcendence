@@ -22,6 +22,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
 
     return (
         <div className="p-6 h-[50vh] overflow-auto">
+            { data !== undefined && data !== null && data.length !== 0 ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
                     <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-sapphire to-base'
@@ -50,6 +51,13 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                     </div>
             ))}
             </div>
+            ) : (
+                <div className="flex flex-col h-full justify-center">
+                        <span className="flex justify-center text-[5rem] text-gray-700 leading-[5rem]">
+                            No Leaderboard available
+                        </span>
+                </div>
+            )}
         </div>
     )
 }
