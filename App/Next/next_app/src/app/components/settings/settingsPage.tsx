@@ -34,6 +34,8 @@ const SettingsPage = ({
 	const [inputUserName, setInputUserName] = useState('');
 	const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
 	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
+	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
+	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -78,10 +80,12 @@ const SettingsPage = ({
 				newUsername: inputUserName,
 				userId: userId,
 			};
+			setUpdatingUsername(true);
 			await UpdateUsernameById(updateData.newUsername, updateData.userId);
 			setValidateUsernameEnabled(false);
 			setMessage("Username updated successfully");
 			setIsVisibleTimer(true);
+			setUpdatingUsername(false);
 			setIsVisible(false);	
 			setUpdatedUsername(true);
 		} catch (error) {
@@ -93,10 +97,12 @@ const SettingsPage = ({
 	const handleClickAvatar = async () => {
 		try {
 			setValidateAvatarEnabled(false);
+			setUpdatingAvatar(true);
 			setMessage("Updating avatar...");
 			setIsVisibleTimerAvatar(true);
 			await UpdateAvatar(avatarFile, userId, setImageUrl);
 			setMessage("Avatar updated successfully");
+			setUpdatingAvatar(false);
 		} catch (error) {
 			console.log("Error during avatar upload:", error);
 			setMessage("Error during avatar upload");
@@ -153,6 +159,7 @@ const SettingsPage = ({
 			<div className="flex flex-col w-full p-4">
 				<p className="flex flex-row font-bold justify-center">Choose your username</p>
 				<div className="flex flex-row justify-center">
+					{ !updatingUsername &&
 					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
 						id="username"
 						onChange={(e) => handleOnChange(e)}
@@ -161,6 +168,7 @@ const SettingsPage = ({
 						type="text"
 						className="flex flex-row justify-center m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
 					/>
+					}
 				</div>
 			</div>
 			<div className="flex flex-col justify-center">
@@ -175,13 +183,13 @@ const SettingsPage = ({
 						</div>
 				}
 				{
-					!validateUsernameEnabled &&
+					!validateUsernameEnabled && updatedUsername &&
 						<div className=" text-green-400 text-center mb-2">
 							{isVisibleTimer && <p>{message}</p>}
 						</div>
 				}
 				<div className="flex justify-center mt-2">
-					{validateUsernameEnabled &&
+					{validateUsernameEnabled && !updatingAvatar &&
 						<ValidateBtn onClick={handleClickUsername} disable={!validateUsernameEnabled} >
 							Validate
 						</ValidateBtn>
@@ -192,13 +200,13 @@ const SettingsPage = ({
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			{
-				!validateAvatarEnabled &&
+				!validateAvatarEnabled && updatingAvatar &&
 				<div className=" text-green-400 text-center mb-2">
 					{isVisibleTimerAvatar && <p>{message}</p>}
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{validateAvatarEnabled &&
+				{validateAvatarEnabled && !updatedUsername &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>
