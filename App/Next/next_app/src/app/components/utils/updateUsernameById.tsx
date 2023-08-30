@@ -1,19 +1,17 @@
 
-const UpdateUsernameById = async ( {userData}: any ) => {
+const UpdateUsernameById = async ( newUserName: string, userId: string  ) => {
 	try {
-		const response = await fetch(`${process.env.BACK_URL}/users/update_username/${userData.id}`, {	
+		const response = await fetch(`${process.env.BACK_URL}/users/update_username/${userId}`, {	
 			credentials: "include",
 			method: "PUT",
-			body: JSON.stringify({username: userData.newUsername}),
+			body: JSON.stringify({username: newUserName}),
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
 		const data = await response.json();
-		return (data);
 	} catch (error) {
 		console.log(error);
-		return (error);
 	}
 }
 export default UpdateUsernameById;

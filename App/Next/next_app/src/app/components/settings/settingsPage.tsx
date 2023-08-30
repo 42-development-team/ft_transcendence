@@ -78,18 +78,14 @@ const SettingsPage = ({
 				newUsername: inputUserName,
 				userId: userId,
 			};
-			const usernameUpdateResponse = await UpdateUsernameById(updateData);
-			if (usernameUpdateResponse.ok) {
-				console.log("Username updated successfully");
-			} else {
-				console.log("Error updating username:", usernameUpdateResponse.error);
-			}
+			await UpdateUsernameById(updateData.newUsername, updateData.userId);
 			setValidateUsernameEnabled(false);
 			setMessage("Username updated successfully");
 			setIsVisibleTimer(true);
 			setIsVisible(false);	
 			setUpdatedUsername(true);
 		} catch (error) {
+			setMessage("Error updating username");
 			console.log("Error updating username:", error);
 		}
 	}
