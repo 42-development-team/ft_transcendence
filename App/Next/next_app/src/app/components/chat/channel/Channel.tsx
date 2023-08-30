@@ -35,7 +35,6 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
                     sizes=" 100vw, 100vw"
                     className="rounded-[inherit]" />
                 }
-                <h4 className={styles.channelName} >{name}</h4>
             {unreadMessages > 0 && 
                 <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold 
                     text-text bg-rose-500 border-2 border-base rounded-full -top-2 -right-2">
