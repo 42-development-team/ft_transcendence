@@ -78,7 +78,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	};
 
 	return (
-		<div className='w-full min-w-[350px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+		<div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
 			<ChatHeader title="Create a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
 			<div className="p-4">
 				<form onSubmit={handleSubmit}>

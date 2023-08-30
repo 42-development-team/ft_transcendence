@@ -38,12 +38,11 @@ const ChatSideBar = ({ channels }: { channels: ChannelModel[] }) => {
 				<JoinChannelButton />
 				<CreateChannelButton />
 				<Separator />
-				<li className='overflow-y-scroll overflow-x-hidden no-scrollbar items-center'>
-					<ul className="flex flex-col gap-3 ">
+				<li className='overflow-y-scroll overflow-x-hidden no-scrollbar items-center -m-2 p-3'>
+					<ul className="flex flex-col gap-3">
 						{directMessageList}
 						{channelsList}
 					</ul>
-
 				</li>
 			</ul>
 		</div>
