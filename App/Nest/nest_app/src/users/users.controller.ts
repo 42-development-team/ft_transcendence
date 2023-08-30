@@ -12,7 +12,6 @@ import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 import { Public } from '../auth/public.routes';
 
-
 // Nestjs/swagger decorator to display the routes: localhost:4000/api
 @ApiTags('Users')
 

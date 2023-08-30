@@ -9,7 +9,6 @@ import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
 import { PrismaService } from '../prisma/prisma.service'
 
-
 @Controller('auth')
 export class AuthController {
 

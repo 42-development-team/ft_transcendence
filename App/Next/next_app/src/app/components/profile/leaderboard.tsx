@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "./Avatar";
+import { useRouter } from "next/navigation";
+
+
 
 const leaderBoard = ( props: { data: any, currentUser: number } ) => {
-    const data = props.data;
+    const data = Array.isArray(props.data) ? props.data : [];
     const currentUserId = props.currentUser;
+    const Router = useRouter();
     const [ openAlert, setOpenAlert ] = useState(false);
     
     const onProfileClick = (userId: number) => {
@@ -13,8 +17,9 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
-            window.location.href = "/profile";
+            Router.push("/profile");
     }
+
     return (
         <div className="p-6 h-[50vh] overflow-auto">
             <div className="flex flex-col">

@@ -31,7 +31,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
-	const ENDPOINT = `${process.env.BACK_URL}`
+	const ENDPOINT = `${process.env.BACK_URL}`;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -45,6 +45,20 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		if (isLoggedIn)
 			initializeSocket();
 	}, [isLoggedIn]);
+
+	useEffect(() => {
+		if (isLoggedIn) {
+		  const handleTabClosing = (event: BeforeUnloadEvent) => {
+			logout();
+		};
+		if (isLoggedIn) {
+			window.addEventListener('beforeunload', handleTabClosing);
+		}
+		  return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		  };
+		}
+	  }, [isLoggedIn]);
 
     const fetchProfile = async () => {
         try {

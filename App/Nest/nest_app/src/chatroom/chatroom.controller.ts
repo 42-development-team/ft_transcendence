@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, HttpStatus, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
@@ -7,6 +7,8 @@ import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { UsersService } from 'src/users/users.service';
+import { MembershipService } from '../membership/membership.service';
+import { Public } from '../auth/public.routes';
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -15,6 +17,7 @@ export class ChatroomController {
 		private chatroomService: ChatroomService,
 		private socketGateway: SocketGateway,
 		private userService: UsersService,
+		private membershipService: MembershipService,
 	) { }
 
 	/* C(reate) */
@@ -99,6 +102,27 @@ export class ChatroomController {
 			.catch(error => {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
+	}
+
+	@Public()
+	@Get('/isMember')
+	async isMember(
+		@Query('userId') userId: string,
+		@Query('channelId') channelId: string,
+		@Request() req: any,
+		@Res() response: Response) {
+			try {
+				console.log ("userId logging in in isMember handler: ", userId);
+				console.log ("channelId logging in in isMember handler: ", channelId);
+				const isMember = await this.membershipService.isChannelMember(
+					parseInt(userId),
+					parseInt(channelId)
+				);
+				console.log("isMember = ", isMember);
+				response.status(HttpStatus.OK).json(isMember);
+			} catch (error) {
+				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			}
 	}
 
 	/* U(pdate) */

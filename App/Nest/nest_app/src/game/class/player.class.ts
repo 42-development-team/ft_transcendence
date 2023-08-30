@@ -1,4 +1,4 @@
-import { PlayerDto } from "../dto/player.dto";
+import { PlayerDto } from "../dto/game-data.dto";
 
 class PlayerClass {
     constructor(bool: boolean) {
@@ -22,6 +22,7 @@ class PlayerClass {
     velocity: number = 0;
     angle: number = 60;
     points: number = 0;
+    // socket: ;
 
     score(): number {
         this.points++;
@@ -52,7 +53,7 @@ class PlayerClass {
         let player: PlayerDto;
 
         player.color = this.color;
-        player.name = this.name;
+        // player.name = this.name;
         player.x = this.x;
         player.y = this.y;
         player.h = this.h;
