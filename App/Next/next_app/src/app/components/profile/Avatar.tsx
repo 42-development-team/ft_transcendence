@@ -87,7 +87,7 @@ const Avatar = (
                     </div>
                 )}
                 {!disableChooseAvatar &&
-                    <div className="mt-8 mb-3 text-center">
+                    <div className="mt-8 text-center">
                         <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}>
                             {imageUrl ? "Change Avatar" : "Choose Avatar"}
                         </label>
