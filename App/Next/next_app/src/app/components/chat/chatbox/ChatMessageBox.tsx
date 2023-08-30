@@ -52,7 +52,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     }, [channel]);
 
     return (
-        <div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='flex flex-col w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channelTitle} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 {channel.type == ChannelType.DirectMessage ?
                     <div></div>
@@ -60,7 +60,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
                     <ChatMemberButton onClick={() => updateChatBarState(ChatBarState.ChatMembersOpen)} />
                 }
             </ChatHeader>
-            <div ref={chatMessageBoxRef} className='overflow-auto h-[86vh]'>
+            <div ref={chatMessageBoxRef} className='overflow-auto h-full'>
                 {MessageList}
             </div>
             <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} />

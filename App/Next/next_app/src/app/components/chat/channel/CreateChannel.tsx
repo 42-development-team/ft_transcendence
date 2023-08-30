@@ -120,12 +120,15 @@ const ChannelNameInput = ({value, setValue, disabled} :
 				id="channelName"
 				value={value}
 				disabled={disabled}
+				maxLength={24}
 				onChange={(e) => setValue(e.target.value)}
 				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
 		</div>
 	)	
 }
+
+
 
 const ChannelTypeInput = ({value, onChange, disabled} :
 	{value: string, onChange: (event: ChangeEvent<HTMLSelectElement>) => void, disabled: boolean}) => {
