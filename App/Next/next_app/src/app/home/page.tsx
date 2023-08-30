@@ -13,7 +13,7 @@ export default function Home() {
     login();
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, inGame, data} = useGame();
+	const {move, stopMove, leaveQueue, joinQueue, launchGame, inGame, data} = useGame();
 
   console.log('inGame boool:', inGame);
 
@@ -26,7 +26,7 @@ export default function Home() {
         </div>
       }
       {inGame &&
-        <Game move={move} stopMove={stopMove} data={data}/>
+        <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data}/>
       }
     </div>
   );

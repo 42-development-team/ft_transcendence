@@ -10,18 +10,13 @@ const canvasStyle: any = {
 };
 
 // ======== PRINT CANVAS SCORE AND CONTOUR ==============//
-function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number): [PlayerInterface, PlayerInterface] | null {
+function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number) {
 	context.font='30px Arial';
 	context.fillStyle='#cba6f7';
 	context.beginPath();
 		context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
 		context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
 	context.closePath();
-	if (p1.points === 11)
-		return [p1, p2];
-	else if (p2.points === 11)
-		return [p2, p1];
-	return null;
 }
 
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
@@ -90,8 +85,7 @@ const Canvas = ({...props}) => {
 	if (window === undefined)
 		return ;
 
-	// const {move, stopMove, data} = props;
-	const {move, stopMove, data} = props;
+	const {move, stopMove, launchGame, data} = props;
 	if (!data)
 		return ;
 
@@ -100,62 +94,61 @@ const Canvas = ({...props}) => {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas)
-			return ;
-		const context = canvas.getContext('2d');
-		if (!context)
-			return ;
-		height = width * (9 / 16);
+	useEffect(() => {launchGame(data.id)}, []);
 
-		let animationId: number;
+	// useEffect(() => {
+	// 	const canvas = canvasRef.current;
+	// 	if (!canvas)
+	// 		return ;
+	// 	const context = canvas.getContext('2d');
+	// 	if (!context)
+	// 		return ;
+	// 	height = width * (9 / 16);
+
+	// 	let animationId: number;
 		
-		const render = (): any => {
+	// 	const render = (): any => {
 
-			blurEffect(context, width, height);
-			printMidLine(context, width, height);
-			renderGame(context, data, width, height);
+	// 		blurEffect(context, width, height);
+	// 		printMidLine(context, width, height);
+	// 		renderGame(context, data, width, height);
 
-			const result: any = printScore(context, data.player1, data.player2, width, height);
-			if (result) {
-				win(context, result, width, height);
-				return finish(result, animationId);
-			}
-			animationId = window.requestAnimationFrame(render);
-		}
-		render();
+	// 		printScore(context, data.player1, data.player2, width, height);
+
+	// 		// animationId = window.requestAnimationFrame(render);
+	// 	}
+	// 	render();
 		
-		return () => window.cancelAnimationFrame(animationId);
+	// 	// return () => window.cancelAnimationFrame(animationId);
 
-	}, [width]);
+	// }, [width]);
 	
-	useEffect(() => {
-		function handleKeyDown(e: any) {
-			if (e.code === "ArrowDown")
-				move(e.code);
-			else if (e.code === "ArrowUp")
-				move(e.code);
-		}
+	// useEffect(() => {
+	// 	function handleKeyDown(e: any) {
+	// 		if (e.code === "ArrowDown")
+	// 			move(e.code);
+	// 		else if (e.code === "ArrowUp")
+	// 			move(e.code);
+	// 	}
 
-		function handleKeyRelease(e: any) {
-			if (e.code === "ArrowDown")
-				stopMove(e.code);
-			else if (e.code === "ArrowUp")
-				stopMove(e.code);
-		}
+	// 	function handleKeyRelease(e: any) {
+	// 		if (e.code === "ArrowDown")
+	// 			stopMove(e.code);
+	// 		else if (e.code === "ArrowUp")
+	// 			stopMove(e.code);
+	// 	}
 
-		function resize() {
-			const canvas = canvasRef.current;
-			if (!canvas)
-				return ;
-			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
-		}
-		window.addEventListener("resize", resize);
-		document.addEventListener("keydown", handleKeyDown);
-		document.addEventListener("keyup", handleKeyRelease);
+	// 	function resize() {
+	// 		const canvas = canvasRef.current;
+	// 		if (!canvas)
+	// 			return ;
+	// 		setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
+	// 	}
+	// 	window.addEventListener("resize", resize);
+	// 	document.addEventListener("keydown", handleKeyDown);
+	// 	document.addEventListener("keyup", handleKeyRelease);
 
-	});
+	// });
 
 	return (
 		<div className="canvas w-full">

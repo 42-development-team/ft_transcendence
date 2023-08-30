@@ -195,8 +195,23 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     // Send the players positions + ball positions to correct room
-    async sendGameData(roomName: string, gameData: GameDto) {
-        this.server.to(roomName).emit('updateGame', {gameData});
+    @SubscribeMessage('launchGame')
+    async handleLaunchGame(socket: Socket, id: number) {
+        console.log("id:", id);
+        console.log("====================");
+        const gameRoom: GameRoomDto = this.gameRooms.find(game => game.id === id);
+        console.log(gameRoom);
+        let gameData = gameRoom.data;
+        if (!gameData)
+            return ;
+        // while (gameData.player1.points < 11 && gameData.player2.points < 11) {
+        //     console.log("before:", gameData);
+        //     gameData = await this.gameService.calculateGame(gameData);
+        //     // this.socketGateway.sendGameData(data.roomName, data);
+        //     this.server.to(gameData.roomName).emit('updateGame', {gameData});
+        //     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+        //     sleep(1/60);
+        // }
     }
 
     // Should emit to room event 'GameOver' ??

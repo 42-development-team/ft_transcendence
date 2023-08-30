@@ -20,28 +20,12 @@ export default function useGame() {
 		socket?.on('updateGame', (body: any) => {
 			console.log("updateGame event - useGame.tsx");
 			console.log("body:", JSON.stringify(body, null, 2));
-			// update data
-			// launch the loop here ?
+			setData(body);
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
-			console.log('MatchIsReady-useGame.tsx')
 			setInGame(true);
 			setData(body);
-			// const gameData = JSON.stringify(body, null, 2);
-			// console.log(gameData);
-			// setData(initData);
-			// console.log({data});
-		});
-		
-		// socket?.on('redirect', (body: any) => {
-		// 	console.log("get redirected");
-		// 	console.log("body:", JSON.stringify(body, null, 2));
-		//	router.push("/game");
-		// });
-
-		socket?.on('newGameConnection', (body: any) => {
-			handleNewGameConnection(body); // get data from this ???
 		});
 
 		return () => {
@@ -63,11 +47,15 @@ export default function useGame() {
 
 	const move = async (event: string) => {
 		// Emit le move sur la socket
-		socket?.emit('move', (event));
+		socket?.emit('move', event);
 	}
 
 	const stopMove = async (event: string) => {
-		socket?.emit('stopMove', (event));
+		socket?.emit('stopMove', event);
+	}
+
+	const launchGame = async (id: number) => {
+		socket?.emit('launchGame', id);
 	}
 
 	return {
@@ -75,6 +63,7 @@ export default function useGame() {
 		stopMove,
 		leaveQueue,
 		joinQueue,
+		launchGame,
 		inGame,
 		data,
 	}
