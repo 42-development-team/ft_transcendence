@@ -30,10 +30,6 @@ const FirstLoginPageComponent = ({
     const [inputUserName, setInputUserName] = useState('');
     const Router = useRouter();
 
-
-    // let inputUserName: string | null;
-
-
     useEffect(() => {
         try {
             getUserName(userId);
