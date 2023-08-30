@@ -6,6 +6,9 @@ import Avatar from "../profile/Avatar";
 import ValidateBtn from "../ValidateBtn";
 import { get } from "http";
 import { useEffectTimer } from "../auth/utils/useEffectTimer";
+import getUserNameById from "../utils/getUserNameById";
+import UpdateUsernameById from "../utils/updateUsernameById";
+import DoesUserNameExist from "../utils/DoesUsernameExist";
 
 const SettingsPage = ({
 		userId,
@@ -59,14 +62,14 @@ const SettingsPage = ({
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
-		const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
-			method: "GET",
-		});
-		const data = await response.json();
-		if (!data.ok)
-			console.log(data.error);
-		setPlaceHolder(data.username);
-		setInputUserName(data.username);
+		try {
+			const username = await getUserNameById(userId);
+			setPlaceHolder(username);
+			setInputUserName(username);
+
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	const handleClickUsername = async () => {
@@ -75,18 +78,11 @@ const SettingsPage = ({
 				newUsername: inputUserName,
 				userId: userId,
 			};
-			const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-				method: "PUT",
-				body: JSON.stringify(updateData),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
+			const usernameUpdateResponse = await UpdateUsernameById(updateData);
 			if (usernameUpdateResponse.ok) {
 				console.log("Username updated successfully");
 			} else {
-				console.log("Error updating username:", usernameUpdateResponse.status);
+				console.log("Error updating username:", usernameUpdateResponse.error);
 			}
 			setValidateUsernameEnabled(false);
 			setMessage("Username updated successfully");
@@ -128,10 +124,7 @@ const SettingsPage = ({
 				return;
 			}
 
-			const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
-				method: "GET",
-			});
-			const data = await response.json();
+			const data = await DoesUserNameExist(newinputUserName);
 			const isUserAlreadyTaken = data.isUsernameTaken;
 			const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
