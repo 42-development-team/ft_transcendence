@@ -44,20 +44,13 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	useEffect(() => {
 		if (isLoggedIn)
-			initializeSocket();
-	}, [isLoggedIn]);
+			initializeSocket(userId);
+	}, [isLoggedIn, userId]);
 
 	useEffect(() => {
 		if (isLoggedIn) {
 			const message = 'Important: Please click on \'Save\' button to leave this page.';
 			const handleTabClosing = (event: BeforeUnloadEvent) => {
-			// if (typeof event === 'undefined') {
-			// 	event = window.event as BeforeUnloadEvent;
-			//   }
-			// if (event) {
-			// event.returnValue = message;
-			// }
-			console.log("userId in handleTab hook: ", userId);
 			fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
                 credentials: "include",
                 method: 'PUT',
@@ -152,11 +145,21 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         }
     }, [socket]);
 
-	const initializeSocket = async () => {
+	const initializeSocket = async (userId: string) => {
 		console.log('Connecting to socket.io server...');
 		const socket = connect();
 		setSocket(socket);
 		// fetch to verify userStatus is online. If not update it to online
+		fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+			credentials: "include",
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				currentStatus: "online",
+			}),
+		});
 		return () => {
 			console.log('Disconnecting from socket.io server...');
 			socket.close();

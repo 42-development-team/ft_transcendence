@@ -74,9 +74,6 @@ export class UsersController {
 		try {
 			const userId = req.user.sub;
 			const currentStatus = req.body.currentStatus;
-			console.log("userId in update status handler: ", userId);
-			console.log("currentStatus sent to update status handler: ", currentStatus);
-			console.log("currentStatus returned by getCurrentStatus in update status handler: ", currentStatus);
 			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
 				this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
 				this.userService.updateStatus(userId, currentStatus);
