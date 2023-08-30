@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import { BallInterface, GameInterface, PlayerInterface } from "../game/interfaces/game.interfaces";
 import { useAuthcontext } from "../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function useGame() {
-	
+
 	const {socket} = useAuthcontext();
 	const [data, setData] = useState<GameInterface>();
-	// const [activeGames, setActiveGames] = useState<GameModel[]>([]); // check db model and redo this properly
+	const [inGame, setInGame] = useState<boolean>(false);
+	const router = useRouter();
 
 	const handleNewGameConnection = (body: any) => {
 		const { room, user } = body;
@@ -22,12 +24,29 @@ export default function useGame() {
 			// launch the loop here ?
 		});
 
+		socket?.on('matchIsReady', (body: any) => {
+			console.log('MatchIsReady-useGame.tsx')
+			setInGame(true);
+			setData(body);
+			// const gameData = JSON.stringify(body, null, 2);
+			// console.log(gameData);
+			// setData(initData);
+			// console.log({data});
+		});
+		
+		// socket?.on('redirect', (body: any) => {
+		// 	console.log("get redirected");
+		// 	console.log("body:", JSON.stringify(body, null, 2));
+		//	router.push("/game");
+		// });
+
 		socket?.on('newGameConnection', (body: any) => {
 			handleNewGameConnection(body); // get data from this ???
 		});
 
 		return () => {
 			socket?.off('updateGame');
+			socket?.off('matchIsReady');
 		};
 	}, [socket]);
 
@@ -56,6 +75,7 @@ export default function useGame() {
 		stopMove,
 		leaveQueue,
 		joinQueue,
+		inGame,
 		data,
 	}
 }

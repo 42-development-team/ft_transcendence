@@ -21,6 +21,8 @@ export interface BallInterface {
 }
 
 export interface GameInterface {
+	id: number,
+	roomName: string,
 	player1: PlayerInterface,
 	player2: PlayerInterface,
 	ball: BallInterface,

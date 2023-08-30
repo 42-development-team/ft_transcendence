@@ -21,6 +21,8 @@ export class PlayerDto {
 };
 
 export class GameDto {
+	id: number;
+	roomName: string;
 	player1: PlayerDto;
 	player2: PlayerDto;
 	ball: BallDto;

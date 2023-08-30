@@ -1,18 +1,19 @@
 "use client";
 
 import { Spinner } from '@material-tailwind/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import CustomBtn from '../CustomBtn'
 import { join } from 'path'
 import useGame from '@/app/hooks/useGame';
+import Canvas from '../game/canvas';
 
-const Play = () => {
+const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {joinQueue, leaveQueue } = useGame();
+	const {leaveQueue, joinQueue} = props;
 
 	const matchmaking = async () => {
 		setLoading(true)
@@ -28,13 +29,13 @@ const Play = () => {
 		setDisable(false)
 		setButtonText("Play")
 		leaveQueue();
-		
+
 	}
 
 	return (
 		<div className='flex flex-col '>
 			<div className='flex flex-col justify-center items-center'>
-				{loading ? (
+				{loading? (
 					<div className='flex flex-col'>
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5' style={{ opacity: 1 }}></div>
