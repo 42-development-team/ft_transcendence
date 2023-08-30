@@ -69,6 +69,24 @@ export class UsersController {
         return updatedObject;
     }
 
+	@Put('/update_status/:id')
+    async updatestatus(@Request() req: any, @Res() response: Response) {
+		try {
+			const userId = req.user.sub;
+			const currentStatus = req.body.currentStatus;
+			console.log("userId in update status handler: ", userId);
+			console.log("currentStatus sent to update status handler: ", currentStatus);
+			console.log("currentStatus returned by getCurrentStatus in update status handler: ", currentStatus);
+			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
+				this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
+				this.userService.updateStatus(userId, currentStatus);
+			}
+			response.status(HttpStatus.OK);
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+    }
+
     // should we add updateAvatar?
 
     /* D(elete) */
