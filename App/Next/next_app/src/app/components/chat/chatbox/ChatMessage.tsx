@@ -6,7 +6,6 @@ type MessageProps = {
 }
 
 const ChatMessage = ({message: {senderUsername, content}, color}: MessageProps) => {
-    // const color = 'darkorchid';
     const Author = (
         <span className="font-semibold" style={{color: color }}>
             {senderUsername}
