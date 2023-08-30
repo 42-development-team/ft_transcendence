@@ -25,7 +25,13 @@ export default function useGame() {
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
+			console.log('MatchIsReady-useGame.tsx')
 			setInGame(true);
+			setData(body);
+			// const gameData = JSON.stringify(body, null, 2);
+			// console.log(gameData);
+			// setData(initData);
+			// console.log({data});
 		});
 		
 		// socket?.on('redirect', (body: any) => {
@@ -40,6 +46,7 @@ export default function useGame() {
 
 		return () => {
 			socket?.off('updateGame');
+			socket?.off('matchIsReady');
 		};
 	}, [socket]);
 

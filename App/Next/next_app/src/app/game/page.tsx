@@ -3,11 +3,10 @@ import Canvas from '../components/game/canvas';
 
 const Game = ({...props}) => {
 	
-	const { id } = props;
-	console.log('id:', id);
+	const {move, stopMove, data} = props;
 
 	return (
-		<Canvas />
+		<Canvas move={move} stopMove={stopMove} data={data}/>
 	);
 }
 	

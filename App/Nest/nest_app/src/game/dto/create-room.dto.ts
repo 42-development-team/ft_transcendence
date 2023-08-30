@@ -5,5 +5,5 @@ export class GameRoomDto {
 	roomName: string;
 	playerOneId: number;
 	playerTwoId: number;
-	data?: GameDto;
+	data: GameDto;
 }

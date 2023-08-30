@@ -20,7 +20,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-        ) {}
+    ) {
+            console.log("SocketGateway Constructor");
+    }
 
 
     @WebSocketServer()
@@ -136,51 +138,54 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket) {
 
-        const userId = await this.chatroomService.getUserIdFromSocket(player);
-        this.queued.push({userId});
+        try {
+            const userId = await this.chatroomService.getUserIdFromSocket(player);
+            this.queued.push({userId});
+            
+            if (this.queued.length >= 2) {
+                const player2Id: number = this.queued[0].userId;
+                const player1Id: number = this.queued[1].userId;
 
-        if (this.queued.length >= 2) {
-            const player1Id: number = this.queued[0].userId;
-            const player2Id: number = this.queued[1].userId;
+                // create room data
+                const id: number = this.gameRooms.length;
+                const roomName: string = player1Id + "_" + player2Id;
+                const newGameRoom: GameRoomDto = {
+                    id: id,
+                    roomName: roomName,
+                    playerOneId: player1Id,
+                    playerTwoId: player2Id,
+                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
+                }
 
-            // create room data
-            const newGameRoom: GameRoomDto = {
-                id: this.gameRooms.length,
-                roomName: player1Id + "_" + player2Id,
-                playerOneId: player1Id,
-                playerTwoId: player2Id,
-                data: this.gameService.setGameData(player1Id, player2Id),
+                // add room to rooms list
+                this.gameRooms.push(newGameRoom);
+                // pop player from queue list
+                this.handleLeaveQueue(this.queued[0]);
+                this.handleLeaveQueue(this.queued[1]);
+
+                // Create room instance and join room
+                await player?.join(roomName);
+
+                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
+			    await player2Socket?.join(roomName);
+
+                // send game data to players
+                this.server.to(roomName).emit('matchIsReady', newGameRoom.data); // => which event to send first ??
+                // this.server.to(newGameRoom.roomName).emit('updateGame', {newGameRoom}); // => which event to send first ??
             }
-
-            // add room to rooms list
-            this.gameRooms.push(newGameRoom);
-
-            // Create room instance and join room
-            player?.join(newGameRoom.roomName);
-            const player2SocketId = await this.userService.getUserSocketFromId(player2Id);
-			this.clients.find(c => c.id == player2SocketId)?.join(newGameRoom.roomName);
-
-            // pop player from queue list
-            this.handleLeaveQueue(this.queued[0]);
-            this.handleLeaveQueue(this.queued[1]);
-
-            // send game data to players
-            this.server.to(newGameRoom.roomName).emit('redirect', {roomId: newGameRoom.id}); // => which event to send first ??
-            // this.server.to(newGameRoom.roomName).emit('updateGame', {newGameRoom}); // => which event to send first ??
+        } catch (e) {
+            console.log(e);
         }
     }
 
     // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
-        const {move} = body;
-        console.log(move);
     }
 
     @SubscribeMessage('stopMove')
     async handleStopMove(@MessageBody() body: any, @ConnectedSocket() socket) {
-        const {stopMove} = body;
-        console.log(stopMove);
     }
 
     @SubscribeMessage('leaveQueue')

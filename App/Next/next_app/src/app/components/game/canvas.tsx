@@ -90,6 +90,7 @@ const Canvas = ({...props}) => {
 	if (window === undefined)
 		return ;
 
+	// const {move, stopMove, data} = props;
 	const {move, stopMove, data} = props;
 	if (!data)
 		return ;

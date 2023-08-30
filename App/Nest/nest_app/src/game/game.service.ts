@@ -8,7 +8,7 @@ import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 
 //===========
-// import { SocketGateway } from "src/sockets/socket.gateway";
+import { SocketGateway } from "src/sockets/socket.gateway";
 
 @Injectable()
 export class GameService {
@@ -249,14 +249,14 @@ export class GameService {
     async update(data: GameDto) {
         // TODO Check disconnected sockets
         while (data.player1.points < 11 && data.player2.points < 11) {
-            data = await this.calculateGame(data);
-            // this.socketGateway.sendGameData('roomName', data);
+            data = await  this.calculateGame(data);
+            // this.socketGateway.sendGameData(data.roomName, data);
             const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
             sleep(1/60);
         }
     }
 
-    setGameData(playerOneId: number, playerTwoId: number): GameDto {
+    setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,
             color: '#cba6f7aa',
@@ -292,6 +292,8 @@ export class GameService {
         }
 
         let data: GameDto = {
+            id: id,
+            roomName: roomName,
             player1: player1,
             player2: player2,
             ball: ball,
