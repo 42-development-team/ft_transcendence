@@ -1,7 +1,7 @@
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider"
 import { ChannelType } from "@/app/utils/models"
 import { Tooltip } from "@material-tailwind/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useUserRole } from "./members/UserRoleProvider"
 
 type SendMessageFormProps = {

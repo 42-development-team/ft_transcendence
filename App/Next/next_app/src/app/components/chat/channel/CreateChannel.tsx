@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent, Dispatch, SetStateAction } from 'react';
+import { useState, ChangeEvent, FormEvent, Dispatch, SetStateAction, useEffect } from 'react';
 import { NewChannelInfo } from '@/app/hooks/useChannels';
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import { delay } from '@/app/utils/delay';
@@ -28,6 +28,14 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 
 	const [error, setError] = useState(false);
 	const [openAlert, setOpenAlert] = useState(false);
+
+	useEffect(() => {
+		// Auto focus on channel name input
+		const channelNameInput = document.getElementById('channelName');
+		if (channelNameInput) {
+			channelNameInput.focus();
+		}
+	}, []);
 
 	const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = event.target.value;

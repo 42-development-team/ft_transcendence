@@ -10,7 +10,7 @@ import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 const Navbar = () => {
     const {isLoggedIn, logout} = useAuthcontext();
     return (
-        <div className="h-[5vh] flex items-center justify-between bg-base p-1  drop-shadow-xl">
+        <div className="h-[4vh] flex items-center justify-between bg-base p-1  drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
             {isLoggedIn && <NavLinks logout={logout}/> }
         </div>
