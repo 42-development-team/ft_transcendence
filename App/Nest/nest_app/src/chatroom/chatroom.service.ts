@@ -139,6 +139,7 @@ export class ChatroomService {
 		};
 		return current;
 	}
+
 	async getAllChannelsContent(userId: number): Promise<ChatroomContentDto[]> {
 		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
