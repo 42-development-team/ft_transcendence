@@ -4,7 +4,6 @@ import { ChangeEvent, useEffect, useState } from "react";
 import UpdateAvatar from "../auth/utils/updateAvatar";
 import Avatar from "../profile/Avatar";
 import ValidateBtn from "../ValidateBtn";
-import { get } from "http";
 import { useEffectTimer } from "../auth/utils/useEffectTimer";
 import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
