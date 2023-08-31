@@ -258,7 +258,7 @@ export class ChatroomService {
 				memberShips: true
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		if (!isAdmin && !isOwner) {
 			throw new Error('User is not an admin of this channel');
@@ -306,7 +306,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === kickedId;
 		if (!isAdmin && !isOwner) {
@@ -332,7 +332,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === bannedId;
 		// const isTargetAdmin = this.isUserAdmin(bannedId, id);	// Todo: can admins kick each other?
@@ -394,7 +394,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === mutedId;
 		if (!isAdmin && !isOwner) {
@@ -404,11 +404,12 @@ export class ChatroomService {
 			throw new Error('Cannot mute owner of the channel');
 		}
 		// Add muted user to mute list
+		const muteEndTime = new Date(Date.now() + muteDuration * 1000);
 		await this.prisma.membership.updateMany({
 			where: { userId: mutedId, chatRoomId: id },
 			data: {
-				isMuted: true,
-				mutedUntil: Date.now() + muteDuration * 1000
+				isMuted: muteDuration == 0 ? false : true,
+				mutedUntil: muteEndTime
 			},
 		});
 	}

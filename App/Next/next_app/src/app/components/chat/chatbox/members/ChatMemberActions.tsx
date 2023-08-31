@@ -3,7 +3,7 @@ import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/Dro
 import DropDownMenu from "@/app/components/dropdown/DropDownMenu";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
 import { Tooltip } from "@material-tailwind/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUserRole } from "./UserRoleProvider";
 import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
 import { Alert } from "@material-tailwind/react";
@@ -43,12 +43,21 @@ const ChatMemberActions = (
     const [ openAlert, setOpenAlert ] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
+    const [ isMuted, setIsMuted ] = useState(Date.now() < Date.parse(user.mutedUntil));
     const adminActionsEnabled: boolean = !isCurrentUser && !user.isOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !user.isAdmin;
 
+    // get muted time in number format
+    useEffect(() => {
+        setIsMuted(Date.now() < Date.parse(user.mutedUntil));
+        if (isMuted) {
+            console.log('mute time ' + Date.parse(user.mutedUntil));
+        console.log("Current time: " + Date.now() + " Muted until: " + Date.parse(user.mutedUntil));
+        }
+    }, [user]);
+
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
-    console.log("Current time: " + Date.now() + " Muted until: " + user.mutedUntil);
 
     return (
         <div className="flex flex-row gap-2">
@@ -64,15 +73,15 @@ const ChatMemberActions = (
                         </button>
                     </Tooltip>
                     {isOpen && (
-                        <div className="absolute z-10 mt-2 w-16 right-14 rounded-md bg-crust">
+                        <div className="absolute z-10 mt-2 w-24 right-14 rounded-md bg-crust">
+                            {isMuted && 
+                                <DropDownAction onClick={() => muteUser(0)}>Unmute</DropDownAction>
+                            }
                             <DropDownAction onClick={() => muteUser(30)}>30s</DropDownAction>
                             <DropDownAction onClick={() => muteUser(60)}>60s</DropDownAction>
                             <DropDownAction onClick={() => muteUser(3 * 60)}>3m</DropDownAction>
                             <DropDownAction onClick={() => muteUser(10 * 60)}>10m</DropDownAction>
                             <DropDownAction onClick={() => muteUser(60 * 60)}>1h</DropDownAction>
-                            {user.isMuted && 
-                                <p className="text-xs">{user.mutedUntil}</p>
-                            }
                         </div>
                     )}
                 </div>

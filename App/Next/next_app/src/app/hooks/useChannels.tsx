@@ -86,6 +86,7 @@ export default function useChannels(userId: string) {
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
+        console.log(JSON.stringify(newMember,null, 2));
         const existingMemberIndex = joinedChannels[channelIndex]?.members?.findIndex((member: ChannelMember) => member.id === newMember.id);
         if (existingMemberIndex !== undefined && existingMemberIndex !== -1) {
             const newChannels = [...joinedChannels];

@@ -205,7 +205,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
     const BannedList = channel.members
             .filter(member => member.isBanned)
             .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>

@@ -15,7 +15,7 @@ export default function Home() {
 
 	const {move, stopMove, leaveQueue, joinQueue, inGame, data} = useGame();
 
-  console.log('inGame boool:', inGame);
+  // console.log('inGame boool:', inGame);
 
   return (
     <div className="flex flex-auto w-full h-full">
