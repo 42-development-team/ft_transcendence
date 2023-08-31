@@ -9,7 +9,6 @@ import { useAuthcontext } from "@/app/context/AuthContext";
 type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
-    isBanned?: boolean
 	channelId: string
     kick: (kickedId: string) => void
     ban: (bannedId: string) => void
@@ -22,8 +21,8 @@ type ChatMemberProps = {
 }
 // Todo: add status and avatar
 const ChatMemberItem = ({
-	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
-    isCurrentUser, isBanned,
+	user,
+    isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage,
     setAsAdmin, removeAdmin, mute, channelId
 }: ChatMemberProps) => {
@@ -34,7 +33,7 @@ const ChatMemberItem = ({
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
 			try {
-				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
+				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json'
@@ -47,7 +46,7 @@ const ChatMemberItem = ({
 			}
 		};
 		fetchedUserStatus();
-	}, [id, statusChange]);
+	}, [user.id, statusChange]);
 
 	useEffect(() => {
 		console.log("status change: ", statusChange);
@@ -86,43 +85,43 @@ const ChatMemberItem = ({
 
     const kickUser = () => {
         if (kick == undefined) return;
-        kick(id);
+        kick(user.id);
     }
     const banUser = () => {
         if (ban == undefined) return;
-        ban(id);
+        ban(user.id);
     }
     const unbanUser = () => {
         if (unban == undefined) return;
-        unban(id);
+        unban(user.id);
     }
     const sendDirectMessage = () => {
         if (directMessage == undefined) return;
-        directMessage(id);
+        directMessage(user.id);
     }
 
     const setAdmin = () => {
         if (setAsAdmin == undefined) return;
-        setAsAdmin(id);
+        setAsAdmin(user.id);
     }
 
     const unsetAdmin = () => {
         if (setAsAdmin == undefined) return;
-        removeAdmin(id);
+        removeAdmin(user.id);
     }
 
     const muteUser = (muteDuration: number) => {
         if (mute == undefined) return;
-            mute(id, muteDuration);
+            mute(user.id, muteDuration);
     }
 
     const getColor = () => {
-        if (isOwner) {
+        if (user.isOwner) {
             return 'text-[#f38ba8]';
             // return '#fab387';
-        } else if (isAdmin) {
+        } else if (user.isAdmin) {
             return 'text-[#c6a0f6]';
-        } else if (isBanned) {
+        } else if (user.isBanned) {
             return 'text-[#838ba7]';
         }
         return 'text-[#f5e0dc]';
@@ -132,8 +131,8 @@ const ChatMemberItem = ({
         <div className={` ${isCurrentUser && "bg-surface0"} flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
                 <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
-                    {avatar.startsWith("https://")
-                        ? <Image alt="Member avatar" src={avatar} height={32} width={32}
+                    {user.avatar.startsWith("https://")
+                        ? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
                             className="w-[inherit] rounded-[inherit]" />
                         : null
                     }
@@ -141,9 +140,9 @@ const ChatMemberItem = ({
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{username}</h1>
+                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{user.username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id}
+            <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} />

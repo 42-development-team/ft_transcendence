@@ -7,13 +7,11 @@ import { useRef, useState } from "react";
 import { useUserRole } from "./UserRoleProvider";
 import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
 import { Alert } from "@material-tailwind/react";
+import { ChannelMember } from "@/app/utils/models";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
-    userId: string
-    isMemberAdmin: boolean
-    isMemberOwner: boolean
-    isBanned?: boolean
+    user: ChannelMember
     kickUser: () => void
     banUser: () => void
     unbanUser: () => void
@@ -24,16 +22,16 @@ type ChatMemberActionsProps = {
     muteUser: (muteDuration: number) => void
 }
 
-// Todo: prevent double click on kick button
+// Todo: prevent double click on buttons
 const ChatMemberActions = (
     { 
-        userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, 
+        isCurrentUser, user,
         kickUser, banUser, unbanUser, 
         leaveChannel, sendDirectMessage, muteUser,
         setAdmin, unsetAdmin
     }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
-        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("userId", user.id);
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
@@ -45,14 +43,16 @@ const ChatMemberActions = (
     const [ openAlert, setOpenAlert ] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    const adminActionsEnabled: boolean = !isCurrentUser && !isMemberOwner && (isCurrentUserAdmin || isCurrentUserOwner);
-    const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !isMemberAdmin;
+    const adminActionsEnabled: boolean = !isCurrentUser && !user.isOwner && (isCurrentUserAdmin || isCurrentUserOwner);
+    const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !user.isAdmin;
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
+    console.log("Current time: " + Date.now() + " Muted until: " + user.mutedUntil);
+
     return (
         <div className="flex flex-row gap-2">
-            {adminActionsEnabled && !isBanned &&
+            {adminActionsEnabled && !user.isBanned &&
                 <div ref={wrapperRef} className=" text-left w-full">
                     <Tooltip content="Mute" placement="top" className="tooltip">
                         <button onClick={() => setIsOpen(!isOpen)}
@@ -70,6 +70,9 @@ const ChatMemberActions = (
                             <DropDownAction onClick={() => muteUser(3 * 60)}>3m</DropDownAction>
                             <DropDownAction onClick={() => muteUser(10 * 60)}>10m</DropDownAction>
                             <DropDownAction onClick={() => muteUser(60 * 60)}>1h</DropDownAction>
+                            {user.isMuted && 
+                                <p className="text-xs">{user.mutedUntil}</p>
+                            }
                         </div>
                     )}
                 </div>
@@ -94,16 +97,16 @@ const ChatMemberActions = (
                         <DropDownAction onClick={() => console.log('Play')}>Invite to play</DropDownAction>
                     </>
                     }
-                    { isCurrentUserOwner && isMemberAdmin &&
+                    { isCurrentUserOwner && user.isAdmin &&
                         <DropDownActionRed onClick={unsetAdmin}>Remove admin</DropDownActionRed>
                     }
-                    {ownerActionsEnabled && !isBanned &&
+                    {ownerActionsEnabled && !user.isBanned &&
                         <DropDownAction onClick={setAdmin}>Set as admin</DropDownAction>
                     }
-                    {adminActionsEnabled && isBanned &&
+                    {adminActionsEnabled && user.isBanned &&
                         <DropDownActionRed onClick={unbanUser}>Unban</DropDownActionRed>
                     }
-                    {adminActionsEnabled && !isBanned &&
+                    {adminActionsEnabled && !user.isBanned &&
                         <>
                             <DropDownActionRed onClick={kickUser}>Kick</DropDownActionRed>
                             <DropDownActionRed onClick={banUser}>Ban</DropDownActionRed>
