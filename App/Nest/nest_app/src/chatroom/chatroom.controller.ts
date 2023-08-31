@@ -272,7 +272,7 @@ export class ChatroomController {
 		await this.chatroomService.invite(+id, userId, +invitedId)
 			.then(() => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
-				// this.socketGateway.handleInvite(clientSocket, id);
+				this.socketGateway.handleInvite(clientSocket, invitedId, id);
 				response.send();
 			})
 			.catch(error => {
