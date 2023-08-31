@@ -268,15 +268,12 @@ export class ChatroomController {
 		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
 		if (invitedId){
 			const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
-			await this.chatroomService.invite(+id, userId, +invitedId)
-				.then(() => {
-					const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
-					this.socketGateway.handleInvite(clientSocket, invitedId, id);
-					response.send("ok");
-				})
-				.catch(error => {
-					response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-				});
+			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
+			if (newMembership) {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				response.status(HttpStatus.OK).send("ok");
+			}
 		} else {
 			const notInDatabaseMessage = "User invited not found"
 			console.log(notInDatabaseMessage);

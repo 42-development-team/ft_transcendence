@@ -24,7 +24,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log("SocketGateway Constructor");
     }
 
-
     @WebSocketServer()
     server: Server;
 

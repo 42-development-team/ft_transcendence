@@ -201,13 +201,13 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         )
     )
 
-	const AlertInvited = (text: string) => {
-		return (
-		  <div className="flex w-full flex-col gap-2">
-			<Alert>{text}</Alert>
-		  </div>
-		);
-	  }
+	// const AlertInvited = (text: string) => {
+	// 	return (
+	// 	  <div className="flex w-full flex-col gap-2">
+	// 		<Alert>{text}</Alert>
+	// 	  </div>
+	// 	);
+	//   }
 
     const InviteFieldButton = () => {
 		const [ login, setLogin ] = useState('');
@@ -223,16 +223,16 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 				})
 			});
 			const responseData = await response.json();
-			if (response.ok){
+			if (response.status == 200){
 				setOpenAlert(true);
 				setAlertMessage("The user has been successfully invited and joined the channel")
-				await delay(1250);
+				await delay(2000);
 				setOpenAlert(false);
 			}
             if (response.status == 404) {
 				setOpenAlert(true);
 				setAlertMessage(responseData.message)
-				await delay(1250);
+				await delay(2000);
 				setOpenAlert(false);
             }
 			setLogin('');
