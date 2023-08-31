@@ -9,6 +9,7 @@ import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 import { comparePassword } from '../utils/bcrypt';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class ChatroomService {
@@ -17,6 +18,7 @@ export class ChatroomService {
 		private jwtService: JwtService,
 		private userService: UsersService,
 		private configService: ConfigService,
+		private membershipService: MembershipService
 	) { }
 
 	// #region C(reate)
@@ -366,6 +368,16 @@ export class ChatroomService {
 			where: { userId: unbannedId, chatRoomId: id, isBanned: true },
 		});
 		return unbannedUser;
+	}
+
+	async invite(id: number, userId: number, invitedId: number) {
+		// check if invitedId is already member of the channel
+		const isMember = await this.membershipService.isChannelMember(invitedId, id);
+		if (isMember) {
+			return null;
+		}
+		const invitedMembership = await this.connectUserToChatroom(invitedId, id);
+		return invitedMembership;
 	}
 
 	async leave(id: number, userId: number) {

@@ -24,7 +24,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log("SocketGateway Constructor");
     }
 
-
     @WebSocketServer()
     server: Server;
 
@@ -108,6 +107,19 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
+	async handleInvite(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        if (client) {
+            client.join(room);
+            client.emit('invitedRoom', { room }); // for the client to be notified when event is emit
+            console.log(`Client ${userId} (${client.id}) invited to room ${room}`);
+        } else {
+            console.log(`Client ${userId} invited to room ${room}`);
+        }
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
         const userId = await this.chatroomService.getUserIdFromSocket(client);
@@ -141,7 +153,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         try {
             const userId = await this.chatroomService.getUserIdFromSocket(player);
             this.queued.push({userId});
-            
+
             if (this.queued.length >= 2) {
                 const player2Id: number = this.queued[0].userId;
                 const player1Id: number = this.queued[1].userId;
