@@ -33,16 +33,18 @@ const ChatSideBar = ({ channels }: { channels: ChannelModel[] }) => {
 
 	return (
 		<div className="w-16 min-w-[4rem] bg-base h-full shadow-inner flex flex-col justify-start items-center">
-			<div className={style.navChannel} >
-				<ul className={style.channelContainer}>
-					<ShowFriends />
-					<JoinChannelButton />
-					<CreateChannelButton />
-					<Separator />
-					{directMessageList}
-					{channelsList}
-				</ul>
-			</div>
+			<ul className="flex flex-col gap-2 p-1 absolute h-[calc(100vh-48px)] items-center">
+				<ShowFriends />
+				<JoinChannelButton />
+				<CreateChannelButton />
+				<Separator />
+				<li className='overflow-y-scroll overflow-x-hidden no-scrollbar items-center -m-2 p-3'>
+					<ul className="flex flex-col gap-3">
+						{directMessageList}
+						{channelsList}
+					</ul>
+				</li>
+			</ul>
 		</div>
 	);
 };

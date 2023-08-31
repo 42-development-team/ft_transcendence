@@ -4,13 +4,8 @@ import { useState } from "react";
 
 const matchHistory = ( props: { data: any, currentUserId: number } ) => {
     const data = Array.isArray(props.data) ? props.data : [];
-    let nodata = false;
     const currentUserId = props.currentUserId;
     const [ openAlert, setOpenAlert ] = useState(false);
-
-    if (data === undefined || data === null) {
-        nodata = true;
-    }
 
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
@@ -22,7 +17,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
 
     return (
         <div className="p-6 h-[50vh] overflow-auto">
-            { !nodata && data.length !== 0 ? (
+            { data.length !== 0 ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
                     <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-base'

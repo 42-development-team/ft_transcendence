@@ -60,7 +60,7 @@ const Chat = ({ userId }: ChatBarProps) => {
     }, [joinedChannels]);
 
     return (
-        <div className='flex h-full'>
+        <div className='flex h-[calc(100vh-48px)]'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
                 <ChatSideBar channels={joinedChannels} />
                 {/* Main Panel */}

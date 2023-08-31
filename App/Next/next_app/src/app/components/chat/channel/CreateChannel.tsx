@@ -78,7 +78,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	};
 
 	return (
-		<div className='w-full min-w-[350px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+		<div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
 			<ChatHeader title="Create a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
 			<div className="p-4">
 				<form onSubmit={handleSubmit}>
@@ -120,12 +120,15 @@ const ChannelNameInput = ({value, setValue, disabled} :
 				id="channelName"
 				value={value}
 				disabled={disabled}
+				maxLength={24}
 				onChange={(e) => setValue(e.target.value)}
 				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
 		</div>
 	)	
 }
+
+
 
 const ChannelTypeInput = ({value, onChange, disabled} :
 	{value: string, onChange: (event: ChangeEvent<HTMLSelectElement>) => void, disabled: boolean}) => {

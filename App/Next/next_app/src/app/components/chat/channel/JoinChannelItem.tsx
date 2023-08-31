@@ -62,7 +62,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
         <div className="flex flex-col flex-grow">
             <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
                 <div className="flex items-center w-80">
-                    <h1 className="font-medium text-md">{name}</h1>
+                    <h1 className="font-medium text-md break-all">{name}</h1>
                 </div>
                 <div className="relative inline-block text-left">
                     {!banned && (isJoined
