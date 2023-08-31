@@ -58,6 +58,8 @@ model Membership {
 	updatedAt	DateTime	@updatedAt
 	isAdmin		Boolean		@default(false)
 	isBanned	Boolean		@default(false)
+	isMuted		Boolean		@default(false)
+	mutedUntil	DateTime?
 	userId		Int
 	chatRoomId	Int
 	user		User		@relation("membershipUser", fields: [userId], references: [id])

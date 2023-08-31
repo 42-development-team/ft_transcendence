@@ -1,7 +1,7 @@
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider"
 import { ChannelType } from "@/app/utils/models"
 import { Tooltip } from "@material-tailwind/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useUserRole } from "./members/UserRoleProvider"
 
 type SendMessageFormProps = {
@@ -37,7 +37,7 @@ const ChatMessageBoxFooter = ({ onSend, channelType }: SendMessageFormProps) => 
                 }}
                 placeholder="Send a chat message" />
             <div className="flex flex-row justify-end">
-                {channelType != ChannelType.DirectMessage &&  isCurrentUserOwner &&
+                {channelType != ChannelType.DirectMessage && isCurrentUserOwner &&
                     <ShowChannelSettingsButton />
                 }
                 <button className=" mx-2 mt-2 button-mauve w-16" type="submit">
