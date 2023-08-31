@@ -77,15 +77,15 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 	renderBall(context, data.ball, width, height);
 	renderPlayer(context, data.player1, width, height);
 	renderPlayer(context, data.player2, width, height);
+	printScore(context, data.player1, data.player2, width, height);
 };
 
-// ============= COMPONENT ============= //
 const Canvas = ({...props}) => {
 	
 	if (window === undefined)
 		return ;
 
-	const {move, stopMove, launchGame, data} = props;
+	const {move, stopMove, launchGame, data, userId} = props;
 	if (!data)
 		return ;
 
@@ -94,61 +94,39 @@ const Canvas = ({...props}) => {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	useEffect(() => {launchGame(data.id)}, []);
+	useEffect(() => {
+		launchGame(data.id)
+	}, []);
 
-	// useEffect(() => {
-	// 	const canvas = canvasRef.current;
-	// 	if (!canvas)
-	// 		return ;
-	// 	const context = canvas.getContext('2d');
-	// 	if (!context)
-	// 		return ;
-	// 	height = width * (9 / 16);
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas)
+			return ;
+		const context = canvas.getContext('2d');
+		if (!context)
+			return ;
+		height = width * (9 / 16);
 
-	// 	let animationId: number;
+		function handleKeyDown(e: any) {
+			move(e.code, data.id, userId);
+		}
+
+		function handleKeyRelease(e: any) {
+			stopMove(e.code, data.id, userId);
+		}
 		
-	// 	const render = (): any => {
+		const render = (): any => {
 
-	// 		blurEffect(context, width, height);
-	// 		printMidLine(context, width, height);
-	// 		renderGame(context, data, width, height);
+			blurEffect(context, width, height);
+			printMidLine(context, width, height);
+			renderGame(context, data, width, height);
 
-	// 		printScore(context, data.player1, data.player2, width, height);
+		}
+		render();
 
-	// 		// animationId = window.requestAnimationFrame(render);
-	// 	}
-	// 	render();
-		
-	// 	// return () => window.cancelAnimationFrame(animationId);
-
-	// }, [width]);
-	
-	// useEffect(() => {
-	// 	function handleKeyDown(e: any) {
-	// 		if (e.code === "ArrowDown")
-	// 			move(e.code);
-	// 		else if (e.code === "ArrowUp")
-	// 			move(e.code);
-	// 	}
-
-	// 	function handleKeyRelease(e: any) {
-	// 		if (e.code === "ArrowDown")
-	// 			stopMove(e.code);
-	// 		else if (e.code === "ArrowUp")
-	// 			stopMove(e.code);
-	// 	}
-
-	// 	function resize() {
-	// 		const canvas = canvasRef.current;
-	// 		if (!canvas)
-	// 			return ;
-	// 		setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
-	// 	}
-	// 	window.addEventListener("resize", resize);
-	// 	document.addEventListener("keydown", handleKeyDown);
-	// 	document.addEventListener("keyup", handleKeyRelease);
-
-	// });
+		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("keyup", handleKeyRelease);
+	}, [data]);
 
 	return (
 		<div className="canvas w-full">

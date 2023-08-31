@@ -15,8 +15,6 @@ export default function Home() {
 
 	const {move, stopMove, leaveQueue, joinQueue, launchGame, inGame, data} = useGame();
 
-  console.log('inGame boool:', inGame);
-
   return (
     <div className="flex flex-auto w-full h-full">
       <Chat userId={userId} />
@@ -26,7 +24,7 @@ export default function Home() {
         </div>
       }
       {inGame &&
-        <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data}/>
+        <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId}/>
       }
     </div>
   );
