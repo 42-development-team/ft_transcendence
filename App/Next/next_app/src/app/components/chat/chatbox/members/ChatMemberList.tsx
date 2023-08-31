@@ -152,7 +152,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             if (!response.ok) {
                 console.log("Error muting: " + response.status);
             }
-            console.log("Mute response: " + await response.text());
+            // Todo: manage response
         }
         catch (error) {
             console.log("Error muting: " + error);

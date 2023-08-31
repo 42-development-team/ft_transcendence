@@ -37,6 +37,8 @@ export interface ChannelMember {
     isAdmin: boolean
     isOwner: boolean
     isBanned: boolean
+    isMuted: string         // Todo: use DateTime format?
+    mutedUntil: number
     avatar: string
 	currentStatus: UserStatus
 }
