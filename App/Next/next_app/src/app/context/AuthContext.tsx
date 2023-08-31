@@ -149,7 +149,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		const socket = connect();
 		setSocket(socket);
 		// fetch to verify userStatus is online. If not update it to online
-		if (userId){
+		// if (userId){
 			fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
 				credentials: "include",
 				method: 'PUT',
@@ -160,7 +160,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 					currentStatus: "online",
 				}),
 			});
-		}
+		// }
 		return () => {
 			console.log('Disconnecting from socket.io server...');
 			socket.close();
