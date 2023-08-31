@@ -55,8 +55,6 @@ const ChatMemberItem = ({
 
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
-			console.log('User logged in');
-			console.log('userId', userId);
 			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
 			url.searchParams.append('userId', userId);
 			url.searchParams.append('channelId', channelId);
@@ -68,7 +66,6 @@ const ChatMemberItem = ({
 				},
 			});
 			const data = await response.json();
-			console.log("data returned after isMember fetch: ", data);
 			if (data) {
 				setStatusChange(usePrevious => !usePrevious);
 			}
@@ -78,7 +75,6 @@ const ChatMemberItem = ({
 		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
-			console.log('Cleanup function called');
 			socket?.off("userLoggedIn", statusChangeMonitor);
   			socket?.off("userLoggedOut", statusChangeMonitor);
 		}

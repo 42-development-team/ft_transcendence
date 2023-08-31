@@ -44,11 +44,9 @@ export class UsersService {
     }
 
     async getUserSocketFromId(id: number): Promise<string> {
-        console.log("getUserSocketFromId:", id);
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
-		console.log("userSocketId in getUserSocketFromId: ", user.socketId);
         return user.socketId;
     }
 
@@ -72,7 +70,6 @@ export class UsersService {
 		// console.log("user in getIdFromLogin", user);
 
 		if(user) {
-			console.log("user.Id in getIdFromLogin", user.id);
 			return user.id;
 		}
         return null;
