@@ -278,7 +278,7 @@ export class ChatroomController {
 					response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 				});
 		} else {
-			const notInDatabaseMessage = "User invited not in database"
+			const notInDatabaseMessage = "User invited not found"
 			console.log(notInDatabaseMessage);
 			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
 		}

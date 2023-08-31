@@ -15,7 +15,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    
+
     const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false)
 
@@ -41,7 +41,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                 return;
             }
         }
-        
+
         const response = await joinChannel(id, name, password);
         if (!response.ok) {
             const text = await response.text();
@@ -74,9 +74,9 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                             onClick={onJoin}>
                             Join</button>
                     )}
-                    {banned && 
+                    {banned &&
                         <div className="inline-flex justify-center w-full rounded-full px-3 py-2 font-semibold text-sm text-base bg-red">
-                            Banned</div> 
+                            Banned</div>
                     }
                 </div>
             </div>
@@ -103,7 +103,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                 }}>
                 {error && password=="" && <p>Password can not be empty</p>}
                 {error && password!="" && <p>Incorrect password</p>}
-                {!error && <p>Joined {name}</p>}
+                {!error && <p>Joined {name}</p>}dzfasfszl":
             </Alert>
         </div>
     )
