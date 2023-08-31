@@ -75,7 +75,6 @@ export class UsersService {
 			console.log("user.Id in getIdFromLogin", user.id);
 			return user.id;
 		}
-
         return null;
 	}
 

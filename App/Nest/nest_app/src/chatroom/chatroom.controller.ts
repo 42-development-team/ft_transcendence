@@ -264,20 +264,24 @@ export class ChatroomController {
 	@Patch(':id/invite')
 	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		console.log("userId of user inviting: ", userId);
 		const invitedLogin = body.invitedLogin;
-		console.log("user login of user invited: ", invitedLogin);
 		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
-		const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
-		await this.chatroomService.invite(+id, userId, +invitedId)
-			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
-				this.socketGateway.handleInvite(clientSocket, invitedId, id);
-				response.send();
-			})
-			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-			});
+		if (invitedId){
+			const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
+			await this.chatroomService.invite(+id, userId, +invitedId)
+				.then(() => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+					this.socketGateway.handleInvite(clientSocket, invitedId, id);
+					response.send("ok");
+				})
+				.catch(error => {
+					response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				});
+		} else {
+			const notInDatabaseMessage = "User invited not in database"
+			console.log(notInDatabaseMessage);
+			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
+		}
 	}
 
 	/* D(elete) */

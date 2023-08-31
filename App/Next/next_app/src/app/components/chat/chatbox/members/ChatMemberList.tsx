@@ -201,7 +201,6 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 		const [ login, setLogin ] = useState('');
 
 		const handleInvite = async () => {
-			console.log("Fetch chatroom/:id/invite");
 			const response = await fetch(`${process.env.BACK_URL}/chatroom/${channelId}/invite`, {
 				credentials: "include",
 				method: "PATCH",
@@ -211,14 +210,19 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 					invitedLogin: login
 				})
 			});
-			console.log("login passed to handleInvited: ", login)
+			const responseData = await response.json();
+			if (response.ok){
+				alert("The user has been successfully invited and joined the channel")
+			}
+            if (response.status == 404) {
+                alert(responseData.message);
+            }
 			setLogin('');
 		}
 
 		const handleChange = (e: any) => {
 			const newLogin = e.target.value;
 			setLogin(newLogin);
-			console.log("login written in field: ", login);
 		}
 
 		return (

@@ -147,6 +147,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const initializeSocket = async (userId: string) => {
 		console.log('Connecting to socket.io server...');
 		const socket = connect();
+		setSocket(socket);
 
 		socket.on('connect', () => {
 			// fetch to verify userStatus is online. If not update it to online
@@ -164,7 +165,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			}
 		})
 
-		setSocket(socket);
 
 		return () => {
 			console.log('Disconnecting from socket.io server...');
