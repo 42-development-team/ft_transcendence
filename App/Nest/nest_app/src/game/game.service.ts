@@ -113,8 +113,8 @@ export class GameService {
         player.points++;
     }
 
-    async setVelocity(player: PlayerDto){
-        player.velocity = 0.01;
+    async setVelocity(val: number, player: PlayerDto){
+        player.velocity = val;
     }
 
     async killVelocity(player: PlayerDto) {
@@ -287,7 +287,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0, 0],
+            speed: [0.05, 0.02],
             incr: 0,
         }
 

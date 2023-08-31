@@ -11,7 +11,7 @@ export class UserStatsService {
 	/* C(reate) */
 	async createUserStats( userIdDto: UserIdDto ) {
 		const stats = await this.prisma.userStats.findUnique({
-			where:  { id: userIdDto.userId },
+			where:  { userId: userIdDto.userId },
 		});
 		if ( stats ) {
 			throw new Error("UsersStats already exists");

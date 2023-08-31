@@ -17,7 +17,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
-            Router.push("/profile");
+            window.location.href = "/profile";
     }
 
     return (
