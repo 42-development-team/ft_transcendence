@@ -5,7 +5,7 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameDto, PlayerDto, BallDto } from 'src/game/dto/game-data.dto';
+import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
@@ -20,9 +20,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-    ) {
-            console.log("SocketGateway Constructor");
-    }
+    ) {}
 
 
     @WebSocketServer()
