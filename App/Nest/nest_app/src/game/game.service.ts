@@ -9,11 +9,13 @@ import { GetGameDto } from "./dto/get-game.dto";
 
 //===========
 import { SocketGateway } from "src/sockets/socket.gateway";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class GameService {
     constructor(
         private prisma: PrismaService,
+        private userService: UsersService,
         // private socketGateway: SocketGateway,
     ) {}
 
@@ -103,6 +105,10 @@ export class GameService {
             where: { id: deleteGameDto.gameId },
         });
         return true;
+    }
+
+    async addResultsInDb(data: GameDto, winnerId: number, loserId: number) {
+        
     }
 
     //=================================================//

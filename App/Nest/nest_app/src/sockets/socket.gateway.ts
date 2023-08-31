@@ -244,6 +244,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             await this.sleep(1000/60);
         }
 
+        this.gameService.addResultsInDb(data);
         // handle finish game
     }
 
