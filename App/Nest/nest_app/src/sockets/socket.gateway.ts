@@ -5,7 +5,7 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameDto } from 'src/game/dto/game-data.dto';
+import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
@@ -244,7 +244,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             await this.sleep(1000/60);
         }
 
-        this.gameService.addResultsInDb(data);
+        let result: [PlayerDto, PlayerDto];
+        if (data.player1.points > data.player2.points) {
+            result = [data.player1, data.player2];
+        }
+        else {
+            result = [data.player2, data.player1];
+        }
+        this.gameService.addResultsInDb(data, result);
         // handle finish game
     }
 

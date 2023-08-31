@@ -107,8 +107,9 @@ export class GameService {
         return true;
     }
 
-    async addResultsInDb(data: GameDto, winnerId: number, loserId: number) {
-        
+    async addResultsInDb(data: GameDto, result: [PlayerDto, PlayerDto]) {
+        const winner: PlayerDto = result[0];
+        const loser: PlayerDto = result[1];
     }
 
     //=================================================//
