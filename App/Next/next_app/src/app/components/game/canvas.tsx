@@ -114,7 +114,7 @@ const Canvas = ({...props}) => {
 		function handleKeyRelease(e: any) {
 			stopMove(e.code, data.id, userId);
 		}
-		
+
 		const render = (): any => {
 
 			blurEffect(context, width, height);

@@ -243,7 +243,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
             await this.sleep(1000/60);
         }
+
+        // handle finish game
     }
+
+    // handle disconnect during game
+    // handle refresh
 
     async sendDataToRoom(data: GameDto) {
         this.server.to(data.roomName).emit('updateGame', data);
