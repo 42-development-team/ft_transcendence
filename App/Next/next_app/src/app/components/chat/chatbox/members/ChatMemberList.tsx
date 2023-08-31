@@ -200,8 +200,14 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
     const InviteFieldButton = () => {
 		const [ username, setUsername ] = useState('');
 
-		const handleInvite = () => {
+		const handleInvite = async () => {
 			console.log("Fetch chatroom/:id/invite");
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/${channelId}/invite`, {
+				credentials: "include",
+				method: "PATCH",
+				headers: { 'Content-Type': 'application/json'},
+				body: JSON.stringify({ userId: userId, invitedUsername: username})
+			});
 			setUsername('');
 		}
 
