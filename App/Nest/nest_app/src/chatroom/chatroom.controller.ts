@@ -264,8 +264,10 @@ export class ChatroomController {
 	@Patch(':id/invite')
 	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const invitedUsername = body.invitedUsername;
-		const invitedId = await this.userService.getUserFromLogin(invitedUsername);
+		console.log("userId of user inviting: ", userId);
+		const invitedLogin = body.invitedLogin;
+		console.log("user login of user invited: ", invitedLogin);
+		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
 		const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
 		await this.chatroomService.invite(+id, userId, +invitedId)
 			.then(() => {

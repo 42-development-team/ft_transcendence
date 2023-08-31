@@ -44,10 +44,11 @@ export class UsersService {
     }
 
     async getUserSocketFromId(id: number): Promise<string> {
-        // console.log("getUserSocketFromId:" + id);
+        console.log("getUserSocketFromId:", id);
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
+		console.log("userSocketId in getUserSocketFromId: ", user.socketId);
         return user.socketId;
     }
 
@@ -64,9 +65,22 @@ export class UsersService {
         }
     }
 
+	async getIdFromLogin(login: string): Promise < number | null > {
+		const user = await this.prisma.user.findFirst({
+			where: { login: login },
+		});
+		// console.log("user in getIdFromLogin", user);
+
+		if(user) {
+			console.log("user.Id in getIdFromLogin", user.id);
+			return user.id;
+		}
+
+        return null;
+	}
+
     async getUserFromLogin(login: string): Promise<CreateUserDto> {
         try {
-
             const user = await this.prisma.user.findUniqueOrThrow({
                 where: { login: login },
             });

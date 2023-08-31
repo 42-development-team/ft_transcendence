@@ -108,6 +108,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
+	
+
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
         const userId = await this.chatroomService.getUserIdFromSocket(client);
@@ -141,7 +143,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         try {
             const userId = await this.chatroomService.getUserIdFromSocket(player);
             this.queued.push({userId});
-            
+
             if (this.queued.length >= 2) {
                 const player2Id: number = this.queued[0].userId;
                 const player1Id: number = this.queued[1].userId;

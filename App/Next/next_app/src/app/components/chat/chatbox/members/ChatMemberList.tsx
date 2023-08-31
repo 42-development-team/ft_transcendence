@@ -198,7 +198,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 
 
     const InviteFieldButton = () => {
-		const [ username, setUsername ] = useState('');
+		const [ login, setLogin ] = useState('');
 
 		const handleInvite = async () => {
 			console.log("Fetch chatroom/:id/invite");
@@ -206,22 +206,28 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 				credentials: "include",
 				method: "PATCH",
 				headers: { 'Content-Type': 'application/json'},
-				body: JSON.stringify({ userId: userId, invitedUsername: username})
+				body: JSON.stringify({
+					userId: userId,
+					invitedLogin: login
+				})
 			});
-			setUsername('');
+			console.log("login passed to handleInvited: ", login)
+			setLogin('');
 		}
 
 		const handleChange = (e: any) => {
-			setUsername(e.target.value);
+			const newLogin = e.target.value;
+			setLogin(newLogin);
+			console.log("login written in field: ", login);
 		}
 
 		return (
 				<div className="relative flex h-10 w-full">
 					<input
-						type="username"
+						type="login"
 						className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
 						placeholder=" "
-						value={username}
+						value={login}
 						onChange={handleChange}
 						required
 					/>
