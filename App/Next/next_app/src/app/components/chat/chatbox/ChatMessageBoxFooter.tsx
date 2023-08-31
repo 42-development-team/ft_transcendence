@@ -9,8 +9,7 @@ type SendMessageFormProps = {
     channelType: ChannelType
 }
 
-// Todo: remove max message length??
-const MAX_MESSAGE_LENGTH = 500
+const MAX_MESSAGE_LENGTH = 300
 
 const ChatMessageBoxFooter = ({ onSend, channelType }: SendMessageFormProps) => {
     const [message, setMessage] = useState("");
@@ -31,6 +30,7 @@ const ChatMessageBoxFooter = ({ onSend, channelType }: SendMessageFormProps) => 
         <form className="mt-4 flex flex-col w-full justify-between" onSubmit={handleSubmit}>
             <input
                 type="text" value={message}
+                maxLength={MAX_MESSAGE_LENGTH}
                 className=" p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
                 onChange={(e) => {
                     setMessage(e.target.value);
