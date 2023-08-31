@@ -1,10 +1,11 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel } from '@/app/utils/models';
+import { ChannelModel, ChannelType } from '@/app/utils/models';
 import ChatMemberHeader from './ChatMemberHeader';
 import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
+import { useUserRole } from "../members/UserRoleProvider"
 
 interface ChatMemberListProps {
     channel: ChannelModel
@@ -16,6 +17,8 @@ interface ChatMemberListProps {
 const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
+	const channelType = channel.type;
+	const { isCurrentUserOwner,isCurrentUserAdmin } = useUserRole();
 
     // Chat actions functions
     const kick = async (kickedId: string) => {
@@ -224,8 +227,9 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
                 <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
                 {BannedList}
 				{/* todo: add icon Font Awsome */}
-                <ChatMemberHeader> Invite to your channel</ChatMemberHeader>
-                {InviteFieldButton}
+				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&
+                <ChatMemberHeader> Invite to your channel</ChatMemberHeader> &&
+                < InviteFieldButton /> }
             </div>
         </div>
     )
