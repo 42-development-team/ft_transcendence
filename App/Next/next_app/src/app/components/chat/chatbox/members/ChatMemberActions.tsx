@@ -21,6 +21,7 @@ type ChatMemberActionsProps = {
     sendDirectMessage: () => void
     setAdmin: () => void
     unsetAdmin: () => void
+    muteUser: (muteDuration: number) => void
 }
 
 // Todo: prevent double click on kick button
@@ -28,7 +29,7 @@ const ChatMemberActions = (
     { 
         userId, isCurrentUser, isMemberAdmin, isMemberOwner, isBanned, 
         kickUser, banUser, unbanUser, 
-        leaveChannel, sendDirectMessage,
+        leaveChannel, sendDirectMessage, muteUser,
         setAdmin, unsetAdmin
     }: ChatMemberActionsProps) => {
     const onProfileClick = () => {
@@ -64,11 +65,11 @@ const ChatMemberActions = (
                     </Tooltip>
                     {isOpen && (
                         <div className="absolute z-10 mt-2 w-16 right-14 rounded-md bg-crust">
-                            <DropDownAction onClick={() => console.log('Mute 30s!')}>30s</DropDownAction>
-                            <DropDownAction onClick={() => console.log('Mute 60s')}>60s</DropDownAction>
-                            <DropDownAction onClick={() => console.log('Mute 3m')}>3m</DropDownAction>
-                            <DropDownAction onClick={() => console.log('Mute 10m')}>10m</DropDownAction>
-                            <DropDownAction onClick={() => console.log('Mute 1h')}>1h</DropDownAction>
+                            <DropDownAction onClick={() => muteUser(30)}>30s</DropDownAction>
+                            <DropDownAction onClick={() => muteUser(60)}>60s</DropDownAction>
+                            <DropDownAction onClick={() => muteUser(3 * 60)}>3m</DropDownAction>
+                            <DropDownAction onClick={() => muteUser(10 * 60)}>10m</DropDownAction>
+                            <DropDownAction onClick={() => muteUser(60 * 60)}>1h</DropDownAction>
                         </div>
                     )}
                 </div>

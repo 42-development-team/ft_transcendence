@@ -5,7 +5,6 @@ import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 import { useAuthcontext } from "@/app/context/AuthContext";
-import { usePrevious } from "@material-tailwind/react";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -19,13 +18,14 @@ type ChatMemberProps = {
     directMessage: (targetId: string) => void
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
+    mute: (mutedId: string, muteDuration: number) => void
 }
 // Todo: add status and avatar
 const ChatMemberItem = ({
 	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
     isCurrentUser, isBanned,
     kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin, channelId
+    setAsAdmin, removeAdmin, mute, channelId
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -111,6 +111,11 @@ const ChatMemberItem = ({
         removeAdmin(id);
     }
 
+    const muteUser = (muteDuration: number) => {
+        if (mute == undefined) return;
+            mute(id, muteDuration);
+    }
+
     const getColor = () => {
         if (isOwner) {
             return 'text-[#f38ba8]';
@@ -124,7 +129,7 @@ const ChatMemberItem = ({
     }
 
     return (
-        <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
+        <div className={` ${isCurrentUser && "bg-surface0"} flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
                 <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
                     {avatar.startsWith("https://")
@@ -140,7 +145,7 @@ const ChatMemberItem = ({
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
-                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
+                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
         </div>
     )

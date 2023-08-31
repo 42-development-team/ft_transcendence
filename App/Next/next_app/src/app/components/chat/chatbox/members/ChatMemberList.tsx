@@ -139,6 +139,26 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
     }
 
+    const mute = async (mutedId: string, muteDuration: number) => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({mutedId, muteDuration}),
+            });
+            if (!response.ok) {
+                console.log("Error muting: " + response.status);
+            }
+            console.log("Mute response: " + await response.text());
+        }
+        catch (error) {
+            console.log("Error muting: " + error);
+        } 
+    }
+
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -161,7 +181,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
     const MemberList = channel.members
@@ -169,7 +189,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
@@ -178,7 +198,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
@@ -187,7 +207,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         )
     )
