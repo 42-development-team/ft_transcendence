@@ -408,7 +408,7 @@ export class ChatroomService {
 			where: { userId: mutedId, chatRoomId: id },
 			data: {
 				isMuted: true,
-				mutedUntil: new Date(Date.now() + muteDuration * 1000)
+				mutedUntil: Date.now() + muteDuration * 1000
 			},
 		});
 	}
