@@ -6,6 +6,7 @@ import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
 import { useUserRole } from "../members/UserRoleProvider"
+import React, { useState } from 'react';
 
 interface ChatMemberListProps {
     channel: ChannelModel
@@ -195,19 +196,31 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         )
     )
 
+
     const InviteFieldButton = () => {
-		const { updateChatBarState } = useChatBarContext();
+		const [ username, setUsername ] = useState('');
+
+		const handleInvite = () => {
+			console.log("Fetch chatroom/:id/invite");
+			setUsername('');
+		}
+
+		const handleChange = (e: any) => {
+			setUsername(e.target.value);
+		}
+
 		return (
 				<div className="relative flex h-10 w-full">
 					<input
-						type="email"
+						type="username"
 						className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
 						placeholder=" "
+						value={username}
+						onChange={handleChange}
 						required
 					/>
-					<button onClick={() => {
-						console.log("Fetch chatroom/:id/invite");
-					}}
+					<button
+						onClick={ handleInvite }
 						className="!absolute right-1 top-1 z-10 select-none rounded bg-pink-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
 						type="button"
 						data-ripple-light="true"

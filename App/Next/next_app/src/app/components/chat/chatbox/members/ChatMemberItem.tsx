@@ -49,9 +49,9 @@ const ChatMemberItem = ({
 		fetchedUserStatus();
 	}, [id, statusChange]);
 
-	useEffect(() => {
-		console.log("status change: ", statusChange);
-	}, [statusChange]);
+	// useEffect(() => {
+	// 	console.log("status change: ", statusChange);
+	// }, [statusChange]);
 
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
