@@ -114,13 +114,10 @@ export class ChatroomController {
 		@Request() req: any,
 		@Res() response: Response) {
 			try {
-				console.log ("userId logging in in isMember handler: ", userId);
-				console.log ("channelId logging in in isMember handler: ", channelId);
 				const isMember = await this.membershipService.isChannelMember(
 					parseInt(userId),
 					parseInt(channelId)
 				);
-				console.log("isMember = ", isMember);
 				response.status(HttpStatus.OK).json(isMember);
 			} catch (error) {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
