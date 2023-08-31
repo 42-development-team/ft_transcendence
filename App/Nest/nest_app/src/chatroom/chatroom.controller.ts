@@ -268,18 +268,17 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const mutedId: number = body.mutedId;
 		const muteDuration: number = body.muteDuration;
-		// const userSocket = await this.userService.getUserSocketFromId(userId);
+		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
 			.then(() => {
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				// this.socketGateway.handleMute(clientSocket, mutedId, id, muteDuration);
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleMute(clientSocket, mutedId, id);
 				response.send();
 			})
 			.catch(error => {
 				response.send(JSON.stringify(error.message));
 			});
 	}
-
 
 	/* D(elete) */
 	@Delete(':id')

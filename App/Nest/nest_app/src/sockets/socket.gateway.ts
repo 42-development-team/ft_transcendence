@@ -95,6 +95,28 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
     }
 
+    async handleMute(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            console.log(`Client ${userId} (${client.id}) muted in room ${room}`);
+        } else {
+            console.log(`Client ${userId} muted in room ${room}`);
+        }
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
+    async handleUnmute(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            console.log(`Client ${userId} (${client.id}) unmuted in room ${room}`);
+        } else {
+            console.log(`Client ${userId} unmuted in room ${room}`);
+        }
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
     async handleAdminUpdate(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
