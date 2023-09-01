@@ -19,6 +19,7 @@ const ChatMessageBoxFooter = ({ onSend, channelType, cannotSendMessage }: SendMe
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (cannotSendMessage) return;
 
         const filteredMessage = message.trim().slice(0, MAX_MESSAGE_LENGTH);
         if (filteredMessage) {
