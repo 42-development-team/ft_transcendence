@@ -6,7 +6,7 @@ import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
 import { useUserRole } from "../members/UserRoleProvider"
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
 
@@ -148,6 +148,26 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
     }
 
+    const mute = async (mutedId: string, muteDuration: number) => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
+                credentials: "include",
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({mutedId, muteDuration}),
+            });
+            if (!response.ok) {
+                console.log("Error muting: " + response.status);
+            }
+            // Todo: manage response
+        }
+        catch (error) {
+            console.log("Error muting: " + error);
+        } 
+    }
+
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -170,7 +190,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
     const MemberList = channel.members
@@ -178,7 +198,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
@@ -187,16 +207,16 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         ))
 
     const BannedList = channel.members
             .filter(member => member.isBanned)
             .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBanned={true}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
-                directMessage={handleDirectMessage}
+                directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         )
     )
@@ -281,7 +301,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
 	}
 
     return (
-		<div className='w-full h-full min-w-[450px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <BackToChatButton onClick={() => updateChatBarState(ChatBarState.ChatOpen)} />
             </ChatHeader>

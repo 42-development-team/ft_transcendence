@@ -11,12 +11,14 @@ import { useEffect, useState } from 'react';
 interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
     channel: ChannelModel;
+    userId: string;
 }
 
 
-const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
+const ChatMessagesBox = ({ sendToChannel, channel, userId }: ChatMessagesBoxProps ) => {
     const {updateChatBarState} = useChatBarContext();
     const [channelTitle, setChannelTitle] = useState<string>(channel.name);
+    const [cannotSendMessage, setCannotSendMessage] = useState<boolean>(false);
 
     const sendMessage = (message: string) => {
         sendToChannel(channel, message);
@@ -49,6 +51,10 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             setChannelTitle(channel.directMessageTargetUsername);
         else
             setChannelTitle(channel.name);
+
+        const currentUser = channel.members?.find(member => member.id == userId);
+        if (currentUser == undefined) return;
+        setCannotSendMessage(currentUser.isMuted && Date.now() < Date.parse(currentUser.mutedUntil))
     }, [channel]);
 
     return (
@@ -63,7 +69,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             <div ref={chatMessageBoxRef} className='overflow-auto h-full'>
                 {MessageList}
             </div>
-            <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} />
+            <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} cannotSendMessage={cannotSendMessage} />
         </div>
     )
 };

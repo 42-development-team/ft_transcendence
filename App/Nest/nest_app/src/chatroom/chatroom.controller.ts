@@ -20,6 +20,7 @@ export class ChatroomController {
 		private membershipService: MembershipService,
 	) { }
 
+	// Todo: check for HttpStatus.Bad_Request return -> avoid 
 	/* C(reate) */
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
@@ -104,6 +105,7 @@ export class ChatroomController {
 			});
 	}
 
+	// Todo: remove this shit!
 	@Public()
 	@Get('/isMember')
 	async isMember(
@@ -255,6 +257,23 @@ export class ChatroomController {
 			.catch(error => {
 				// Todo: socket event
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/mute')
+	async mute(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const mutedId: number = body.mutedId;
+		const muteDuration: number = body.muteDuration;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleMute(clientSocket, mutedId, id);
+				response.send();
+			})
+			.catch(error => {
+				response.send(JSON.stringify(error.message));
 			});
 	}
 

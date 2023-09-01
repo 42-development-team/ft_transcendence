@@ -93,7 +93,7 @@ export class UsersController {
 			const userId = req.user.sub;
 			const currentStatus = req.body.currentStatus;
 			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
-				this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
+				// this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
 				this.userService.updateStatus(userId, currentStatus);
 			}
 			response.status(HttpStatus.OK);

@@ -20,9 +20,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-    ) {
-            console.log("SocketGateway Constructor");
-    }
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -96,6 +94,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
     }
 
+    async handleMute(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        if (client) {
+            console.log(`Client ${userId} (${client.id}) muted in room ${room}`);
+        } else {
+            console.log(`Client ${userId} muted in room ${room}`);
+        }
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
     async handleAdminUpdate(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
@@ -138,6 +147,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         const {roomId, message} = body;
         const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        if (!newMessage) {
+            console.log(`Users (${userId}) can not send message channel (${roomId})`)
+            return ;
+        }
         const room = await this.chatroomService.getChannelNameFromId(roomId);
         this.server.to(room).emit('new-message',
             {newMessage, room}
