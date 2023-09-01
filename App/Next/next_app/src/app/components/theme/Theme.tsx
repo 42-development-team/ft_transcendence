@@ -24,7 +24,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <body className={`${theme} flex flex-col h-screen`}>
-      <div className='fixed z-10 top-3 right-[2rem]'>
+      <div className='fixed z-10 top-4 right-[6.9rem]'>
         <div className="static">
           <div className="inline-flex items-center">
             <div className="relative inline-block h-4 w-8 cursor-pointer rounded-full">
@@ -46,7 +46,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
         </div>
-        <button onClick={toggleTheme}>Switch Theme</button>
+        Sun
       </div>
       {children}
     </body>
