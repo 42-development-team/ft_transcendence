@@ -47,18 +47,12 @@ const ChatMemberActions = (
     const adminActionsEnabled: boolean = !isCurrentUser && !user.isOwner && (isCurrentUserAdmin || isCurrentUserOwner);
     const ownerActionsEnabled: boolean = !isCurrentUser && isCurrentUserOwner && !user.isAdmin;
 
-    // get muted time in number format
     useEffect(() => {
         const currentlyMuted = user.isMuted && Date.now() < Date.parse(user.mutedUntil);
-        if (currentlyMuted) {
-            console.log('mute time ' + Date.parse(user.mutedUntil));
-            console.log("Current time: " + Date.now() + " Muted until: " + Date.parse(user.mutedUntil));
-        }
         setIsMuted(currentlyMuted);
     }, [user]);
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
-
 
     return (
         <div className="flex flex-row gap-2">

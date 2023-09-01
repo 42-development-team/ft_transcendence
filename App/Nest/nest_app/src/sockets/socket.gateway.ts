@@ -96,7 +96,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     async handleMute(client: Socket, userId: number, roomId: string ) {
-        console.log("handleMute");
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
             console.log(`Client ${userId} (${client.id}) muted in room ${room}`);
