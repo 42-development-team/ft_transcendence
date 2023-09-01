@@ -50,8 +50,6 @@ const ChatMemberItem = ({
 
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
-			console.log('User logged in');
-			console.log('userId', userId);
 			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
 			url.searchParams.append('userId', userId);
 			url.searchParams.append('channelId', channelId);

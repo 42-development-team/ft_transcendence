@@ -107,7 +107,7 @@ export class UsersController {
     /* D(elete) */
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
         this.logger.log(`Deleting user with ID: ${id}`);
         await this.userService.deleteUser(id);
         // todo update in order to remove the user from channel admins/members list

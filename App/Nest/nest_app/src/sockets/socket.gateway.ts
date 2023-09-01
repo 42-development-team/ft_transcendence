@@ -22,7 +22,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private memberShipService: MembershipService,
     ) {}
 
-
     @WebSocketServer()
     server: Server;
 
@@ -117,6 +116,19 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
+	async handleInvite(client: Socket, userId: number, roomId: string ) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
+        if (client) {
+            client.join(room);
+            client.emit('invitedRoom', { room }); // for the client to be notified when event is emit
+            console.log(`Client ${userId} (${client.id}) invited to room ${room}`);
+        } else {
+            console.log(`Client ${userId} invited to room ${room}`);
+        }
+        this.server.to(room).emit('newConnectionOnChannel', {room, user});
+    }
+
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
         const userId = await this.chatroomService.getUserIdFromSocket(client);
@@ -150,7 +162,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         try {
             const userId = await this.chatroomService.getUserIdFromSocket(player);
             this.queued.push({userId});
-            
+
             if (this.queued.length >= 2) {
                 const player2Id: number = this.queued[0].userId;
                 const player1Id: number = this.queued[1].userId;
@@ -180,21 +192,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 			    await player2Socket?.join(roomName);
 
                 // send game data to players
-                this.server.to(roomName).emit('matchIsReady', newGameRoom.data); // => which event to send first ??
-                // this.server.to(newGameRoom.roomName).emit('updateGame', {newGameRoom}); // => which event to send first ??
+                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
             }
         } catch (e) {
             console.log(e);
         }
-    }
-
-    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
-    @SubscribeMessage('move')
-    async handleMove(@MessageBody() body: any, @ConnectedSocket() socket) {
-    }
-
-    @SubscribeMessage('stopMove')
-    async handleStopMove(@MessageBody() body: any, @ConnectedSocket() socket) {
     }
 
     @SubscribeMessage('leaveQueue')
@@ -202,12 +204,84 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const playerIndex = this.queued.indexOf(userId);
         this.queued.splice(playerIndex, 1);
     }
-
-    // Send the players positions + ball positions to correct room
-    async sendGameData(roomName: string, gameData: GameDto) {
-        this.server.to(roomName).emit('updateGame', {gameData});
+    
+    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
+    @SubscribeMessage('move')
+    async handleMove(socket: Socket, @MessageBody() body: any) {
+        const [event, id, userId] = body;
+        // console.log("userId", userId);
+        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
+        if (!data) {
+            console.log("!Data")
+            return ;
+        }
+        if (data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.gameService.setVelocity(-0.01, data.player1);
+            else if (event === "ArrowDown")
+                this.gameService.setVelocity(0.01, data.player1);
+        }
+        else {
+            if (event === "ArrowUp")
+                this.gameService.setVelocity(-0.01, data.player2);
+            else if (event === "ArrowDown")
+                this.gameService.setVelocity(0.01, data.player2);
+        }
+    }
+    
+    @SubscribeMessage('stopMove')
+    async handleStopMove(socket: Socket, @MessageBody() body: any) {
+        const [event, id, userId] = body;
+        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
+        if (!data)
+            return ;
+        if (data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.gameService.killVelocity(data.player1);
+            else if (event === "ArrowDown")
+                this.gameService.killVelocity(data.player1);
+        }
+        else {
+            if (event === "ArrowUp")
+            this.gameService.killVelocity(data.player2);
+        else if (event === "ArrowDown")
+            this.gameService.killVelocity(data.player2);
+        }
     }
 
+    @SubscribeMessage('launchGame')
+    async handleLaunchGame(socket: Socket, id: number) {
+        let data: GameDto = await this.getDataFromRoomId(id);
+        if (!data) {
+            console.log("!LaunchGame Data")
+            return ;
+        }
+        while (data.player1.points < 5 && data.player2.points < 5) {
+            let data = await this.getDataFromRoomId(id);
+            if (!data)
+                return ;
+            data = await this.gameService.calculateGame(data);
+            this.sendDataToRoom(data);
+            await this.sleep(1000/60);
+        }
+
+        // handle finish game
+    }
+
+    // handle disconnect during game
+    // handle refresh
+
+    async sendDataToRoom(data: GameDto) {
+        this.server.to(data.roomName).emit('updateGame', data);
+    }
+
+    async getDataFromRoomId(id: number): Promise<GameDto> {
+        return this.gameRooms.find(game => game.id === id)?.data;
+    }
+
+    async sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     // Should emit to room event 'GameOver' ??
 
 

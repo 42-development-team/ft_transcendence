@@ -277,6 +277,26 @@ export class ChatroomController {
 			});
 	}
 
+	@Patch(':id/invite')
+	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const invitedLogin = body.invitedLogin;
+		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
+		if (invitedId){
+			const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
+			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
+			if (newMembership) {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				response.status(HttpStatus.OK).send("ok");
+			}
+		} else {
+			const notInDatabaseMessage = "User invited not found"
+			console.log(notInDatabaseMessage);
+			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
+		}
+	}
+
 	/* D(elete) */
 	@Delete(':id')
 	remove(@Param('id') id: string) {

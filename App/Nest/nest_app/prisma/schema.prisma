@@ -60,6 +60,7 @@ model Membership {
 	isBanned	Boolean		@default(false)
 	isMuted		Boolean		@default(false)
 	mutedUntil	DateTime?
+	isInvited	Boolean		@default(false)
 	userId		Int
 	chatRoomId	Int
 	user		User		@relation("membershipUser", fields: [userId], references: [id])
