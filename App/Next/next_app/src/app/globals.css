@@ -35,7 +35,8 @@
 }
 
 .button-mauve {
-	@apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2;
+	@apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2
+		disabled:pointer-events-none disabled:opacity-50;
 }
 
 .tooltip {

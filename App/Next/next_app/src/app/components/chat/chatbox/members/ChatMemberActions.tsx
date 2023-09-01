@@ -49,11 +49,12 @@ const ChatMemberActions = (
 
     // get muted time in number format
     useEffect(() => {
-        setIsMuted(Date.now() < Date.parse(user.mutedUntil));
-        if (isMuted) {
+        const currentlyMuted = user.isMuted && Date.now() < Date.parse(user.mutedUntil);
+        if (currentlyMuted) {
             console.log('mute time ' + Date.parse(user.mutedUntil));
-        console.log("Current time: " + Date.now() + " Muted until: " + Date.parse(user.mutedUntil));
+            console.log("Current time: " + Date.now() + " Muted until: " + Date.parse(user.mutedUntil));
         }
+        setIsMuted(currentlyMuted);
     }, [user]);
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });

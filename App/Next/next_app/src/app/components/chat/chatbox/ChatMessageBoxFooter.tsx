@@ -7,11 +7,12 @@ import { useUserRole } from "./members/UserRoleProvider"
 type SendMessageFormProps = {
     onSend: (message: string) => void
     channelType: ChannelType
+    cannotSendMessage: boolean
 }
 
 const MAX_MESSAGE_LENGTH = 300
 
-const ChatMessageBoxFooter = ({ onSend, channelType }: SendMessageFormProps) => {
+const ChatMessageBoxFooter = ({ onSend, channelType, cannotSendMessage }: SendMessageFormProps) => {
     const [message, setMessage] = useState("");
 
     const { isCurrentUserOwner } = useUserRole();
@@ -30,17 +31,18 @@ const ChatMessageBoxFooter = ({ onSend, channelType }: SendMessageFormProps) => 
         <form className="mt-4 flex flex-col w-full justify-between" onSubmit={handleSubmit}>
             <input
                 type="text" value={message}
+                disabled={cannotSendMessage}
                 maxLength={MAX_MESSAGE_LENGTH}
                 className=" p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
                 onChange={(e) => {
                     setMessage(e.target.value);
                 }}
-                placeholder="Send a chat message" />
+                placeholder={cannotSendMessage ? "You are muted on this channel": "Send a chat message"} />
             <div className="flex flex-row justify-end">
                 {channelType != ChannelType.DirectMessage && isCurrentUserOwner &&
                     <ShowChannelSettingsButton />
                 }
-                <button className=" mx-2 mt-2 button-mauve w-16" type="submit">
+                <button className=" mx-2 mt-2 button-mauve w-16" type="submit" disabled={cannotSendMessage}>
                     Chat
                 </button>
             </div>
