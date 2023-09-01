@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import sun from "../../../../public/sun.png";
+import sunLight from "../../../../public/sunLight.png";
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
@@ -46,10 +47,14 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
                 ></div>
               </label>
             </div>
-            {theme === 'mocha' ? (
+            {sun && sunLight ? (
+            theme === 'mocha' ? (
               <Image className={"m-2"} alt="Sun-dark" src={sun} height={22} width={22}/>
             ) : (
               <Image className={"m-2"} alt="Sun-light" src={sunLight} height={22} width={22}/>
+            )
+            ) : (
+              <div className="m-2">☀️</div>
             )}
           </div>
         </div>
