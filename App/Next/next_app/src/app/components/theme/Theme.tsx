@@ -28,7 +28,6 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
   return (
     <body className={`${theme} flex flex-col h-screen`}>
       <div className='fixed flex flex-row z-10 top-2 right-[5.7rem]'>
-        <div className="static">
           <div className="inline-flex items-center">
             <div className="relative inline-block h-4 w-8 cursor-pointer rounded-full">
               <input
@@ -58,7 +57,6 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
             )}
           </div>
         </div>
-      </div>
       {children}
     </body>
   );
