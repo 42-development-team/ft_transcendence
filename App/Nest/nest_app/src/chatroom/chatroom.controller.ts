@@ -20,6 +20,7 @@ export class ChatroomController {
 		private membershipService: MembershipService,
 	) { }
 
+	// Todo: check for HttpStatus.Bad_Request return -> avoid 
 	/* C(reate) */
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
@@ -104,6 +105,7 @@ export class ChatroomController {
 			});
 	}
 
+	// Todo: remove this shit!
 	@Public()
 	@Get('/isMember')
 	async isMember(
@@ -112,13 +114,10 @@ export class ChatroomController {
 		@Request() req: any,
 		@Res() response: Response) {
 			try {
-				console.log ("userId logging in in isMember handler: ", userId);
-				console.log ("channelId logging in in isMember handler: ", channelId);
 				const isMember = await this.membershipService.isChannelMember(
 					parseInt(userId),
 					parseInt(channelId)
 				);
-				console.log("isMember = ", isMember);
 				response.status(HttpStatus.OK).json(isMember);
 			} catch (error) {
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -259,6 +258,43 @@ export class ChatroomController {
 				// Todo: socket event
 				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 			});
+	}
+
+	@Patch(':id/mute')
+	async mute(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const mutedId: number = body.mutedId;
+		const muteDuration: number = body.muteDuration;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleMute(clientSocket, mutedId, id);
+				response.send();
+			})
+			.catch(error => {
+				response.send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/invite')
+	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const invitedLogin = body.invitedLogin;
+		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
+		if (invitedId){
+			const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
+			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
+			if (newMembership) {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				response.status(HttpStatus.OK).send("ok");
+			}
+		} else {
+			const notInDatabaseMessage = "User invited not found"
+			console.log(notInDatabaseMessage);
+			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
+		}
 	}
 
 	/* D(elete) */

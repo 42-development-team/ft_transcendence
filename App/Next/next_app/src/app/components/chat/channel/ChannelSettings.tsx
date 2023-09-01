@@ -105,7 +105,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
                     {showPasswordInput &&
                         <PasswordInputField value={password} setValue={setPassword} />
                     }
-                    <button type="submit" className={`button-mauve p-4 disabled:pointer-events-none disabled:opacity-50`} 
+                    <button type="submit" className={`button-mauve p-4`} 
                     disabled={lockSubmit}>
                         Submit
                     </button>
@@ -152,7 +152,7 @@ const ChannelTypeButton = ({ children, onClick, disable }: { children: any, onCl
             type="button"
             disabled={disable}
             style={{ opacity: disable ? 0.5 : 1 }}
-            className={`font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-1 py-2`}
+            className={`font-bold text-sm rounded-lg text-base bg-mauve hover:bg-pink drop-shadow-xl m-1 py-2 disabled:pointer-events-none`}
             onClick={onClick}>
             {children}
         </button>

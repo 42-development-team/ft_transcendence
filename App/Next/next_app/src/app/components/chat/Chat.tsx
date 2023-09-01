@@ -65,7 +65,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                 <ChatSideBar channels={joinedChannels} />
                 {/* Main Panel */}
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
-                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} />
+                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} />
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
                     <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage}/>

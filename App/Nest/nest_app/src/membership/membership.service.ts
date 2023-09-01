@@ -59,6 +59,8 @@ export class MembershipService {
 				isAdmin: memberShip.isAdmin,
 				isOwner: await this.isOwner(memberShip.user.id, channelId),
 				isBanned: memberShip.isBanned,
+				isMuted: memberShip.isMuted,
+				mutedUntil: memberShip.mutedUntil,
 				avatar: memberShip.user.avatar,
 			}
 		}

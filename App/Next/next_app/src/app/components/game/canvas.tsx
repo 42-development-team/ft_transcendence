@@ -10,18 +10,13 @@ const canvasStyle: any = {
 };
 
 // ======== PRINT CANVAS SCORE AND CONTOUR ==============//
-function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number): [PlayerInterface, PlayerInterface] | null {
+function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number) {
 	context.font='30px Arial';
 	context.fillStyle='#cba6f7';
 	context.beginPath();
 		context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
 		context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
 	context.closePath();
-	if (p1.points === 11)
-		return [p1, p2];
-	else if (p2.points === 11)
-		return [p2, p1];
-	return null;
 }
 
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
@@ -82,16 +77,15 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 	renderBall(context, data.ball, width, height);
 	renderPlayer(context, data.player1, width, height);
 	renderPlayer(context, data.player2, width, height);
+	printScore(context, data.player1, data.player2, width, height);
 };
 
-// ============= COMPONENT ============= //
 const Canvas = ({...props}) => {
 	
 	if (window === undefined)
 		return ;
 
-	// const {move, stopMove, data} = props;
-	const {move, stopMove, data} = props;
+	const {move, stopMove, launchGame, data, userId} = props;
 	if (!data)
 		return ;
 
@@ -99,6 +93,10 @@ const Canvas = ({...props}) => {
 	let height: number;
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	useEffect(() => {
+		launchGame(data.id)
+	}, []);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -109,53 +107,26 @@ const Canvas = ({...props}) => {
 			return ;
 		height = width * (9 / 16);
 
-		let animationId: number;
-		
+		function handleKeyDown(e: any) {
+			move(e.code, data.id, userId);
+		}
+
+		function handleKeyRelease(e: any) {
+			stopMove(e.code, data.id, userId);
+		}
+
 		const render = (): any => {
 
 			blurEffect(context, width, height);
 			printMidLine(context, width, height);
 			renderGame(context, data, width, height);
 
-			const result: any = printScore(context, data.player1, data.player2, width, height);
-			if (result) {
-				win(context, result, width, height);
-				return finish(result, animationId);
-			}
-			animationId = window.requestAnimationFrame(render);
 		}
 		render();
-		
-		return () => window.cancelAnimationFrame(animationId);
 
-	}, [width]);
-	
-	useEffect(() => {
-		function handleKeyDown(e: any) {
-			if (e.code === "ArrowDown")
-				move(e.code);
-			else if (e.code === "ArrowUp")
-				move(e.code);
-		}
-
-		function handleKeyRelease(e: any) {
-			if (e.code === "ArrowDown")
-				stopMove(e.code);
-			else if (e.code === "ArrowUp")
-				stopMove(e.code);
-		}
-
-		function resize() {
-			const canvas = canvasRef.current;
-			if (!canvas)
-				return ;
-			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
-		}
-		window.addEventListener("resize", resize);
 		document.addEventListener("keydown", handleKeyDown);
 		document.addEventListener("keyup", handleKeyRelease);
-
-	});
+	}, [data]);
 
 	return (
 		<div className="canvas w-full">

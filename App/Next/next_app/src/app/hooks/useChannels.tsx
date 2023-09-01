@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-// import { useSocketContext } from "../context/SocketContext";
 import { useAuthcontext } from "../context/AuthContext";
 import bcrypt from 'bcryptjs';
 
@@ -82,6 +81,8 @@ export default function useChannels(userId: string) {
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
             isBanned: user.isBanned,
+            isMuted: user.isMuted,
+            mutedUntil: user.mutedUntil,
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
@@ -251,6 +252,8 @@ export default function useChannels(userId: string) {
                     isAdmin: member.isAdmin,
                     isOwner: member.isOwner,
                     isBanned: member.isBanned,
+                    isMuted: member.isMuted,
+                    mutedUntil: member.mutedUntil,
                     avatar: "",
                     // Todo: currentStatus
                     currentStatus: UserStatus.Offline,
@@ -318,6 +321,8 @@ export default function useChannels(userId: string) {
                         isAdmin: member.isAdmin,
                         isOwner: member.isOwner,
                         isBanned: member.isBanned,
+                        isMuted: member.isMuted,
+                        mutedUntil: member.mutedUntil,
                         //Todo: avatar
                         avatar: "",
                     }
