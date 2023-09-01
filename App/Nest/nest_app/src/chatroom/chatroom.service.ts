@@ -429,7 +429,12 @@ export class ChatroomService {
 	}
 
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
-		// Todo: if user is banned refuse
+		const userMemberShip = await this.prisma.membership.findFirst({
+			where: { userId: userId, chatRoomId: channelId },
+		});
+		if (userMemberShip.isBanned || (userMemberShip.isMuted && userMemberShip.mutedUntil > new Date())) {
+			return null;
+		}
 		const newMessage = await this.prisma.message.create({
 			data: {
 				content: message,
@@ -437,13 +442,13 @@ export class ChatroomService {
 				chatRoomId: channelId,
 			},
 		});
-		const test = await this.prisma.message.findUnique({
+		const result = await this.prisma.message.findUnique({
 			where: { id: newMessage.id },
 			include: {
 				sender: true,
 			},
 		});
-		return test;
+		return result;
 	}
 
 	// #endregion

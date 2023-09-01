@@ -147,6 +147,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         const {roomId, message} = body;
         const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        if (!newMessage) {
+            console.log(`Users (${userId}) can not send message channel (${roomId})`)
+            return ;
+        }
         const room = await this.chatroomService.getChannelNameFromId(roomId);
         this.server.to(room).emit('new-message',
             {newMessage, room}
