@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
+import sun from '../../../../../public/App/Next/sun.png';
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
@@ -24,7 +26,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <body className={`${theme} flex flex-col h-screen`}>
-      <div className='fixed z-10 top-4 right-[6.9rem]'>
+      <div className='fixed flex flex-row z-10 top-4 right-[6.9rem]'>
         <div className="static">
           <div className="inline-flex items-center">
             <div className="relative inline-block h-4 w-8 cursor-pointer rounded-full">
@@ -46,7 +48,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
         </div>
-        Sun
+        <Image className={"m-2"} alt="Sun" src={sun} height={32} width={32}/>
       </div>
       {children}
     </body>
