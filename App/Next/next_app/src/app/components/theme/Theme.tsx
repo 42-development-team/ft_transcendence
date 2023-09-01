@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import sun from '../../../../../public/App/Next/sun.png';
+import sun from "../../../../public/sun.png";
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
@@ -26,7 +26,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <body className={`${theme} flex flex-col h-screen`}>
-      <div className='fixed flex flex-row z-10 top-4 right-[6.9rem]'>
+      <div className='fixed flex flex-row z-10 top-2 right-[5.7rem]'>
         <div className="static">
           <div className="inline-flex items-center">
             <div className="relative inline-block h-4 w-8 cursor-pointer rounded-full">
@@ -46,9 +46,13 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
                 ></div>
               </label>
             </div>
+            {theme === 'mocha' ? (
+              <Image className={"m-2"} alt="Sun-dark" src={sun} height={22} width={22}/>
+            ) : (
+              <Image className={"m-2"} alt="Sun-light" src={sunLight} height={22} width={22}/>
+            )}
           </div>
         </div>
-        <Image className={"m-2"} alt="Sun" src={sun} height={32} width={32}/>
       </div>
       {children}
     </body>
