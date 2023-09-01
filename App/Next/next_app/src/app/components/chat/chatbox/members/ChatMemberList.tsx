@@ -5,6 +5,7 @@ import ChatMemberHeader from './ChatMemberHeader';
 import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
+import { useEffect } from 'react';
 
 interface ChatMemberListProps {
     channel: ChannelModel

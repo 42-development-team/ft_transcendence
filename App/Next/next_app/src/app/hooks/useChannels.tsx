@@ -322,6 +322,8 @@ export default function useChannels(userId: string) {
                         isAdmin: member.isAdmin,
                         isOwner: member.isOwner,
                         isBanned: member.isBanned,
+                        isMuted: member.isMuted,
+                        mutedUntil: member.mutedUntil,
                         //Todo: avatar
                         avatar: "",
                     }
