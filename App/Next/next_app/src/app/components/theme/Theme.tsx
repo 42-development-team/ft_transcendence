@@ -3,11 +3,23 @@
 import { useState } from 'react';
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState("mocha");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
+
   const toggleTheme = () => {
-    
-    setTheme((currentTheme) => currentTheme === "mocha" ? "latte" : "mocha");
-    
+    switch (localStorage.getItem("theme")) {
+      case "mocha":
+        setTheme("latte");
+        localStorage.setItem("theme", "latte");
+        break;
+      case "latte":
+        setTheme("mocha");
+        localStorage.setItem("theme", "mocha");
+        break;
+      default:
+        setTheme("mocha");
+        localStorage.setItem("theme", "mocha");
+
+    };
   };
 
   return (
