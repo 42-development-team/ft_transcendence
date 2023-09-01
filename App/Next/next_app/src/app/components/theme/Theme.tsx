@@ -48,9 +48,9 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
             </div>
             {sun && sunLight ? (
             theme === 'mocha' ? (
-              <Image className={"m-2"} alt="Sun-dark" src={sun} height={22} width={22}/>
+              <Image className={"m-2"} alt="Sun-dark" src={sunLight} height={22} width={22}/>
             ) : (
-              <Image className={"m-2"} alt="Sun-light" src={sunLight} height={22} width={22}/>
+              <Image className={"m-2"} alt="Sun-light" src={sun} height={22} width={22}/>
             )
             ) : (
               <div className="m-2">☀️</div>
