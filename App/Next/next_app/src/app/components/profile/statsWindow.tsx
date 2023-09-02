@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 import Avatar from "../../components/profile/Avatar";
 import Stats from "./Stats";
 import sessionStorageUser from "./sessionStorage";
+import { useAuthcontext } from "@/app/context/AuthContext";
 
 const StatsWindow = ({userId}: {userId: string} ) => {
+    const { login } = useAuthcontext();
+    useEffect(() => {
+        login();
+    }, []);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [statsData, setStatsData] = useState<any>("null");
     const [avatarFile, setAvatarFile] = useState<File | null>(null);

@@ -1,5 +1,4 @@
 import { Controller, Delete, Get, HttpStatus, Param, Redirect, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 import { Post, Body, Patch } from '@nestjs/common';
 import { Response } from 'express';
@@ -10,6 +9,7 @@ import { JoinGameDto } from './dto/join-game.dto';
 import { DeleteGameDto } from './dto/delete-game.dto';
 
 //===========
+// Todo: clean this shit up
 import { SocketGateway } from "src/sockets/socket.gateway";
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 import { GetCurrentUserId } from 'src/common/custom-decorators/get-current-user-id.decorator';
@@ -18,7 +18,6 @@ import { GameRoomDto } from './dto/create-room.dto';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 
-@ApiTags('Game')
 @Controller('game')
 export class GameController {
     constructor(

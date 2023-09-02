@@ -53,7 +53,6 @@ const Chat = ({ userId }: ChatBarProps) => {
 
     useEffect(() => {
         if ((chatBarState == ChatBarState.ChatOpen || chatBarState == ChatBarState.ChatMembersOpen) && joinedChannels.find(channel => channel.id == openChannelId) == undefined) {
-            console.log("Current channel not found");
             updateChatBarState(ChatBarState.Closed);
             setCurrentChannelId("");
         }

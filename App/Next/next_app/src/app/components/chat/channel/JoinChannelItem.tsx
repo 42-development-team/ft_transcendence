@@ -15,6 +15,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [lockSubmit, setLockSubmit] = useState<boolean>(false);
 
     const [openAlert, setOpenAlert] = useState(false);
     const [error, setError] = useState(false)
@@ -41,7 +42,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                 return;
             }
         }
-
+        setLockSubmit(true);
         const response = await joinChannel(id, name, password);
         if (!response.ok) {
             const text = await response.text();
@@ -55,6 +56,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
         setShowPassword(false);
         setOpenAlert(true);
         await delay(1250);
+        setLockSubmit(false);
         setOpenAlert(false);
     }
 

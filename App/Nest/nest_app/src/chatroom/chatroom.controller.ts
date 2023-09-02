@@ -4,13 +4,11 @@ import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
-import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { UsersService } from 'src/users/users.service';
 import { MembershipService } from '../membership/membership.service';
 import { Public } from '../auth/public.routes';
 
-@ApiTags('ChatRoom')
 @Controller('chatroom')
 export class ChatroomController {
 	constructor(
@@ -105,7 +103,6 @@ export class ChatroomController {
 			});
 	}
 
-	// Todo: remove this shit!
 	@Public()
 	@Get('/isMember')
 	async isMember(
@@ -216,9 +213,12 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
-			.then(() => {
+			.then((newOwnerId) => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, id);
+				if (newOwnerId) {
+					this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
