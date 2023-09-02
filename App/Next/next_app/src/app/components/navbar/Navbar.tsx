@@ -4,6 +4,7 @@ import { useAuthcontext } from '@/app/context/AuthContext';
 import { useRouter } from "next/navigation";
 import Image from "next/image"
 import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
+import LogoutIconLight from "../../../../public/collapse-right-light-theme.svg";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 
