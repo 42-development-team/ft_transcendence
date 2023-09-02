@@ -47,7 +47,7 @@ model ChatRoom {
 	type			String
 	hashedPassword	String?
 	creatorId		Int
-	owner			User			@relation("chatCreated", fields: [creatorId], references: [id], onDelete: Cascade)
+	owner			User			@relation("chatCreated", fields: [creatorId], references: [id])
 	messages		Message[]		@relation("chatMessages")
 	memberShips		Membership[]	@relation("membership")
 }
