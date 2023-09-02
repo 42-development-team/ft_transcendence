@@ -1,12 +1,11 @@
 "use client";
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import sun from "../../../../public/sun.png";
 import sunLight from "../../../../public/sunLight.png";
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
+  const [theme, setTheme] = useState("mocha");
 
   const toggleTheme = () => {
     switch (localStorage.getItem("theme")) {
@@ -21,9 +20,12 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
       default:
         setTheme("mocha");
         localStorage.setItem("theme", "mocha");
-
-    };
-  };
+    }
+  }
+  
+  useEffect(() => {
+    setTheme(localStorage.getItem("theme") || "mocha");
+  }, []);
 
   return (
     <body className={`${theme} flex flex-col h-screen`}>
