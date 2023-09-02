@@ -49,8 +49,7 @@ const CreateChannel = ({ createNewChannel }: CreateChannelProps) => {
 		setOpenAlert(false);
 		setError(false);
 		event.preventDefault();
-		if (channelName === '') return;
-		if (channelType === ChannelType.Protected && password === '') return;
+		if (lockSubmit) return;
 		setLockInterface(true);
 		setShowPasswordInput(false);
 		const newChannelInfo: NewChannelInfo = {
