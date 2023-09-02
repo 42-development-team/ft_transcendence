@@ -208,7 +208,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const playerIndex = this.queued.indexOf(userId);
         this.queued.splice(playerIndex, 1);
     }
-    
+
     // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(socket: Socket, @MessageBody() body: any) {
@@ -232,7 +232,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
                 this.gameService.setVelocity(0.01, data.player2);
         }
     }
-    
+
     @SubscribeMessage('stopMove')
     async handleStopMove(socket: Socket, @MessageBody() body: any) {
         const [event, id, userId] = body;
