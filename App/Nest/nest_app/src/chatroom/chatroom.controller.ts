@@ -105,7 +105,6 @@ export class ChatroomController {
 			});
 	}
 
-	// Todo: remove this shit!
 	@Public()
 	@Get('/isMember')
 	async isMember(
@@ -216,9 +215,12 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
-			.then(() => {
+			.then((newOwnerId) => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, id);
+				if (newOwnerId) {
+					this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
