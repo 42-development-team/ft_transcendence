@@ -383,18 +383,14 @@ export class ChatroomService {
 	}
 
 	async leave(id: number, userId: number) {
-		// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
-		// 	where: { id: id },
-		// 	include: { owner: true },
-		// });
-
-		// Todo: if owner transmit ownership to another member (admin)
+		// if owner transmit ownership to another member (admin)
+		let newOwner = undefined;
 		const isOwner = await this.prisma.chatRoom.count({
 			where: { id: id, owner: { id: userId } },
 		}) > 0;
 		if (isOwner) {
 			// Find the first admin and set as new owner
-			const newOwner = await this.prisma.membership.findFirst({
+			newOwner = await this.prisma.membership.findFirst({
 				where: { chatRoomId: id, isAdmin: true, userId: { not: userId } },
 			});
 			if (newOwner) {
@@ -410,6 +406,7 @@ export class ChatroomService {
 			where:
 				{ userId: userId, chatRoomId: id },
 		});
+		return newOwner.userId;
 	}
 
 	async mute(id: number, userId: number, mutedId: number, muteDuration: number) {
