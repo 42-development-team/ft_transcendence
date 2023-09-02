@@ -100,7 +100,6 @@ export class AuthController {
         }
     }
 
-
     @Get('profile')
     getProfile(@Req() req, @Res() res: Response) {
         if (this.authService.isTwoFactorAuthenticated(req)) {
