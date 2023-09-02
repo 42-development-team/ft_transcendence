@@ -1,6 +1,9 @@
 "use client";
+import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
 import { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
+import { delay } from "@/app/utils/delay";
+
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -31,6 +34,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
+	const [ channelNameInvited, setChannelNameInvited ] = useState("");
 	const ENDPOINT = `${process.env.BACK_URL}`;
 
     useEffect(() => {
@@ -165,16 +169,53 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			}
 		})
 
-
 		return () => {
 			console.log('Disconnecting from socket.io server...');
 			socket.close();
 		}
 	};
 
+	const [open, setOpen] = useState(false);
+	const [invited, setInvited] = useState(false);
+
+	useEffect(() => {
+		socket?.on('userInvited', (body: any) => {
+			setChannelNameInvited(body.room);
+			setInvited(true);
+			const userInvited = body.user;
+		  	if (userInvited.id === userId){
+				console.log(`user ${userInvited.name} has been invited to join channel ${channelNameInvited}`);
+				setOpen(true);
+				}
+			})
+		}, [socket, invited]);
+
+	const handleOpen = () => {
+		delay(2000);
+		setOpen(!open);
+	}
+
     return (
         <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT, socket }}>
-            {children}
+			{children}
+			<Dialog open={open} handler={handleOpen} className="mt-auto">
+				<DialogHeader>
+					Invitation
+				</DialogHeader>
+				<DialogBody divider>
+				You have been invited to join the channel: {channelNameInvited}
+				</DialogBody>
+				<DialogFooter>
+					<Button
+						variant="text"
+						color="red"
+						onClick={handleOpen}
+						className="mr-1"
+					>
+						<span>Ok</span>
+					</Button>
+				</DialogFooter>
+      		</Dialog>
         </AuthContext.Provider>
     )
 }

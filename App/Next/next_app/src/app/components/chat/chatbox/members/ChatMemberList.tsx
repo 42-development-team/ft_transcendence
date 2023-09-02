@@ -165,7 +165,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
         }
         catch (error) {
             console.log("Error muting: " + error);
-        } 
+        }
     }
 
 
@@ -220,14 +220,6 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
         )
     )
-
-	// const AlertInvited = (text: string) => {
-	// 	return (
-	// 	  <div className="flex w-full flex-col gap-2">
-	// 		<Alert>{text}</Alert>
-	// 	  </div>
-	// 	);
-	//   }
 
     const InviteFieldButton = () => {
 		const [ login, setLogin ] = useState('');
