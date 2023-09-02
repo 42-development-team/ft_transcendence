@@ -36,6 +36,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
 	const [ channelNameInvited, setChannelNameInvited ] = useState("");
 	const ENDPOINT = `${process.env.BACK_URL}`;
+	const [open, setOpen] = useState(false);
+	const [invited, setInvited] = useState(false);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -174,9 +176,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			socket.close();
 		}
 	};
-
-	const [open, setOpen] = useState(false);
-	const [invited, setInvited] = useState(false);
 
 	useEffect(() => {
 		socket?.on('userInvited', (body: any) => {
