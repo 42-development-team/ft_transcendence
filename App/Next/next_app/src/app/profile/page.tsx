@@ -1,13 +1,10 @@
-
 import StatsWindow from "../components/profile/statsWindow";
 import { UnderlineTabs } from "../components/profile/tabs";
 import getJwt from '@/app/utils/getJwt';
 import { useRouter } from "next/navigation";
 import Chat from "@/components/chat/Chat";
-import sessionStorageUser from "../components/profile/sessionStorage";
 
 export default async function Profile() {
-
     const payload = await getJwt();
     let userId = "";
     if (payload !== null && payload !== undefined) {
@@ -23,8 +20,8 @@ export default async function Profile() {
         <div className="flex h-full w-full"> 
             <Chat userId={userId}/>
             <div className="mx-[7vw] my-[4vw] flex flex-col flex-grow">
-                    <StatsWindow userId={userId} />
-                    <UnderlineTabs userId={userId}/>
+                <StatsWindow userId={userId} />
+                <UnderlineTabs userId={userId} />
             </div>
         </div>
     )
