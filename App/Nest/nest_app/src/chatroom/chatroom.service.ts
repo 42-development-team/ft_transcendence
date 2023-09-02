@@ -389,9 +389,23 @@ export class ChatroomService {
 		// });
 
 		// Todo: if owner transmit ownership to another member (admin)
-		// const isOwner = await this.prisma.chatRoom.count({
-		// 	where: { id: id, owner: { id: userId } },
-		// }) > 0;
+		const isOwner = await this.prisma.chatRoom.count({
+			where: { id: id, owner: { id: userId } },
+		}) > 0;
+		if (isOwner) {
+			// Find the first admin and set as new owner
+			const newOwner = await this.prisma.membership.findFirst({
+				where: { chatRoomId: id, isAdmin: true, userId: { not: userId } },
+			});
+			if (newOwner) {
+				await this.prisma.chatRoom.update({
+					where: { id: id },
+					data: {
+						owner: { connect: { id: newOwner.userId } },
+					},
+				});
+			}
+		}
 		await this.prisma.membership.deleteMany({
 			where:
 				{ userId: userId, chatRoomId: id },

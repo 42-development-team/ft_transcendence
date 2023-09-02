@@ -67,7 +67,6 @@ const ChatMemberActions = (
 
     return (
         <div className="flex flex-row gap-2">
-            {lockSubmit && <p>locked</p>}
             {adminActionsEnabled && !user.isBanned &&
                 <div ref={wrapperRef} className=" text-left w-full">
                     <Tooltip content="Mute" placement="top" className="tooltip">
