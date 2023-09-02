@@ -63,7 +63,7 @@ model Membership {
 	isInvited	Boolean		@default(false)
 	userId		Int
 	chatRoomId	Int
-	user		User		@relation("membershipUser", fields: [userId], references: [id])
+	user		User		@relation("membershipUser", fields: [userId], references: [id], onDelete: Cascade)
 	chatroom	ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
 }
 
