@@ -1,10 +1,8 @@
 import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, Req, Res } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
 import { UserStatsService } from "./userstats.service";
 import { UserIdDto } from "./dto/user-id.dto";
 import { UserStatsDto } from "./dto/userstats.dto";
 
-ApiTags('Userstats')
 @Controller('userstats')
 export class UserstatsController {
 	constructor(private userstatsService: UserStatsService) { }
@@ -66,5 +64,4 @@ export class UserstatsController {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
-
 }

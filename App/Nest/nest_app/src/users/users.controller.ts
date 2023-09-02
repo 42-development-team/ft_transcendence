@@ -1,25 +1,13 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Logger, ParseIntPipe, Request, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger'
-/*
-Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
-It provides a set of tools and specifications, including the Swagger UI and the OpenAPI Specification which document APIs in a standardized way.
-The OpenAPI Specification (OAS) is a specification document written in JSON or YAML format
-that defines the structure and behavior of RESTful APIs. It describes the available endpoints,
-their input/output parameters, authentication requirements, response formats, and more.
-*/
 import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 import { Public } from '../auth/public.routes';
 
-// Nestjs/swagger decorator to display the routes: localhost:4000/api
-@ApiTags('Users')
-
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) {}
-
-
+    
     logger = new Logger ('UsersController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
     /* C(reate) */
@@ -63,7 +51,6 @@ export class UsersController {
         }
     }
 
-
 	@Public()
 	@Get('/getCurrentStatus/:id')
     async getStatus(@Param('id') id: string, @Res() response: Response) {
@@ -101,8 +88,6 @@ export class UsersController {
 			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
     }
-
-    // should we add updateAvatar?
 
     /* D(elete) */
 
