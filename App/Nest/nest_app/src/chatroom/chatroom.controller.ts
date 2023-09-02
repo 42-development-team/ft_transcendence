@@ -34,7 +34,7 @@ export class ChatroomController {
             this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
             response.status(HttpStatus.CREATED).send(newChatRoom);
         } catch (error) {
-            response.send("error");
+            response.send(JSON.stringify("error"));
         }
     }
 
