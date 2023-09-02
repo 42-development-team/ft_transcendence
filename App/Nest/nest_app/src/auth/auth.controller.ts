@@ -137,9 +137,6 @@ export class AuthController {
         }
     }
 
-
-
-
     @Public()
 	@Get('firstLogin/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
