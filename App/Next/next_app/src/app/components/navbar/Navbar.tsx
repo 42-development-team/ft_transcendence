@@ -72,7 +72,6 @@ const NavLinks = ({logout} : {logout: () => void}) => {
                         </p>
                     </div>
                 </DropDownActionLarge>
-            {isButtonClicked && <p>Clicked</p>}
             </NavDropDownMenu>
         </div>
     )

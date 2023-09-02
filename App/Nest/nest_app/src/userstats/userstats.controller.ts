@@ -26,7 +26,6 @@ export class UserstatsController {
 		try {
 			const id: number = Number(userId);
 			const statsDto = await this.userstatsService.getUserStats(id);
-
 			await response.status(HttpStatus.OK).send(statsDto);
 		} catch (error) {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -38,7 +37,6 @@ export class UserstatsController {
 		try {
 			const id = Number(userId);
 			const leaderBoard = await this.userstatsService.getLeaderBoard(id);
-
 			await response.status(HttpStatus.OK).send(leaderBoard);
 		} catch (error) {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -51,7 +49,6 @@ export class UserstatsController {
 	async updateUserStats(@Param('id') id: number, @Body() userUpdateDto: UserStatsDto, @Res() response: any) {
 		try {
 			this.userstatsService.updateUserStats(id, userUpdateDto);
-
 			await response.status(HttpStatus.OK);
 		} catch (error) {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
@@ -64,7 +61,6 @@ export class UserstatsController {
 	async deleteUserStats(@Body() userIdDto: UserIdDto, @Res() response: any) {
 		try {
 			this.userstatsService.deleteUserStats(userIdDto);
-
 			await response.status(HttpStatus.OK);
 		} catch (error) {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

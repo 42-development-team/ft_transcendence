@@ -30,6 +30,7 @@ const ChatMemberActions = (
         leaveChannel, sendDirectMessage, muteUser,
         setAdmin, unsetAdmin
     }: ChatMemberActionsProps) => {
+
     const onProfileClick = () => {
         sessionStorage.setItem("userId", user.id);
         if (sessionStorage.getItem("userId") === undefined)
@@ -41,6 +42,8 @@ const ChatMemberActions = (
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const [ isOpen, setIsOpen ] = useState(false);
     const [ openAlert, setOpenAlert ] = useState(false);
+    const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const [ isMuted, setIsMuted ] = useState(Date.now() < Date.parse(user.mutedUntil));
@@ -51,6 +54,14 @@ const ChatMemberActions = (
         const currentlyMuted = user.isMuted && Date.now() < Date.parse(user.mutedUntil);
         setIsMuted(currentlyMuted);
     }, [user]);
+
+    const handleAction = (action: () => void) => {
+        if (lockSubmit) return;
+        setLockSubmit(true);
+        action();
+        setIsOpen(false);
+        setTimeout(() => setLockSubmit(false), 1500);
+    }
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
@@ -70,20 +81,20 @@ const ChatMemberActions = (
                     {isOpen && (
                         <div className="absolute z-10 mt-2 w-24 right-14 rounded-md bg-crust">
                             {isMuted && 
-                                <DropDownAction onClick={() => muteUser(0)}>Unmute</DropDownAction>
+                                <DropDownAction onClick={() => handleAction(() => muteUser(0))}>Unmute</DropDownAction>
                             }
-                            <DropDownAction onClick={() => muteUser(30)}>30s</DropDownAction>
-                            <DropDownAction onClick={() => muteUser(60)}>60s</DropDownAction>
-                            <DropDownAction onClick={() => muteUser(3 * 60)}>3m</DropDownAction>
-                            <DropDownAction onClick={() => muteUser(10 * 60)}>10m</DropDownAction>
-                            <DropDownAction onClick={() => muteUser(60 * 60)}>1h</DropDownAction>
+                            <DropDownAction onClick={() => handleAction(() => muteUser(30))}>30s</DropDownAction>
+                            <DropDownAction onClick={() => handleAction(() => muteUser(60))}>60s</DropDownAction>
+                            <DropDownAction onClick={() => handleAction(() => muteUser(3 * 60))}>3m</DropDownAction>
+                            <DropDownAction onClick={() => handleAction(() => muteUser(10 * 60))}>10m</DropDownAction>
+                            <DropDownAction onClick={() => handleAction(() => muteUser(60 * 60))}>1h</DropDownAction>
                         </div>
                     )}
                 </div>
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={onProfileClick}>View profile</DropDownAction>
+                    <DropDownAction onClick={() => handleAction(() => onProfileClick)}>View profile</DropDownAction>
                     <Alert
                         className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
                         variant='gradient'
@@ -97,27 +108,27 @@ const ChatMemberActions = (
                     </Alert>
                     {!isCurrentUser &&
                     <>
-                        <DropDownAction onClick={sendDirectMessage}>Direct message</DropDownAction>
-                        <DropDownAction onClick={() => console.log('Play')}>Invite to play</DropDownAction>
+                        <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
+                        <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
                     </>
                     }
                     {isCurrentUserOwner && user.isAdmin && !isCurrentUser &&
-                        <DropDownActionRed onClick={unsetAdmin}>Remove admin</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(() => unsetAdmin)}>Remove admin</DropDownActionRed>
                     }
                     {ownerActionsEnabled && !user.isBanned &&
-                        <DropDownAction onClick={setAdmin}>Set as admin</DropDownAction>
+                        <DropDownAction onClick={() => handleAction(() => setAdmin)}>Set as admin</DropDownAction>
                     }
                     {adminActionsEnabled && user.isBanned &&
-                        <DropDownActionRed onClick={unbanUser}>Unban</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(() => unbanUser)}>Unban</DropDownActionRed>
                     }
                     {adminActionsEnabled && !user.isBanned &&
                         <>
-                            <DropDownActionRed onClick={kickUser}>Kick</DropDownActionRed>
-                            <DropDownActionRed onClick={banUser}>Ban</DropDownActionRed>
+                            <DropDownActionRed onClick={() => handleAction(() => kickUser)}>Kick</DropDownActionRed>
+                            <DropDownActionRed onClick={() => handleAction(() => banUser)}>Ban</DropDownActionRed>
                         </>
                     }
                     {isCurrentUser &&
-                        <DropDownActionRed onClick={leaveChannel}>Leave</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(() => leaveChannel)}>Leave</DropDownActionRed>
                     }
                 </div>
             </DropDownMenu>
