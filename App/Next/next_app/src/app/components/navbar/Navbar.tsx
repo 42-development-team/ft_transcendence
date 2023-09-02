@@ -52,7 +52,12 @@ const NavLinks = ({logout} : {logout: () => void}) => {
                         router.push("/");
                     }}>
                         <div className="flex items-center justify-between group">
-                            <Image src={LogoutIcon} width={28} height={28} alt="logout" />
+                            {localStorage.getItem("theme") === "latte" ? (
+                                <Image src={LogoutIconLight} width={28} height={28} alt="logout" />
+
+                            ) : (
+                                <Image src={LogoutIcon} width={28} height={28} alt="logout" />
+                            )}
                             <p className=" w-[100%] h-[100%] text-[1rem] ml-2 mr-2">
                                 Logout
                             </p>
