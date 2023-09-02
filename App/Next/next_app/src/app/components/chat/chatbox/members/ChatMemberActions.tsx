@@ -101,7 +101,7 @@ const ChatMemberActions = (
                         <DropDownAction onClick={() => console.log('Play')}>Invite to play</DropDownAction>
                     </>
                     }
-                    { isCurrentUserOwner && user.isAdmin &&
+                    {isCurrentUserOwner && user.isAdmin && !isCurrentUser &&
                         <DropDownActionRed onClick={unsetAdmin}>Remove admin</DropDownActionRed>
                     }
                     {ownerActionsEnabled && !user.isBanned &&
