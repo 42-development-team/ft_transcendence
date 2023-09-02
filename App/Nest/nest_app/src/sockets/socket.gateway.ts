@@ -126,6 +126,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         } else {
             console.log(`Client ${userId} invited to room ${room}`);
         }
+        this.server.to(room).emit('userInvited', {room, user});
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
