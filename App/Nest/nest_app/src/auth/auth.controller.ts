@@ -7,13 +7,11 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Tokens } from './types/token.type';
 import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
-import { PrismaService } from '../prisma/prisma.service'
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
-        private prismaService: PrismaService,
         private authService: AuthService,
         private userService: UsersService,
     ) {}
@@ -45,8 +43,6 @@ export class AuthController {
                 httpOnly: true,
             }
             const jwt = await this.authService.getTokens(req.user, true);
-            // res.clearCookie("jwt") // => not needed because
-            // res.cookie automatically overwrites the existing cookie with the same name
             res.cookie("jwt", jwt.access_token, cookieOptions)
             .cookie("rt", jwt.refresh_token, cookieOptions);
         }
@@ -60,7 +56,6 @@ export class AuthController {
     async logout(@Res() res: Response, @Req() req: any) {
         try {
 			const userId: number = req.user.sub;
-			// console.log("userId user logging out: ", userId);
 			const user = this.userService.getUserFromId(userId);
 			this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
@@ -76,7 +71,6 @@ export class AuthController {
     async generateNewTokens(@Req() req: any, @Res() res: Response) {
         try {
             const payload = await this.authService.verifyRefreshToken(req,  res);
-            // console.log('payload:', payload);
             if (!payload) throw new UnauthorizedException('Invalid refresh token');
 
             const cookieOptions = {
@@ -100,15 +94,12 @@ export class AuthController {
         }
     }
 
-
     @Get('profile')
     getProfile(@Req() req, @Res() res: Response) {
         if (this.authService.isTwoFactorAuthenticated(req)) {
-            // console.log(req.user);
             return res.send(req.user);
         }
         else {
-            console.log("You didn't validate 2fa process");
             return res.status(HttpStatus.OK).send({
                 message: "Two-factor authentication not completed",
                 user: req.user
@@ -136,25 +127,15 @@ export class AuthController {
     @Public()
     @Put('firstLogin/updateUsername')
     async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-    console.log('Received update data:', updateData);
         try {
             const userId = Number(updateData.userId);
-            console.log('Parsed userId:', userId);
-            console.log('New username:', updateData.newUsername);
-
-
             const updatedUser = await this.userService.updateUsername(userId, updateData.newUsername);
-
-            console.log('Updated user:', updatedUser);
             return updatedUser;
         } catch (error) {
             console.error('Error updating username:', error);
             throw error;
         }
     }
-
-
-
 
     @Public()
 	@Get('firstLogin/getUser/:userId')
@@ -166,5 +147,3 @@ export class AuthController {
 		}
 	}
 }
-
-

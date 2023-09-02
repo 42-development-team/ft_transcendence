@@ -11,10 +11,11 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
     return (
-        <div ref={wrapperRef} className="relative inline-block text-left">
+        <div ref={wrapperRef} className="relative inline-block text-left pt-1">
             <button
                 type="button"
-                className="inline-flex justify-center w-full rounded-full px-2 py-2 bg-base hover:bg-crust hover:scale-105 transform transition"
+                className="inline-flex justify-center w-full rounded-full px-2 py-2 bg-base 
+                            hover:bg-crust hover:scale-105 transform transition"
                 onClick={() => setIsOpen(!isOpen)}>
                     { localStorage.getItem("theme") === "latte" ? (
                         <Image src={ProfileIconLight} width={32} height={32} alt="Profile" />
@@ -22,12 +23,13 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
                         <Image src={ProfileIcon} width={32} height={32} alt="Profile" />
                     )}
             </button>
-            {isOpen && (
+            {isOpen && 
                 <div className="absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
                     {children}
                 </div>
-            )}
-        </div>)
+            }
+        </div>
+    )
 }
 
 export default NavDropDownMenu;

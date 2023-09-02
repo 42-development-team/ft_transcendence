@@ -1,5 +1,4 @@
 "use client";
-
 import { ChangeEvent, useEffect, useState } from "react";
 import UpdateAvatar from "../auth/utils/updateAvatar";
 import Avatar from "../profile/Avatar";
@@ -8,18 +7,14 @@ import { useEffectTimer } from "../auth/utils/useEffectTimer";
 import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
 import DoesUserNameExist from "../utils/DoesUsernameExist";
+import { useAuthcontext } from "@/app/context/AuthContext";
 
-const SettingsPage = ({
-		userId,
-		CallbackAvatarFile = () => { },
-		CallbackImageUrl = () => { },
-	}
-	:
-	{
-		userId: string,
-		CallbackAvatarFile?: any,
-		CallbackImageUrl?: any
-}) => {
+const SettingsPage = ({userId}: {userId: string}) => {
+
+	const { login } = useAuthcontext();
+	useEffect(() => {
+	  login();
+	}, []);
 
 	const [message, setMessage] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
@@ -50,8 +45,6 @@ const SettingsPage = ({
 		try {
 			getUserName(userId);
 			getAvatar();
-
-
 		} catch (error) {
 			console.log(error);
 		}
