@@ -36,6 +36,7 @@ const NavLinks = ({logout} : {logout: () => void}) => {
         sessionStorage.removeItem("userId");
         router.push('/profile');
     }
+    
     return (
         <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
