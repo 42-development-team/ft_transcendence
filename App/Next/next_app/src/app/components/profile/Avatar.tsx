@@ -2,18 +2,32 @@
 
 
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import Image from 'next/image';
 
-const AvatarComponent = (
+const Avatar = (
     {
         children,
         CallbackAvatarData = (AvFile: File | null, image: string) => {},
+        imageUrlGetFromCloudinary = null,
+        disableChooseAvatar = false,
+        disableImageResize = false,
+        userName = null,
+        userId = null,
+        width = 212,
+        height = 212,
     }
     :
     {
-        children: any;
-        CallbackAvatarData: any;
+        children?: any;
+        CallbackAvatarData?: any;
+        imageUrlGetFromCloudinary?: string | null;
+        disableChooseAvatar?: boolean;
+        disableImageResize?: boolean;
+        userName?: string | null;
+        userId?: string | null;
+        width?: number;
+        height?: number;
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -37,55 +51,59 @@ const AvatarComponent = (
       
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
-          console.log('Selected file size exceeds the allowed limit.');
+          console.log('Setlected file size exceeds the allowed limit.');
           return;
         }
-      
-        setImageUrl(URL.createObjectURL(file));
-        CallbackAvatarData(file, imageUrl); //Send Avatar DAta to Parent Component
+        const objectURL = URL.createObjectURL(file);
+        setImageUrl(objectURL);
+        CallbackAvatarData(file, objectURL); //Send Avatar DAta to Parent Component
       };
 
     return (
-        <div className="m-4 pt-4">
-            <p className="font-bold text-center"></p>
-            {imageUrl ? (
-                <div>
-                    {/* Display uploaded avatar image temporary stored in URL*/}
-                    <Image
-                        src={imageUrl}
-                        alt="Selected Avatar"
-                        width={128}
-                        height={128}
-                        className="drop-shadow-xl"
-                    />
-                </div>
-            ) : (
-                <div>
-                    {/* Display default avatar */}
-                    <Image
-                        src="https://img.freepik.com/free-icon/user_318-563642.jpg"
-                        alt="Default Avatar"
-                        width={128}
-                        height={128}
-                        className="drop-shadow-xl"
-                    />
-                </div>
-            )}
-            <div className="mt-2" style={{ marginTop: "20px" }}>
-                <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}>
-                    {imageUrl ? "Change Avatar" : "Choose Avatar"}
-                </label>
-                <input
-                    type="file"
-                    id="avatarInput"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    className="hidden"
-                />
+        <div className="flex flex-col my-5 justify-center ">
+            <p className=" font-bold text-center text-2xl mb-1">{userName}</p>
+            <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
+                {imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
+                    <div className="flex justify-center">
+                        {/* Display uploaded avatar image temporary stored in URL*/}
+                        <Image
+                            src={imageUrlGetFromCloudinary as string || imageUrl as string}
+                            alt="Selected Avatar"
+                            width={width}
+                            height={height}
+                            className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`}
+                        />
+                    </div>
+                ) : (
+                    <div className="flex justify-center">
+                        {/* Display default avatar */}
+                        <Image
+                            src="https://img.freepik.com/free-icon/user_318-563642.jpg"
+                            alt="Default Avatar"
+                            width={width}
+                            height={height}
+                            className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`}
+                        />
+                    </div>
+                )}
+                {!disableChooseAvatar &&
+                    <div className="mt-8 text-center">
+                        <label htmlFor="avatarInput" className="cursor-pointer" style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}>
+                            {imageUrl ? "Change Avatar" : "Choose Avatar"}
+                        </label>
+                        <input
+                            type="file"
+                            id="avatarInput"
+                            accept="image/*"
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                        />
+                    </div>
+                }
             </div>
         </div>
     )
 
 }
 
-export default AvatarComponent;
+export default Avatar;

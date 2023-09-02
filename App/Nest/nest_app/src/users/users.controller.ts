@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, ParseIntPipe, Request, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger'
 /*
 Swagger is an open-source framework that simplifies the documentation, design, and testing of RESTful APIs.
@@ -9,14 +10,15 @@ their input/output parameters, authentication requirements, response formats, an
 */
 import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
-
+import { Public } from '../auth/public.routes';
 
 // Nestjs/swagger decorator to display the routes: localhost:4000/api
-@ApiTags('Users')  
+@ApiTags('Users')
 
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) {}
+
 
     logger = new Logger ('UsersController'); // instanciating Lgger class to use it for debugging instead of console.log etc
 
@@ -45,6 +47,35 @@ export class UsersController {
         return this.userService.getUserFromId(Number(id));
     }
 
+    @Get('/usernameExist/:username')
+    async usernameExist(@Param('username') username: string, @Res() res: Response) {
+        try {
+            const user = await this.userService.getUserFromUsername(username);
+            const isUsernameTaken = !!user; // double negation to turn user into a boolean
+            //If the user object is not null or undefined (truthy),
+            // !!user will evaluate to true, indicating that the username is taken.
+            // If the user object is null or undefined (falsy),
+            // !!user will evaluate to false, indicating that the username is available.
+            res.status(HttpStatus.OK).send({ isUsernameTaken });
+        } catch (error) {
+            console.error('Error checking username availability:', error.message);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
+        }
+    }
+
+
+	@Public()
+	@Get('/getCurrentStatus/:id')
+    async getStatus(@Param('id') id: string, @Res() response: Response) {
+		try {
+			const userId: number = parseInt(id);
+			// console.log("userId in get Current Status: ", userId);
+			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
+			response.status(HttpStatus.OK).json(currentStatus);
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+    }
 
     /* U(pdate) */
 
@@ -56,13 +87,29 @@ export class UsersController {
         return updatedObject;
     }
 
+	@Put('/update_status/:id')
+    async updatestatus(@Request() req: any, @Res() response: Response) {
+		try {
+			const userId = req.user.sub;
+			const currentStatus = req.body.currentStatus;
+			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
+				// this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
+				this.userService.updateStatus(userId, currentStatus);
+			}
+			response.status(HttpStatus.OK);
+		} catch (error) {
+			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+		}
+    }
+
     // should we add updateAvatar?
 
     /* D(elete) */
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
         this.logger.log(`Deleting user with ID: ${id}`);
         await this.userService.deleteUser(id);
+        // todo update in order to remove the user from channel admins/members list
     }
 }

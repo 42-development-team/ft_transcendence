@@ -1,27 +1,32 @@
 import { ReactNode } from "react"
 
-export const DropDownAction = ({children, onClick} : {children: ReactNode, onClick: () => void}) => {
+type DropDownActionProps = {
+    children: ReactNode
+    onClick: () => void
+}
+
+export const DropDownAction = ({children, onClick } : DropDownActionProps) => {
     return (
-        <button onClick={onClick}
+        <button onClick={onClick} id="dropdownAction"
             className="text-left w-full block px-4 py-2 text-sm hover:bg-surface0 rounded-md">
             {children}
         </button>
     )
 }
 
-export const DropDownActionRed = ({children, onClick} : {children: ReactNode, onClick: () => void}) => {
+export const DropDownActionRed = ({children, onClick } : DropDownActionProps) => {
     return (
-        <button onClick={onClick}
+        <button onClick={onClick} id="dropdownAction"
             className="text-left w-full block px-4 py-2 text-sm hover:bg-red hover:font-[550] hover:text-mantle rounded-md">
             {children}
         </button>
     )
 }
 
-export const DropDownActionLarge = ({children, onClick} : {children: ReactNode, onClick: () => void}) => {
+export const DropDownActionLarge = ({children, onClick } : DropDownActionProps) => {
     return (
-        <button onClick={onClick}
-            className="text-left w-full block px-4 py-2 text-lg group hover:bg-surface0 rounded-md">
+        <button onClick={onClick} id="dropdownAction"
+            className="  text-left w-full block px-4 py-2 text-lg group hover:bg-surface0 rounded-md">
             {children}
         </button>
     )

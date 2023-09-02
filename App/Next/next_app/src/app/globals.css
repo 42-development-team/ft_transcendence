@@ -6,44 +6,104 @@
 
 
 :root {
-    --color-green: #a6e3a1;
-    --color-crust: #11111b;
+	--color-green: #a6e3a1;
+	--color-crust: #11111b;
 }
 
 @layer base {
-    body {
-        @apply bg-mantle text-text font-transcendence min-h-screen;
-    }
+	body {
+		@apply bg-mantle text-text font-transcendence min-h-screen;
+	}
+}
+
+@layer utilities {
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Hide scrollbar for IE, Edge and Firefox */
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		/* IE and Edge */
+		scrollbar-width: none;
+		/* Firefox */
+	}
 }
 
 .button-mauve {
-    @apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2;
+	@apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2
+		disabled:pointer-events-none disabled:opacity-50;
+}
+
+.tooltip {
+	@apply bg-crust z-20 p-3;
+	font-size: 1rem;
 }
 
 .icon {
-    color: var(--color-mauve);
-    border-radius: inherit;
-    width: inherit;
+	color: var(--color-mauve);
+	border-radius: inherit;
+	width: inherit;
 }
 
 .icon:hover {
-    color: var(--color-pink);
+	color: var(--color-pink);
 }
 
 ::-webkit-scrollbar {
-    width: 10px;
+	width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: bg-red;
-    border-radius: 5px;
+	background: bg-red;
+	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+	background: #888;
+	border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+	background: #555;
+}
+
+/* Pong loader */
+.shapes-5 {
+	width: 44px;
+	height: 44px;
+	color: #89dceb;
+	position: relative;
+}
+
+.shapes-5:before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background:
+		conic-gradient(from 0deg, #0000, currentColor 1deg 120deg, #0000 121deg) top right,
+		conic-gradient(from 120deg, #0000, currentColor 1deg 120deg, #0000 121deg) bottom,
+		conic-gradient(from 240deg, #0000, currentColor 1deg 120deg, #0000 121deg) top left;
+	background-size: 44px 44px;
+	background-repeat: no-repeat;
+	animation: sp5 2s infinite cubic-bezier(0.3, 1, 0, 1);
+}
+
+@keyframes sp5 {
+	33% {
+		inset: -8px;
+		transform: rotate(0deg)
+	}
+
+	66% {
+		inset: -8px;
+		transform: rotate(180deg)
+	}
+
+	100% {
+		inset: 0;
+		transform: rotate(180deg)
+	}
 }

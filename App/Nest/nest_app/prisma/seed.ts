@@ -2,13 +2,19 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { users } from '../seeds/seeds_users'
 import { chatRooms } from '../seeds/seeds_chatrooms'
 import { messages } from '../seeds/seeds_messages'
+import { games } from "../seeds/seeds_games";
+import { UserStats } from "../seeds/seeds_userstats";
+import { memberShips } from "../seeds/seeds_memberships";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function seedFeeding() {
     await seedUsers();
     await seedChatRooms();
     await seedMessages();
+    await seedUserStats();
+    await seedGames();
+	await seedMemberShips();
 }
 
 async function seedUsers() {
@@ -34,7 +40,30 @@ async function seedChatRooms() {
       });
     }
   }
-  
+
+async function seedMemberShips() {
+    for (let memberShip of memberShips) {
+      await prisma.membership.create({
+        data: memberShip,
+      });
+    }
+  }
+
+async function seedGames() {
+    for (let game of games) {
+        await prisma.game.create({
+            data: game,
+        });
+    }
+}
+
+async function seedUserStats() {
+    for (let userStats of UserStats) {
+        await prisma.userStats.create({
+            data: userStats,
+        });
+    }
+}
 
 seedFeeding().catch((e) => {
     console.error(e);

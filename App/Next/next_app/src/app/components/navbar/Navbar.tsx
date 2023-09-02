@@ -10,10 +10,10 @@ import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 const Navbar = () => {
     const {isLoggedIn, logout} = useAuthcontext();
     return (
-        <nav className="flex items-center flex-wrap justify-between bg-base p-1  drop-shadow-xl">
+        <div className="h-[48px] flex items-center justify-between bg-base p-1  drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
             {isLoggedIn && <NavLinks logout={logout}/> }
-        </nav>
+        </div>
     );
 };
 
@@ -22,7 +22,7 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
         <div className="flex w-fit items-center justify-center gap-2 p-2 pt-4
             font-bold text-mauve text-2xl">
             <Link href={isLoggedIn ? "/home" : "/"}>
-                Pongolin
+                Pong
             </Link>
         </div>
     )
@@ -30,11 +30,16 @@ const Logo = ({isLoggedIn} : {isLoggedIn: boolean}) => {
 
 const NavLinks = ({logout} : {logout: () => void}) => {
     const router = useRouter();
+    const onProfilClick = () => {
+    if (sessionStorage.getItem("userId"))
+        sessionStorage.removeItem("userId");
+        router.push('/profile');
+    }
     return (
-        <div className="flex items-center gap-8 px-6 text-lg transition-all">
+        <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
-                <div aria-orientation="vertical">
-                    <DropDownActionLarge onClick={() => router.push('/profile')}>
+                <div aria-orientation="vertical" >
+                    <DropDownActionLarge onClick={() => onProfilClick()}>
                         Profile
                     </DropDownActionLarge >
                     <DropDownActionLarge onClick={() => router.push('/settings')}>

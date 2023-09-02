@@ -1,10 +1,9 @@
-import { Controller, Post, Body, BadRequestException, UseInterceptors, InternalServerErrorException, UploadedFile, Logger, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Param, Get, Body, BadRequestException, UseInterceptors, InternalServerErrorException, UploadedFile, Logger, UnauthorizedException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from './cloudinary.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/public.routes';
 // import { GetCurrentUserId } from '../common/custom-decorators/get-current-user-id.decorator';
-import { unlinkSync } from 'fs';
 
 @Controller('avatars')
 export class AvatarsController {
@@ -43,6 +42,24 @@ export class AvatarsController {
     } catch (error) {
       console.error('Error uploading avatar:', error);
       throw new InternalServerErrorException('Avatar upload failed');
+    }
+  }
+
+  @Public()
+  @Get(":id")
+  async getAvatar(@Param('id') id: string) {
+    try {
+      const userId = Number(id);
+      console.log(userId);
+      if ( !userId ) {
+        throw new BadRequestException('Invalid user ID');
+      }
+      const user = await this.usersService.getUserFromId(userId);
+      const avatar = user.avatar;
+      return { avatar };
+    } catch (error) {
+      console.error('Error getting avatar:', error);
+      throw new InternalServerErrorException('Avatar get failed');
     }
   }
   

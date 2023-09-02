@@ -1,5 +1,6 @@
 "use client";
 import { useContext, createContext, useState, useEffect } from "react";
+import { io, Socket } from 'socket.io-client';
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -8,6 +9,7 @@ type AuthContextType = {
     uniqueLogin: string;
     userId: string;
     refreshJWT: () => void;
+	socket: Socket | undefined,
 }
 
 const AuthContextDefaultValues: AuthContextType = {
@@ -17,6 +19,7 @@ const AuthContextDefaultValues: AuthContextType = {
     uniqueLogin: "",
     userId: "",
     refreshJWT: async () => { },
+	socket: undefined,
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
@@ -24,9 +27,11 @@ const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
 const JWT_REFRESH_INTERVAL = 25 * 60 * 1000;
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+	const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
     const [uniqueLogin, setUniqueLogin] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
+	const [socket, setSocket] = useState<Socket | undefined>(undefined);
+	const ENDPOINT = `${process.env.BACK_URL}`;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -36,11 +41,41 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         return () => clearInterval(intervalId);
     }, []);
 
+	useEffect(() => {
+		if (isLoggedIn && userId)
+			initializeSocket(userId);
+	}, [isLoggedIn, userId]);
+
+	useEffect(() => {
+		if (isLoggedIn) {
+			const message = 'Important: Please click on \'Save\' button to leave this page.';
+			const handleTabClosing = (event: BeforeUnloadEvent) => {
+			fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+                credentials: "include",
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    currentStatus: "offline",
+                }),
+            });
+
+		};
+		if (isLoggedIn) {
+			window.addEventListener('beforeunload', handleTabClosing);
+		}
+		  return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		  };
+		}
+	  }, [isLoggedIn, userId]);
+
 
     const fetchProfile = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
-            const data = await response.json();;
+            const data = await response.json();
             let newLogin: string = data.login as string;
             setUniqueLogin(newLogin);
             let newUserId: string = data.sub as string;
@@ -79,10 +114,66 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         // Todo: update user status
         setUniqueLogin("");
         setUserId("");
+		socket?.disconnect();
     }
 
+
+	const connect = () => {
+    	return io(ENDPOINT, {
+        withCredentials: true,
+        reconnectionAttempts: 1,
+        transports: ['websocket'],
+    	})
+	}
+
+	useEffect(() => {
+        socket?.on('connect_error', (err) => {
+            console.log('Connection to socket.io server failed', err);
+        });
+        socket?.on('disconnect', (reason) => {
+            console.log('Disconnected from socket.io server', reason);
+        });
+        socket?.on('connect', () => {
+            console.log('Connected to socket.io server');
+        });
+
+        return () => {
+            socket?.off('connect_error');
+            socket?.off('disconnect');
+            socket?.off('connect');
+        }
+    }, [socket]);
+
+	const initializeSocket = async (userId: string) => {
+		console.log('Connecting to socket.io server...');
+		const socket = connect();
+		setSocket(socket);
+
+		socket.on('connect', () => {
+			// fetch to verify userStatus is online. If not update it to online
+			if (userId){
+				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+					credentials: "include",
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						currentStatus: "online",
+					}),
+				});
+			}
+		})
+
+
+		return () => {
+			console.log('Disconnecting from socket.io server...');
+			socket.close();
+		}
+	};
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT, socket }}>
             {children}
         </AuthContext.Provider>
     )

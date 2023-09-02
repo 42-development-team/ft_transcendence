@@ -1,92 +1,136 @@
 "use client";
-import BallInterface from "@/app/game/interfaces/ballInterface";
-import PlayerInterface from "@/app/game/interfaces/playerInterface";
+
 import React, { useRef, useEffect, useState } from "react";
+import { GameInterface, PlayerInterface, BallInterface } from "../../game/interfaces/game.interfaces";
 
-// ============================================ // 
-// ===============  TO DO  ==================== // 
-
-// Use requestAnimationFrame instead of setInterval / setTimeout
-// redraw only the regions that have to and not all canvas
-
-// ============================================ // 
-// update canvas every 1/60 sec
-// move ball in random direction
-// add hit box on canvas border
-// bounce on borders
-// delete hit box on left abd rigth canvas's sides
-// count points on canvas's sides
-// add hit box on paddle
-// ============================================ // 
-
+// ======== CANVAS CSS ==============//
 const canvasStyle: any = {
-	backgroundColor: '#009BD7',
-	width: '80%',
+	backgroundColor: '#4B3C4E',
+	width: '78%',
 };
 
-const drawBall = (context: CanvasRenderingContext2D, ball: BallInterface, width: number, height: number) => {
+// ======== PRINT CANVAS SCORE AND CONTOUR ==============//
+function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number) {
+	context.font='30px Arial';
+	context.fillStyle='#cba6f7';
+	context.beginPath();
+		context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
+		context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
+	context.closePath();
+}
+
+function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
+	context.fillStyle= 'rgba(0, 0, 0, 0.25';
+	context.beginPath();
+		context.fillRect(0, 0, width, height);
+	context.closePath();
+}
+
+function printMidLine(context: CanvasRenderingContext2D, width: number, height: number) {
+	let y = 0;
+
+	context.strokeStyle='#cba6f7';
+	context.beginPath();
+	while (y < height) {
+		context.moveTo(width / 2, y);
+		context.lineTo(width / 2, y + 0.01 * height);
+		context.stroke();
+		y += 0.02 * height;
+	}
+	context.closePath();
+}
+
+// ======== MANAGE END GAME ==============//
+function win(context: CanvasRenderingContext2D, result: [PlayerInterface, PlayerInterface], width: number, height: number) {
+	
+	context.font='30px Arial';
+	context.fillStyle='red';
+	context.beginPath();
+		context.fillText(result[0].name + " won the game", 0.5 * width, 0.5 * height);
+		context.fillText(result[1].name + " lose the game", 0.5 * width, 0.7 * height);
+	context.closePath();
+}
+
+function finish(result: [PlayerInterface, PlayerInterface], animationId: number) {
+	// envoyer les infos au back
+	() => window.cancelAnimationFrame(animationId);
+}
+
+// ============ RENDER ==============//
+function renderBall(context: CanvasRenderingContext2D, ball: BallInterface, width:  number, height: number) {
 	context.fillStyle = ball.color;
 	context.beginPath();
-		context.arc(ball.position[0] * width - ball.r, ball.position[1] * height - ball.r, ball.r, 0, ball.pi2, false);
+		context.arc(ball.x * width, ball.y * height , ball.r * width, 0, ball.pi2, false);
 		context.fill();
+		context.stroke();
 	context.closePath();
-}
+};
 
-const drawPlayer = (context: CanvasRenderingContext2D, player: PlayerInterface, width: number, height: number) => {
-	context.fillStyle = player.color;
+function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, width:  number, height: number) {
+	context.fillStyle = p.color;
 	context.beginPath();
-		context.fillRect(player.position[0] * width - player.rect[0] * width, player.position[1] * height - player.rect[1] * height, player.rect[0] * width, player.rect[1] * height);
+		context.fillRect(p.x * width - p.w * width / 2, p.y * height - p.h * height / 2, p.w * width, p.h * height);
 	context.closePath();
 }
 
-const renderGame = (context: CanvasRenderingContext2D , {...props}, width:number, height: number) => {
+function renderGame(context: CanvasRenderingContext2D, data: GameInterface, width: number, height: number) {
+	renderBall(context, data.ball, width, height);
+	renderPlayer(context, data.player1, width, height);
+	renderPlayer(context, data.player2, width, height);
+	printScore(context, data.player1, data.player2, width, height);
+};
 
-	context.clearRect(0, 0, width, height);
-	drawPlayer(context, props.player1, width, height);
-	drawPlayer(context, props.player2, width, height);
-	drawBall(context, props.ball, width, height);
-
-}
-
-const Canvas = ({ ...props }) => {
-
+const Canvas = ({...props}) => {
+	
 	if (window === undefined)
+		return ;
+
+	const {move, stopMove, launchGame, data, userId} = props;
+	if (!data)
 		return ;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
-	
+
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-			const canvas = canvasRef.current;
-			if (!canvas)
-				return ;
-			const context = canvas.getContext('2d');
-			if (!context)
-				return ;
-			height = width * (9 / 16);
-
-			// ======================== //
-			// Do we want to loose canvas in height
-			// or to play in a stamp
-
-			renderGame(context, props, width, height);
-	}, [width]);
+		launchGame(data.id)
+	}, []);
 
 	useEffect(() => {
-		function resize() {
-			const canvas = canvasRef.current;
-			if (!canvas)
-				return ;
-			setWidth((currentWidth) => { return currentWidth = canvas.getBoundingClientRect().width; });
+		const canvas = canvasRef.current;
+		if (!canvas)
+			return ;
+		const context = canvas.getContext('2d');
+		if (!context)
+			return ;
+		height = width * (9 / 16);
+
+		function handleKeyDown(e: any) {
+			move(e.code, data.id, userId);
 		}
-		window.addEventListener('resize', resize);
-	});
+
+		function handleKeyRelease(e: any) {
+			stopMove(e.code, data.id, userId);
+		}
+
+		const render = (): any => {
+
+			blurEffect(context, width, height);
+			printMidLine(context, width, height);
+			renderGame(context, data, width, height);
+
+		}
+		render();
+
+		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("keyup", handleKeyRelease);
+	}, [data]);
 
 	return (
 		<div className="canvas w-full">
-			<canvas id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
+			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
 }

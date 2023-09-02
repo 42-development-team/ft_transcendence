@@ -9,7 +9,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ChatroomController } from '../chatroom/chatroom.controller';
 import { ChatroomService } from '../chatroom/chatroom.service';
-import { SocketGateway } from '../sockets/socket.gateway';
 import { TwoFAController } from '../auth/2FA/2FA.controller';
 import { TwoFAService } from '../auth/2FA/2FA.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -18,8 +17,16 @@ import { TwoFAModule } from '../auth/2FA/2FA.module';
 import { AvatarsController } from '../avatars/avatars.controller';
 import { CloudinaryService } from '../avatars/cloudinary.service';
 import { JwtModule } from '@nestjs/jwt';
-import { ChatGateway } from 'src/chat/chat.gateway';
-import { ChatModule } from 'src/chat/chat.module';
+import { ChatroomModule } from '../chatroom/chatroom.module';
+import { GameModule } from 'src/game/game.module';
+import { UserstatsModule } from '../userstats/userstats.module';
+import { GameController } from 'src/game/game.controller';
+import { GameService } from 'src/game/game.service';
+import { UserStatsService } from '../userstats/userstats.service';
+import { UserstatsController } from '../userstats/userstats.controller';
+
+//=============
+// import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
   imports: [
@@ -31,7 +38,9 @@ import { ChatModule } from 'src/chat/chat.module';
     PrismaModule,
     AuthModule,
     TwoFAModule,
-    ChatModule,
+    ChatroomModule,
+    GameModule,
+    UserstatsModule,
     JwtModule.registerAsync({
       inject: [ConfigService], // Inject ConfigService to access JWT_SECRET
       useFactory: (configService: ConfigService) => ({
@@ -46,16 +55,19 @@ import { ChatModule } from 'src/chat/chat.module';
     ChatroomController,
     TwoFAController,
     AvatarsController,
+    GameController,
+    UserstatsController,
   ],
   providers: [
     AppService,
     UsersService,
     ChatroomService,
     PrismaService,
-    SocketGateway,
     TwoFAService,
     CloudinaryService,
-    ChatGateway
+    GameService,
+    UserStatsService,
+    // SocketGateway,
   ],
 })
 export class AppModule {}

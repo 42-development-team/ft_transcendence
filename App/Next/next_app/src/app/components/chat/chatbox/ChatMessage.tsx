@@ -1,14 +1,14 @@
 import { MessageModel } from "@/app/utils/models";
 
-
 type MessageProps = {
-    message: MessageModel
-} & React.ComponentPropsWithRef<'div'>
+    message: MessageModel,
+    color: string
+}
 
-const ChatMessage = ({message: {author, content}}: MessageProps) => {
+const ChatMessage = ({message: {senderUsername, content}, color}: MessageProps) => {
     const Author = (
-        <span className="font-semibold" style={{color: author.rgbColor}}>
-            {author.username}
+        <span className="font-semibold" style={{color: color }}>
+            {senderUsername}
         </span>
     )
 

@@ -58,14 +58,23 @@ export class AuthService {
                 data: { isFirstLogin: false },
             });
         }
-    }  
-    
+    }
+
+    async updateCurrentStatus(user: any, userId: number, status: string) {
+		// user.currentStatus = status;
+		// console.log("user id in updateCurrentStatus in service: ", userId);
+            await this.prisma.user.update({
+                where: { id: userId},
+                data: { currentStatus: status },
+            });
+    }
+
     async logout(res: Response): Promise<void> {
         await res.clearCookie('jwt');
         await res.clearCookie('rt');
         return;
     }
-    
+
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
             const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
@@ -88,7 +97,7 @@ export class AuthService {
             const [at, rt] = await Promise.all([
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtSecret'),
-                expiresIn: "30m",
+                expiresIn: "1d",
             }),
                 this.jwtService.signAsync(jwtPayload, {
                     secret: this.configService.get<string>('jwtRefreshSecret'),
@@ -110,7 +119,7 @@ export class AuthService {
             if (!token) {
                 throw new UnauthorizedException('Refresh token not found');
             }
-    
+
             const secret = this.configService.get<string>('jwtRefreshSecret');
             const payload = await this.jwtService.verifyAsync(token, { secret });
             return payload; // Return the payload if the token is verified

@@ -1,63 +1,96 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+	provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+	provider = "postgresql"
+	url = env("DATABASE_URL")
 }
 
 model User {
-  id                Int         @id @default(autoincrement())
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  
-  login             String      @unique
-  username          String?     @unique
-  avatar            String? 
-
-  messagesSent      Message[]   @relation("SentMessages") // one (user) to many (messages)
-  messageReceived   Message[]   @relation("ReceivedMessages") // one (user) to many (messages)
-  chatRoom          ChatRoom[]  @relation("members")
-  chatRoomsCreated  ChatRoom[]  @relation("chatCreated")
-  chatRoomsAdmin    ChatRoom[]  @relation("chatAdmins")
-
-  twoFAsecret       String?
-  isTwoFAEnabled    Boolean    @default(false)
-  isFirstLogin      Boolean    @default(true)
-
-} 
+	id					Int				@id @default(autoincrement())
+	createdAt			DateTime		@default(now())
+	updatedAt			DateTime		@updatedAt
+	avatar				String?
+	username			String?			@unique
+	login				String			@unique
+	isTwoFAEnabled		Boolean			@default(false)
+	twoFAsecret			String?
+	isFirstLogin		Boolean			@default(true)
+	chatRoomsCreated	ChatRoom[]		@relation("chatCreated")
+	gamesLosed			Game[]			@relation("gamesLosed")
+	gamesWon			Game[]			@relation("gamesWon")
+	messagesSent		Message[]		@relation("SentMessages")
+	userStats			UserStats?
+	games				Game[]			@relation("gamesPlayed")
+	memberShips			Membership[]	@relation("membershipUser")
+	socketId			String?			@unique
+	currentStatus		String
+}
 
 model Message {
-  id                Int         @id @default(autoincrement())
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  content           String
-  sender            User        @relation("SentMessages", fields: [senderId], references: [id])
-  senderId          Int
-  receiver          User?       @relation("ReceivedMessages", fields: [receiverId], references: [id]) // optional in the case of a broadcasted message
-  receiverId        Int?
-  chatRoom          ChatRoom?   @relation("chatMessages", fields: [chatRoomId], references: [id])
-  chatRoomId        Int?
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime 	@default(now())
+	updatedAt	DateTime	@updatedAt
+	content		String
+	senderId	Int
+	chatRoomId	Int?
+	chatRoom	ChatRoom?	@relation("chatMessages", fields: [chatRoomId], references: [id])
+	sender		User		@relation("SentMessages", fields: [senderId], references: [id])
 }
 
 model ChatRoom {
-  id                Int         @id @default(autoincrement())
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  name              String
-  type              String    // public, private, protected
-  password          String?     // for password protected chatrooms
-  members           User[]      @relation("members")
-  messages          Message[]   @relation("chatMessages")
-  owner             User        @relation("chatCreated", fields: [creatorId], references: [id])
-  creatorId         Int
-  admins            User[]      @relation("chatAdmins")
+	id				Int				@id @default(autoincrement())
+	createdAt		DateTime		@default(now())
+	updatedAt		DateTime		@updatedAt
+	name			String			@unique
+	type			String
+	hashedPassword	String?
+	creatorId		Int
+	owner			User			@relation("chatCreated", fields: [creatorId], references: [id])
+	messages		Message[]		@relation("chatMessages")
+	memberShips		Membership[]	@relation("membership")
 }
 
-// still to implement invitation (adding a new model?) and blocking users
+model Membership {
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+	isAdmin		Boolean		@default(false)
+	isBanned	Boolean		@default(false)
+	isMuted		Boolean		@default(false)
+	mutedUntil	DateTime?
+	isInvited	Boolean		@default(false)
+	userId		Int
+	chatRoomId	Int
+	user		User		@relation("membershipUser", fields: [userId], references: [id])
+	chatroom	ChatRoom	@relation("membership", fields: [chatRoomId], references: [id])
+}
+
+model UserStats {
+	id			Int			@id @default(autoincrement())
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+	winStreak	Int			@default(0)
+	win			Int			@default(0)
+	ratio		Float		@default(0)
+	played		Int			@default(0)
+	totalScore	Int			@default(0)
+	lose		Int			@default(0)
+	userId		Int			@unique
+	user		User		@relation(fields: [userId], references: [id])
+}
+
+model Game {
+	id				Int			@id @default(autoincrement())
+	createdAt		DateTime	@default(now())
+	updatedAt		DateTime	@updatedAt
+	users			User[]		@relation("gamesPlayed")
+	loser			User?		@relation("gamesLosed", fields: [gameLosedId], references: [id])
+	gameLosedId		Int?
+	winner			User?		@relation("gamesWon", fields: [gameWonId], references: [id])
+	gameWonId		Int?
+	winnerScore		Int			@default(0)
+	loserScore		Int			@default(0)
+	gameDuration	Int			@default(0)
+}

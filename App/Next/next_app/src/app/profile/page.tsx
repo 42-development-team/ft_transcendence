@@ -1,19 +1,31 @@
-"use client";
-import ChatBar from "@/components/chat/ChatBar";
-import { UnderlineTabs } from "../components/profile/tabs";
 
-export default function Profile() {
-    return (
-        <div className=" flex flex-row w-full h-full">
-            <ChatBar />
-            <div className="flex flex-col w-full h-full mx-5">
-                <div className=" font-semibold text-gray-400 text-center h-[15vh] mt-3 transition hover:duration-[550ms] rounded-lg bg-surface0 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
-                    Stats <br /><br /><br /> Here Stats Component(s) will be rendered
-                </div>
-                <div className=" h-[72vh] mt-6 rounded-lg transition hover:duration-[550ms] bg-surface0  hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
-                    <UnderlineTabs />
-                </div>
-                </div>
+import StatsWindow from "../components/profile/statsWindow";
+import { UnderlineTabs } from "../components/profile/tabs";
+import getJwt from '@/app/utils/getJwt';
+import { useRouter } from "next/navigation";
+import Chat from "@/components/chat/Chat";
+import sessionStorageUser from "../components/profile/sessionStorage";
+
+export default async function Profile() {
+
+    const payload = await getJwt();
+    let userId = "";
+    if (payload !== null && payload !== undefined) {
+        userId = payload.sub as string;
+    }
+    else {
+        const router = useRouter();
+        router.push('/');
+        return;
+    }
+
+    return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
+        <div className="flex h-full w-full"> 
+            <Chat userId={userId}/>
+            <div className="mx-[7vw] my-[4vw] flex flex-col flex-grow">
+                    <StatsWindow userId={userId} />
+                    <UnderlineTabs userId={userId}/>
+            </div>
         </div>
     )
- }
+}
