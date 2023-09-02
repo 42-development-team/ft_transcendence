@@ -36,7 +36,7 @@ model Message {
 	senderId	Int
 	chatRoomId	Int?
 	chatRoom	ChatRoom?	@relation("chatMessages", fields: [chatRoomId], references: [id])
-	sender		User		@relation("SentMessages", fields: [senderId], references: [id])
+	sender		User		@relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model ChatRoom {
