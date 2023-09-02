@@ -67,6 +67,7 @@ const ChatMemberActions = (
 
     return (
         <div className="flex flex-row gap-2">
+            {lockSubmit && <p>locked</p>}
             {adminActionsEnabled && !user.isBanned &&
                 <div ref={wrapperRef} className=" text-left w-full">
                     <Tooltip content="Mute" placement="top" className="tooltip">
@@ -113,22 +114,22 @@ const ChatMemberActions = (
                     </>
                     }
                     {isCurrentUserOwner && user.isAdmin && !isCurrentUser &&
-                        <DropDownActionRed onClick={() => handleAction(() => unsetAdmin)}>Remove admin</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(unsetAdmin)}>Remove admin</DropDownActionRed>
                     }
                     {ownerActionsEnabled && !user.isBanned &&
-                        <DropDownAction onClick={() => handleAction(() => setAdmin)}>Set as admin</DropDownAction>
+                        <DropDownAction onClick={() => handleAction(setAdmin)}>Set as admin</DropDownAction>
                     }
                     {adminActionsEnabled && user.isBanned &&
-                        <DropDownActionRed onClick={() => handleAction(() => unbanUser)}>Unban</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(unbanUser)}>Unban</DropDownActionRed>
                     }
                     {adminActionsEnabled && !user.isBanned &&
                         <>
-                            <DropDownActionRed onClick={() => handleAction(() => kickUser)}>Kick</DropDownActionRed>
-                            <DropDownActionRed onClick={() => handleAction(() => banUser)}>Ban</DropDownActionRed>
+                            <DropDownActionRed onClick={() => handleAction(kickUser)}>Kick</DropDownActionRed>
+                            <DropDownActionRed onClick={() => handleAction(banUser)}>Ban</DropDownActionRed>
                         </>
                     }
                     {isCurrentUser &&
-                        <DropDownActionRed onClick={() => handleAction(() => leaveChannel)}>Leave</DropDownActionRed>
+                        <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
                 </div>
             </DropDownMenu>

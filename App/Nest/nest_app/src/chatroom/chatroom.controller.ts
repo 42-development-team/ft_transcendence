@@ -105,7 +105,6 @@ export class ChatroomController {
 			});
 	}
 
-	// Todo: remove this shit!
 	@Public()
 	@Get('/isMember')
 	async isMember(
