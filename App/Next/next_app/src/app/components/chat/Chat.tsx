@@ -19,7 +19,7 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
-    const { friends } = useFriends();
+    const { friends, blockedUsers, blockUser } = useFriends();
     const { 
         channels, joinedChannels, 
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,

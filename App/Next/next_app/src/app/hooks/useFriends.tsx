@@ -1,46 +1,33 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserModel } from "../utils/models";
 
 export default function useFriends() {
-    const [friends, setFriends] = useState<UserModel[]>([
-    ])
+	const [friends, setFriends] = useState<UserModel[]>([])
+	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
-    // const socket = useChatConnection();
+	useEffect(() => {
+		// Todo: fetch blocked users
+		// Todo: fetch friends
+	}, []);
 
-    const appendNewFriend = useCallback(
-        (newFriend: UserModel) => {
-            const nextFriends: UserModel[] = [
-                ...friends,
-                newFriend
-            ]
-            setFriends(nextFriends);
-        },
-        [friends]
-    )
+	const blockUser = async (userId: string) => {
+		try {
+			console.log("blockUser with id: " + userId);
+			const response = await fetch(`${process.env.BACK_URL}/friends/blockUser/${userId}`, {
+				credentials: "include",
+				method: "PUT",
+			});
+			console.log(JSON.stringify(response));
+		}
+		catch (error) {
+			console.log("Block user:" + error);
+		}
+	}
 
-    const createFriend = useCallback(
-        () => {
-            // const newFriend: UserModel = generateFakeFriend();
-            // appendNewChannel(newChannel);
-            // socket?.emit('channel', newChannel);
-            console.log(`new friend creation `);
-        },
-        []
-    )
-
-    // useEffect(() => {
-    //     // socket?.on('new-friend', (friend: FriendModel) => {
-    //     //     appendNewFriend(friend);
-    //     // })
-    //     return (
-    //         console.log("Unsuscribe from new-friend")
-    //          socket?.off('new-friend')
-    //     )
-    // }, [appendNewFriend, socket])
-
-    return {
-        friends,
-        createFriend,
-    }
+	return {
+		friends,
+		blockedUsers,
+		blockUser,
+	}
 }
