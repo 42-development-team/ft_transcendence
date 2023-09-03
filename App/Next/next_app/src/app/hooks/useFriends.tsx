@@ -11,14 +11,38 @@ export default function useFriends() {
 		// Todo: fetch friends
 	}, []);
 
-	const blockUser = async (userId: string) => {
+	const updateBlockedUsers = (newBlockedUser: UserModel) => {
+		const exisitingUserIndex = blockedUsers.findIndex((user: UserModel) => user.id === newBlockedUser.id);
+		if (exisitingUserIndex !== -1) {
+			const newBlockedUsers = [...blockedUsers];
+			newBlockedUsers[exisitingUserIndex] = newBlockedUser;
+			setBlockedUsers(newBlockedUsers);
+		}
+		else {
+			setBlockedUsers([...blockedUsers, newBlockedUser]);
+		}
+	}
+
+	const updateFriends = (newFriend: UserModel) => {
+		const exisitingUserIndex = friends.findIndex((user: UserModel) => user.id === newFriend.id);
+		if (exisitingUserIndex !== -1) {
+			const newFriends = [...friends];
+			newFriends[exisitingUserIndex] = newFriend;
+			setFriends(newFriends);
+		}
+		else {
+			setFriends([...friends, newFriend]);
+		}
+	}
+
+	const blockUser = async (blockedId: string) => {
 		try {
-			console.log("blockUser with id: " + userId);
-			const response = await fetch(`${process.env.BACK_URL}/friend/block/${userId}`, {
+			console.log("block User with id: " + blockedId);
+			const response = await fetch(`${process.env.BACK_URL}/friend/block/${blockedId}`, {
 				credentials: "include",
-				method: "PUT",
+				method: "PATCH",
 			});
-			console.log(JSON.stringify(response));
+			console.log(await response.json());
 		}
 		catch (error) {
 			console.log("Block user:" + error);

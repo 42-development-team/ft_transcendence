@@ -18,12 +18,13 @@ type ChatMemberProps = {
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
     mute: (mutedId: string, muteDuration: number) => void
+    blockUser: (blockedId: string) => void
 }
 // Todo: add status and avatar
 const ChatMemberItem = ({
 	user,
     isCurrentUser,
-    kick, ban, unban, leaveChannel, directMessage,
+    kick, ban, unban, leaveChannel, directMessage, blockUser,
     setAsAdmin, removeAdmin, mute, channelId
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
@@ -107,6 +108,10 @@ const ChatMemberItem = ({
             mute(user.id, muteDuration);
     }
 
+    const block = () => {
+        blockUser(user.id);
+    }
+
     const getColor = () => {
         if (user.isOwner) {
             return 'text-[#f38ba8]';
@@ -137,7 +142,7 @@ const ChatMemberItem = ({
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
-                setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} />
         </div>
     )
 }

@@ -15,10 +15,11 @@ interface ChatMemberListProps {
     channel: ChannelModel
     userId: string
     directMessage: (receiverId: string, senderId: string) => Promise<string>
+    blockUser: (blockedId: string) => void
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -191,7 +192,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -199,7 +200,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
 
     const AdminList = channel.members
@@ -208,7 +209,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
 
     const BannedList = channel.members
@@ -217,7 +218,7 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         )
     )
 
