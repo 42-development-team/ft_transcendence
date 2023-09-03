@@ -105,7 +105,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                 }}>
                 {error && password=="" && <p>Password can not be empty</p>}
                 {error && password!="" && <p>Incorrect password</p>}
-                {!error && <p>Joined {name}</p>}dzfasfszl":
+                {!error && <p>Joined {name}</p>}:
             </Alert>
         </div>
     )
