@@ -256,6 +256,7 @@ export class GameService {
         }
     }
 
+    // Todo: put colors in frontend
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,

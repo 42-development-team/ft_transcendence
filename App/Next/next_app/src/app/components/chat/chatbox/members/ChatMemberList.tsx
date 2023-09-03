@@ -1,6 +1,6 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel, ChannelType } from '@/app/utils/models';
+import { ChannelModel, ChannelType, UserModel } from '@/app/utils/models';
 import ChatMemberHeader from './ChatMemberHeader';
 import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
@@ -15,10 +15,12 @@ interface ChatMemberListProps {
     channel: ChannelModel
     userId: string
     directMessage: (receiverId: string, senderId: string) => Promise<string>
+    blockUser: (blockedId: string) => void
+    blockedUsers: UserModel[]
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -188,36 +190,36 @@ const ChatMemberList = ({ channel, userId, directMessage }: ChatMemberListProps)
     const OwnerList = channel.members
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
 
     const AdminList = channel.members
         .filter(member => member.isAdmin && !member.isOwner && !member.isBanned)
         .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         ))
 
     const BannedList = channel.members
             .filter(member => member.isBanned)
             .map((member) => (
-            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId}
+            <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
         )
     )
 

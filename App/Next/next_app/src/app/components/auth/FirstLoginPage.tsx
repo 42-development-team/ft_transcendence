@@ -33,7 +33,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			method: "GET",
 		});
 		const data = await response.json();
-		if (!data.ok)
+		if (data && !data.ok && data.error)
 			console.log(data.error);
 		setPlaceHolder(data.username);
 		setInputUserName(data.username);

@@ -24,6 +24,8 @@ import { GameController } from 'src/game/game.controller';
 import { GameService } from 'src/game/game.service';
 import { UserStatsService } from '../userstats/userstats.service';
 import { UserstatsController } from '../userstats/userstats.controller';
+import { FriendModule } from 'src/friend/friend.module';
+import { FriendController } from 'src/friend/friend.controller';
 
 //=============
 // import { SocketGateway } from '../sockets/socket.gateway';
@@ -41,6 +43,7 @@ import { UserstatsController } from '../userstats/userstats.controller';
     ChatroomModule,
     GameModule,
     UserstatsModule,
+    FriendModule,
     JwtModule.registerAsync({
       inject: [ConfigService], // Inject ConfigService to access JWT_SECRET
       useFactory: (configService: ConfigService) => ({
@@ -57,6 +60,7 @@ import { UserstatsController } from '../userstats/userstats.controller';
     AvatarsController,
     GameController,
     UserstatsController,
+    FriendController
   ],
   providers: [
     AppService,

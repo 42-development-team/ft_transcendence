@@ -19,7 +19,7 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
-    const { friends } = useFriends();
+    const { friends, blockedUsers, blockUser, unblockUser } = useFriends();
     const { 
         channels, joinedChannels, 
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
@@ -64,16 +64,16 @@ const Chat = ({ userId }: ChatBarProps) => {
                 <ChatSideBar channels={joinedChannels} />
                 {/* Main Panel */}
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
-                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} />
+                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers}/>
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage}/>
+                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} blockUser={blockUser} blockedUsers={blockedUsers}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.FriendListOpen &&
-                    <FriendList friends={friends} />
+                    <FriendList friends={friends} blockedUsers={blockedUsers} unblockUser={unblockUser}/>
                 }
                 {chatBarState == ChatBarState.JoinChannelOpen &&
                     <JoinChannel channels={channels} joinChannel={joinChannel}/>
