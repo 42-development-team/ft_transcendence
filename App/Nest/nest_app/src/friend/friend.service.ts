@@ -11,6 +11,25 @@ export class FriendService {
 
     /* C(reate) */
     /* R(ead) */
+	async getBlockedUsers(userId: number) : Promise<FriendDto[]> {
+		const result = await this.prisma.user.findMany({
+			where: {
+				blockedBy: {
+					some: {
+						id: userId,
+					},
+				},
+			},
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				currentStatus: true,
+			},
+		});
+		return plainToClass(FriendDto, result);
+	}
+
     /* U(pdate) */
     async blockUser(blockedId: number, userId: number) : Promise<FriendDto>{
 		// Todo: protect against non existing user

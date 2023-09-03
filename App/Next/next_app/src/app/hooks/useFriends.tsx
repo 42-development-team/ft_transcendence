@@ -7,9 +7,15 @@ export default function useFriends() {
 	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
 	useEffect(() => {
-		// Todo: fetch blocked users
+		fetchBlockedUsers();
 		// Todo: fetch friends
 	}, []);
+
+	const fetchBlockedUsers = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/blocked`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setBlockedUsers(data);
+	}
 
 	const updateBlockedUsers = (newBlockedUser: UserModel) => {
 		const exisitingUserIndex = blockedUsers.findIndex((user: UserModel) => user.id === newBlockedUser.id);
