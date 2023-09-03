@@ -22,7 +22,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
         setTheme("mocha");
         localStorage.setItem("theme", "mocha");
     }
-    location.reload();
+    // location.reload();
   }
   
   useEffect(() => {
