@@ -73,7 +73,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                     <ChannelSettings channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.FriendListOpen &&
-                    <FriendList friends={friends} />
+                    <FriendList friends={friends} blockedUsers={blockedUsers}/>
                 }
                 {chatBarState == ChatBarState.JoinChannelOpen &&
                     <JoinChannel channels={channels} joinChannel={joinChannel}/>

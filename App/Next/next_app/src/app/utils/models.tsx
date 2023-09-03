@@ -52,6 +52,6 @@ export enum UserStatus {
 export interface UserModel {
 	id: string
 	username: string
-	status: UserStatus
+	avatar: string
 	currentStatus: UserStatus
 }

@@ -37,12 +37,11 @@ export default function useFriends() {
 
 	const blockUser = async (blockedId: string) => {
 		try {
-			console.log("block User with id: " + blockedId);
 			const response = await fetch(`${process.env.BACK_URL}/friend/block/${blockedId}`, {
 				credentials: "include",
 				method: "PATCH",
 			});
-			console.log(await response.json());
+			updateBlockedUsers(await response.json());
 		}
 		catch (error) {
 			console.log("Block user:" + error);
