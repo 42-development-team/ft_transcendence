@@ -28,4 +28,10 @@ export class FriendController {
 
 
 	/* D(elete) */
+	@Patch('unblock/:unblockedId')
+	async unblockUser(@Param('unblockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const user: FriendDto = await this.friendService.unblockUser(Number(blockedId), userId);
+		res.send(user);
+	}
 }

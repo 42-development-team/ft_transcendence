@@ -19,7 +19,7 @@ interface ChatBarProps {
 
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
-    const { friends, blockedUsers, blockUser } = useFriends();
+    const { friends, blockedUsers, blockUser, unblockUser } = useFriends();
     const { 
         channels, joinedChannels, 
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
@@ -73,7 +73,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                     <ChannelSettings channel={currentChannel} />
                 }
                 {chatBarState == ChatBarState.FriendListOpen &&
-                    <FriendList friends={friends} blockedUsers={blockedUsers}/>
+                    <FriendList friends={friends} blockedUsers={blockedUsers} unblockUser={unblockUser}/>
                 }
                 {chatBarState == ChatBarState.JoinChannelOpen &&
                     <JoinChannel channels={channels} joinChannel={joinChannel}/>

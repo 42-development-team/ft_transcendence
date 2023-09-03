@@ -51,4 +51,21 @@ export class FriendService {
     }
 
     /* D(elete) */
+	async unblockUser(blockedId: number, userId: number) : Promise<FriendDto> {
+		const result = await this.prisma.user.update({
+			where: { id: blockedId },
+			data: {
+				blockedBy: {
+					disconnect: { id: userId },
+				},
+			},
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				currentStatus: true,
+			},
+		});
+		return plainToClass(FriendDto, result);
+	}
 }

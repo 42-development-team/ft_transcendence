@@ -4,27 +4,26 @@ import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
 
-type FriendProps = {
+type BlockedProps = {
     user: UserModel
+    unblockUser: (unblockedId: string) => void
 }
 
-const FriendActions = () => {
+const BlockedActions = ({unblock}: {unblock: () => void}) => {
+    // Todo: block multiple clicks
     return (
         <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('Play')}>
-                Invite to play
-            </DropDownAction>
             <DropDownAction onClick={() => console.log('View Profile')}>
                 View profile
             </DropDownAction>
-            <DropDownActionRed onClick={() => console.log('Remove Friend')}>
-                Remove Friend 
+            <DropDownActionRed onClick={unblock}>
+                Unblock
             </DropDownActionRed>
         </div>
     )
 }
 
-const FriendItem = ({ user }: FriendProps) => {
+const BlockUserItem = ({ user, unblockUser }: BlockedProps) => {
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center">
@@ -41,10 +40,10 @@ const FriendItem = ({ user }: FriendProps) => {
                 <h1 className="font-medium text-sm">{user.username}</h1>
             </div>
             <DropDownMenu >
-                <FriendActions />
+                <BlockedActions unblock={() => unblockUser(user.id)} />
             </DropDownMenu>
         </div>
     )
 }
 
-export default FriendItem;
+export default BlockUserItem;
