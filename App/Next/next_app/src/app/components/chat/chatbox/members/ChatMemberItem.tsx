@@ -19,13 +19,14 @@ type ChatMemberProps = {
     removeAdmin: (removedAdminId: string) => void
     mute: (mutedId: string, muteDuration: number) => void
     blockUser: (blockedId: string) => void
+    isBlocked: boolean
 }
 // Todo: add status and avatar
 const ChatMemberItem = ({
 	user,
     isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage, blockUser,
-    setAsAdmin, removeAdmin, mute, channelId
+    setAsAdmin, removeAdmin, mute, channelId, isBlocked
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -142,7 +143,7 @@ const ChatMemberItem = ({
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
-                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} />
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked} />
         </div>
     )
 }
