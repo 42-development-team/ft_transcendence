@@ -14,7 +14,7 @@ export default function useFriends() {
 	const blockUser = async (userId: string) => {
 		try {
 			console.log("blockUser with id: " + userId);
-			const response = await fetch(`${process.env.BACK_URL}/friends/blockUser/${userId}`, {
+			const response = await fetch(`${process.env.BACK_URL}/friend/block/${userId}`, {
 				credentials: "include",
 				method: "PUT",
 			});

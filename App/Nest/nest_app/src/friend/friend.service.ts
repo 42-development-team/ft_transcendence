@@ -8,4 +8,8 @@ export class FriendService {
     ) {}
 
 
+    /* C(reate) */
+    /* R(ead) */
+    /* U(pdate) */
+    /* D(elete) */
 }
