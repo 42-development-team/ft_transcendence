@@ -4,14 +4,12 @@ import { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
 import { delay } from "@/app/utils/delay";
 
-
 type AuthContextType = {
 	isLoggedIn: boolean;
 	login: () => void;
 	logout: () => void;
 	uniqueLogin: string;
 	userId: string;
-	refreshJWT: () => void;
 	socket: Socket | undefined,
 }
 
@@ -21,13 +19,10 @@ const AuthContextDefaultValues: AuthContextType = {
 	logout: () => { },
 	uniqueLogin: "",
 	userId: "",
-	refreshJWT: async () => { },
 	socket: undefined,
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
-
-const JWT_REFRESH_INTERVAL = 25 * 60 * 1000;
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 	const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
@@ -40,21 +35,12 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [invited, setInvited] = useState(false);
 
 	useEffect(() => {
-		const intervalId = setInterval(() => {
-			console.log("interval triggered: " + Date.now() / 1000);
-			refreshJWT();
-		}, JWT_REFRESH_INTERVAL);
-		return () => clearInterval(intervalId);
-	}, []);
-
-	useEffect(() => {
 		if (isLoggedIn && userId)
 			initializeSocket(userId);
 	}, [isLoggedIn, userId]);
 
 	useEffect(() => {
 		if (isLoggedIn) {
-			const message = 'Important: Please click on \'Save\' button to leave this page.';
 			const handleTabClosing = (event: BeforeUnloadEvent) => {
 				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
 					credentials: "include",
@@ -77,7 +63,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 	}, [isLoggedIn, userId]);
 
-
 	const fetchProfile = async () => {
 		try {
 			const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
@@ -97,13 +82,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		};
 	}
 
-	const refreshJWT = async () => {
-		await fetch(`${process.env.BACK_URL}/auth/refresh`, { credentials: 'include' }).catch((error) => {
-			console.log("Error fetching profile: " + error.message);
-			logout();
-		});
-	}
-
 	const login = async () => {
 		// Todo: update user status
 		setLoggedIn(true);
@@ -117,12 +95,10 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			console.log("error fetching logout: " + error.message);
 		});
 		setLoggedIn(false);
-		// Todo: update user status
 		setUniqueLogin("");
 		setUserId("");
 		socket?.disconnect();
 	}
-
 
 	const connect = () => {
 		return io(ENDPOINT, {
@@ -191,7 +167,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}
 
 	return (
-		<AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, refreshJWT, socket }}>
+		<AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, socket }}>
 			{children}
 			<Dialog open={open} handler={handleOpen} className="mt-auto">
 				<DialogHeader>
@@ -202,11 +178,10 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 				</DialogBody>
 				<DialogFooter>
 					<Button
-						variant="text"
-						color="red"
+						variant="text" color="red"
 						onClick={handleOpen}
 						className="mr-1">
-						<span>Ok</span>
+						Ok
 					</Button>
 				</DialogFooter>
 			</Dialog>
