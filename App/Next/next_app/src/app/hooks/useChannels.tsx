@@ -254,9 +254,8 @@ export default function useChannels(userId: string) {
                     isBanned: member.isBanned,
                     isMuted: member.isMuted,
                     mutedUntil: member.mutedUntil,
-                    avatar: "",
                     currentStatus: UserStatus.Offline,
-                    // avatar: member.user.avatar,
+                    avatar: member.avatar,
                 }
             });
             fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
@@ -322,8 +321,8 @@ export default function useChannels(userId: string) {
                         isBanned: member.isBanned,
                         isMuted: member.isMuted,
                         mutedUntil: member.mutedUntil,
-                        //Todo: avatar
-                        avatar: "",
+                        // avatar: "",
+                        avatar: member.avatar,
                     }
                 });
                 if (channel.type == ChannelType.DirectMessage) {

@@ -130,6 +130,7 @@ export class ChatroomService {
 					isBanned: member.isBanned,
 					isMuted: member.isMuted,
 					mutedUntil: member.mutedUntil,
+					avatar: member.user.avatar,
 				};
 			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
