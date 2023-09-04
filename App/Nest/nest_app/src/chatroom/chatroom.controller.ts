@@ -130,7 +130,7 @@ export class ChatroomController {
 			response.send('success');
 		}
 		catch (error) {
-			response.send(error.message);
+			response.send(JSON.stringify(error.message));
 		}
 	}
 
