@@ -321,7 +321,6 @@ export default function useChannels(userId: string) {
                         isBanned: member.isBanned,
                         isMuted: member.isMuted,
                         mutedUntil: member.mutedUntil,
-                        // avatar: "",
                         avatar: member.avatar,
                     }
                 });
