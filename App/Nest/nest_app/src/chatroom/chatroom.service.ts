@@ -407,7 +407,7 @@ export class ChatroomService {
 			where:
 				{ userId: userId, chatRoomId: id },
 		});
-		return newOwner.userId;
+		return isOwner && newOwner ? newOwner.userId : undefined;
 	}
 
 	async mute(id: number, userId: number, mutedId: number, muteDuration: number) {

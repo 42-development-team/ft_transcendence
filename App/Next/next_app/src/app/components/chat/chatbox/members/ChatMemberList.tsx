@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
 
-
 interface ChatMemberListProps {
     channel: ChannelModel
     userId: string
@@ -101,13 +100,18 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
     }
 
     const leaveChannel = async () => {
-        const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/leave`, {
-            credentials: "include",
-            method: 'PATCH',
-        });
-        if (!response.ok) {
-            console.log("Error leaving channel: " + response.status);
-            return;
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/leave`, {
+                credentials: "include",
+                method: 'PATCH',
+            });
+            if (!response.ok) {
+                console.log("Error leaving channel: " + response.status);
+                return;
+            }
+        }
+        catch (error) {
+            console.log("Error leaving channel: " + error);
         }
     }
 
