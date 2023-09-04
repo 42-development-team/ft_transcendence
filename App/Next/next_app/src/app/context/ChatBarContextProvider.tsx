@@ -1,5 +1,5 @@
 "use client";
-import React, {useContext, createContext, useState } from "react";
+import {useContext, createContext, useState } from "react";
 
 export enum ChatBarState {
     Closed,
@@ -36,6 +36,9 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
             setChatBarState(ChatBarState.Closed);
         } else {
             setChatBarState(state);
+        }
+        if (state != ChatBarState.ChatOpen) {
+            setOpenChannelId("");
         }
     }
 
