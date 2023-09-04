@@ -23,10 +23,10 @@ export default function useChannels(userId: string) {
     }, []);
 
     useEffect(() => {
-        if (joinedChannels.length > 0) {
+        if (joinedChannels.length > 0 && socket != undefined) {
             joinPreviousChannels();
         }
-    }, [joinedChannels]);
+    }, [joinedChannels, socket]);
 
     useEffect(() => {
         // Update the notification count to 0 when the channel is open
@@ -255,7 +255,6 @@ export default function useChannels(userId: string) {
                     isMuted: member.isMuted,
                     mutedUntil: member.mutedUntil,
                     avatar: "",
-                    // Todo: currentStatus
                     currentStatus: UserStatus.Offline,
                     // avatar: member.user.avatar,
                 }

@@ -29,9 +29,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     gameRooms: GameRoomDto[] = [];
     queued: UserIdDto[] = [];
 
-     // The client object is an instance of the Socket class provided by the Socket.io library.
-     // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
-     // why "(client: Socket)" ? because client is an instance of Socket class
 	async handleConnection(client: Socket) {
 		const userId = await this.chatroomService.getUserIdFromSocket(client);
 		if (userId) {
@@ -48,13 +45,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 		}
 	}
 
-    // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
-		const userStatus = await this.userService.getCurrentStatusFromId(userId);
+		// const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userId });
     }
 
