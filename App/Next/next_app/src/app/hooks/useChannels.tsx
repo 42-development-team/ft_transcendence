@@ -130,6 +130,16 @@ export default function useChannels(userId: string) {
         joinChannel(id, name);
     }
 
+    const handleChatroomUpdate = (body: any) => {
+        const { room } = body;
+        fetchChannelsInfo();
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        fetchChannelContent(joinedChannels[channelIndex].id);
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
@@ -144,11 +154,14 @@ export default function useChannels(userId: string) {
         socket?.on('leftRoom', (body: any) => {
             handleLeftRoom(body);
         });
-        socket?.on('NewChatRoom', (body: any) => {
+        socket?.on('NewChatRoom', () => {
             fetchChannelsInfo();
         });
         socket?.on('directMessage', (body: any) => {
             handleNewDirectMessageChannel(body);
+        });
+        socket?.on('chatroomUpdate', (body: any) => {
+            handleChatroomUpdate(body);
         });
 
         // return is used for cleanup, remove the socket listener on unmount
@@ -159,6 +172,7 @@ export default function useChannels(userId: string) {
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
             socket?.off('directMessage');
+            socket?.off('chatroomUpdate');
         }
     }, [socket, joinedChannels, channels]);
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
@@ -225,7 +239,7 @@ export default function useChannels(userId: string) {
                 return response;
             }
             socket?.emit("joinRoom", name);
-            await fetchNewChannelContent(id);
+            await fetchChannelContent(id);
             await fetchChannelsInfo();
             return response;
         }
@@ -236,7 +250,22 @@ export default function useChannels(userId: string) {
     }
 
     // FETCHING
-    const fetchNewChannelContent = async (id: string) => {
+    const fetchChannelsInfo = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                channel.icon = '';
+                return channel;
+            });
+            setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel info list: " + err);
+        }
+    };
+
+    const fetchChannelContent = async (id: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
             const channelContent = await response.json();
@@ -271,28 +300,20 @@ export default function useChannels(userId: string) {
                 const targetMember = fetchedChannel.members?.find(m => m.id != userId);
                 fetchedChannel.directMessageTargetUsername = targetMember?.username;
             }
-            setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+            // Search if channel already exists
+            const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === fetchedChannel.name);
+            if (channelIndex == -1) {
+                setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+                return;
+            }
+            const newChannels = [...joinedChannels];
+            newChannels[channelIndex] = fetchedChannel;
+            setJoinedChannels(newChannels);
         }
         catch (err) {
             console.log("Error fetching channel content: " + err);
         }
     }
-    // FETCHING
-    const fetchChannelsInfo = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
-                return channel;
-            });
-            setChannels(fetchedChannels);
-        }
-        catch (err) {
-            console.log("Error fetching channel info list: " + err);
-        }
-    };
-
 
     const fetchChannelsContent = async () => {
         try {
