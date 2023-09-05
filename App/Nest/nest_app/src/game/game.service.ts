@@ -8,7 +8,6 @@ import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 
 //===========
-import { SocketGateway } from "src/sockets/socket.gateway";
 
 @Injectable()
 export class GameService {
@@ -18,18 +17,22 @@ export class GameService {
     ) {}
 
     /* C(reate) */
-    async createGame(createGameDto: CreateGameDto) {
+    async createGame(createGamedto: CreateGameDto) {
         
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: createGameDto.playerOneId },
+                        { id: createGamedto.winnerId },
+                        { id: createGamedto.loserId }
                     ],
                 },
+                winner: { connect: { id: createGamedto.winnerId } },
+                loser: { connect: { id: createGamedto.loserId } },
+                winnerScore: createGamedto.winnerScore,
+                loserScore: createGamedto.loserScore,
             },
         });
-
         return newGame;
     }
 
@@ -73,7 +76,8 @@ export class GameService {
         return gameDtos;
     }
 
-    /* U(pdate) */ //TODO: gameDuration
+    /* U(pdate) */
+    //TODO: now useless, remove when game finished
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
@@ -87,6 +91,7 @@ export class GameService {
         return game;
     }
 
+    //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
         const game = await this.prisma.game.update({
             where: { id: joinGameDto.gameId },
@@ -239,6 +244,8 @@ export class GameService {
     async calculateGame(data: GameDto): Promise<GameDto> {
         this.calculatePlayer(data);
         this.calculateBall(data);
+        if (data.player1.points > 11 || data.player2.points > 11)
+            data.end = true;
         return data;
     }
 
@@ -246,15 +253,15 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
 
-    async update(data: GameDto) {
-        // TODO Check disconnected sockets
-        while (data.player1.points < 11 && data.player2.points < 11) {
-            data = await  this.calculateGame(data);
-            // this.socketGateway.sendGameData(data.roomName, data);
-            const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-            sleep(1/60);
-        }
-    }
+    // async update(data: GameDto) {
+    //     // TODO Check disconnected sockets
+    //     while (data.player1.points < 11 && data.player2.points < 11) {
+    //         data = await  this.calculateGame(data);
+    //         // this.socketGateway.sendGameData(data.roomName, data);
+    //         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    //         sleep(1/60);
+    //     }
+    // }
 
     // Todo: put colors in frontend
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
@@ -295,6 +302,7 @@ export class GameService {
         let data: GameDto = {
             id: id,
             roomName: roomName,
+            end: false,
             player1: player1,
             player2: player2,
             ball: ball,
