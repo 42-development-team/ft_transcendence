@@ -20,13 +20,14 @@ export class GameService {
     ) {}
 
     /* C(reate) */
-    async createGame(createGameDto: CreateGameDto) {
+    async createGame(game: UpdateGameDto) {
         
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: createGameDto.playerOneId },
+                        { id: game.winnerId },
+                        { id: game.loserId }
                     ],
                 },
             },
@@ -105,11 +106,6 @@ export class GameService {
             where: { id: deleteGameDto.gameId },
         });
         return true;
-    }
-
-    async addResultsInDb(data: GameDto, result: [PlayerDto, PlayerDto]) {
-        const winner: PlayerDto = result[0];
-        const loser: PlayerDto = result[1];
     }
 
     //=================================================//

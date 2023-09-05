@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 
 export class UpdateGameDto {
-    gameId: number;
+    // gameId: number;
     winnerScore: number;
     loserScore: number;
     winner: User;
