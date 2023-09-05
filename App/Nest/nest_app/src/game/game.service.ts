@@ -244,6 +244,8 @@ export class GameService {
     async calculateGame(data: GameDto): Promise<GameDto> {
         this.calculatePlayer(data);
         this.calculateBall(data);
+        if (data.player1.points > 11 || data.player2.points > 11)
+            data.end = true;
         return data;
     }
 
@@ -251,15 +253,15 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
 
-    async update(data: GameDto) {
-        // TODO Check disconnected sockets
-        while (data.player1.points < 11 && data.player2.points < 11) {
-            data = await  this.calculateGame(data);
-            // this.socketGateway.sendGameData(data.roomName, data);
-            const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-            sleep(1/60);
-        }
-    }
+    // async update(data: GameDto) {
+    //     // TODO Check disconnected sockets
+    //     while (data.player1.points < 11 && data.player2.points < 11) {
+    //         data = await  this.calculateGame(data);
+    //         // this.socketGateway.sendGameData(data.roomName, data);
+    //         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    //         sleep(1/60);
+    //     }
+    // }
 
     // Todo: put colors in frontend
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
@@ -300,6 +302,7 @@ export class GameService {
         let data: GameDto = {
             id: id,
             roomName: roomName,
+            end: false,
             player1: player1,
             player2: player2,
             ball: ball,
