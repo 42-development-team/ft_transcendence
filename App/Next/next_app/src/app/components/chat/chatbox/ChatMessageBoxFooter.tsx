@@ -54,7 +54,7 @@ const ChatMessageBoxFooter = ({ onSend, channelType, cannotSendMessage }: SendMe
 const ShowChannelSettingsButton = () => {
     const { updateChatBarState } = useChatBarContext();
     return (
-        <Tooltip content="Channel Settings" placement="left" className="tooltip">
+        <Tooltip content="Channel Settings" placement="left" className="tooltip text-text">
             <button className="mt-2 mx-2" type="button" onClick={() => {
                 updateChatBarState(ChatBarState.ChannelSettingsOpen)
                 console.log("Show channel settings");

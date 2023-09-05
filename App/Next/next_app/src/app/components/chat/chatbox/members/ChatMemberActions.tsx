@@ -69,7 +69,7 @@ const ChatMemberActions = (
         <div className="flex flex-row gap-2">
             {adminActionsEnabled && !user.isBanned &&
                 <div ref={wrapperRef} className=" text-left w-full">
-                    <Tooltip content="Mute" placement="top" className="tooltip">
+                    <Tooltip content="Mute" placement="top" className="tooltip text-text">
                         <button onClick={() => setIsOpen(!isOpen)}
                             className={`inline-flex justify-center w-full rounded-2xl px-2 py-2 bg-base ${isMuted && " bg-crust"}`}>
                             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
