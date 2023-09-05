@@ -1,11 +1,13 @@
 "user client";
 
+import { delay } from "@/app/utils/delay";
 import OtpInput from "./OtpInput";
 import SubmitBtn from "./SubmitBtn";
 
 const Submit2FA = (
 	{
 		children,
+		disabled=false,
 		displayBox=false,
 		handleOnKeyDown=() => {},
 		handleSubmit=() => {},
@@ -20,6 +22,7 @@ const Submit2FA = (
 	:
 	{
 		children: any,
+		disabled?: boolean,
 		displayBox: Boolean,
 		handleOnKeyDown: any,
 		handleSubmit: any,
@@ -32,6 +35,9 @@ const Submit2FA = (
 		colorText: string,
 	}) =>
 {
+
+	
+
 	return (
 		<div className="text-center">
 			{
@@ -53,7 +59,7 @@ const Submit2FA = (
 				{isVisible && <p>{message}</p>}
 			</div>
 			<div className=" active:duration-500 flex flex-col items-center">
-				<SubmitBtn displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}>Submit</SubmitBtn>
+				<SubmitBtn disabled={disabled} displayBox={displayBox} handleOnKeyDown={handleOnKeyDown} handleSubmit={handleSubmit}>Submit</SubmitBtn>
 			</div>
 		</div>
 	)

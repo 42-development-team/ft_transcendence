@@ -24,6 +24,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
   const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
   const [colorClickCancel, setColorCancel] = useState<string>('bg-mauve');
+  const [disable2FA, setDisable2FA] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +38,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   }, [userId]);
 
   useEffectTimer(isVisible, 2600, setIsVisible);
+  useEffectTimer(disable2FA, 2600, setDisable2FA);
 
   const handleEnableClick = async () => {
     try {
@@ -108,6 +110,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	  const handleSubmit = async () => {
 		setEnableBtnActivated(false);
 		setDisableBtnActivated(false);
+		setDisable2FA(true);
 	  
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid) {
@@ -211,6 +214,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			</div>
 				<Submit2FA 	
 					displayBox={displayBox}
+					disabled={disable2FA}
 					handleOnKeyDown={handleOnKeyDown}
 					handleSubmit={handleSubmit}
 					handleCallbackData={handleCallback}
