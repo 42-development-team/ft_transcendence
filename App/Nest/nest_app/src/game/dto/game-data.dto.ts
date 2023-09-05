@@ -24,7 +24,6 @@ export class GameDto {
 	id: number;
 	roomName: string;
 	end: boolean;
-	forfeitId?: number;
 	player1: PlayerDto;
 	player2: PlayerDto;
 	ball: BallDto;

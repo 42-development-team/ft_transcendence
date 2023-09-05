@@ -49,7 +49,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 		console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
-        this.handleDisconnectInGame(userId);
         this.clients = this.clients.filter(c => c.id !== client.id);
 		// const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userId });
@@ -173,39 +172,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         try {
             const userId = await this.chatroomService.getUserIdFromSocket(player);
-            this.queued.push({userId});
-
-            if (this.queued.length >= 2) {
-                const player2Id: number = this.queued[0].userId;
-                const player1Id: number = this.queued[1].userId;
-
-                // create room data
-                const id: number = this.gameRooms.length;
-                const roomName: string = player1Id + "_" + player2Id;
-                const newGameRoom: GameRoomDto = {
-                    id: id,
-                    roomName: roomName,
-                    playerOneId: player1Id,
-                    playerTwoId: player2Id,
-                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
-                }
-
-                // add room to rooms list
-                this.gameRooms.push(newGameRoom);
-                // pop player from queue list
-                this.handleLeaveQueue(this.queued[0]);
-                this.handleLeaveQueue(this.queued[1]);
-
-                // Create room instance and join room
-                await player?.join(roomName);
-
-                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
-			    await player2Socket?.join(roomName);
-
-                // send game data to players
-                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (idx === -1)
+                this.queued.push({userId});
+            else {
+                player?.join(this.gameRooms[idx].roomName);
+                this.server.to(this.gameRooms[idx].roomName).emit('matchIsReady', this.gameRooms[idx].data);
             }
+
+            if (this.queued.length >= 2)
+               this.joinGame(player);
+
         } catch (e) {
             console.log(e);
         }
@@ -279,15 +256,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log(data);
     }
 
-    async handleDisconnectInGame(userId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);// || game.playerTwoId === userId});
-        if (idx === -1)
-            return ;
-        this.gameRooms[idx].data.forfeitId = userId;
-        this.gameRooms[idx].data.end = true;
-    }
-
     // handle refresh as disconectied or not ??
+
+    async joinGame(player: Socket) {
+        const player2Id: number = this.queued[0].userId;
+                const player1Id: number = this.queued[1].userId;
+
+                // create room data
+                const id: number = this.gameRooms.length;
+                const roomName: string = player1Id + "_" + player2Id;
+                const newGameRoom: GameRoomDto = {
+                    id: id,
+                    roomName: roomName,
+                    playerOneId: player1Id,
+                    playerTwoId: player2Id,
+                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
+                }
+
+                // add room to rooms list
+                this.gameRooms.push(newGameRoom);
+                // pop player from queue list
+                this.handleLeaveQueue(this.queued[0]);
+                this.handleLeaveQueue(this.queued[1]);
+
+                // Create room instance and join room
+                await player?.join(roomName);
+
+                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
+			    await player2Socket?.join(roomName);
+
+                // send game data to players
+                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+    }
 
     async sendDataToRoom(data: GameDto) {
         this.server.to(data.roomName).emit('updateGame', data);
