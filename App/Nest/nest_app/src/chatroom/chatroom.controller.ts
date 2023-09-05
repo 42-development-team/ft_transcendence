@@ -4,13 +4,11 @@ import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { SocketGateway } from '../sockets/socket.gateway';
-import { ApiTags } from '@nestjs/swagger'
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { UsersService } from 'src/users/users.service';
 import { MembershipService } from '../membership/membership.service';
 import { Public } from '../auth/public.routes';
 
-@ApiTags('ChatRoom')
 @Controller('chatroom')
 export class ChatroomController {
 	constructor(
@@ -20,6 +18,7 @@ export class ChatroomController {
 		private membershipService: MembershipService,
 	) { }
 
+	// Todo: check for HttpStatus.Bad_Request return -> avoid 
 	/* C(reate) */
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
@@ -33,7 +32,7 @@ export class ChatroomController {
             this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
             response.status(HttpStatus.CREATED).send(newChatRoom);
         } catch (error) {
-            response.send("error");
+            response.send(JSON.stringify("error"));
         }
     }
 
@@ -49,7 +48,7 @@ export class ChatroomController {
 			}
 			catch (error) {
 				const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
-				const connectSecondUser = await this.chatroomService.connectUserToChatroom(Number(createChatroomDto.receiverId), newChatRoom.id);
+				await this.chatroomService.connectUserToChatroom(Number(createChatroomDto.receiverId), newChatRoom.id);
 				this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
 				const receiverSocketId = await this.userService.getUserSocketFromId(Number(createChatroomDto.receiverId));
 				this.socketGateway.clients.find(c => c.id == receiverSocketId)?.emit("directMessage", newChatRoom);
@@ -57,7 +56,7 @@ export class ChatroomController {
 			}
 		}
 		catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+			response.send(JSON.stringify(error.message));
 		}
 	}
 
@@ -76,7 +75,7 @@ export class ChatroomController {
 				response.send(chatRoom);
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -88,7 +87,7 @@ export class ChatroomController {
 				response.send(chatRooms);
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -100,7 +99,7 @@ export class ChatroomController {
 				response.send(chatRoom);
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -112,16 +111,13 @@ export class ChatroomController {
 		@Request() req: any,
 		@Res() response: Response) {
 			try {
-				console.log ("userId logging in in isMember handler: ", userId);
-				console.log ("channelId logging in in isMember handler: ", channelId);
 				const isMember = await this.membershipService.isChannelMember(
 					parseInt(userId),
 					parseInt(channelId)
 				);
-				console.log("isMember = ", isMember);
 				response.status(HttpStatus.OK).json(isMember);
 			} catch (error) {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			}
 	}
 
@@ -131,11 +127,10 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		try {
 			await this.chatroomService.update(+id, updateChatroomDto, userId);
-			// Todo: emit on socket
 			response.send('success');
 		}
 		catch (error) {
-			response.send(error.message);
+			response.send(JSON.stringify(error.message));
 		}
 	}
 
@@ -148,7 +143,7 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -170,7 +165,7 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -192,7 +187,7 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -208,7 +203,7 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -217,13 +212,16 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const userSocket = await this.userService.getUserSocketFromId(userId);
 		await this.chatroomService.leave(+id, userId)
-			.then(() => {
+			.then((newOwnerId) => {
 				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
 				this.socketGateway.handleLeaveRoom(clientSocket, id);
+				if (newOwnerId) {
+					this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -239,8 +237,7 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				// Todo: socket event
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
 	}
 
@@ -257,8 +254,45 @@ export class ChatroomController {
 			})
 			.catch(error => {
 				// Todo: socket event
-				response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+				response.send(JSON.stringify(error.message));
 			});
+	}
+
+	@Patch(':id/mute')
+	async mute(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const mutedId: number = body.mutedId;
+		const muteDuration: number = body.muteDuration;
+		const userSocket = await this.userService.getUserSocketFromId(userId);
+		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
+			.then(() => {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				this.socketGateway.handleMute(clientSocket, mutedId, id);
+				response.send();
+			})
+			.catch(error => {
+				response.send(JSON.stringify(error.message));
+			});
+	}
+
+	@Patch(':id/invite')
+	async invite(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
+		const userId: number = req.user.sub;
+		const invitedLogin = body.invitedLogin;
+		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
+		if (invitedId){
+			const invitedUserSocket = await this.userService.getUserSocketFromId(+invitedId);
+			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
+			if (newMembership) {
+				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				response.status(HttpStatus.OK).send("ok");
+			}
+		} else {
+			const notInDatabaseMessage = "User invited not found"
+			console.log(notInDatabaseMessage);
+			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
+		}
 	}
 
 	/* D(elete) */

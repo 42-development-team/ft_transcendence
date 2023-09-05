@@ -10,12 +10,11 @@ import ChatHeader from '../chatbox/ChatHeader';
 import { ChannelType } from '@/app/utils/models';
 
 interface CreateChannelProps {
-	userId: string;
 	createNewChannel: (newChannel: NewChannelInfo) => Promise<string>;
 }
 
 // Todo: prevent double click on button
-const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
+const CreateChannel = ({ createNewChannel }: CreateChannelProps) => {
 
 	const CLOSE_DELAY = 750;
 
@@ -25,17 +24,20 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 	const [channelType, setChannelType] = useState<string>(ChannelType.Public);
 	const [password, setPassword] = useState('');
 	const [lockInterface, setLockInterface] = useState(false);
+	const [lockSubmit, setLockSubmit] = useState(false);
 
 	const [error, setError] = useState(false);
 	const [openAlert, setOpenAlert] = useState(false);
 
 	useEffect(() => {
-		// Auto focus on channel name input
 		const channelNameInput = document.getElementById('channelName');
-		if (channelNameInput) {
+		if (channelNameInput)
 			channelNameInput.focus();
-		}
 	}, []);
+
+	useEffect(() => {
+		setLockSubmit(channelName === '' || (channelType === ChannelType.Protected && password === ''));
+	}, [channelName, channelType, password]);
 
 	const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = event.target.value;
@@ -47,8 +49,7 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 		setOpenAlert(false);
 		setError(false);
 		event.preventDefault();
-		if (channelName === '') return;
-		if (channelType === ChannelType.Protected && password === '') return;
+		if (lockSubmit) return;
 		setLockInterface(true);
 		setShowPasswordInput(false);
 		const newChannelInfo: NewChannelInfo = {
@@ -87,7 +88,8 @@ const CreateChannel = ({ userId, createNewChannel }: CreateChannelProps) => {
 					{showPasswordInput && 
 						<PasswordInputField value={password}  setValue={setPassword}/>
 					}
-					<button type="submit" className={`button-mauve disabled:pointer-events-none disabled:bg-overlay1`} disabled={lockInterface} >
+					<button type="submit" className={`button-mauve disabled:pointer-events-none disabled:bg-overlay1`} 
+						disabled={lockInterface || lockSubmit} >
 						Create Channel
 					</button>
 				</form>

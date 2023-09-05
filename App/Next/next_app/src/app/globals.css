@@ -17,25 +17,23 @@
 }
 
 @layer utilities {
-	@variants responsive {
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
 
-		/* Hide scrollbar for Chrome, Safari and Opera */
-		.no-scrollbar::-webkit-scrollbar {
-			display: none;
-		}
-
-		/* Hide scrollbar for IE, Edge and Firefox */
-		.no-scrollbar {
-			-ms-overflow-style: none;
-			/* IE and Edge */
-			scrollbar-width: none;
-			/* Firefox */
-		}
+	/* Hide scrollbar for IE, Edge and Firefox */
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		/* IE and Edge */
+		scrollbar-width: none;
+		/* Firefox */
 	}
 }
 
 .button-mauve {
-	@apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2;
+	@apply bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-sm p-2
+		disabled:pointer-events-none disabled:opacity-50;
 }
 
 .tooltip {

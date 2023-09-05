@@ -17,8 +17,6 @@ export class CloudinaryService {
   @Public()
   async uploadAvatar(file: Express.Multer.File): Promise<string> {
     try {
-      console.log('File object in uploadAvatar:', file);
-
       // Convert the Buffer to a base64 string
       const base64String = file.buffer.toString('base64');
 
@@ -26,9 +24,6 @@ export class CloudinaryService {
       // to Cloudinary and get the image URL
       const result = await cloudinary.uploader.upload(`data:${file.mimetype};base64,${base64String}`, {
       });
-
-      console.log('Cloudinary response:', result);
-
       return result.secure_url;
     } catch (error) {
       console.error('Error uploading avatar to Cloudinary:', error);

@@ -1,22 +1,25 @@
 "use client";
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
-import { ChannelModel, ChannelType, MessageModel } from '@/app/utils/models';
+import { ChannelModel, ChannelType, MessageModel, UserModel } from '@/app/utils/models';
 import ChatMessageBoxFooter from './ChatMessageBoxFooter';
 import useChatScrolling from '@/app/hooks/useChatScrolling';
 import ChatMessage from './ChatMessage';
 import ChatHeader from './ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
 import { useEffect, useState } from 'react';
+import ChatMessageBlocked from './ChatMessageBlocked';
 
 interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
     channel: ChannelModel;
+    userId: string;
+    blockedUsers: UserModel[]
 }
 
-
-const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
+const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatMessagesBoxProps ) => {
     const {updateChatBarState} = useChatBarContext();
     const [channelTitle, setChannelTitle] = useState<string>(channel.name);
+    const [cannotSendMessage, setCannotSendMessage] = useState<boolean>(false);
 
     const sendMessage = (message: string) => {
         sendToChannel(channel, message);
@@ -41,7 +44,10 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
     }
 
     let MessageList = channel.messages?.map((message) => (
-        <ChatMessage key={message.id} message={message} color={getColor(message)} />
+            // If blocked user, change message display
+            blockedUsers.find(user => user.username == message.senderUsername) != undefined
+                ? <ChatMessageBlocked key={message.id} message={message} color={getColor(message)} />
+                : <ChatMessage key={message.id} message={message} color={getColor(message)} />
         ))
 
     useEffect(() => {
@@ -49,6 +55,10 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             setChannelTitle(channel.directMessageTargetUsername);
         else
             setChannelTitle(channel.name);
+
+        const currentUser = channel.members?.find(member => member.id == userId);
+        if (currentUser == undefined) return;
+        setCannotSendMessage(currentUser.isMuted && Date.now() < Date.parse(currentUser.mutedUntil))
     }, [channel]);
 
     return (
@@ -63,7 +73,7 @@ const ChatMessagesBox = ({ sendToChannel, channel }: ChatMessagesBoxProps ) => {
             <div ref={chatMessageBoxRef} className='overflow-auto h-full'>
                 {MessageList}
             </div>
-            <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} />
+            <ChatMessageBoxFooter onSend={sendMessage} channelType={channel.type} cannotSendMessage={cannotSendMessage} />
         </div>
     )
 };

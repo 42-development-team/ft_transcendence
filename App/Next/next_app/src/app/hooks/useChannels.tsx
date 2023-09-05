@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-// import { useSocketContext } from "../context/SocketContext";
 import { useAuthcontext } from "../context/AuthContext";
 import bcrypt from 'bcryptjs';
 
@@ -24,10 +23,10 @@ export default function useChannels(userId: string) {
     }, []);
 
     useEffect(() => {
-        if (joinedChannels.length > 0) {
+        if (joinedChannels.length > 0 && socket != undefined) {
             joinPreviousChannels();
         }
-    }, [joinedChannels]);
+    }, [joinedChannels, socket]);
 
     useEffect(() => {
         // Update the notification count to 0 when the channel is open
@@ -82,6 +81,8 @@ export default function useChannels(userId: string) {
             isAdmin: user.isAdmin,
             isOwner: user.isOwner,
             isBanned: user.isBanned,
+            isMuted: user.isMuted,
+            mutedUntil: user.mutedUntil,
             avatar: user.avatar,
             currentStatus: user.currentStatus,
         }
@@ -251,10 +252,10 @@ export default function useChannels(userId: string) {
                     isAdmin: member.isAdmin,
                     isOwner: member.isOwner,
                     isBanned: member.isBanned,
-                    avatar: "",
-                    // Todo: currentStatus
+                    isMuted: member.isMuted,
+                    mutedUntil: member.mutedUntil,
                     currentStatus: UserStatus.Offline,
-                    // avatar: member.user.avatar,
+                    avatar: member.avatar,
                 }
             });
             fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
@@ -318,8 +319,9 @@ export default function useChannels(userId: string) {
                         isAdmin: member.isAdmin,
                         isOwner: member.isOwner,
                         isBanned: member.isBanned,
-                        //Todo: avatar
-                        avatar: "",
+                        isMuted: member.isMuted,
+                        mutedUntil: member.mutedUntil,
+                        avatar: member.avatar,
                     }
                 });
                 if (channel.type == ChannelType.DirectMessage) {

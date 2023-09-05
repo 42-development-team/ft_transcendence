@@ -9,6 +9,7 @@ import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
 import { comparePassword } from '../utils/bcrypt';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class ChatroomService {
@@ -17,6 +18,7 @@ export class ChatroomService {
 		private jwtService: JwtService,
 		private userService: UsersService,
 		private configService: ConfigService,
+		private membershipService: MembershipService
 	) { }
 
 	// #region C(reate)
@@ -126,6 +128,9 @@ export class ChatroomService {
 					isAdmin: member.isAdmin,
 					isOwner: chatroom.owner.id === member.userId,
 					isBanned: member.isBanned,
+					isMuted: member.isMuted,
+					mutedUntil: member.mutedUntil,
+					avatar: member.user.avatar,
 				};
 			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
@@ -258,7 +263,7 @@ export class ChatroomService {
 				memberShips: true
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		if (!isAdmin && !isOwner) {
 			throw new Error('User is not an admin of this channel');
@@ -306,7 +311,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === kickedId;
 		if (!isAdmin && !isOwner) {
@@ -332,7 +337,7 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isAdmin = this.isUserAdmin(userId, id);
+		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === bannedId;
 		// const isTargetAdmin = this.isUserAdmin(bannedId, id);	// Todo: can admins kick each other?
@@ -368,25 +373,80 @@ export class ChatroomService {
 		return unbannedUser;
 	}
 
-	async leave(id: number, userId: number) {
-			// const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
-			// 	where: { id: id },
-			// 	include: { owner: true },
-			// });
-
-			// Todo: if owner transmit ownership to another member (admin)
-			// const isOwner = await this.prisma.chatRoom.count({
-			// 	where: { id: id, owner: { id: userId } },
-			// }) > 0;
-			const kickedMembership = await this.prisma.membership.deleteMany({
-				where:
-					{ userId: userId, chatRoomId: id },
-			});
-			return kickedMembership;
+	async invite(id: number, userId: number, invitedId: number) {
+		// check if invitedId is already member of the channel
+		const isMember = await this.membershipService.isChannelMember(invitedId, id);
+		if (isMember) {
+			return null;
 		}
+		const invitedMembership = await this.connectUserToChatroom(invitedId, id);
+		return invitedMembership;
+	}
+
+	async leave(id: number, userId: number) {
+		// if owner transmit ownership to another member (admin)
+		let newOwner = undefined;
+		const isOwner = await this.prisma.chatRoom.count({
+			where: { id: id, owner: { id: userId } },
+		}) > 0;
+		if (isOwner) {
+			// Find the first admin and set as new owner
+			newOwner = await this.prisma.membership.findFirst({
+				where: { chatRoomId: id, isAdmin: true, userId: { not: userId } },
+			});
+			if (newOwner) {
+				await this.prisma.chatRoom.update({
+					where: { id: id },
+					data: {
+						owner: { connect: { id: newOwner.userId } },
+					},
+				});
+			}
+		}
+		await this.prisma.membership.deleteMany({
+			where:
+				{ userId: userId, chatRoomId: id },
+		});
+		return isOwner && newOwner ? newOwner.userId : undefined;
+	}
+
+	async mute(id: number, userId: number, mutedId: number, muteDuration: number) {
+		const chatRoom = await this.prisma.chatRoom.findUniqueOrThrow({
+			where: { id: id },
+			include: {
+				owner: true,
+				memberShips: {
+					include: { user: true }
+				}
+			},
+		});
+		const isAdmin = await this.isUserAdmin(userId, id);
+		const isOwner = chatRoom.owner.id === userId;
+		const isTargetOwner = chatRoom.owner.id === mutedId;
+		if (!isAdmin && !isOwner) {
+			throw new Error('User is not an admin of this channel');
+		}
+		if (isTargetOwner) {
+			throw new Error('Cannot mute owner of the channel');
+		}
+		// Add muted user to mute list
+		const muteEndTime = new Date(Date.now() + muteDuration * 1000);
+		await this.prisma.membership.updateMany({
+			where: { userId: mutedId, chatRoomId: id },
+			data: {
+				isMuted: muteDuration == 0 ? false : true,
+				mutedUntil: muteEndTime
+			},
+		});
+	}
 
 	async addMessageToChannel(channelId: number, userId: number, message: string) {
-		// Todo: if user is banned refuse
+		const userMemberShip = await this.prisma.membership.findFirst({
+			where: { userId: userId, chatRoomId: channelId },
+		});
+		if (userMemberShip.isBanned || (userMemberShip.isMuted && userMemberShip.mutedUntil > new Date())) {
+			return null;
+		}
 		const newMessage = await this.prisma.message.create({
 			data: {
 				content: message,
@@ -394,13 +454,13 @@ export class ChatroomService {
 				chatRoomId: channelId,
 			},
 		});
-		const test = await this.prisma.message.findUnique({
+		const result = await this.prisma.message.findUnique({
 			where: { id: newMessage.id },
 			include: {
 				sender: true,
 			},
 		});
-		return test;
+		return result;
 	}
 
 	// #endregion

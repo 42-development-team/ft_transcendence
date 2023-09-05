@@ -5,12 +5,10 @@ import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 import { useAuthcontext } from "@/app/context/AuthContext";
-import { usePrevious } from "@material-tailwind/react";
 
 type ChatMemberProps = {
     user: ChannelMember
     isCurrentUser: boolean
-    isBanned?: boolean
 	channelId: string
     kick: (kickedId: string) => void
     ban: (bannedId: string) => void
@@ -19,13 +17,16 @@ type ChatMemberProps = {
     directMessage: (targetId: string) => void
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
+    mute: (mutedId: string, muteDuration: number) => void
+    blockUser: (blockedId: string) => void
+    isBlocked: boolean
 }
 // Todo: add status and avatar
 const ChatMemberItem = ({
-	user: { username, avatar, isAdmin, isOwner, id, currentStatus },
-    isCurrentUser, isBanned,
-    kick, ban, unban, leaveChannel, directMessage,
-    setAsAdmin, removeAdmin, channelId
+	user,
+    isCurrentUser,
+    kick, ban, unban, leaveChannel, directMessage, blockUser,
+    setAsAdmin, removeAdmin, mute, channelId, isBlocked
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -34,7 +35,7 @@ const ChatMemberItem = ({
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
 			try {
-				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${id}`, {
+				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json'
@@ -47,16 +48,10 @@ const ChatMemberItem = ({
 			}
 		};
 		fetchedUserStatus();
-	}, [id, statusChange]);
-
-	useEffect(() => {
-		console.log("status change: ", statusChange);
-	}, [statusChange]);
+	}, [user.id, statusChange]);
 
 	useEffect(() => {
 		const statusChangeMonitor = async (userId: string) => {
-			console.log('User logged in');
-			console.log('userId', userId);
 			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
 			url.searchParams.append('userId', userId);
 			url.searchParams.append('channelId', channelId);
@@ -68,7 +63,6 @@ const ChatMemberItem = ({
 				},
 			});
 			const data = await response.json();
-			console.log("data returned after isMember fetch: ", data);
 			if (data) {
 				setStatusChange(usePrevious => !usePrevious);
 			}
@@ -78,7 +72,6 @@ const ChatMemberItem = ({
 		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
-			console.log('Cleanup function called');
 			socket?.off("userLoggedIn", statusChangeMonitor);
   			socket?.off("userLoggedOut", statusChangeMonitor);
 		}
@@ -86,62 +79,72 @@ const ChatMemberItem = ({
 
     const kickUser = () => {
         if (kick == undefined) return;
-        kick(id);
+        kick(user.id);
     }
     const banUser = () => {
         if (ban == undefined) return;
-        ban(id);
+        ban(user.id);
     }
     const unbanUser = () => {
         if (unban == undefined) return;
-        unban(id);
+        unban(user.id);
     }
     const sendDirectMessage = () => {
         if (directMessage == undefined) return;
-        directMessage(id);
+        directMessage(user.id);
     }
 
     const setAdmin = () => {
         if (setAsAdmin == undefined) return;
-        setAsAdmin(id);
+        setAsAdmin(user.id);
     }
 
     const unsetAdmin = () => {
         if (setAsAdmin == undefined) return;
-        removeAdmin(id);
+        removeAdmin(user.id);
+    }
+
+    const muteUser = (muteDuration: number) => {
+        if (mute == undefined) return;
+            mute(user.id, muteDuration);
+    }
+
+    const block = () => {
+        blockUser(user.id);
     }
 
     const getColor = () => {
-        if (isOwner) {
+        if (user.isOwner) {
             return 'text-[#f38ba8]';
             // return '#fab387';
-        } else if (isAdmin) {
+        } else if (user.isAdmin) {
             return 'text-[#c6a0f6]';
-        } else if (isBanned) {
+        } else if (user.isBanned) {
             return 'text-[#838ba7]';
         }
         return 'text-[#f5e0dc]';
     }
 
     return (
-        <div className={` ${isCurrentUser && "bg-surface0"}  flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
+        <div className={` ${isCurrentUser && "bg-surface0"} flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2`}>
             <div className="flex items-center">
                 <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
-                    {avatar.startsWith("https://")
-                        ? <Image alt="Member avatar" src={avatar} height={32} width={32}
+                    {user.avatar.startsWith("https://")
+                        ? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
                             className="w-[inherit] rounded-[inherit]" />
-                        : null
+                        : <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
+                            className="w-[inherit] rounded-[inherit]" />
                     }
                     <div className="absolute bg-base p-[2px] rounded-full -bottom-[2px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{username}</h1>
+                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{user.username}</h1>
             </div>
-            <ChatMemberActions isCurrentUser={isCurrentUser} isMemberAdmin={isAdmin} isMemberOwner={isOwner} isBanned={isBanned} userId={id}
+            <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
-                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage}
-                setAdmin={setAdmin} unsetAdmin={unsetAdmin} />
+                unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked} />
         </div>
     )
 }
