@@ -8,6 +8,7 @@ import { GameService } from 'src/game/game.service';
 import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
+import { Max } from 'class-validator';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -267,6 +268,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log("!LaunchGame Data")
             return ;
         }
+        //TODO: create handleGame section
         while (data.player1.points < 5 && data.player2.points < 5) {
             let data = await this.getDataFromRoomId(id);
             if (!data)
@@ -276,14 +278,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             await this.sleep(1000/60);
         }
 
-        let result: [PlayerDto, PlayerDto];
-        if (data.player1.points > data.player2.points) {
-            result = [data.player1, data.player2];
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
         }
-        else {
-            result = [data.player2, data.player1];
-        }
-        this.gameService.createGame();
+
+        await this.gameService.createGame(createGameDto);
         // handle finish game
     }
 
