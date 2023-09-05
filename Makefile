@@ -5,9 +5,6 @@ _GREEN			:=	\033[32m
 
 all: start
 
-setEnv:
-	sh ./setEnv.sh
-
 build:
 	mkdir -p ./App
 	mkdir -p ./App/Nest
