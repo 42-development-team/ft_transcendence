@@ -283,7 +283,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         else {
             result = [data.player2, data.player1];
         }
-        this.gameService.addResultsInDb(data, result);
+        this.gameService.createGame();
         // handle finish game
     }
 

@@ -8,28 +8,29 @@ import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 
 //===========
-import { SocketGateway } from "src/sockets/socket.gateway";
-import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class GameService {
     constructor(
         private prisma: PrismaService,
-        private userService: UsersService,
         // private socketGateway: SocketGateway,
     ) {}
 
     /* C(reate) */
-    async createGame(game: UpdateGameDto) {
+    async createGame(createGamedto: CreateGameDto) {
         
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: game.winnerId },
-                        { id: game.loserId }
+                        { id: createGamedto.winnerId },
+                        { id: createGamedto.loserId }
                     ],
                 },
+                winner: { connect: { id: createGamedto.winnerId } },
+                loser: { connect: { id: createGamedto.loserId } },
+                winnerScore: createGamedto.winnerScore,
+                loserScore: createGamedto.loserScore,
             },
         });
 

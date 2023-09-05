@@ -12,9 +12,6 @@ export class CreateGameDto {
     loserScore: number;
 
     @IsNotEmpty()
-    winner: User;
-
-    @IsNotEmpty()
     @IsNumber()    
     winnerId: number;
     
@@ -22,6 +19,4 @@ export class CreateGameDto {
     @IsNumber()
     loserId: number;
 
-    @IsNotEmpty()
-    loser: User;
 }
