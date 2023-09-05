@@ -14,7 +14,7 @@ const ChatHeader = ({title, onCollapse, children}: ChatHeaderProps) => {
             <span className='font-semibold grow align-middle break-all text-center'>
                 {title}
             </span>
-            <Tooltip placement="bottom-end" content="Collapse" className="tooltip flex-none" >
+            <Tooltip placement="bottom-end" content="Collapse" className="tooltip  text-text flex-none ">
                 <button onClick={onCollapse} >
                     <svg fill="base" width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="base" transform="rotate(0)matrix(-1, 0, 0, 1, 0, 0)">
 
