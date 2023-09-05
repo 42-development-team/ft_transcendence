@@ -277,16 +277,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
             await this.sleep(1000/60);
         }
-
+        
+        // handle finish game
         const createGameDto = {
             winnerScore: Math.max(data.player1.points, data.player2.points),
             loserScore: Math.min(data.player1.points, data.player2.points),
             winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
             loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
         }
-
         await this.gameService.createGame(createGameDto);
-        // handle finish game
+       
     }
 
     // handle disconnect during game

@@ -33,7 +33,6 @@ export class GameService {
                 loserScore: createGamedto.loserScore,
             },
         });
-
         return newGame;
     }
 
@@ -77,7 +76,8 @@ export class GameService {
         return gameDtos;
     }
 
-    /* U(pdate) */ //TODO: gameDuration
+    /* U(pdate) */
+    //TODO: now useless, remove when game finished
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
@@ -91,6 +91,7 @@ export class GameService {
         return game;
     }
 
+    //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
         const game = await this.prisma.game.update({
             where: { id: joinGameDto.gameId },
