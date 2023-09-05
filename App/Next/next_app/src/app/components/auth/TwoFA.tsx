@@ -218,7 +218,9 @@ const TwoFA = ({ userId }: { userId: string }) => {
 					isVisible={isVisible}
 					message={message}
 					colorText={colorText}
-				>Enter 2FA code:</Submit2FA>
+				>
+					Enter 2FA code:
+				</Submit2FA>
 		</div>
 	);
 };

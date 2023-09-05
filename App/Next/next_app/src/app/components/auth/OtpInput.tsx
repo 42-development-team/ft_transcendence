@@ -55,8 +55,8 @@ const OtpInput = ( { parentCallbackData, parentCallbackEnter } : any ) => {
                         <input
                         ref={index === activeOtpIndex ? inputRef : null}
                             inputMode="numeric"
-                            className={`  w-12 h-12 border-2 rounded bg-transparent outline-none text-center font-semibold text-xl
-                            border-gray-4-- focus:border-gray-700 focus:text-gray-700 text-gray-400 focus-visible:animate-pulse `}
+                            className={`  w-12 h-12 border-2 border-text rounded bg-transparent outline-none text-center font-semibold text-xl
+                            focus:border-surface2 focus:text-surface2 text-overlay2 focus-visible:animate-pulse `}
                             onChange={handleOnChange}
                             onKeyDown={(e) => handleOnKeyDown(e, index)}
                             value={otp[index]}
