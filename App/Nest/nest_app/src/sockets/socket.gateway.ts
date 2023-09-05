@@ -8,6 +8,7 @@ import { GameService } from 'src/game/game.service';
 import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
+import { Max } from 'class-validator';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -253,7 +254,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
             await this.sleep(1000/60);
         }
-        console.log(data);
+        
+        // handle finish game
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+        }
+        await this.gameService.createGame(createGameDto);
+        this.removeRoom(data.roomName);
     }
 
     // handle refresh as disconectied or not ??
@@ -288,6 +298,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
                 // send game data to players
                 this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+    }
+
+    async removeRoom(roomName: string) {
+        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+        if (idx === -1)
+            return ;
+        this.gameRooms.splice(idx, 1);
     }
 
     async sendDataToRoom(data: GameDto) {

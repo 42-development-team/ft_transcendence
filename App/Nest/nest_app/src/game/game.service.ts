@@ -8,7 +8,6 @@ import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 
 //===========
-import { SocketGateway } from "src/sockets/socket.gateway";
 
 @Injectable()
 export class GameService {
@@ -18,18 +17,22 @@ export class GameService {
     ) {}
 
     /* C(reate) */
-    async createGame(createGameDto: CreateGameDto) {
+    async createGame(createGamedto: CreateGameDto) {
         
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: createGameDto.playerOneId },
+                        { id: createGamedto.winnerId },
+                        { id: createGamedto.loserId }
                     ],
                 },
+                winner: { connect: { id: createGamedto.winnerId } },
+                loser: { connect: { id: createGamedto.loserId } },
+                winnerScore: createGamedto.winnerScore,
+                loserScore: createGamedto.loserScore,
             },
         });
-
         return newGame;
     }
 
@@ -73,7 +76,8 @@ export class GameService {
         return gameDtos;
     }
 
-    /* U(pdate) */ //TODO: gameDuration
+    /* U(pdate) */
+    //TODO: now useless, remove when game finished
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
@@ -87,6 +91,7 @@ export class GameService {
         return game;
     }
 
+    //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
         const game = await this.prisma.game.update({
             where: { id: joinGameDto.gameId },
@@ -239,7 +244,7 @@ export class GameService {
     async calculateGame(data: GameDto): Promise<GameDto> {
         this.calculatePlayer(data);
         this.calculateBall(data);
-        if (data.player1.points > 5 || data.player2.points > 5)
+        if (data.player1.points > 11 || data.player2.points > 11)
             data.end = true;
         return data;
     }
