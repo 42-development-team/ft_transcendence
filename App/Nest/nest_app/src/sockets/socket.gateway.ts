@@ -263,7 +263,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
         }
         await this.gameService.createGame(createGameDto);
-       
+        this.removeRoom(data.roomName);
     }
 
     // handle refresh as disconectied or not ??
@@ -298,6 +298,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
                 // send game data to players
                 this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+    }
+
+    async removeRoom(roomName: string) {
+        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+        if (idx === -1)
+            return ;
+        this.gameRooms.splice(idx, 1);
     }
 
     async sendDataToRoom(data: GameDto) {
