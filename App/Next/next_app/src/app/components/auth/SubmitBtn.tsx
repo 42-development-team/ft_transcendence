@@ -1,13 +1,15 @@
 "use client"
 const SubmitBtn = (
     {
+        children,
         displayBox=false,
         handleOnKeyDown=() => {},
         handleSubmit=() => {}
     }
     :
     {
-        displayBox: Boolean,
+        children: any,
+        displayBox?: Boolean,
         handleOnKeyDown: any,
         handleSubmit: any  
     }) => 
@@ -20,7 +22,7 @@ const SubmitBtn = (
                 onKeyDown={(e) => handleOnKeyDown(e)}
                 onClick={handleSubmit}
             >
-                Submit
+                {children}
             </button>
     );
 }
