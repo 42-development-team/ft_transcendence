@@ -67,6 +67,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         client.join(room);
     }
 
+    @SubscribeMessage('leaveRoom')
+    async handleLeaveRoom(client: Socket, roomId: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        client.leave(room);
+        client.emit('leftRoom', {room});
+        console.log(`Client ${userId} (${client.id}) left room ${room}`);
+        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
+    }
+
+    @SubscribeMessage('message')
+    async handleMessage(
+        @MessageBody() body: any,
+        @ConnectedSocket() client: Socket
+        ) : Promise<void> {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const {roomId, message} = body;
+        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        if (!newMessage) {
+            console.log(`Users (${userId}) can not send message channel (${roomId})`)
+            return ;
+        }
+        const room = await this.chatroomService.getChannelNameFromId(roomId);
+        this.server.to(room).emit('new-message',
+            {newMessage, room}
+        );
+    }
+
+    async handleChatroomUpdate(roomId: string) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        this.server.emit('chatroomUpdate', {room});
+    }
+
     async handleBan(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
@@ -112,6 +145,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
+
     async handleOwnerUpdate(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
@@ -135,34 +169,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         }
         this.server.to(room).emit('userInvited', {room, user});
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
-    }
-
-    @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(client: Socket, roomId: string) {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        client.leave(room);
-        client.emit('leftRoom', {room});
-        console.log(`Client ${userId} (${client.id}) left room ${room}`);
-        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
-    }
-
-    @SubscribeMessage('message')
-    async handleMessage(
-        @MessageBody() body: any,
-        @ConnectedSocket() client: Socket
-        ) : Promise<void> {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const {roomId, message} = body;
-        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
-        if (!newMessage) {
-            console.log(`Users (${userId}) can not send message channel (${roomId})`)
-            return ;
-        }
-        const room = await this.chatroomService.getChannelNameFromId(roomId);
-        this.server.to(room).emit('new-message',
-            {newMessage, room}
-        );
     }
 
     // =========================================================================== //
@@ -319,11 +325,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     // Should emit to room event 'GameOver' ??
-
-
-
-
-
 
 
     /*
