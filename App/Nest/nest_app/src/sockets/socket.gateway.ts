@@ -5,7 +5,7 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameDto } from 'src/game/dto/game-data.dto';
+import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
@@ -49,6 +49,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 		console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
+        this.handleDisconnectInGame(userId);
         this.clients = this.clients.filter(c => c.id !== client.id);
 		// const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userId });
@@ -267,7 +268,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log("!LaunchGame Data")
             return ;
         }
-        while (data.player1.points < 5 && data.player2.points < 5) {
+        while (!data.end) {
             let data = await this.getDataFromRoomId(id);
             if (!data)
                 return ;
@@ -275,12 +276,18 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
             await this.sleep(1000/60);
         }
-
-        // handle finish game
+        console.log(data);
     }
 
-    // handle disconnect during game
-    // handle refresh
+    async handleDisconnectInGame(userId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);// || game.playerTwoId === userId});
+        if (idx === -1)
+            return ;
+        this.gameRooms[idx].data.forfeitId = userId;
+        this.gameRooms[idx].data.end = true;
+    }
+
+    // handle refresh as disconectied or not ??
 
     async sendDataToRoom(data: GameDto) {
         this.server.to(data.roomName).emit('updateGame', data);
