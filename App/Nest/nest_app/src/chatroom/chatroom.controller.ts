@@ -140,8 +140,8 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-			.then(() => {
-				response.send();
+			.then((res) => {
+				response.send(res);
 			})
 			.catch(error => {
 				response.send(JSON.stringify(error.message));
