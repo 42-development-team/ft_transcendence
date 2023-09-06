@@ -25,20 +25,27 @@ export class GameService {
 
 
     /* C(reate) */
-    async createGame(createGamedto: CreateGameDto) {
+    async createGame(data: GameDto) {
         
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+        }
+
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: createGamedto.winnerId },
-                        { id: createGamedto.loserId }
+                        { id: createGameDto.winnerId },
+                        { id: createGameDto.loserId }
                     ],
                 },
-                winner: { connect: { id: createGamedto.winnerId } },
-                loser: { connect: { id: createGamedto.loserId } },
-                winnerScore: createGamedto.winnerScore,
-                loserScore: createGamedto.loserScore,
+                winner: { connect: { id: createGameDto.winnerId } },
+                loser: { connect: { id: createGameDto.loserId } },
+                winnerScore: createGameDto.winnerScore,
+                loserScore: createGameDto.loserScore,
             },
         });
         return newGame;
@@ -172,7 +179,7 @@ export class GameService {
         return ({newGameRoom, player2SocketId});
     }
 
-    async handleLaunchGame(server: Server, id: number, userId: number) {
+    async handleLaunchGame(id: number, userId: number) {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!LaunchGameRoom")
@@ -185,15 +192,17 @@ export class GameService {
             this.gameRooms[idx].readyPlayerTwo = true;
         }
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true) {
-            this.update(server, idx);
-            const createGameDto = {
-                winnerScore: Math.max(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
-                loserScore: Math.min(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
-                winnerId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player1.id : this.gameRooms[idx].data.player2.id,
-                loserId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player2.id : this.gameRooms[idx].data.player1.id,
-            }
-            await this.createGame(createGameDto);
-            this.removeRoom(this.gameRooms[idx].data.roomName);
+            // BUG IN THIS SHIT!!
+            return this.update(idx);
+
+            // const createGameDto = {
+            //     winnerScore: Math.max(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
+            //     loserScore: Math.min(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
+            //     winnerId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player1.id : this.gameRooms[idx].data.player2.id,
+            //     loserId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player2.id : this.gameRooms[idx].data.player1.id,
+            // }
+            // await this.createGame(createGameDto);
+            // this.removeRoom(this.gameRooms[idx].data.roomName);
         }
     }
 
@@ -406,11 +415,12 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
     
-    async update(server: Server, idx: number) {
+    async update(idx: number) {
         
+        return this.gameRooms[idx].data;
+
         while (this.gameRooms[idx].data.end === false) {
             const data: GameDto = await this.calculateGame(idx); // ATTENTION A LA DUREE DU SLEEP
-            console.log(server);
             // server.to(data.roomName).emit('updateGame', data);
             await this.sleep(1000 / 60);
             console.log(data);

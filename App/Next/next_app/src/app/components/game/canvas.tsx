@@ -100,7 +100,7 @@ const Canvas = ({...props}) => {
 		}
 
 		const render = (): any => {
-			console.log(data);
+
 			blurEffect(context, width, height);
 			printMidLine(context, width, height);
 			renderGame(context, data, width, height);
