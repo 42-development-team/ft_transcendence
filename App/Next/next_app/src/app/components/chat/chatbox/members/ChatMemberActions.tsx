@@ -20,15 +20,16 @@ type ChatMemberActionsProps = {
     setAdmin: () => void
     unsetAdmin: () => void
     muteUser: (muteDuration: number) => void
+    block: () => void
+    isBlocked: boolean
 }
 
-// Todo: prevent double click on buttons
 const ChatMemberActions = (
     { 
         isCurrentUser, user,
         kickUser, banUser, unbanUser, 
         leaveChannel, sendDirectMessage, muteUser,
-        setAdmin, unsetAdmin
+        setAdmin, unsetAdmin, block, isBlocked
     }: ChatMemberActionsProps) => {
 
     const onProfileClick = () => {
@@ -110,6 +111,9 @@ const ChatMemberActions = (
                     <>
                         <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
+                        {!isBlocked &&
+                            <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                        }
                     </>
                     }
                     {isCurrentUserOwner && user.isAdmin && !isCurrentUser &&

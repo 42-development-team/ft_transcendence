@@ -5,9 +5,6 @@ _GREEN			:=	\033[32m
 
 all: start
 
-setEnv:
-	sh ./setEnv.sh
-
 build:
 	mkdir -p ./App
 	mkdir -p ./App/Nest
@@ -17,10 +14,6 @@ build:
 start: build
 	@echo "$(_GREEN)Start containers$(_END)"
 	${DOCKER_COMPOSE} up -d
-
-start_debug: build
-	@echo "$(_GREEN)Start containers$(_END)"
-	${DOCKER_COMPOSE} up
 
 stop:
 	@echo "$(_GREEN)Stop containers$(_END)"

@@ -130,6 +130,7 @@ export class ChatroomService {
 					isBanned: member.isBanned,
 					isMuted: member.isMuted,
 					mutedUntil: member.mutedUntil,
+					avatar: member.user.avatar,
 				};
 			}),
 			messages: (chatroom.messages === undefined) ? [] : chatroom.messages.map(message => {
@@ -240,7 +241,8 @@ export class ChatroomService {
 			}
 		}
 		if (!isJoined)
-			return await this.connectUserToChatroom(userId, id);
+			await this.connectUserToChatroom(userId, id);
+		return JSON.stringify("Success");
 	}
 
 	async isUserAdmin(userId: number, chatroomId: number) {
@@ -406,7 +408,7 @@ export class ChatroomService {
 			where:
 				{ userId: userId, chatRoomId: id },
 		});
-		return newOwner.userId;
+		return isOwner && newOwner ? newOwner.userId : undefined;
 	}
 
 	async mute(id: number, userId: number, mutedId: number, muteDuration: number) {

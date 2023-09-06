@@ -23,10 +23,10 @@ export default function useChannels(userId: string) {
     }, []);
 
     useEffect(() => {
-        if (joinedChannels.length > 0) {
+        if (joinedChannels.length > 0 && socket != undefined) {
             joinPreviousChannels();
         }
-    }, [joinedChannels]);
+    }, [joinedChannels, socket]);
 
     useEffect(() => {
         // Update the notification count to 0 when the channel is open
@@ -130,6 +130,16 @@ export default function useChannels(userId: string) {
         joinChannel(id, name);
     }
 
+    const handleChatroomUpdate = (body: any) => {
+        const { room } = body;
+        fetchChannelsInfo();
+        const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === room);
+        if (channelIndex == -1) {
+            return;
+        }
+        fetchChannelContent(joinedChannels[channelIndex].id);
+    }
+
     useEffect(() => {
         // Subscribe to socket events
         socket?.on('new-message', (body: any) => {
@@ -144,11 +154,14 @@ export default function useChannels(userId: string) {
         socket?.on('leftRoom', (body: any) => {
             handleLeftRoom(body);
         });
-        socket?.on('NewChatRoom', (body: any) => {
+        socket?.on('NewChatRoom', () => {
             fetchChannelsInfo();
         });
         socket?.on('directMessage', (body: any) => {
             handleNewDirectMessageChannel(body);
+        });
+        socket?.on('chatroomUpdate', (body: any) => {
+            handleChatroomUpdate(body);
         });
 
         // return is used for cleanup, remove the socket listener on unmount
@@ -159,6 +172,7 @@ export default function useChannels(userId: string) {
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
             socket?.off('directMessage');
+            socket?.off('chatroomUpdate');
         }
     }, [socket, joinedChannels, channels]);
     // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
@@ -210,8 +224,7 @@ export default function useChannels(userId: string) {
         return "";
     }
 
-    const joinChannel = async (id: string, name: string, password?: string): Promise<any> => {
-        // Todo: fix catch
+    const joinChannel = async (id: string, name: string, password?: string): Promise<string> => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
                 credentials: "include",
@@ -221,29 +234,43 @@ export default function useChannels(userId: string) {
                 },
                 body: JSON.stringify({ password }),
             });
-            if (!response.ok) {
-                return response;
+            const responseJson = await response.json();
+            if (!response.ok || responseJson == "Wrong password") {
+                return responseJson;
             }
             socket?.emit("joinRoom", name);
-            await fetchNewChannelContent(id);
+            await fetchChannelContent(id);
             await fetchChannelsInfo();
-            return response;
+            return responseJson;
         }
-        catch (err) {
+        catch (err : any) {
             console.log("Error joining channel: " + err);
-            return err;
+            return err.toString();
         }
     }
 
     // FETCHING
-    const fetchNewChannelContent = async (id: string) => {
+    const fetchChannelsInfo = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
+            const data = await response.json();
+            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
+                return channel;
+            });
+            setChannels(fetchedChannels);
+        }
+        catch (err) {
+            console.log("Error fetching channel info list: " + err);
+        }
+    };
+
+    const fetchChannelContent = async (id: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content/${id}`, { credentials: "include", method: "GET" });
             const channelContent = await response.json();
             const fetchedChannel: ChannelModel = channelContent;
             fetchedChannel.joined = true;
             fetchedChannel.banned = false;
-            fetchedChannel.icon = '';
             fetchedChannel.unreadMessages = 0;
             fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
                 return {
@@ -254,10 +281,8 @@ export default function useChannels(userId: string) {
                     isBanned: member.isBanned,
                     isMuted: member.isMuted,
                     mutedUntil: member.mutedUntil,
-                    avatar: "",
-                    // Todo: currentStatus
                     currentStatus: UserStatus.Offline,
-                    // avatar: member.user.avatar,
+                    avatar: member.avatar,
                 }
             });
             fetchedChannel.messages = fetchedChannel.messages?.map((message: any) => {
@@ -273,35 +298,26 @@ export default function useChannels(userId: string) {
                 const targetMember = fetchedChannel.members?.find(m => m.id != userId);
                 fetchedChannel.directMessageTargetUsername = targetMember?.username;
             }
-            setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+            // Search if channel already exists
+            const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === fetchedChannel.name);
+            if (channelIndex == -1) {
+                setJoinedChannels(prevChannels => [...prevChannels, fetchedChannel]);
+                return;
+            }
+            const newChannels = [...joinedChannels];
+            newChannels[channelIndex] = fetchedChannel;
+            setJoinedChannels(newChannels);
         }
         catch (err) {
             console.log("Error fetching channel content: " + err);
         }
     }
-    // FETCHING
-    const fetchChannelsInfo = async () => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
-            const data = await response.json();
-            const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
-                return channel;
-            });
-            setChannels(fetchedChannels);
-        }
-        catch (err) {
-            console.log("Error fetching channel info list: " + err);
-        }
-    };
-
 
     const fetchChannelsContent = async () => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
                 channel.joined = false;
                 channel.banned = false;
                 channel.unreadMessages = 0;
@@ -323,8 +339,7 @@ export default function useChannels(userId: string) {
                         isBanned: member.isBanned,
                         isMuted: member.isMuted,
                         mutedUntil: member.mutedUntil,
-                        //Todo: avatar
-                        avatar: "",
+                        avatar: member.avatar,
                     }
                 });
                 if (channel.type == ChannelType.DirectMessage) {

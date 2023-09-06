@@ -9,7 +9,7 @@ type ChannelProps = {
     channel: ChannelModel
 }
 
-const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps) => {
+const Channel = ({channel :{name, type, id, unreadMessages}}: ChannelProps) => {
     const { openChannel, openChannelId } = useChatBarContext();
 
     const handleClick = () => {
@@ -31,12 +31,7 @@ const Channel = ({channel :{name, icon, type, id, unreadMessages}}: ChannelProps
                         ${type == ChannelType.Protected && "bg-yellow text-base"}
                         ${type == ChannelType.DirectMessage && "bg-green text-base"}
                         rounded-[inherit] w-[inherit] h-[inherit] relative p-1`}>
-                    {icon === '' ?
-                        <p className='text-xs break-keep'>{name}</p> :
-                        <Image alt="Channel Icon" fill src={icon} 
-                        sizes=" 100vw, 100vw"
-                        className="rounded-[inherit]" />
-                    }
+                    <p className='text-xs break-keep'>{name}</p>
                 {unreadMessages > 0 && 
                     <div className="absolute inline-flex items-center justify-center 
                         h-6 min-w-6 px-0.5

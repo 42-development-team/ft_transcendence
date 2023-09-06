@@ -14,18 +14,20 @@ model User {
 	avatar				String?
 	username			String?			@unique
 	login				String			@unique
+	currentStatus		String
 	isTwoFAEnabled		Boolean			@default(false)
 	twoFAsecret			String?
 	isFirstLogin		Boolean			@default(true)
+	socketId			String?			@unique
 	chatRoomsCreated	ChatRoom[]		@relation("chatCreated")
+	memberShips			Membership[]	@relation("membershipUser")
+	messagesSent		Message[]		@relation("SentMessages")
 	gamesLosed			Game[]			@relation("gamesLosed")
 	gamesWon			Game[]			@relation("gamesWon")
-	messagesSent		Message[]		@relation("SentMessages")
 	userStats			UserStats?
 	games				Game[]			@relation("gamesPlayed")
-	memberShips			Membership[]	@relation("membershipUser")
-	socketId			String?			@unique
-	currentStatus		String
+	blockedUsers		User[]			@relation("blockedUsers")
+	blockedBy			User[]			@relation("blockedUsers")
 }
 
 model Message {
@@ -60,7 +62,6 @@ model Membership {
 	isBanned	Boolean		@default(false)
 	isMuted		Boolean		@default(false)
 	mutedUntil	DateTime?
-	isInvited	Boolean		@default(false)
 	userId		Int
 	chatRoomId	Int
 	user		User		@relation("membershipUser", fields: [userId], references: [id], onDelete: Cascade)

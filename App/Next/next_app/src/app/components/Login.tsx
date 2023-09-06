@@ -10,7 +10,7 @@ function LoginComponent() {
 			<button type="submit" disabled={lock}
 				className="bg-mauve rounded-md p-4 drop-shadow-md text-base font-bold text-lg 
 					hover:bg-pink disabled:opacity-50 disabled:pointer-events-none">
-				Sigin in with 42
+				Sign in with 42
 			</button>
 		</form>
 	)

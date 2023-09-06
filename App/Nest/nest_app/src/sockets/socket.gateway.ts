@@ -5,9 +5,10 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameDto } from 'src/game/dto/game-data.dto';
+import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
+import { Max } from 'class-validator';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -29,9 +30,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     gameRooms: GameRoomDto[] = [];
     queued: UserIdDto[] = [];
 
-     // The client object is an instance of the Socket class provided by the Socket.io library.
-     // handleConnection is a method predefined on OnGatewayConnection. We can't change the name
-     // why "(client: Socket)" ? because client is an instance of Socket class
 	async handleConnection(client: Socket) {
 		const userId = await this.chatroomService.getUserIdFromSocket(client);
 		if (userId) {
@@ -48,13 +46,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 		}
 	}
 
-    // handleDisconnect is a predefined method of the OnGatewayDisconnect interface
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected: ' + client.id);
         const userId = await this.chatroomService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
-		const userStatus = await this.userService.getCurrentStatusFromId(userId);
+		// const userStatus = await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userLoggedOut", { userId });
     }
 
@@ -68,6 +65,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             {room, user}
         );
         client.join(room);
+    }
+
+    @SubscribeMessage('leaveRoom')
+    async handleLeaveRoom(client: Socket, roomId: string) {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        client.leave(room);
+        client.emit('leftRoom', {room});
+        console.log(`Client ${userId} (${client.id}) left room ${room}`);
+        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
+    }
+
+    @SubscribeMessage('message')
+    async handleMessage(
+        @MessageBody() body: any,
+        @ConnectedSocket() client: Socket
+        ) : Promise<void> {
+        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const {roomId, message} = body;
+        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
+        if (!newMessage) {
+            console.log(`Users (${userId}) can not send message channel (${roomId})`)
+            return ;
+        }
+        const room = await this.chatroomService.getChannelNameFromId(roomId);
+        this.server.to(room).emit('new-message',
+            {newMessage, room}
+        );
+    }
+
+    async handleChatroomUpdate(roomId: string) {
+        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+        this.server.emit('chatroomUpdate', {room});
     }
 
     async handleBan(client: Socket, userId: number, roomId: string ) {
@@ -115,6 +145,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
+
     async handleOwnerUpdate(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         if (client) {
@@ -136,35 +167,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         } else {
             console.log(`Client ${userId} invited to room ${room}`);
         }
+        this.server.to(room).emit('userInvited', {room, user});
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
-    }
-
-    @SubscribeMessage('leaveRoom')
-    async handleLeaveRoom(client: Socket, roomId: string) {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        client.leave(room);
-        client.emit('leftRoom', {room});
-        console.log(`Client ${userId} (${client.id}) left room ${room}`);
-        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
-    }
-
-    @SubscribeMessage('message')
-    async handleMessage(
-        @MessageBody() body: any,
-        @ConnectedSocket() client: Socket
-        ) : Promise<void> {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
-        const {roomId, message} = body;
-        const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
-        if (!newMessage) {
-            console.log(`Users (${userId}) can not send message channel (${roomId})`)
-            return ;
-        }
-        const room = await this.chatroomService.getChannelNameFromId(roomId);
-        this.server.to(room).emit('new-message',
-            {newMessage, room}
-        );
     }
 
     // =========================================================================== //
@@ -175,39 +179,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         try {
             const userId = await this.chatroomService.getUserIdFromSocket(player);
-            this.queued.push({userId});
-
-            if (this.queued.length >= 2) {
-                const player2Id: number = this.queued[0].userId;
-                const player1Id: number = this.queued[1].userId;
-
-                // create room data
-                const id: number = this.gameRooms.length;
-                const roomName: string = player1Id + "_" + player2Id;
-                const newGameRoom: GameRoomDto = {
-                    id: id,
-                    roomName: roomName,
-                    playerOneId: player1Id,
-                    playerTwoId: player2Id,
-                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
-                }
-
-                // add room to rooms list
-                this.gameRooms.push(newGameRoom);
-                // pop player from queue list
-                this.handleLeaveQueue(this.queued[0]);
-                this.handleLeaveQueue(this.queued[1]);
-
-                // Create room instance and join room
-                await player?.join(roomName);
-
-                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
-			    await player2Socket?.join(roomName);
-
-                // send game data to players
-                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (idx === -1)
+                this.queued.push({userId});
+            else {
+                player?.join(this.gameRooms[idx].roomName);
+                this.server.to(this.gameRooms[idx].roomName).emit('matchIsReady', this.gameRooms[idx].data);
             }
+
+            if (this.queued.length >= 2)
+               this.joinGame(player);
+
         } catch (e) {
             console.log(e);
         }
@@ -270,7 +252,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             console.log("!LaunchGame Data")
             return ;
         }
-        while (data.player1.points < 5 && data.player2.points < 5) {
+        while (!data.end) {
             let data = await this.getDataFromRoomId(id);
             if (!data)
                 return ;
@@ -278,12 +260,58 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
             await this.sleep(1000/60);
         }
-
+        
         // handle finish game
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+        }
+        await this.gameService.createGame(createGameDto);
+        this.removeRoom(data.roomName);
     }
 
-    // handle disconnect during game
-    // handle refresh
+    // handle refresh as disconectied or not ??
+
+    async joinGame(player: Socket) {
+        const player2Id: number = this.queued[0].userId;
+                const player1Id: number = this.queued[1].userId;
+
+                // create room data
+                const id: number = this.gameRooms.length;
+                const roomName: string = player1Id + "_" + player2Id;
+                const newGameRoom: GameRoomDto = {
+                    id: id,
+                    roomName: roomName,
+                    playerOneId: player1Id,
+                    playerTwoId: player2Id,
+                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
+                }
+
+                // add room to rooms list
+                this.gameRooms.push(newGameRoom);
+                // pop player from queue list
+                this.handleLeaveQueue(this.queued[0]);
+                this.handleLeaveQueue(this.queued[1]);
+
+                // Create room instance and join room
+                await player?.join(roomName);
+
+                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
+			    await player2Socket?.join(roomName);
+
+                // send game data to players
+                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
+    }
+
+    async removeRoom(roomName: string) {
+        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+        if (idx === -1)
+            return ;
+        this.gameRooms.splice(idx, 1);
+    }
 
     async sendDataToRoom(data: GameDto) {
         this.server.to(data.roomName).emit('updateGame', data);
@@ -297,11 +325,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     // Should emit to room event 'GameOver' ??
-
-
-
-
-
 
 
     /*

@@ -7,11 +7,10 @@ import { delay } from "@/app/utils/delay";
 
 type ChannelProps = {
     channel: ChannelModel
-    joinChannel: (id: string, name: string, password?: string) => Promise<Response>
+    joinChannel: (id: string, name: string, password?: string) => Promise<string>
 }
 
-// Todo: Add channel icon
-const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, joinChannel }: ChannelProps) => {
+const JoinChannelItem = ({ channel: { id, name, type, joined, banned }, joinChannel }: ChannelProps) => {
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -44,17 +43,14 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
         }
         setLockSubmit(true);
         const response = await joinChannel(id, name, password);
-        if (!response.ok) {
-            const text = await response.text();
-            if (text === "\"Wrong password\"") {
-                setError(true);
-                setOpenAlert(true);
-            }
-            return;
+        if (response === "Wrong password") {
+            setError(true);
+            setOpenAlert(true);
+        } else {
+            setIsJoined(true);
+            setShowPassword(false);
+            setOpenAlert(true);
         }
-        setIsJoined(true);
-        setShowPassword(false);
-        setOpenAlert(true);
         await delay(1250);
         setLockSubmit(false);
         setOpenAlert(false);
@@ -105,7 +101,7 @@ const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, jo
                 }}>
                 {error && password=="" && <p>Password can not be empty</p>}
                 {error && password!="" && <p>Incorrect password</p>}
-                {!error && <p>Joined {name}</p>}dzfasfszl":
+                {!error && <p>Joined {name}</p>}
             </Alert>
         </div>
     )
