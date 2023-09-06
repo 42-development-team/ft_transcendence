@@ -47,6 +47,7 @@ export class FriendService {
                 currentStatus: true,
             },
         });
+		// Remove friendship
         return plainToClass(FriendDto, result);
     }
 
