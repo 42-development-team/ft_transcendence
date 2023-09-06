@@ -8,7 +8,6 @@ import { useUserRole } from "./UserRoleProvider";
 import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
 import { Alert } from "@material-tailwind/react";
 import { ChannelMember } from "@/app/utils/models";
-import { isBlock } from "typescript";
 
 type ChatMemberActionsProps = {
     isCurrentUser: boolean
@@ -25,7 +24,6 @@ type ChatMemberActionsProps = {
     isBlocked: boolean
 }
 
-// Todo: prevent double click on buttons
 const ChatMemberActions = (
     { 
         isCurrentUser, user,

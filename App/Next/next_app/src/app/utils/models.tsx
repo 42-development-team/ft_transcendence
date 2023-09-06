@@ -1,9 +1,6 @@
 export interface ChannelModel {
 	id: string
 	name: string
-	createdAt: string   //useful?
-	creatorId: string   //useful?
-	icon: string
 	type: ChannelType
 	joined: boolean
 	banned: boolean
@@ -20,8 +17,6 @@ export enum ChannelType {
 	DirectMessage = "direct_message",
 }
 
-// Todo: use enum for channel type ?
-
 export interface MessageModel {
 	id: string
 	createdAt: string
@@ -30,7 +25,6 @@ export interface MessageModel {
 	senderUsername: string
 }
 
-// Todo: add avatar
 export interface ChannelMember {
 	id: string
 	username: string

@@ -16,12 +16,10 @@ const FriendList = ({friends, blockedUsers, unblockUser}: FriendListProps) => {
     const {updateChatBarState} = useChatBarContext();
 
     const friendsList = friends.map((friend) => (
-        // Todo: add actions to invite to play, view profile, remove friend
         <FriendItem key={friend.id} user={friend}/>
     ))
 
     const blockedList = blockedUsers.map((blockedUser) => (
-        // Todo: add action to unblock user
         <BlockUserItem key={blockedUser.id} user={blockedUser} unblockUser={unblockUser}/>
     ))
     

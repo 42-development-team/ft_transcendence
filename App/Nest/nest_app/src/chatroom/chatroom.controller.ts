@@ -18,7 +18,6 @@ export class ChatroomController {
 		private membershipService: MembershipService,
 	) { }
 
-	// Todo: check for HttpStatus.Bad_Request return -> avoid 
 	/* C(reate) */
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
@@ -254,7 +253,6 @@ export class ChatroomController {
 				response.send();
 			})
 			.catch(error => {
-				// Todo: socket event
 				response.send(JSON.stringify(error.message));
 			});
 	}
