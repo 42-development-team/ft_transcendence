@@ -71,10 +71,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			setUniqueLogin(newLogin);
 			let newUserId: string = data.sub as string;
 			setUserId(newUserId);
-			if (uniqueLogin !== "" && userId !== "") {
-				console.log(`uniqueLogin=${uniqueLogin}`);
-				console.log(`userId=${userId}`);
-			}
 		}
 		catch (error) {
 			console.log("Error fetching profile: " + error);
