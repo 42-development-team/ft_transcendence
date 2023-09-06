@@ -32,6 +32,9 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
     const [openChannelId, setOpenChannelId] = useState<string>("");
 
     useEffect(() => {
+        if (typeof window == 'undefined') {
+            return ;
+        }
         const chatBarStateValue = localStorage.getItem("chatBarState");
         if (chatBarStateValue) {
             setChatBarState(JSON.parse(chatBarStateValue));
