@@ -1,6 +1,4 @@
 "use client"
-
-import React from "react";
 import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthcontext } from "../context/AuthContext";
