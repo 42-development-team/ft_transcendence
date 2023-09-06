@@ -6,15 +6,23 @@ import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
-
 //===========
+import { Socket, Server } from 'socket.io';
+import { GameRoomDto } from "./dto/create-room.dto";
+import { UserIdDto } from "src/userstats/dto/user-id.dto";
+import { UsersService } from "src/users/users.service";
+
 
 @Injectable()
 export class GameService {
     constructor(
         private prisma: PrismaService,
-        // private socketGateway: SocketGateway,
+        private userService: UsersService,
     ) {}
+
+    gameRooms: GameRoomDto[] = [];
+    queued: UserIdDto[] = [];
+
 
     /* C(reate) */
     async createGame(createGamedto: CreateGameDto) {
@@ -110,6 +118,130 @@ export class GameService {
         return true;
     }
 
+    //=================================================//
+    //============= HANDLE SOCKET EVENTS ==============//
+    //=================================================//
+
+    async handleJoinQueue(player: Socket): Promise<[GameRoomDto, string]> {
+        try {
+            const userId = await this.userService.getUserIdFromSocket(player);
+            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (idx === -1) {
+                this.queued.push({userId});
+                if (this.queued.length >= 2)
+                   return this.handleJoinGame(player);
+            }
+            else {
+                player?.join(this.gameRooms[idx].roomName);
+                return ([this.gameRooms[idx], undefined]);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async handleJoinGame(player: Socket): Promise<[GameRoomDto, string]> {
+        const player2Id: number = this.queued[0].userId;
+        const player1Id: number = this.queued[1].userId;
+
+        // create room data
+        const id: number = this.gameRooms.length;
+        const roomName: string = player1Id + "_" + player2Id;
+        const newGameRoom: GameRoomDto = {
+            id: id,
+            roomName: roomName,
+            playerOneId: player1Id,
+            playerTwoId: player2Id,
+            data: this.setGameData(id, roomName, player1Id, player2Id),
+        }
+
+        // add room to rooms list
+        this.gameRooms.push(newGameRoom);
+        // pop player from queue list
+        this.handleLeaveQueue(this.queued[0]);
+        this.handleLeaveQueue(this.queued[1]);
+
+        // Create room instance and join room
+        await player?.join(roomName);
+
+        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+        return ([newGameRoom, player2SocketId]);
+    }
+
+    async handleLaunchGame(server: Server, id: number) {
+        let data: GameDto = await this.getDataFromRoomId(id);
+        if (!data) {
+            console.log("!LaunchGame Data")
+            return ;
+        }
+        this.update(server, data);
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+        }
+        await this.createGame(createGameDto);
+        this.removeRoom(data.roomName);
+    }
+
+    handleLeaveQueue(userId: UserIdDto) {
+        const playerIndex = this.queued.indexOf(userId);
+        this.queued.splice(playerIndex, 1);
+    }
+
+    handleMove(event: string, id: number, userId: number) {
+        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
+        if (!data) {
+            console.log("!Data")
+            return ;
+        }
+        if (data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.setVelocity(-0.01, data.player1);
+            else if (event === "ArrowDown")
+                this.setVelocity(0.01, data.player1);
+        }
+        else {
+            if (event === "ArrowUp")
+                this.setVelocity(-0.01, data.player2);
+            else if (event === "ArrowDown")
+                this.setVelocity(0.01, data.player2);
+        }
+    }
+
+    handleStopMove(event: string, id: number, userId: number) {
+        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
+        if (!data)
+            return ;
+        if (data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.killVelocity(data.player1);
+            else if (event === "ArrowDown")
+                this.killVelocity(data.player1);
+        }
+        else {
+            if (event === "ArrowUp")
+            this.killVelocity(data.player2);
+        else if (event === "ArrowDown")
+            this.killVelocity(data.player2);
+        }
+    }
+
+    async removeRoom(roomName: string) {
+        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+        if (idx === -1)
+            return ;
+        this.gameRooms.splice(idx, 1);
+    }
+
+    async getDataFromRoomId(id: number): Promise<GameDto> {
+        return this.gameRooms.find(game => game.id === id)?.data;
+    }
+
+    async sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     //=================================================//
     //================== GAME PLAY ====================//
     //=================================================//
@@ -253,15 +385,14 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
 
-    // async update(data: GameDto) {
-    //     // TODO Check disconnected sockets
-    //     while (data.player1.points < 11 && data.player2.points < 11) {
-    //         data = await  this.calculateGame(data);
-    //         // this.socketGateway.sendGameData(data.roomName, data);
-    //         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    //         sleep(1/60);
-    //     }
-    // }
+    async update(server: Server, data: GameDto) {
+        // TODO Check disconnected sockets
+        while (!data.end) {
+            data = await  this.calculateGame(data);
+            server.to(data.roomName).emit('updateGame', data);
+            this.sleep(1000 / 60);
+        }
+    }
 
     // Todo: put colors in frontend
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
