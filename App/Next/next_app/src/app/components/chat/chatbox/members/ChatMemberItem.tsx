@@ -21,7 +21,6 @@ type ChatMemberProps = {
     blockUser: (blockedId: string) => void
     isBlocked: boolean
 }
-// Todo: add status and avatar
 const ChatMemberItem = ({
 	user,
     isCurrentUser,

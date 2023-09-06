@@ -83,7 +83,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}
 
 	const login = async () => {
-		// Todo: update user status
 		setLoggedIn(true);
 		await fetchProfile().catch((error) => {
 			console.log("error fetching profile: " + error.message);
