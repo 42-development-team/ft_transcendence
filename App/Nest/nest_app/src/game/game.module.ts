@@ -4,7 +4,7 @@ import { GameController } from './game.controller';
 import { UsersModule } from "../users/users.module";
 
 //==================
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { GameGateway } from 'src/sockets/game.gateway';
 
