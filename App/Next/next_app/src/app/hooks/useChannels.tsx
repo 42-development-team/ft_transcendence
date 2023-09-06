@@ -225,7 +225,6 @@ export default function useChannels(userId: string) {
     }
 
     const joinChannel = async (id: string, name: string, password?: string): Promise<string> => {
-        // Todo: fix catch
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
                 credentials: "include",
