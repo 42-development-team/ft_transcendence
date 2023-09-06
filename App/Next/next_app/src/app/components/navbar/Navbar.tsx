@@ -68,11 +68,11 @@ const NavLinks = ({logout} : {logout: () => void}) => {
                     }}>
                     <div className="flex items-center justify-between group">
                         <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" stroke="text" xmlns="http://www.w3.org/2000/svg">
-                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                            <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+                            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
                             <g id="SVGRepo_iconCarrier">
-                                <path d="M15 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                <path d="M19 12L15 8M19 12L15 16M19 12H9" stroke="currentColor" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                <path d="M15 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H15" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                                <path d="M19 12L15 8M19 12L15 16M19 12H9" stroke="currentColor" fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                             </g>
                         </svg>
                         <p className="w-full h-full text-[1rem] ml-2 mr-2">
