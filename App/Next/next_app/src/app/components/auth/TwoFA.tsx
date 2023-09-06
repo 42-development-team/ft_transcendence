@@ -24,6 +24,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
   const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
   const [colorClickCancel, setColorCancel] = useState<string>('bg-mauve');
+  const [disable2FA, setDisable2FA] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +38,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   }, [userId]);
 
   useEffectTimer(isVisible, 2600, setIsVisible);
+  useEffectTimer(disable2FA, 2600, setDisable2FA);
 
   const handleEnableClick = async () => {
     try {
@@ -108,6 +110,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	  const handleSubmit = async () => {
 		setEnableBtnActivated(false);
 		setDisableBtnActivated(false);
+		setDisable2FA(true);
 	  
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		if (!isValid) {
@@ -161,7 +164,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	}
 
 	return (
-		<div className="flex flex-col border-2 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.7)]">
+		<div className="flex flex-col border-0 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.25)]">
 			<div className="flex justify-center mt-2">
 				{
 					!activTwoFA &&
@@ -211,6 +214,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			</div>
 				<Submit2FA 	
 					displayBox={displayBox}
+					disabled={disable2FA}
 					handleOnKeyDown={handleOnKeyDown}
 					handleSubmit={handleSubmit}
 					handleCallbackData={handleCallback}
@@ -218,7 +222,9 @@ const TwoFA = ({ userId }: { userId: string }) => {
 					isVisible={isVisible}
 					message={message}
 					colorText={colorText}
-				>Enter 2FA code:</Submit2FA>
+				>
+					Enter 2FA code:
+				</Submit2FA>
 		</div>
 	);
 };

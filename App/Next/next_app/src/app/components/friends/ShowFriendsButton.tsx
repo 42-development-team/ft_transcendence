@@ -6,7 +6,7 @@ const ShowFriendsButton = () => {
     const { updateChatBarState } = useChatBarContext();
     return (
         <li className={style.channelItem}>
-            <Tooltip placement="right" content={"Friends"} className="tooltip" offset={8}>
+            <Tooltip placement="right" content={"Friends"} className="tooltip text-text " offset={8}>
                 <button onClick={() => updateChatBarState(ChatBarState.FriendListOpen)} className='rounded-[inherit] w-[inherit] h-[inherit] '>
                     <svg viewBox="0 0 24 24" aria-hidden="false" width={"42"} height={"42"} className={style.channelIcon}>
                         <path fill="currentColor" d="M9.25 4C9.25 2.48122 10.4812 1.25 12 1.25C13.5188 1.25 14.75 2.48122 14.75 4C14.75 5.51878 13.5188 6.75 12 6.75C10.4812 6.75 9.25 5.51878 9.25 4Z" ></path>

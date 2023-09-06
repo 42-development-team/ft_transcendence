@@ -4,6 +4,7 @@ import { useAuthcontext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image"
 import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
+import LogoutIconLight from "../../../../public/collapse-right-light-theme.svg";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 import { useEffect, useState } from "react";
@@ -43,7 +44,7 @@ const NavLinks = ({logout} : {logout: () => void}) => {
             sessionStorage.removeItem("userId");
         router.push('/profile');
     }
-
+    
     return (
         <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
             <NavDropDownMenu>
@@ -66,7 +67,14 @@ const NavLinks = ({logout} : {logout: () => void}) => {
                         router.push("/");
                     }}>
                     <div className="flex items-center justify-between group">
-                        <Image src={LogoutIcon} width={28} height={28} alt="logout" />
+                        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" stroke="text" xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                            <g id="SVGRepo_iconCarrier">
+                                <path d="M15 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                <path d="M19 12L15 8M19 12L15 16M19 12H9" stroke="currentColor" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </g>
+                        </svg>
                         <p className="w-full h-full text-[1rem] ml-2 mr-2">
                             Logout
                         </p>

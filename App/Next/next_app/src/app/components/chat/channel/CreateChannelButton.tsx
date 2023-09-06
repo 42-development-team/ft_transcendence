@@ -7,7 +7,7 @@ const CreateChannelButton = () => {
 
     return (
         <li className={style.channelItem}>
-            <Tooltip placement="right" content={"Create channel"} className="tooltip" offset={8}>
+            <Tooltip placement="right" content={"Create channel"} className="tooltip text-text" offset={8}>
                 <button
                     onClick={() => updateChatBarState(ChatBarState.CreateChannelOpen)}
                     className='rounded-[inherit] w-[inherit] h-[inherit]'>

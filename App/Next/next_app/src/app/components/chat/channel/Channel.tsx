@@ -24,7 +24,7 @@ const Channel = ({channel :{name, type, id, unreadMessages}}: ChannelProps) => {
 
     return (
         <li className={styles.channelItem}>
-            <Tooltip placement="right" content={name} className="tooltip" offset={8}>
+            <Tooltip placement="right" content={name} className="tooltip text-text" offset={8}>
                 <button onClick={handleClick} 
                     className={`
                         ${type == ChannelType.Public && "bg-blue text-base"} 
