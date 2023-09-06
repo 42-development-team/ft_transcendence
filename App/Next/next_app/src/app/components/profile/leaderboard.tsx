@@ -28,7 +28,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                     <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-pink to-base'
                         : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
                         <span className="flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 px-2">
-                            <div className="flex flex-row justify-center">
+                            <div className="flex flex-row justify-center sm:pr-0 pr-2">
                                 <div className="flex flex-col justify-center">
                                     <div className="pr-[3vw] text-sky">
                                         {index + 1}
