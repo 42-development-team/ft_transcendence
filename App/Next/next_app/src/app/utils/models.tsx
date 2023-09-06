@@ -3,7 +3,6 @@ export interface ChannelModel {
 	name: string
 	createdAt: string   //useful?
 	creatorId: string   //useful?
-	icon: string
 	type: ChannelType
 	joined: boolean
 	banned: boolean

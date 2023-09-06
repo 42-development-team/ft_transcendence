@@ -29,12 +29,7 @@ const DirectMessageChannel = ({channel :{name, icon, type, id, unreadMessages, d
                     ${type == ChannelType.Protected && "bg-yellow text-base"}
                     ${type == ChannelType.DirectMessage && "bg-green text-base"}
                     rounded-[inherit] w-[inherit] h-[inherit] relative`}>
-                {icon === '' ?
-                    <p className='text-xs'>{directMessageTargetUsername}</p> :
-                    <Image alt="Channel Icon" fill src={icon} 
-                    sizes=" 100vw, 100vw"
-                    className="rounded-[inherit]" />
-                }
+                <p className='text-xs'>{directMessageTargetUsername}</p>
             {unreadMessages > 0 && 
                 <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold 
                     text-text bg-rose-500 border-2 border-base rounded-full -top-2 -right-2">

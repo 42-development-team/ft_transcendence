@@ -255,7 +255,6 @@ export default function useChannels(userId: string) {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/info`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
                 return channel;
             });
             setChannels(fetchedChannels);
@@ -272,7 +271,6 @@ export default function useChannels(userId: string) {
             const fetchedChannel: ChannelModel = channelContent;
             fetchedChannel.joined = true;
             fetchedChannel.banned = false;
-            fetchedChannel.icon = '';
             fetchedChannel.unreadMessages = 0;
             fetchedChannel.members = fetchedChannel.members?.map((member: any) => {
                 return {
@@ -320,7 +318,6 @@ export default function useChannels(userId: string) {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.icon = '';
                 channel.joined = false;
                 channel.banned = false;
                 channel.unreadMessages = 0;
