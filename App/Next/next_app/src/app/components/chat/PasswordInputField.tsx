@@ -11,6 +11,7 @@ const PasswordInputField = ({value, setValue} : {value: string, setValue: Dispat
 				id="password"
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
+				autoComplete="on"
 				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
 		</div >
