@@ -33,14 +33,14 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
     const getColor = (message: MessageModel) => {
         const user = channel.members?.find(member => member.username == message.senderUsername);
         if (user?.isOwner) {
-            return '#f38ba8';
+            return 'red';
             // return '#fab387';
         } else if (user?.isAdmin) {
-            return '#c6a0f6';
+            return 'orange';
         } else if (user?.isBanned) {
-            return '#838ba7';
+            return 'gray';
         }
-        return '#f5e0dc';
+        return 'text';
     }
 
     let MessageList = channel.messages?.map((message) => (
@@ -80,7 +80,7 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
 
 const ChatMemberButton = ({onClick}: {onClick: () => void}) => {
     return (
-        <Tooltip content="Members" placement="bottom-start" className="tooltip">
+        <Tooltip content="Members" placement="bottom-start" className="tooltip text-text">
             <button onClick={onClick} >
                 <svg viewBox="0 0 24 24" aria-hidden="false" width={"32"} height={"32"} >
                     <path fill="currentColor" d="M9.25 4C9.25 2.48122 10.4812 1.25 12 1.25C13.5188 1.25 14.75 2.48122 14.75 4C14.75 5.51878 13.5188 6.75 12 6.75C10.4812 6.75 9.25 5.51878 9.25 4Z" ></path>

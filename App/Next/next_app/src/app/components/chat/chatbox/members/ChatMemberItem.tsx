@@ -114,14 +114,14 @@ const ChatMemberItem = ({
 
     const getColor = () => {
         if (user.isOwner) {
-            return 'text-[#f38ba8]';
+            return 'text-red';
             // return '#fab387';
         } else if (user.isAdmin) {
-            return 'text-[#c6a0f6]';
+            return 'text-orange';
         } else if (user.isBanned) {
-            return 'text-[#838ba7]';
+            return 'text-gray';
         }
-        return 'text-[#f5e0dc]';
+        return 'text-text';
     }
 
     return (

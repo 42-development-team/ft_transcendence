@@ -7,7 +7,6 @@ import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 import getStatsLeaderBoard from "./getStatsLeaderBoard";
-import { error } from "console";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -70,7 +69,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   };
 
   return (
-    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-40 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.7)]">
+    <div className=" mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-40 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]">
       <Tabs value={activeTab}>
         <TabsHeader
           className="text-xl rounded-none bg-transparent p-0 font-semibold h-[4vh]"
@@ -81,8 +80,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               value={value}
               onClick={() => handleClick(value)}
               style={indicatorStyle}
-              className={`${activeTab === value ? "text-mauve text-xl" : " text-gray-400"
-                } border-b-4 ${activeTab === value ? "border-mauve" : "border-gray-500"
+              className={`${activeTab === value ? "text-sapphire text-xl" : " text-gray-400"
+                } border-b-4 ${activeTab === value ? "border-sapphire" : "border-gray-500"
                 }`}
             >
               {label}
