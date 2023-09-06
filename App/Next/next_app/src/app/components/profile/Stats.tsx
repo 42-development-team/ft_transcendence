@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 
 const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 
-	useEffect(() => {
-		console.log("Stats in useEffect: " ,stats);
-	}, []);
-
 	return (
 		<div className="flex flex-col mx-[2vw] h-full text-text">
 			<p className=" flex flex-col mt-1 text-center text-2xl uppercase ">Stats</p>

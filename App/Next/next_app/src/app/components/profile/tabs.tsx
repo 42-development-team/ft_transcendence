@@ -7,7 +7,6 @@ import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 import getStatsLeaderBoard from "./getStatsLeaderBoard";
-import { error } from "console";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
