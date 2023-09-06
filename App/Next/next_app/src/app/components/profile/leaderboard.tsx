@@ -38,13 +38,14 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                                     width={64} height={64} imageUrlGetFromCloudinary={item.avatar} disableChooseAvatar={true} disableImageResize={true} userName={item.username} userId={item.userId}
                                 />
                             </div>
-                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] text-pink` : 'flex flex-col justify-center hover:scale-110 hover:text-teal text-[1.4rem] md:text-[1.6rem]'} 
+                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] text-pink` 
+                                                                                : 'flex flex-col justify-center hover:scale-110 hover:text-teal text-[1.4rem] md:text-[1.6rem]'} 
                                     onClick={() => onProfileClick(item.userId)}
                             >
                                 {item.userName}
                             </button>
                             <div className="flex flex-col justify-center pr-[4vw]">
-                                <div className="flex mb-2 justify-center">Total Score</div>
+                                <div className="flex mb-2 justify-center text-center">Total Score</div>
                                 <div className="flex justify-center text-[1.4rem] md:text-[1.6rem] text-pink">{item.totalScore}</div>
                             </div>
                         </span>
