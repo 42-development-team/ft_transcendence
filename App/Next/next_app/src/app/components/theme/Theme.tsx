@@ -5,7 +5,7 @@ import sun from "../../../../public/sun.png";
 import sunLight from "../../../../public/sunLight.png";
 
 export const Theme = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "mocha");
+  const [theme, setTheme] = useState("mocha");
   const [position, setPosition] = useState("left");
 
   const toggleTheme = () => {
@@ -21,11 +21,14 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
       default:
         setTheme("mocha");
         localStorage.setItem("theme", "mocha");
+
     }
     // location.reload();
   }
   
   useEffect(() => {
+    if (typeof window === 'undefined') 
+      return;
     setTheme(localStorage.getItem("theme") || "mocha");
   }, []);
 
@@ -39,7 +42,7 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
                 type="checkbox"
                 className="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-overlay0 transition-colors duration-300 checked:bg-pink-500 peer-checked:border-pink-500 peer-checked:before:bg-pink-500"
                 onClick={toggleTheme}
-                checked={theme === "mocha"}
+                defaultChecked={theme === "mocha"}
               />
                 <label
                 htmlFor="switch-component"
