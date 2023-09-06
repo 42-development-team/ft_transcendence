@@ -318,8 +318,6 @@ export default function useChannels(userId: string) {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/content`, { credentials: "include", method: "GET" });
             const data = await response.json();
             const fetchedChannels: ChannelModel[] = data.map((channel: any) => {
-                channel.joined = false;
-                channel.banned = false;
                 channel.unreadMessages = 0;
                 channel.messages = channel.messages.map((message: any) => {
                     return {
