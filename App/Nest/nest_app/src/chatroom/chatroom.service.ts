@@ -121,6 +121,8 @@ export class ChatroomService {
 			name: chatroom.name,
 			type: chatroom.type,
 			ownerId: chatroom.ownerId,
+			isJoined: true,
+			isBanned: false,
 			members: (chatroom.memberShips === undefined) ? [] : chatroom.memberShips.map(member => {
 				return {
 					id: member.userId,
@@ -146,7 +148,6 @@ export class ChatroomService {
 	}
 
 	async getAllChannelsContent(userId: number): Promise<ChatroomContentDto[]> {
-		// Filter only the channels joined
 		const chatrooms = await this.prisma.chatRoom.findMany({
 			orderBy: { id: 'asc' },
 			where: { memberShips: { some: { userId: userId, isBanned: false } } },
@@ -169,7 +170,10 @@ export class ChatroomService {
 
 	async getChannelContent(id: number, userId: number): Promise<ChatroomContentDto> {
 		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
-			where: { id: id },
+			where: {
+				id: id,
+				memberShips: { some: { userId: userId, isBanned: false } }
+			},
 			include: {
 				messages: {
 					include: { sender: true }
@@ -180,10 +184,6 @@ export class ChatroomService {
 				}
 			},
 		});
-		const isJoined = chatroom.memberShips.some(member => member.userId === userId && member.isBanned == false);
-		if (!isJoined) {
-			throw new Error('User is not a member of this channel');
-		}
 		return this.constructChatroomContentDto(chatroom);
 	}
 	// #endregion
