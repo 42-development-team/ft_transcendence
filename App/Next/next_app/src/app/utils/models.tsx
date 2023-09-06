@@ -1,8 +1,6 @@
 export interface ChannelModel {
 	id: string
 	name: string
-	createdAt: string   //useful?
-	creatorId: string   //useful?
 	type: ChannelType
 	joined: boolean
 	banned: boolean
