@@ -224,7 +224,7 @@ export default function useChannels(userId: string) {
         return "";
     }
 
-    const joinChannel = async (id: string, name: string, password?: string): Promise<any> => {
+    const joinChannel = async (id: string, name: string, password?: string): Promise<string> => {
         // Todo: fix catch
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${id}/join`, {
@@ -235,17 +235,18 @@ export default function useChannels(userId: string) {
                 },
                 body: JSON.stringify({ password }),
             });
-            if (!response.ok) {
-                return response;
+            const responseJson = await response.json();
+            if (!response.ok || responseJson == "Wrong password") {
+                return responseJson;
             }
             socket?.emit("joinRoom", name);
             await fetchChannelContent(id);
             await fetchChannelsInfo();
-            return response;
+            return responseJson;
         }
-        catch (err) {
+        catch (err : any) {
             console.log("Error joining channel: " + err);
-            return err;
+            return err.toString();
         }
     }
 

@@ -241,7 +241,8 @@ export class ChatroomService {
 			}
 		}
 		if (!isJoined)
-			return await this.connectUserToChatroom(userId, id);
+			await this.connectUserToChatroom(userId, id);
+		return JSON.stringify("Success");
 	}
 
 	async isUserAdmin(userId: number, chatroomId: number) {

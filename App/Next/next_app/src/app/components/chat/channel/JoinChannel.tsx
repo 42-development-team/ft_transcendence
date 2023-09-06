@@ -6,7 +6,7 @@ import ChatHeader from "../chatbox/ChatHeader";
 
 type JoinChannelProps = {
     channels: ChannelModel[],
-    joinChannel: (id: string, name:string, password?: string) => Promise<Response>
+    joinChannel: (id: string, name:string, password?: string) => Promise<string>
 }
 
 const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
