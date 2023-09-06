@@ -11,7 +11,7 @@ type ChannelProps = {
 }
 
 // Todo: Add channel icon
-const JoinChannelItem = ({ channel: { id, name, icon, type, joined, banned }, joinChannel }: ChannelProps) => {
+const JoinChannelItem = ({ channel: { id, name, type, joined, banned }, joinChannel }: ChannelProps) => {
     const [isJoined, setIsJoined] = useState<boolean>(joined);
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);

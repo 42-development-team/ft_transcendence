@@ -8,7 +8,7 @@ type ChannelProps = {
     channel: ChannelModel
 }
 
-const DirectMessageChannel = ({channel :{name, icon, type, id, unreadMessages, directMessageTargetUsername}}: ChannelProps) => {
+const DirectMessageChannel = ({channel :{name, type, id, unreadMessages, directMessageTargetUsername}}: ChannelProps) => {
     const { openChannel, openChannelId } = useChatBarContext();
 
     const handleClick = () => {
