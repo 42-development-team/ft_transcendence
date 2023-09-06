@@ -1,4 +1,4 @@
-import { Controller, Request, Param, Patch, Get, Res } from '@nestjs/common';
+import { Controller, Request, Param, Patch, Get, Res, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { FriendDto } from './friend.dto';
 import { FriendService } from "./friend.service";
@@ -10,15 +10,25 @@ export class FriendController {
 	) { }
 
 	/* C(reate) */
+
+
 	/* R(ead) */
 	@Get('blocked')
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const blockedUsers: FriendDto[] = await this.friendService.getBlockedUsers(userId);
 		res.send(blockedUsers);
-	}		
+	}
 
 	/* U(pdate) */
+
+	@Patch('addFriend')
+	async addFriend(@Param('addedUserId') @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const friends: FriendDto[] = await this.friendService.addFriend(userId, addedUserId);
+		res.send(friends);
+	}
+
 	@Patch('block/:blockedId')
 	async blockUser(@Param('blockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;

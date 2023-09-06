@@ -51,6 +51,24 @@ export class FriendService {
         return plainToClass(FriendDto, result);
     }
 
+	async addFriend(userId: number, addedUserId: number) : Promise<FriendDto>{
+		const result = await this.prisma.user.update({
+            where: { id: addedUserId },
+            data: {
+                friendAddedBy: {
+                    connect: { id: userId },
+                },
+            },
+            select: {
+                id: true,
+                username: true,
+                avatar: true,
+                currentStatus: true,
+            },
+        });
+        return plainToClass(FriendDto, result);
+	}
+
     /* D(elete) */
 	async unblockUser(blockedId: number, userId: number) : Promise<FriendDto> {
 		const result = await this.prisma.user.update({
