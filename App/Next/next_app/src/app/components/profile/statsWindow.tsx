@@ -5,17 +5,17 @@ import Stats from "./Stats";
 import sessionStorageUser from "./sessionStorage";
 import { useAuthcontext } from "@/app/context/AuthContext";
 
-const StatsWindow = ({userId}: {userId: string} ) => {
-    const { login } = useAuthcontext();
-    useEffect(() => {
-        login();
-    }, []);
+const StatsWindow = ({ userId }: { userId: string }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [statsData, setStatsData] = useState<any>("null");
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [statsLoaded, setStatsLoaded] = useState<boolean>(false);
     const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
+    const { login } = useAuthcontext();
 
+    useEffect(() => {
+        login();
+    }, []);
 
     useEffect(() => {
         let sessionUserId = null;
@@ -53,7 +53,7 @@ const StatsWindow = ({userId}: {userId: string} ) => {
             console.log("Error response when fetching userstats/info:", error);
         }
     }, [statsLoaded, avatarLoaded]);
-    
+
     const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
         setAvatarFile(childAvatarFile);
         setImageUrl(childImageUrl);
@@ -62,7 +62,11 @@ const StatsWindow = ({userId}: {userId: string} ) => {
     return (
         <div className="flex flex-col sm:flex-row mb-5 ">
             <Avatar
-                disableChooseAvatar={true} imageUrlGetFromCloudinary={imageUrl} CallbackAvatarData={handleCallBackDataFromAvatar} userName={statsData.userName} userId={userId}>
+                disableChooseAvatar={true} 
+                imageUrlGetFromCloudinary={imageUrl} 
+                CallbackAvatarData={handleCallBackDataFromAvatar} 
+                userName={statsData.userName} 
+                userId={userId}>
             </Avatar>
             <div className="w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
                 bg-surface0 bg-opacity-70 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">
