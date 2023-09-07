@@ -53,19 +53,27 @@ export class FriendService {
 
 	async addFriend(userId: number, addedUserId: number) : Promise<FriendDto>{
 		const result = await this.prisma.user.update({
-            where: { id: addedUserId },
-            data: {
-                friendAddedBy: {
-                    connect: { id: userId },
-                },
-            },
+			where: { id: userId },
+			data: {
+				friends: {
+					connect: { id: addedUserId },
+				},
+			},
             select: {
-                id: true,
+				id: true,
                 username: true,
                 avatar: true,
                 currentStatus: true,
             },
         });
+		await this.prisma.user.update({
+			where: { id: addedUserId },
+			data: {
+				friendAddedBy: {
+					connect: { id: userId },
+				},
+			},
+		});
         return plainToClass(FriendDto, result);
 	}
 
