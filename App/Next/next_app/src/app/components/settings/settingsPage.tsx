@@ -112,7 +112,6 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
 				setMessage("Username must be at least 3 characters long, and at most 15 characters long");
-				console.log("Username must be at least 3 characters long, and at most 15 characters long, newInput:", newinputUserName, "placeholder:", placeHolder);
 				setValidateUsernameEnabled(false);
 				setIsVisible(true);
 				return;
