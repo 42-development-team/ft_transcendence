@@ -8,6 +8,7 @@ export default function useFriends() {
 
 	useEffect(() => {
 		fetchBlockedUsers();
+		fetchFriends();
 		// Todo: fetch friends
 	}, []);
 
@@ -17,6 +18,12 @@ export default function useFriends() {
 	// 	if (blockedUsers.length > 0)
 	// 		console.log("blockedUsers: " + JSON.stringify(blockedUsers, null, 2))
 	// }, [friends, blockedUsers]);
+
+	const fetchFriends = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/friends`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setFriends(data);
+	}
 
 	const fetchBlockedUsers = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/blocked`, { credentials: "include", method: "GET" });
