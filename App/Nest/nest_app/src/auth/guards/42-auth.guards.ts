@@ -1,6 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthGuard } from '@nestjs/passport';
 
-// authguard 42 c'est de la magie, ca appelle la strategy 42 que j'ai créé
 @Injectable()
-export class FortyTwoAuthGuards extends AuthGuard('42') {}
+export class FortyTwoAuthGuards extends AuthGuard('42') {
+    handleRequest(err, user, info, context) {
+        if (err || !user) {
+            throw new UnauthorizedException();
+        }
+        return user;
+    }
+}
