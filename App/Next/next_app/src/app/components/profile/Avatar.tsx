@@ -2,7 +2,8 @@
 
 import { useState, ChangeEvent, useEffect } from "react";
 import Image from 'next/image';
-import imageType from 'image-type';
+import fileType, { fileTypeFromBuffer } from 'file-type';
+import { useEffectTimer } from "../auth/utils/useEffectTimer";
 
 const Avatar = (
     {
@@ -30,24 +31,31 @@ const Avatar = (
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [message, setMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
 
-        /* When the user selects an image for the avatar, 
-    the handleAvatarChange function is called */
-    const reader = new FileReader();
-    reader.onloadend = async function (event) {
-        const buffer = new Uint8Array(reader.result as ArrayBuffer);
-        const type =  await imageType(buffer);
+    useEffectTimer(true, 2600, setIsVisible);
 
-        if (!type || !type.mime.startsWith('image/')) {
-            console.log('Selected file is not an image.');
-            return;
+    //check jpg
+    function checkIfJpg(arrayBuffer: ArrayBuffer) {
+        const bytes = new Uint8Array(arrayBuffer);
+        const jpgMagicNumber = [0xFF, 0xD8, 0xFF];
+
+        for (let i = 0; i < jpgMagicNumber.length; i++) {
+            if (bytes[i] !== jpgMagicNumber[i]) {
+                console.log("File is not a JPG image");
+                return (false);
+            }
+            return (true);
         }
 
-        // The rest of your code...
-    };
+    }
+        /* When the user selects an image for the avatar, 
+    the handleAvatarChange function is called */
+
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-      
+        
         if (!file) {
           // If no file is selected, reset the state for avatarFile and imageUrl
           setImageUrl(null);
@@ -55,12 +63,26 @@ const Avatar = (
           return;
         }
       
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event: ProgressEvent<FileReader>) => {
+                const arrayBuffer = event.target?.result as ArrayBuffer;
+                if (checkIfJpg(arrayBuffer) == false) {
+                    setMessage("File is not a JPG image");
+                    setIsVisible(true);
+                    CallbackAvatarData(null, "https://img.freepik.com/free-icon/user_318-563642.jpg");
+                    console.log("File is not a JPG image");
+                    return;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
         if (!file.type.startsWith('image/')) {
           console.log('Selected file is not an image.');
           return;
         }
-        reader.readAsArrayBuffer(file);
-)
+
       
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
