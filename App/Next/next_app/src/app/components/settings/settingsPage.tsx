@@ -218,7 +218,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{validateAvatarEnabled && !updatedUsername &&
+				{ !updatedUsername &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>
