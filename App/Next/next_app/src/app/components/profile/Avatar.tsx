@@ -1,9 +1,8 @@
 "use client";
 
-
-
 import { useState, ChangeEvent, useEffect } from "react";
 import Image from 'next/image';
+import imageType from 'image-type';
 
 const Avatar = (
     {
@@ -34,6 +33,18 @@ const Avatar = (
 
         /* When the user selects an image for the avatar, 
     the handleAvatarChange function is called */
+    const reader = new FileReader();
+    reader.onloadend = async function (event) {
+        const buffer = new Uint8Array(reader.result as ArrayBuffer);
+        const type =  await imageType(buffer);
+
+        if (!type || !type.mime.startsWith('image/')) {
+            console.log('Selected file is not an image.');
+            return;
+        }
+
+        // The rest of your code...
+    };
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
       
@@ -48,6 +59,8 @@ const Avatar = (
           console.log('Selected file is not an image.');
           return;
         }
+        reader.readAsArrayBuffer(file);
+)
       
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
