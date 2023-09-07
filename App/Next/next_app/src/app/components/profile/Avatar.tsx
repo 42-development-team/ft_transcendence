@@ -31,10 +31,7 @@ const Avatar = (
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [message, setMessage] = useState('');
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffectTimer(true, 2600, setIsVisible);
+    const [wrongFormat, setWrongFormat] = useState<boolean>(true);
 
     //check jpg
     function checkIfJpg(arrayBuffer: ArrayBuffer) {
@@ -43,16 +40,26 @@ const Avatar = (
 
         for (let i = 0; i < jpgMagicNumber.length; i++) {
             if (bytes[i] !== jpgMagicNumber[i]) {
-                console.log("File is not a JPG image");
                 return (false);
             }
             return (true);
         }
 
     }
-        /* When the user selects an image for the avatar, 
-    the handleAvatarChange function is called */
 
+    const isImage = (event: ProgressEvent<FileReader>) => {
+        const arrayBuffer = event.target?.result as ArrayBuffer;
+        if (checkIfJpg(arrayBuffer) == false) {
+            setWrongFormat(true);
+            CallbackAvatarData(null, null, "File is not a JPG image");
+        }
+        else {
+            setWrongFormat(false);
+        }
+    };
+
+    /* When the user selects an image for the avatar, 
+    the handleAvatarChange function is called */
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         
@@ -62,20 +69,16 @@ const Avatar = (
           CallbackAvatarData(null, null, null);
           return;
         }
-      
+
         if (file) {
             const reader = new FileReader();
-            reader.onload = (event: ProgressEvent<FileReader>) => {
-                const arrayBuffer = event.target?.result as ArrayBuffer;
-                if (checkIfJpg(arrayBuffer) == false) {
-                    setMessage("File is not a JPG image");
-                    setIsVisible(true);
-                    CallbackAvatarData(null, null, "File is not a JPG image");
-                    console.log("File is not a JPG image");
-                    return;
-                }
-            };
+            reader.onload = isImage;
             reader.readAsArrayBuffer(file);
+        }
+
+        if (wrongFormat) {
+            console.log("File is not a JPG image LOL");
+            return ;
         }
 
         if (!file.type.startsWith('image/')) {
