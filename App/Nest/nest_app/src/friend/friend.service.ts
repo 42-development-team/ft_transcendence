@@ -11,6 +11,25 @@ export class FriendService {
 
     /* C(reate) */
     /* R(ead) */
+	async getFriends(userId: number) : Promise<FriendDto[]> {
+		const result = await this.prisma.user.findMany({
+			where: {
+				friendAddedBy: {
+					some: {
+						id: userId,
+					},
+				},
+			},
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				currentStatus: true,
+			},
+		});
+		return plainToClass(FriendDto, result);
+	}
+
 	async getBlockedUsers(userId: number) : Promise<FriendDto[]> {
 		const result = await this.prisma.user.findMany({
 			where: {
