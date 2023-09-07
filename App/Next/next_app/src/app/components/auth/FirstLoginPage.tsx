@@ -33,7 +33,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	}, []);
 
 	useEffect(() => {
-		
+
 	}, [wrongFormat]);
 
 	/* called on page load, set the placeholder with default username */
@@ -130,8 +130,8 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
-		if (message !== null) {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, msg: string | null) => {
+		if (msg !== null) {
 			setWrongFormat(true);
 			setMessage(message);
 			console.log("Error during avatar upload:", message);

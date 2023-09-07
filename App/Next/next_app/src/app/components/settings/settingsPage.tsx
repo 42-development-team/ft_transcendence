@@ -55,7 +55,6 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	useEffectTimer(isVisibleTimer, 2600, setIsVisibleTimer);
 	useEffectTimer(isVisibleTimerAvatar, 2600, setIsVisibleTimerAvatar);
 	useEffectTimer(updatedUsername, 2600, setUpdatedUsername);
-	useEffectTimer(wrongFormat, 2600, setWrongFormat);
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
@@ -151,6 +150,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
 		if (message !== null) {
 			setValidateAvatarEnabled(false);
+			setIsVisibleTimerAvatar(true);
 			setUpdatingAvatar(true);
 			setWrongFormat(true);
 			setMessage(message);
@@ -209,9 +209,9 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			{
-				!validateAvatarEnabled && updatingAvatar &&
+				!validateAvatarEnabled && updatingAvatar && isVisibleTimerAvatar &&
 				<div className=" text-green-400 text-center mb-2">
-					{isVisibleTimerAvatar && <p>{message}</p>}
+					{!wrongFormat && <p>{message}</p>}
 					<div className="text-red-700">
 						{ wrongFormat && <p>{message}</p>}
 					</div>
