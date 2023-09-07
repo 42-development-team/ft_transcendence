@@ -19,10 +19,10 @@ const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 					<div className="flex py-[1vw] justify-center w-full h-full">
 						<div className="flex flex-col py-[1vw] h-full w-full justify-center ">
 							<div className="text-lg">
-								W / L - R (%)
+								W / L - R
 							</div>
 							<div className="text-xl">
-								{stats.win} / {stats.lose} - {stats.ratio}
+								{stats.win} / {stats.lose} - {stats.ratio.toFixed(1)}
 							</div>
 						</div>
 					</div>
@@ -41,7 +41,6 @@ const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 					</div>
 				</div>
 			</div>
-
 		</div>
 	)
 }
