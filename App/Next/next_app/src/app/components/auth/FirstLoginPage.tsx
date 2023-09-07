@@ -5,6 +5,7 @@ import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
 import { useRouter } from 'next/navigation';
+import { isAlphanumeric } from '../utils/isAlphanumeric';
 
 const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
@@ -82,6 +83,12 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				setInputUserName(placeHolder);
 				setValidateEnabled(true);
 				setIsVisible(false);
+				return;
+			}
+			else if (isAlphanumeric(newinputUserName) === false) {
+				setMessage("Username can only contain letters and numbers");
+				setValidateEnabled(false);
+				setIsVisible(true);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
