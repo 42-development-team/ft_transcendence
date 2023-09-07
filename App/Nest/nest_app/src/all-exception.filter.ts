@@ -13,8 +13,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
-        console.log("HttpExceptionFilter: " + JSON.stringify(exception, null, 2));
-
         response.clearCookie("jwt");
         response.clearCookie("rt");
         response.redirect(`http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}/`);
