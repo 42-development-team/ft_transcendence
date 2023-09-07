@@ -31,6 +31,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
 	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
 	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
+	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -54,6 +55,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	useEffectTimer(isVisibleTimer, 2600, setIsVisibleTimer);
 	useEffectTimer(isVisibleTimerAvatar, 2600, setIsVisibleTimerAvatar);
 	useEffectTimer(updatedUsername, 2600, setUpdatedUsername);
+	useEffectTimer(wrongFormat, 2600, setWrongFormat);
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
@@ -146,7 +148,15 @@ const SettingsPage = ({userId}: {userId: string}) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
+		if (message !== null) {
+			setValidateAvatarEnabled(false);
+			setUpdatingAvatar(true);
+			setWrongFormat(true);
+			setMessage(message);
+			console.log("Error during avatar upload:", message);
+			return ;
+		}
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
 		if (childAvatarFile !== null && childImageUrl !== null)
@@ -202,6 +212,9 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				!validateAvatarEnabled && updatingAvatar &&
 				<div className=" text-green-400 text-center mb-2">
 					{isVisibleTimerAvatar && <p>{message}</p>}
+					<div className="text-red-700">
+						{ wrongFormat && <p>{message}</p>}
+					</div>
 				</div>
 			}
 			<div className="flex justify-center mb-6">

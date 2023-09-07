@@ -8,7 +8,7 @@ import { useEffectTimer } from "../auth/utils/useEffectTimer";
 const Avatar = (
     {
         children,
-        CallbackAvatarData = (AvFile: File | null, image: string) => {},
+        CallbackAvatarData = (AvFile: File | null, image: string, message: string | null) => {},
         imageUrlGetFromCloudinary = null,
         disableChooseAvatar = false,
         disableImageResize = false,
@@ -59,7 +59,7 @@ const Avatar = (
         if (!file) {
           // If no file is selected, reset the state for avatarFile and imageUrl
           setImageUrl(null);
-          CallbackAvatarData(null, null);
+          CallbackAvatarData(null, null, null);
           return;
         }
       
@@ -70,7 +70,7 @@ const Avatar = (
                 if (checkIfJpg(arrayBuffer) == false) {
                     setMessage("File is not a JPG image");
                     setIsVisible(true);
-                    CallbackAvatarData(null, "https://img.freepik.com/free-icon/user_318-563642.jpg");
+                    CallbackAvatarData(null, null, "File is not a JPG image");
                     console.log("File is not a JPG image");
                     return;
                 }
@@ -91,7 +91,7 @@ const Avatar = (
         }
         const objectURL = URL.createObjectURL(file);
         setImageUrl(objectURL);
-        CallbackAvatarData(file, objectURL); //Send Avatar DAta to Parent Component
+        CallbackAvatarData(file, objectURL, null); //Send Avatar DAta to Parent Component
       };
 
     return (
