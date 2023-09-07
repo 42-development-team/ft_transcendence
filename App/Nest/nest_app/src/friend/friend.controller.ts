@@ -23,9 +23,9 @@ export class FriendController {
 	/* U(pdate) */
 
 	@Patch('addFriend')
-	async addFriend(@Param('addedUserId') @Request() req: any, @Res() res: Response) {
+	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
-		const friends: FriendDto[] = await this.friendService.addFriend(userId, addedUserId);
+		const friends: FriendDto = await this.friendService.addFriend(userId, Number(addedUserId));
 		res.send(friends);
 	}
 
