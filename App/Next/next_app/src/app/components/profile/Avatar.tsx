@@ -31,7 +31,19 @@ const Avatar = (
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [wrongFormat, setWrongFormat] = useState<boolean>(true);
+    const [wrongFormat, setWrongFormat] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (wrongFormat) {
+            setWrongFormat(false);
+            setImageUrl(null);
+            imageUrlGetFromCloudinary = null;
+        }
+    }, [wrongFormat]);
+
+    useEffect(() => {
+
+    }, [imageUrl]);
 
     //check jpg
     function checkIfJpg(arrayBuffer: ArrayBuffer) {
@@ -52,6 +64,7 @@ const Avatar = (
         if (checkIfJpg(arrayBuffer) == false) {
             setWrongFormat(true);
             CallbackAvatarData(null, null, "File is not a JPG image");
+            return ;
         }
         else {
             setWrongFormat(false);
@@ -61,6 +74,7 @@ const Avatar = (
     /* When the user selects an image for the avatar, 
     the handleAvatarChange function is called */
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setWrongFormat(true);
         const file = e.target.files?.[0] || null;
         
         if (!file) {
@@ -77,7 +91,7 @@ const Avatar = (
         }
 
         if (wrongFormat) {
-            console.log("File is not a JPG image LOL");
+            setImageUrl(null);
             return ;
         }
 
