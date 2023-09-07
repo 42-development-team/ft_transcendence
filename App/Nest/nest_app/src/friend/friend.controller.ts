@@ -32,8 +32,8 @@ export class FriendController {
 	@Patch('addFriend')
 	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
-		const friends: FriendDto = await this.friendService.addFriend(userId, Number(addedUserId));
-		res.send(friends);
+		await this.friendService.addFriend(userId, Number(addedUserId));
+		res.send();
 	}
 
 	@Patch('block/:blockedId')
