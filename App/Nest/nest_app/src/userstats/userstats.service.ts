@@ -109,6 +109,8 @@ export class UserStatsService {
 					played: userUpdateDto.played,
 			},
 		});
+		console.log(Number((userUpdateDto.win / userUpdateDto.lose).toFixed(1)));
+		
 	}
 
 	/* D(elete) */
