@@ -9,6 +9,18 @@ type FriendProps = {
 }
 
 const FriendActions = () => {
+
+    // Todo: prevent double click
+    // const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+	
+	// const handleAction = (action: () => void) => {
+    //     if (lockSubmit) return;
+    //     setLockSubmit(true);
+    //     action();
+	// 	console.log("unblockUser");
+    //     setTimeout(() => setLockSubmit(false), 1500);
+    // }
+    
     return (
         <div aria-orientation="vertical" >
             <DropDownAction onClick={() => console.log('Play')}>
