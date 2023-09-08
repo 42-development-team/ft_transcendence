@@ -36,7 +36,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected from game: ' + client.id);
-        const userId = await this.userService.getUserIdFromSocket(client);
+        // const userId = await this.userService.getUserIdFromSocket(client);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
