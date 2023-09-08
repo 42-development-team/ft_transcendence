@@ -3,22 +3,50 @@ import Image from "next/image";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
+import { Alert } from "@material-tailwind/react";
+import { useEffect, useRef, useState } from "react";
+import { useUserRole } from "../../components/chat/chatbox/members/UserRoleProvider";
+// import FriendList from "./FriendList";
 
 type FriendProps = {
     user: UserModel
 }
 
-const FriendActions = () => {
-    return (
+const FriendActions = ({user}: FriendProps) => {
+	const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
+	const [ isOpen, setIsOpen ] = useState(false);
+	const [ openAlert, setOpenAlert ] = useState(false);
+	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+
+	const onProfileClick = () => {
+		// if (user && user.id){
+			console.log("userId = ", user.id);
+			sessionStorage.setItem("userId", user.id);
+		// }
+		if (sessionStorage.getItem("userId") === undefined)
+			setOpenAlert(true);
+		else
+			window.location.href = "/profile";
+	}
+
+	const handleAction = (action: () => void) => {
+		if (lockSubmit) return;
+		setLockSubmit(true);
+		action();
+		setIsOpen(false);
+		setTimeout(() => setLockSubmit(false), 1500);
+	}
+
+	return (
         <div aria-orientation="vertical" >
             <DropDownAction onClick={() => console.log('Play')}>
                 Invite to play
             </DropDownAction>
-            <DropDownAction onClick={() => console.log('View Profile')}>
-                View profile
-            </DropDownAction>
+            <DropDownAction onClick={() => handleAction(onProfileClick)}>
+				View profile
+			</DropDownAction>
             <DropDownActionRed onClick={() => console.log('Remove Friend')}>
-                Remove Friend 
+                Remove Friend
             </DropDownActionRed>
         </div>
     )
@@ -41,7 +69,7 @@ const FriendItem = ({ user }: FriendProps) => {
                 <h1 className="font-medium text-sm">{user.username}</h1>
             </div>
             <DropDownMenu >
-                <FriendActions />
+                <FriendActions user={user}/>
             </DropDownMenu>
         </div>
     )

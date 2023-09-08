@@ -1,10 +1,11 @@
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider";
 import { UserModel } from "@/app/utils/models";
 import FriendItem from "./FriendItem";
+// import FriendActions from "./FriendItem";
 import ChatHeader from "../chat/chatbox/ChatHeader";
 import ChatMemberHeader from "../chat/chatbox/members/ChatMemberHeader";
 import BlockUserItem from "./BlockUserItem";
-import useFriends from "@/app/hooks/useFriends";
+// import useFriends from "@/app/hooks/useFriends";
 
 interface FriendListProps {
     friends: UserModel[];
@@ -20,7 +21,6 @@ const FriendList = ({friends, blockedUsers, unblockUser}: FriendListProps) => {
 	const {updateChatBarState} = useChatBarContext();
 	// const {friends} = useFriends();
     const friendsList = friends.map((friend) => {
-		console.log("username: ", friend.username);
         return <FriendItem key={friend.id} user={friend}/>
 	})
 
