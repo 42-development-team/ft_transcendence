@@ -1,6 +1,5 @@
 
 const generateTwoFA = async (url: string, userId: string, setImageUrl = (data: any) => {}) => {
-    console.log(url);
     try {
         const response = await fetch(url, {
             method: "PUT",

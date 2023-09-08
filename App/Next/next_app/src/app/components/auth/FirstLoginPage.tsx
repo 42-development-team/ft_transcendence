@@ -148,23 +148,25 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
 	return (
 		<div className="flex flex-col items-center ">
-			<div className="m-4 pt-4">
+			<div className="flex flex-col m-4 pt-4 ">
 				<p className="font-bold text-center">Choose your username</p>
-				<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
-					id="username"
-					onChange={(e) => handleOnChange(e)}
-					placeholder={placeHolder}
-					inputMode='text'
-					type="text"
-					className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
-				/>
+				<div className='flex justify-center'>
+					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
+						id="username"
+						onChange={(e) => handleOnChange(e)}
+						placeholder={placeHolder}
+						inputMode='text'
+						type="text"
+						className=" m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
+					/>
+				</div>
 				{
 					validateEnabled || redirecting ?
 						<div className=" text-green-400 text-center">
 							{isVisible && <p>{message}</p>}
 						</div>
 						:
-						<div className=" text-red-700 text-center">
+						<div className=" text-red-700 text-center ">
 							{isVisible && <p>{message}</p>}
 						</div>
 				}
