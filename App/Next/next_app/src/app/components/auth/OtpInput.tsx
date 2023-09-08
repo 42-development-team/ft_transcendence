@@ -35,8 +35,19 @@ const OtpInput = ( { parentCallbackData, parentCallbackEnter } : any ) => {
 
     const handleOnKeyDown = ({key}: React.KeyboardEvent<HTMLInputElement>, index: number) => {
         currentOtpIndex = index;
-        if (key === 'Backspace' ) {
-            setActiveOtpIndex(currentOtpIndex - 1);
+        if (key === 'Backspace') {
+            if ( index !== 5 || index === 5 && otp[index] === '') {
+                const newOTP: string[] = [...otp];
+                newOTP[currentOtpIndex - 1] = '';
+                setOtp(newOTP);
+                setActiveOtpIndex(currentOtpIndex - 1);
+            }
+            else {
+                const newOTP: string[] = [...otp];
+                newOTP[currentOtpIndex] = '';
+                setOtp(newOTP);
+                setActiveOtpIndex(currentOtpIndex);
+            }
         }
         else if (key === 'Enter' && index === 5) {
             parentCallbackEnter();
