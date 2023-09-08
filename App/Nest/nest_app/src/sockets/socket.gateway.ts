@@ -5,10 +5,9 @@ import { ChatroomService } from '../chatroom/chatroom.service';
 import { UsersService } from '../users/users.service'
 import { MembershipService } from 'src/membership/membership.service';
 import { GameService } from 'src/game/game.service';
-import { GameDto, PlayerDto } from 'src/game/dto/game-data.dto';
+import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { UserIdDto } from 'src/userstats/dto/user-id.dto';
-import { Max } from 'class-validator';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -20,7 +19,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private chatroomService: ChatroomService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-    ) {}
+    ) {
+        console.log("Socket Gateway created");
+    }
 
     @WebSocketServer()
     server: Server;
