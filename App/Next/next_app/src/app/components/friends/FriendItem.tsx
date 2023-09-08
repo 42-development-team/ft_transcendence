@@ -9,6 +9,18 @@ type FriendProps = {
 }
 
 const FriendActions = () => {
+
+    // Todo: prevent double click
+    // const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+	
+	// const handleAction = (action: () => void) => {
+    //     if (lockSubmit) return;
+    //     setLockSubmit(true);
+    //     action();
+	// 	console.log("unblockUser");
+    //     setTimeout(() => setLockSubmit(false), 1500);
+    // }
+
     return (
         <div aria-orientation="vertical" >
             <DropDownAction onClick={() => console.log('Play')}>
@@ -32,7 +44,8 @@ const FriendItem = ({ user }: FriendProps) => {
                     {user.avatar.startsWith("https://")
                         ? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
                             className="w-[inherit] rounded-[inherit]" />
-                        : null
+                        : <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
+                            className="w-[inherit] rounded-[inherit]" />
                     }
                     <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(user.currentStatus)}`}></div>

@@ -33,6 +33,7 @@ const ChatMemberActions = (
     }: ChatMemberActionsProps) => {
 
     const onProfileClick = () => {
+        console.log("onProfileClick");
         sessionStorage.setItem("userId", user.id);
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
@@ -95,7 +96,7 @@ const ChatMemberActions = (
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={() => handleAction(() => onProfileClick)}>View profile</DropDownAction>
+                    <DropDownAction onClick={() => handleAction(onProfileClick)}>View profile</DropDownAction>
                     <Alert
                         className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
                         variant='gradient'
@@ -109,10 +110,12 @@ const ChatMemberActions = (
                     </Alert>
                     {!isCurrentUser &&
                     <>
-                        <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
                         {!isBlocked &&
-                            <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            <>
+                                <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
+                                <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            </>
                         }
                     </>
                     }

@@ -1,8 +1,8 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Response } from 'express';
 
-@Catch()
+@Catch(UnauthorizedException)
 export class AllExceptionsFilter implements ExceptionFilter {
     constructor(
         private configService: ConfigService,
