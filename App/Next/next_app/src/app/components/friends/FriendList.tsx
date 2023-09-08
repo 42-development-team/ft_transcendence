@@ -7,19 +7,22 @@ import BlockUserItem from "./BlockUserItem";
 import useFriends from "@/app/hooks/useFriends";
 
 interface FriendListProps {
-    // friends: UserModel[];
+    friends: UserModel[];
     blockedUsers: UserModel[];
     unblockUser: (unblockedId: string) => void;
 }
 
-const FriendList = ({blockedUsers, unblockUser}: FriendListProps) => {
-
-    const {updateChatBarState} = useChatBarContext();
-	const {friends} = useFriends();
-
-    const friendsList = friends.map((friend) => (
-        <FriendItem key={friend.id} user={friend}/>
-    ))
+const FriendList = ({friends, blockedUsers, unblockUser}: FriendListProps) => {
+	// const { friends }: { friends: UserModel[] } = useFriends();
+	// friends.forEach((friend) => {
+	// 	console.log(`friend username: ${friend.username}`);
+	//   });
+	const {updateChatBarState} = useChatBarContext();
+	// const {friends} = useFriends();
+    const friendsList = friends.map((friend) => {
+		console.log("username: ", friend.username);
+        return <FriendItem key={friend.id} user={friend}/>
+	})
 
     const blockedList = blockedUsers.map((blockedUser) => (
         <BlockUserItem key={blockedUser.id} user={blockedUser} unblockUser={unblockUser}/>

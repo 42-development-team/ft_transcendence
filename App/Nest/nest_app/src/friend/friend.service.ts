@@ -28,7 +28,7 @@ export class FriendService {
 			const friend = this.userService.getUserFromId(id);
 			const friendDto: FriendDto = {
 				id: id.toString(),
-				userName: (await friend).username,
+				username: (await friend).username,
 				avatar: (await friend).avatar,
 				currentStatus: (await friend).currentStatus
 			};
@@ -84,7 +84,7 @@ export class FriendService {
 				 this.prisma.user.update({
 					where: { id: userId },
 					data: {
-						friendRequestSent: {
+						friends: {
 							push: addedUserId,
 						},
 					},
@@ -92,7 +92,7 @@ export class FriendService {
 				 this.prisma.user.update({
 					where: { id: addedUserId },
 					data: {
-						friendRequestGot: {
+						friends: {
 							push: userId,
 						},
 					},

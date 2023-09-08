@@ -185,6 +185,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 					'Content-Type': 'application/json'
 				},
 			});
+			// console.log(response);
 			if (!response.ok) {
 				console.log("Error adding user as a friend: " + response.status);
 			}

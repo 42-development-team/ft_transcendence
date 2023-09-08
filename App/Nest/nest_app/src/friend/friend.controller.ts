@@ -24,16 +24,16 @@ export class FriendController {
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const blockedUsers: FriendDto[] = await this.friendService.getBlockedUsers(userId);
+
 		res.send(blockedUsers);
 	}
 
 	/* U(pdate) */
-
-	@Patch('addFriend')
+	@Patch('addFriend/:addedUserId')
 	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		await this.friendService.addFriend(userId, Number(addedUserId));
-		res.send();
+		res.send("Friend added successfully");
 	}
 
 	@Patch('block/:blockedId')

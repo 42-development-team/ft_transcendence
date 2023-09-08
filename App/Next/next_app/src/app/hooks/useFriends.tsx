@@ -12,16 +12,17 @@ export default function useFriends() {
 		// Todo: fetch friends
 	}, []);
 
-	// useEffect(() => {
-	// 	if (friends.length > 0)
-	// 		console.log("friends: " + JSON.stringify(friends, null, 2));
-	// 	if (blockedUsers.length > 0)
-	// 		console.log("blockedUsers: " + JSON.stringify(blockedUsers, null, 2))
-	// }, [friends, blockedUsers]);
+	useEffect(() => {
+		if (friends.length > 0)
+			console.log("friends: " + JSON.stringify(friends, null, 2));
+		if (blockedUsers.length > 0)
+			console.log("blockedUsers: " + JSON.stringify(blockedUsers, null, 2))
+	}, [friends, blockedUsers]);
 
 	const fetchFriends = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
+		// data.forEach((friend: any) => console.log(friend.userName));
 		setFriends(data);
 	}
 
