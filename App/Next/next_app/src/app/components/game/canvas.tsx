@@ -40,22 +40,6 @@ function printMidLine(context: CanvasRenderingContext2D, width: number, height: 
 	context.closePath();
 }
 
-// ======== MANAGE END GAME ==============//
-function win(context: CanvasRenderingContext2D, result: [PlayerInterface, PlayerInterface], width: number, height: number) {
-	
-	context.font='30px Arial';
-	context.fillStyle='red';
-	context.beginPath();
-		context.fillText(result[0].name + " won the game", 0.5 * width, 0.5 * height);
-		context.fillText(result[1].name + " lose the game", 0.5 * width, 0.7 * height);
-	context.closePath();
-}
-
-function finish(result: [PlayerInterface, PlayerInterface], animationId: number) {
-	// envoyer les infos au back
-	() => window.cancelAnimationFrame(animationId);
-}
-
 // ============ RENDER ==============//
 function renderBall(context: CanvasRenderingContext2D, ball: BallInterface, width:  number, height: number) {
 	context.fillStyle = ball.color;
