@@ -4,17 +4,15 @@ import { GameController } from './game.controller';
 import { UsersModule } from "../users/users.module";
 
 //==================
-import { MembershipService } from 'src/membership/membership.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ChatroomModule } from 'src/chatroom/chatroom.module';
+import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { ChatroomService } from 'src/chatroom/chatroom.service';
+import { GameGateway } from 'src/sockets/game.gateway';
 
 
 @Module({
-  imports: [UsersModule, ChatroomModule, JwtModule, PrismaModule],
+  imports: [UsersModule, JwtModule, PrismaModule],
   controllers: [GameController],
-  providers: [GameService, MembershipService, ChatroomService],
+  providers: [GameService, GameGateway],
   exports: [GameService]
 })
 export class GameModule {}

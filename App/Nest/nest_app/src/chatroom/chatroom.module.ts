@@ -13,7 +13,7 @@ import { GameService } from 'src/game/game.service';
 @Module({
   imports: [UsersModule],
   controllers: [ChatroomController],
-  providers: [ChatroomService, PrismaService, JwtService, SocketGateway, MembershipService, GameService],
+  providers: [ChatroomService, PrismaService, JwtService, SocketGateway, MembershipService],
   exports: [ChatroomService, SocketGateway, JwtService, MembershipService]
 })
 export class ChatroomModule {}
