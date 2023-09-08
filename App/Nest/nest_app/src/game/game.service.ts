@@ -192,17 +192,7 @@ export class GameService {
             this.gameRooms[idx].readyPlayerTwo = true;
         }
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true) {
-            // BUG IN THIS SHIT!!
             return this.update(idx);
-
-            // const createGameDto = {
-            //     winnerScore: Math.max(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
-            //     loserScore: Math.min(this.gameRooms[idx].data.player1.points, this.gameRooms[idx].data.player2.points),
-            //     winnerId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player1.id : this.gameRooms[idx].data.player2.id,
-            //     loserId: this.gameRooms[idx].data.player1.points > this.gameRooms[idx].data.player2.points ? this.gameRooms[idx].data.player2.id : this.gameRooms[idx].data.player1.id,
-            // }
-            // await this.createGame(createGameDto);
-            // this.removeRoom(this.gameRooms[idx].data.roomName);
         }
     }
 

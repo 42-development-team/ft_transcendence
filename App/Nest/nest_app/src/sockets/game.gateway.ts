@@ -79,9 +79,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
-        // this.gameService.handleLaunchGame(this.server, id, userId);
 
-        // test
         let data: GameDto = await this.gameService.handleLaunchGame(id, userId);
         while (data.end === false) {
             data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
@@ -97,5 +95,4 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(data.roomName).emit('updateGame', data);
     }
 
-    // Should emit to room event 'GameOver' ??
 }
