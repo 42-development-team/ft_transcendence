@@ -1,7 +1,7 @@
 import useChannels from '@/app/hooks/useChannels';
 import style from '../Chat.module.css';
 
-const CreateChannel = () => {
+const CreateChannel = ({userId}) => {
     const {createNewChannel} = useChannels();
     return (
         <li className={style.channelItem}>

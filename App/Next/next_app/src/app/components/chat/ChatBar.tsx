@@ -14,7 +14,7 @@ import JoinChannel from './channel/JoinChannel';
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
-const ChatBar = () => {
+const ChatBar = ({ userId }) => {
     const {isChatOpen, isFriendListOpen, isChatMembersOpen, isChannelJoinOpen} = useChatBarContext();
     const {messages, send} = useChatMessages();
     const {channels} = useChannels();
@@ -23,7 +23,7 @@ const ChatBar = () => {
 
     return (
         <div className='flex h-full'>
-            <ChatSideBar channels={channels} />
+            <ChatSideBar channels={channels} userId={userId} />
             {/* Main Panel */}
             {isChatOpen && !isChatMembersOpen &&
                 <ChatMessagesBox ref={chatMessageBoxRef} messages={messages} send={send} />
