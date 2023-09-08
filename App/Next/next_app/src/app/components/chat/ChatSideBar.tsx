@@ -6,7 +6,7 @@ import CreateChannel from './channel/CreateChannel';
 import Separator from './channel/Separator';
 import JoinChannelButton from './channel/JoinChannelButton';
 
-const ChatSideBar = ( {channels} : {channels: ChannelModel[]} {userId}) => {
+const ChatSideBar = ( {channels, userId} : {channels: ChannelModel[]; userId: string}) => {
     const channelsList = channels.map((channel) => (
         <Channel key={channel.id} channel={channel}/>
     ))
