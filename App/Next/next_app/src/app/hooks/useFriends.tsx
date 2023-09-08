@@ -20,7 +20,7 @@ export default function useFriends() {
 	// }, [friends, blockedUsers]);
 
 	const fetchFriends = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/friend/friends`, { credentials: "include", method: "GET" });
+		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
 		setFriends(data);
 	}

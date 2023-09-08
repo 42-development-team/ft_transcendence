@@ -13,12 +13,12 @@ export class FriendController {
 
 
 	/* R(ead) */
-	// @Get('friends')
-	// async getFriends(@Request() req: any, @Res() res: Response) {
-	// 	const userId = req.user.sub;
-	// 	const friends: FriendDto[] = await this.friendService.getFriends(userId);
-	// 	res.send(friends);
-	// }
+	@Get('getFriends')
+	async getFriends(@Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const friends: FriendDto[] = await this.friendService.getFriends(userId);
+		res.send(friends);
+	}
 
 	@Get('blocked')
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
