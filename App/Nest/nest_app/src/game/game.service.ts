@@ -192,7 +192,7 @@ export class GameService {
             this.gameRooms[idx].readyPlayerTwo = true;
         }
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true) {
-            return this.update(idx);
+            return this.gameRooms[idx].data;
         }
     }
 
@@ -405,18 +405,6 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
     
-    async update(idx: number) {
-        
-        return this.gameRooms[idx].data;
-
-        while (this.gameRooms[idx].data.end === false) {
-            const data: GameDto = await this.calculateGame(idx); // ATTENTION A LA DUREE DU SLEEP
-            // server.to(data.roomName).emit('updateGame', data);
-            await this.sleep(1000 / 60);
-            console.log(data);
-        }
-    }
-
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,
