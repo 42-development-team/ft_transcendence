@@ -31,6 +31,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
 	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
 	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
+	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -93,7 +94,8 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			setUpdatingAvatar(true);
 			setMessage("Updating avatar...");
 			setIsVisibleTimerAvatar(true);
-			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			if (!wrongFormat)
+				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			setMessage("Avatar updated successfully");
 			setUpdatingAvatar(false);
 		} catch (error) {
@@ -146,7 +148,18 @@ const SettingsPage = ({userId}: {userId: string}) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
+		if (message !== null) {
+			setValidateAvatarEnabled(false);
+			setImageUrl(null);
+			setAvatarFile(null);
+			setIsVisibleTimerAvatar(true);
+			setUpdatingAvatar(true);
+			setWrongFormat(true);
+			setMessage(message);
+			console.log("Error during avatar upload:", message);
+			return ;
+		}
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
 		if (childAvatarFile !== null && childImageUrl !== null)
@@ -199,13 +212,16 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			{
-				!validateAvatarEnabled && updatingAvatar &&
+				!validateAvatarEnabled && updatingAvatar && isVisibleTimerAvatar &&
 				<div className=" text-green-400 text-center mb-2">
-					{isVisibleTimerAvatar && <p>{message}</p>}
+					{!wrongFormat && <p>{message}</p>}
+					<div className="text-red-700">
+						{ wrongFormat && <p>{message}</p>}
+					</div>
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{validateAvatarEnabled && !updatedUsername &&
+				{ !updatedUsername &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>
