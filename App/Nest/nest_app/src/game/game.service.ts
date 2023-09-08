@@ -1,5 +1,4 @@
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
@@ -7,7 +6,7 @@ import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 //===========
-import { Socket, Server } from 'socket.io';
+import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
 import { UserIdDto } from "src/userstats/dto/user-id.dto";
 import { UsersService } from "src/users/users.service";
@@ -163,6 +162,7 @@ export class GameService {
             playerTwoId: player2Id,
             readyPlayerOne: false,
             readyPlayerTwo: false,
+            reconnect: false,
             data: this.setGameData(id, roomName, player1Id, player2Id),
         }
 
@@ -179,7 +179,7 @@ export class GameService {
         return ({newGameRoom, player2SocketId});
     }
 
-    async handleLaunchGame(id: number, userId: number) {
+    async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!LaunchGameRoom")
@@ -191,7 +191,7 @@ export class GameService {
         else if (this.gameRooms[idx].playerTwoId === userId)
             this.gameRooms[idx].readyPlayerTwo = true;
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
-            return this.gameRooms[idx].data;
+            return this.gameRooms[idx];
     }
 
     handleLeaveQueue(userId: UserIdDto) {
@@ -211,7 +211,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
         }
-        else {
+        else if (this.gameRooms[idx].data.player2.id === userId){
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
@@ -387,18 +387,12 @@ export class GameService {
         this.incrementSpeed(idx);
     };
 
-    async calculateGame(idx: number) {
-
-        // var startTime = performance.now()
+    async calculateGame(idx: number): Promise<GameDto> {
 
         this.calculatePlayer(idx);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 11 || this.gameRooms[idx].data.player2.points > 11)
-        this.gameRooms[idx].data.end = true;
-
-        // var endTime = performance.now()
-
-        // console.log("time:", endTime - startTime);
+        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
+            this.gameRooms[idx].data.end = true;
         
         return {...this.gameRooms[idx].data};
     }

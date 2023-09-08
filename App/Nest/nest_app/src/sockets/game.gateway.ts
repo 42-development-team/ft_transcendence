@@ -36,7 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected from game: ' + client.id);
-        // const userId = await this.userService.getUserIdFromSocket(client);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
@@ -54,8 +53,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (player2SocketId) {
             const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
+            this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
-        this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+        else {
+            newGameRoom.reconnect = true;
+            this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
+        }
     }
 
     @SubscribeMessage('leaveQueue')
@@ -63,7 +66,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.gameService.handleLeaveQueue(userId);
     }
 
-    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(socket: Socket, @MessageBody() body: any) {
         const [event, id, userId] = body;
@@ -80,19 +82,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleLaunchGame(socket: Socket, id: number) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
-        let data: GameDto = await this.gameService.handleLaunchGame(id, userId);
-        if (data) {
-           this.gameLogic(data);
+        let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        if (room && room.data) {
+            if (room.reconnect === false)
+                this.gameLogic(room.data);
         }
+    }
+
+    async sleepAndCalculate(data: GameDto): Promise<GameDto> {
+        const promiseSleep = this.gameService.sleep(1000 / 60);
+        const promiseCalculate = this.gameService.calculateGame(data.id);
+    
+        await Promise.all([promiseSleep, promiseCalculate]);
+        return promiseCalculate;
     }
 
     async gameLogic(data: GameDto) {
         while (data.end === false) {
-            var startTime = performance.now();
-            data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
+            data = await this.sleepAndCalculate(data);
             this.sendDataToRoom(data);
-            var endTime = performance.now();
-            await this.gameService.sleep((1000 / 60) - (endTime - startTime));
         }
         await this.gameService.createGame(data);
         this.gameService.removeRoom(data.roomName);
