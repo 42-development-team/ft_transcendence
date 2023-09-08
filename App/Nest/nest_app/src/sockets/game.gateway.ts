@@ -81,12 +81,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let data: GameDto = await this.gameService.handleLaunchGame(id, userId);
-        while (data.end === false) {
-            data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
-            this.server.to(data.roomName).emit('updateGame', data);
-            await this.gameService.sleep(1000 / 60);
+        if (data) {
+           this.gameLogic(data);
         }
+    }
 
+    async gameLogic(data: GameDto) {
+        while (data.end === false) {
+            var startTime = performance.now();
+            data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
+            this.sendDataToRoom(data);
+            var endTime = performance.now();
+            await this.gameService.sleep((1000 / 60) - (endTime - startTime));
+        }
         await this.gameService.createGame(data);
         this.gameService.removeRoom(data.roomName);
     }
@@ -94,5 +101,4 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async sendDataToRoom(data: GameDto) {
         this.server.to(data.roomName).emit('updateGame', data);
     }
-
 }

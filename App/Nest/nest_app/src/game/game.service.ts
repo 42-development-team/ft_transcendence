@@ -185,15 +185,13 @@ export class GameService {
             console.log("!LaunchGameRoom")
             return ;
         }
-        if (this.gameRooms[idx].playerOneId === userId) {
+
+        if (this.gameRooms[idx].playerOneId === userId)
             this.gameRooms[idx].readyPlayerOne = true;
-        }
-        else if (this.gameRooms[idx].playerTwoId === userId) {
+        else if (this.gameRooms[idx].playerTwoId === userId)
             this.gameRooms[idx].readyPlayerTwo = true;
-        }
-        if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true) {
+        if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
             return this.gameRooms[idx].data;
-        }
     }
 
     handleLeaveQueue(userId: UserIdDto) {
@@ -391,12 +389,16 @@ export class GameService {
 
     async calculateGame(idx: number) {
 
+        // var startTime = performance.now()
+
         this.calculatePlayer(idx);
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 11 || this.gameRooms[idx].data.player2.points > 11)
         this.gameRooms[idx].data.end = true;
 
-        // await this.sleep(1000 / 60);
+        // var endTime = performance.now()
+
+        // console.log("time:", endTime - startTime);
         
         return {...this.gameRooms[idx].data};
     }
