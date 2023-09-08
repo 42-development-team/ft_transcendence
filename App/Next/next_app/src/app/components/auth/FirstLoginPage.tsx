@@ -24,8 +24,10 @@ const FirstLoginPageComponent = ({
     const [waiting2fa, setWaiting2fa]           = useState(true);
     const [avatarFile, setAvatarFile]           = useState<File | null>(null);
     const [imageUrl, setImageUrl]               = useState<string | null>(null);
+    const [inputUserName, setInputUserName] = useState('');
 
-    let inputUserName: string | null;
+
+    // let inputUserName: string | null;
 
 
     useEffect(() => {
@@ -46,7 +48,7 @@ const FirstLoginPageComponent = ({
         if (!data.ok)
             console.log(data.error);
         setPlaceHolder(data.username);
-        inputUserName = data.username;
+        setInputUserName(data.username);
     }
 
     const redirectToHome = () => {
@@ -97,10 +99,10 @@ const FirstLoginPageComponent = ({
 /* handle change of username input */
     const handleOnChange = async (e: ChangeEvent<HTMLInputElement>) => {
         try {
-            inputUserName = e.target.value;
+            const newinputUserName = e.target.value;
             if (inputUserName === "") {
+              setInputUserName(newinputUserName);
                 setValidateEnabled(true);
-                inputUserName = placeHolder;
                 setIsVisible(false);
                 return ;
             }
