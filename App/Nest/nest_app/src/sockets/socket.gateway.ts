@@ -17,7 +17,6 @@ import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     constructor(
         private chatroomService: ChatroomService,
-        private gameService: GameService,
         private userService: UsersService,
         private memberShipService: MembershipService,
     ) {
@@ -32,7 +31,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
     queued: UserIdDto[] = [];
 
 	async handleConnection(client: Socket) {
-		const userId = await this.chatroomService.getUserIdFromSocket(client);
+		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
 			console.log('Client connected: ' + client.id);
 			await this.userService.updateSocketId(userId, client.id);
@@ -49,7 +48,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected: ' + client.id);
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const userId = await this.userService.getUserIdFromSocket(client);
         await this.userService.updateSocketId(userId, null);
         this.clients = this.clients.filter(c => c.id !== client.id);
 		// const userStatus = await this.userService.getCurrentStatusFromId(userId);
@@ -58,7 +57,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('joinRoom')
     async joinRoom(client: Socket, room: string){
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const userId = await this.userService.getUserIdFromSocket(client);
         const chatRoomId = await this.chatroomService.getIdFromChannelName(room);
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, chatRoomId);
         console.log(`Client ${user.username} (${client.id}) joined room ${room}`);
@@ -70,7 +69,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('leaveRoom')
     async handleLeaveRoom(client: Socket, roomId: string) {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const userId = await this.userService.getUserIdFromSocket(client);
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         client.leave(room);
         client.emit('leftRoom', {room});
@@ -83,7 +82,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         @MessageBody() body: any,
         @ConnectedSocket() client: Socket
         ) : Promise<void> {
-        const userId = await this.chatroomService.getUserIdFromSocket(client);
+        const userId = await this.userService.getUserIdFromSocket(client);
         const {roomId, message} = body;
         const newMessage = await this.chatroomService.addMessageToChannel(roomId, userId, message);
         if (!newMessage) {
@@ -171,161 +170,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('userInvited', {room, user});
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
-
-    // =========================================================================== //
-    // ============================ GAME EVENTS ================================== //
-    // =========================================================================== //
-    @SubscribeMessage('joinQueue')
-    async handleJoinQueue(player: Socket) {
-        try {
-            const userId = await this.chatroomService.getUserIdFromSocket(player);
-            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
-            if (idx === -1)
-                this.queued.push({userId});
-            else {
-                player?.join(this.gameRooms[idx].roomName);
-                this.server.to(this.gameRooms[idx].roomName).emit('matchIsReady', this.gameRooms[idx].data);
-            }
-
-            if (this.queued.length >= 2)
-               this.joinGame(player);
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    @SubscribeMessage('leaveQueue')
-    handleLeaveQueue(userId: UserIdDto) {
-        const playerIndex = this.queued.indexOf(userId);
-        this.queued.splice(playerIndex, 1);
-    }
-
-    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
-    @SubscribeMessage('move')
-    async handleMove(socket: Socket, @MessageBody() body: any) {
-        const [event, id, userId] = body;
-        // console.log("userId", userId);
-        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
-        if (!data) {
-            console.log("!Data")
-            return ;
-        }
-        if (data.player1.id === userId) {
-            if (event === "ArrowUp")
-                this.gameService.setVelocity(-0.01, data.player1);
-            else if (event === "ArrowDown")
-                this.gameService.setVelocity(0.01, data.player1);
-        }
-        else {
-            if (event === "ArrowUp")
-                this.gameService.setVelocity(-0.01, data.player2);
-            else if (event === "ArrowDown")
-                this.gameService.setVelocity(0.01, data.player2);
-        }
-    }
-
-    @SubscribeMessage('stopMove')
-    async handleStopMove(socket: Socket, @MessageBody() body: any) {
-        const [event, id, userId] = body;
-        let data: GameDto = this.gameRooms.find(game => game.id === id)?.data;
-        if (!data)
-            return ;
-        if (data.player1.id === userId) {
-            if (event === "ArrowUp")
-                this.gameService.killVelocity(data.player1);
-            else if (event === "ArrowDown")
-                this.gameService.killVelocity(data.player1);
-        }
-        else {
-            if (event === "ArrowUp")
-            this.gameService.killVelocity(data.player2);
-        else if (event === "ArrowDown")
-            this.gameService.killVelocity(data.player2);
-        }
-    }
-
-    @SubscribeMessage('launchGame')
-    async handleLaunchGame(socket: Socket, id: number) {
-        let data: GameDto = await this.getDataFromRoomId(id);
-        if (!data) {
-            console.log("!LaunchGame Data")
-            return ;
-        }
-        while (!data.end) {
-            let data = await this.getDataFromRoomId(id);
-            if (!data)
-                return ;
-            data = await this.gameService.calculateGame(data);
-            this.sendDataToRoom(data);
-            await this.sleep(1000/60);
-        }
-        
-        // handle finish game
-        const createGameDto = {
-            winnerScore: Math.max(data.player1.points, data.player2.points),
-            loserScore: Math.min(data.player1.points, data.player2.points),
-            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
-            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
-        }
-        await this.gameService.createGame(createGameDto);
-        this.removeRoom(data.roomName);
-    }
-
-    // handle refresh as disconectied or not ??
-
-    async joinGame(player: Socket) {
-        const player2Id: number = this.queued[0].userId;
-                const player1Id: number = this.queued[1].userId;
-
-                // create room data
-                const id: number = this.gameRooms.length;
-                const roomName: string = player1Id + "_" + player2Id;
-                const newGameRoom: GameRoomDto = {
-                    id: id,
-                    roomName: roomName,
-                    playerOneId: player1Id,
-                    playerTwoId: player2Id,
-                    data: this.gameService.setGameData(id, roomName, player1Id, player2Id),
-                }
-
-                // add room to rooms list
-                this.gameRooms.push(newGameRoom);
-                // pop player from queue list
-                this.handleLeaveQueue(this.queued[0]);
-                this.handleLeaveQueue(this.queued[1]);
-
-                // Create room instance and join room
-                await player?.join(roomName);
-
-                const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-                const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
-			    await player2Socket?.join(roomName);
-
-                // send game data to players
-                this.server.to(roomName).emit('matchIsReady', newGameRoom.data);
-    }
-
-    async removeRoom(roomName: string) {
-        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
-        if (idx === -1)
-            return ;
-        this.gameRooms.splice(idx, 1);
-    }
-
-    async sendDataToRoom(data: GameDto) {
-        this.server.to(data.roomName).emit('updateGame', data);
-    }
-
-    async getDataFromRoomId(id: number): Promise<GameDto> {
-        return this.gameRooms.find(game => game.id === id)?.data;
-    }
-
-    async sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    // Should emit to room event 'GameOver' ??
-
 
     /*
         if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB

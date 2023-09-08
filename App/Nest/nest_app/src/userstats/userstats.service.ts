@@ -105,10 +105,12 @@ export class UserStatsService {
 					win: userUpdateDto.win,
 					lose: userUpdateDto.lose,
 					totalScore: userUpdateDto.totalScore,
-					ratio: userUpdateDto.win / userUpdateDto.played,
+					ratio: Number((userUpdateDto.win / userUpdateDto.lose).toFixed(1)),
 					played: userUpdateDto.played,
 			},
 		});
+		console.log(Number((userUpdateDto.win / userUpdateDto.lose).toFixed(1)));
+		
 	}
 
 	/* D(elete) */

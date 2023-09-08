@@ -3,11 +3,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto';
 import { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
+import { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly prisma: PrismaService,
+        private configService: ConfigService,
+        private jwtService: JwtService,
     ) { }
 
     /* C(reate) */
@@ -49,6 +55,22 @@ export class UsersService {
         });
         return user.socketId;
     }
+
+    async getUserIdFromSocket(socket: Socket){
+		if (socket){
+			const authToken = socket.handshake.headers.cookie.split(";");
+			const jwtToken = authToken[0].split("=")[1];
+			const secret = this.configService.get<string>('jwtSecret');
+			const payload = this.jwtService.verify(jwtToken, { secret: secret });
+			const userId = payload.sub;
+			if(userId) {
+				return userId;
+			}
+			// Todo: if userId is undefined or null?
+			return null;
+		}
+		return null;
+	}
 
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {

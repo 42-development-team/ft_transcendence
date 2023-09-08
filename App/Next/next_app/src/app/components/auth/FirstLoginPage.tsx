@@ -5,6 +5,8 @@ import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
 import { useRouter } from 'next/navigation';
+import { isAlphanumeric } from '../utils/isAlphanumeric';
+import { useEffectTimer } from './utils/useEffectTimer';
 
 const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
@@ -17,8 +19,11 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [inputUserName, setInputUserName] = useState('');
+	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const Router = useRouter();
 
+	useEffectTimer(wrongFormat, 2600, setWrongFormat);
+	
 	useEffect(() => {
 		try {
 			getUserName(userId);
@@ -26,6 +31,10 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			console.log(error);
 		}
 	}, []);
+
+	useEffect(() => {
+
+	}, [wrongFormat]);
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
@@ -51,7 +60,8 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			setRedirecting(true);
 			setMessage("Updating avatar/username...")
 			setIsVisible(true);
-			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			if (!wrongFormat)
+				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			const updateData = {
 				newUsername: inputUserName,
 				userId: userId,
@@ -82,6 +92,12 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				setInputUserName(placeHolder);
 				setValidateEnabled(true);
 				setIsVisible(false);
+				return;
+			}
+			else if (isAlphanumeric(newinputUserName) === false) {
+				setMessage("Username can only contain letters and numbers");
+				setValidateEnabled(false);
+				setIsVisible(true);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
@@ -115,37 +131,52 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
+		if (message !== null) {
+			setWrongFormat(true);
+			setImageUrl(null);
+			setAvatarFile(null);
+			setMessage(message);
+			console.log("Error during avatar upload:", message);
+			return;
+		}
+		console.log("Avatar successfully uploaded");
+		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
 	}
 
 	return (
 		<div className="flex flex-col items-center ">
-			<div className="m-4 pt-4">
+			<div className="flex flex-col m-4 pt-4 ">
 				<p className="font-bold text-center">Choose your username</p>
-				<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
-					id="username"
-					onChange={(e) => handleOnChange(e)}
-					placeholder={placeHolder}
-					inputMode='text'
-					type="text"
-					className="m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
-				/>
+				<div className='flex justify-center'>
+					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
+						id="username"
+						onChange={(e) => handleOnChange(e)}
+						placeholder={placeHolder}
+						inputMode='text'
+						type="text"
+						className=" m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
+					/>
+				</div>
 				{
 					validateEnabled || redirecting ?
 						<div className=" text-green-400 text-center">
 							{isVisible && <p>{message}</p>}
 						</div>
 						:
-						<div className=" text-red-700 text-center">
+						<div className=" text-red-700 text-center ">
 							{isVisible && <p>{message}</p>}
 						</div>
 				}
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null} disableChooseAvatar={false} disableImageResize={true}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
+			<div className='flex justify-center text-red-700'>
+				{wrongFormat && <p>{message}</p>}
+			</div>
 			{
 				waiting2fa &&
 				<TwoFA userId={userId}></TwoFA>
