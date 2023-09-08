@@ -29,7 +29,7 @@ const ChatMemberActions = (
         isCurrentUser, user,
         kickUser, banUser, unbanUser,
         leaveChannel, sendDirectMessage, muteUser,
-        setAdmin, unsetAdmin, block, isBlocked
+        setAdmin, unsetAdmin, block, isBlocked, addFriend
     }: ChatMemberActionsProps) => {
 
     const onProfileClick = () => {
@@ -134,8 +134,8 @@ const ChatMemberActions = (
                     {isCurrentUser &&
                         <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
-                    {isCurrentUser &&
-                        <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Add as friend</DropDownActionRed>
+                    {!isCurrentUser &&
+                        <DropDownActionRed onClick={() => handleAction(addFriend)}>Add as friend</DropDownActionRed>
                     }
                 </div>
             </DropDownMenu>

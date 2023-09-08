@@ -135,6 +135,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         }
     }
 
+
     const removeAdmin = async (removedAdminId: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/removeAdmin`, {
@@ -146,17 +147,17 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({removedAdminId}),
             });
             if (!response.ok) {
-                console.log("Error removing admin role: " + response.status);
+				console.log("Error removing admin role: " + response.status);
             }
         }
         catch (error) {
-            console.log("Error removing admin role: " + error);
+			console.log("Error removing admin role: " + error);
         }
     }
 
     const mute = async (mutedId: string, muteDuration: number) => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
                 credentials: "include",
                 method: 'PATCH',
                 headers: {
@@ -165,15 +166,33 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({mutedId, muteDuration}),
             });
             if (!response.ok) {
-                console.log("Error muting: " + response.status);
+				console.log("Error muting: " + response.status);
             }
             // Todo: manage response
         }
         catch (error) {
-            console.log("Error muting: " + error);
+			console.log("Error muting: " + error);
         }
     }
 
+	const addFriend = async (friendAddingId: string) => {
+		// Todo: alerts
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/friend/addFriend/${friendAddingId}`, {
+				credentials: "include",
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			});
+			if (!response.ok) {
+				console.log("Error adding user as a friend: " + response.status);
+			}
+		}
+		catch (error) {
+			console.log("Error adding user as a friend: " + error);
+		}
+	}
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -197,7 +216,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -205,7 +224,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
         ))
 
     const AdminList = channel.members
@@ -214,7 +233,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
         ))
 
     const BannedList = channel.members
@@ -223,7 +242,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
         )
     )
 
