@@ -1,5 +1,4 @@
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
@@ -7,7 +6,7 @@ import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
 //===========
-import { Socket, Server } from 'socket.io';
+import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
 import { UserIdDto } from "src/userstats/dto/user-id.dto";
 import { UsersService } from "src/users/users.service";
