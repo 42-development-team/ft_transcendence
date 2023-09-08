@@ -36,7 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async handleDisconnect(client: Socket){
 		console.log('Client disconnected from game: ' + client.id);
-        // const userId = await this.userService.getUserIdFromSocket(client);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
@@ -51,18 +50,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             return ;
 
         const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId) { // game just created
+        if (player2SocketId) {
             const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
-        else { // game exists
+        else {
             newGameRoom.reconnect = true;
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
-        // this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
-
-
     }
 
     @SubscribeMessage('leaveQueue')
@@ -70,7 +66,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.gameService.handleLeaveQueue(userId);
     }
 
-    // HOW TO HANDLE PLAYER 1 , PLAYER 2 ??
     @SubscribeMessage('move')
     async handleMove(socket: Socket, @MessageBody() body: any) {
         const [event, id, userId] = body;

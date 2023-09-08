@@ -390,16 +390,10 @@ export class GameService {
 
     async calculateGame(idx: number): Promise<GameDto> {
 
-        // var startTime = performance.now()
-
         this.calculatePlayer(idx);
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
-        this.gameRooms[idx].data.end = true;
-
-        // var endTime = performance.now()
-
-        // console.log("time:", endTime - startTime);
+            this.gameRooms[idx].data.end = true;
         
         return {...this.gameRooms[idx].data};
     }
