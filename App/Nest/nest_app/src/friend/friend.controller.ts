@@ -31,13 +31,17 @@ export class FriendController {
 		const room = await this.friendService.removeDirectMessagesForBlockedUser(Number(blockedId), userId);
 		if (room) {
 			const userSocketId = await this.userService.getUserSocketFromId(userId);
+			if (userSocketId) {
+				const userSocket = this.socketGateway.clients.find(c => c.id === userSocketId);
+				userSocket.leave(room.name);
+				userSocket.emit('leftRoom', { room: room.name });
+			}
 			const blockedUserSocketId = await this.userService.getUserSocketFromId(Number(blockedId));
-			const userSocket = this.socketGateway.clients.find(c => c.id === userSocketId);
-			const blockedUserSocket = this.socketGateway.clients.find(c => c.id === blockedUserSocketId)
-			userSocket.leave(room.name);
-			userSocket.emit('leftRoom', {room: room.name});
-			blockedUserSocket.leave(room.name);
-			blockedUserSocket.emit('leftRoom', {room: room.name});
+			if (blockedUserSocketId) {
+				const blockedUserSocket = this.socketGateway.clients.find(c => c.id === blockedUserSocketId);
+				blockedUserSocket.leave(room.name);
+				blockedUserSocket.emit('leftRoom', {room: room.name});
+			}
 		}
 		res.send(user);
 	}

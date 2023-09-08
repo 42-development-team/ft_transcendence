@@ -62,7 +62,6 @@ export class FriendService {
 			return chatroom;
 		}
 		catch (error) {
-			console.log(error);
 			return undefined;
 		}
 	}
