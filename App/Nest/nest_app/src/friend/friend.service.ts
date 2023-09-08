@@ -103,6 +103,32 @@ export class FriendService {
 		}
 	}
 
+	async removeFriend(userId: number, removedUserId: number) {
+		// transaction garantee that the 2 updates fail or succed together
+		try {
+			await this.prisma.$transaction([
+				 this.prisma.user.update({
+					where: { id: userId },
+					data: {
+						friends: {
+							// pull: removedUserId,
+						},
+					},
+				}),
+				 this.prisma.user.update({
+					where: { id: removedUserId },
+					data: {
+						friends: {
+							// pull: userId,
+						},
+					},
+				}),
+			]);
+		} catch (e){
+			console.log(e);
+		}
+	}
+
     /* D(elete) */
 	async unblockUser(blockedId: number, userId: number) : Promise<FriendDto> {
 		const result = await this.prisma.user.update({
