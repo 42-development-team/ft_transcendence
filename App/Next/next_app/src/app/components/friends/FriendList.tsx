@@ -11,6 +11,7 @@ interface FriendListProps {
     unblockUser: (unblockedId: string) => void;
 }
 
+// Todo: add avatars and default avatars
 const FriendList = ({friends, blockedUsers, unblockUser}: FriendListProps) => {
 
     const {updateChatBarState} = useChatBarContext();

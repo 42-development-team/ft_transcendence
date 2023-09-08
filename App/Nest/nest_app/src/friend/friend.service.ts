@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
+import { ChatroomService } from "src/chatroom/chatroom.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { FriendDto } from "./friend.dto";
 
@@ -7,6 +8,7 @@ import { FriendDto } from "./friend.dto";
 export class FriendService {
     constructor(
         private prisma: PrismaService,
+		private chatroomService: ChatroomService,
     ) {}
 
     /* C(reate) */
@@ -32,7 +34,6 @@ export class FriendService {
 
     /* U(pdate) */
     async blockUser(blockedId: number, userId: number) : Promise<FriendDto>{
-		// Todo: protect against non existing user
         const result = await this.prisma.user.update({
             where: { id: blockedId },
             data: {
@@ -49,6 +50,22 @@ export class FriendService {
         });
         return plainToClass(FriendDto, result);
     }
+
+	async removeDirectMessagesForBlockedUser(blockedId: number, userId: number) : Promise<any> {
+		try {
+			const chatroom = await this.chatroomService.checkForExistingDirectMessageChannel(blockedId, userId);
+			if (chatroom) {
+				await this.prisma.chatRoom.delete({
+					where: { id: chatroom.id },
+				});
+			}
+			return chatroom;
+		}
+		catch (error) {
+			console.log(error);
+			return undefined;
+		}
+	}
 
     /* D(elete) */
 	async unblockUser(blockedId: number, userId: number) : Promise<FriendDto> {
