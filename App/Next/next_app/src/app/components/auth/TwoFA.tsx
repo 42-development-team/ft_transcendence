@@ -114,16 +114,18 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setDisable2FA(true);
 	  
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
+		setInputValue('');
 		if (!isValid) {
 		  setIsVisible(true);
 		  setColorText('text-red-700');
 		  setMessage("Error: code doesn't match");
 		  return;
 		}
-	  
+
 		if (activTwoFA) {
 		  try {
 			await turnOff();
+			
 		  } catch (error) {
 			console.log(error);
 			return;
