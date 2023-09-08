@@ -8,6 +8,7 @@ import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
 import DoesUserNameExist from "../utils/DoesUsernameExist";
 import { useAuthcontext } from "@/app/context/AuthContext";
+import { isAlphanumeric } from "../utils/isAlphanumeric";
 
 const SettingsPage = ({userId}: {userId: string}) => {
 
@@ -108,6 +109,12 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				setInputUserName(placeHolder);
 				setValidateUsernameEnabled(false);
 				setIsVisible(false);
+				return;
+			}
+			else if (isAlphanumeric(newinputUserName) === false) {
+				setMessage("Username can only contain letters and numbers");
+				setValidateUsernameEnabled(false);
+				setIsVisible(true);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {

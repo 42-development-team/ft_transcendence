@@ -3,17 +3,15 @@ import { AppModule } from './app/app.module';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './all-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['debug'],
   });
+  
   const configService = app.get(ConfigService);
-
-  app.useGlobalPipes(new ValidationPipe());
-
   app.use(cookieParser());
-
   app.enableCors({
     origin: [
       `http://${configService.get<string>('ip')}:${configService.get<string>('frontPort')}`,
@@ -21,6 +19,10 @@ async function bootstrap() {
     ],
     credentials: true,
   });
+  
+  app.useGlobalFilters(new AllExceptionsFilter(configService));
+  
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(4000);
 }
