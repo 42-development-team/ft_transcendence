@@ -110,10 +110,12 @@ const ChatMemberActions = (
                     </Alert>
                     {!isCurrentUser &&
                     <>
-                        <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
                         {!isBlocked &&
-                            <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            <>
+                                <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
+                                <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            </>
                         }
                     </>
                     }
