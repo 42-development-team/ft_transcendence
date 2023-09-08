@@ -88,11 +88,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async gameLogic(data: GameDto) {
         while (data.end === false) {
-            var startTime = performance.now();
+            // var startTime = performance.now();
             data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
             this.sendDataToRoom(data);
-            var endTime = performance.now();
-            await this.gameService.sleep((1000 / 60) - (endTime - startTime));
+            // var endTime = performance.now();
+            await this.gameService.sleep(1000 / 60);
+            // await this.gameService.sleep((1000 / 30) - (endTime - startTime));
         }
         await this.gameService.createGame(data);
         this.gameService.removeRoom(data.roomName);
