@@ -161,6 +161,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 		}
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
+		setWrongFormat(false);
 		if (childAvatarFile !== null && childImageUrl !== null)
 			setValidateAvatarEnabled(true);
 	}
@@ -220,7 +221,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{ !updatedUsername &&
+				{ !updatedUsername && validateAvatarEnabled &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>
