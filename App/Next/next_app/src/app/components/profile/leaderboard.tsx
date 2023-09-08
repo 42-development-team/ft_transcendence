@@ -16,8 +16,15 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
         sessionStorage.setItem("userId", userId.toString());
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
-        else
-            window.location.href = "/profile";
+        else {
+            try {
+                window.location.href = "/profile";
+
+            } catch (error){
+                console.log("error:", error);
+            }
+
+        }
     }
 
     return (

@@ -40,9 +40,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}, [isLoggedIn, userId]);
 
 	useEffect(() => {
-		if (isLoggedIn) {
-			const handleTabClosing = (event: BeforeUnloadEvent) => {
-				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+		if (isLoggedIn) {// TODO: there is a problem here with firefox
+			const handleTabClosing = async (event: BeforeUnloadEvent) => {
+				const response = await fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
 					credentials: "include",
 					method: 'PUT',
 					headers: {
@@ -124,10 +124,10 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const initializeSocket = async (userId: string) => {
 		const socket = connect();
 		setSocket(socket);
-		socket.on('connect', () => {
+		socket.on('connect', async () => {
 			// fetch to verify userStatus is online. If not update it to online
 			if (userId) {
-				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+				const response = await fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
 					credentials: "include",
 					method: 'PUT',
 					headers: {
@@ -139,7 +139,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 				});
 			}
 		})
-		return () => {
+		return async () => {
 			socket.close();
 		}
 	};
