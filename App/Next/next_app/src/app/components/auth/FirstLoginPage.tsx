@@ -66,13 +66,15 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				newUsername: inputUserName,
 				userId: userId,
 			};
-			const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-				method: "PUT",
-				body: JSON.stringify(updateData),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+			if (inputUserName !== '') {
+				const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
+					method: "PUT",
+					body: JSON.stringify(updateData),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
+			}
 
 			setMessage("Avatar/username successfully updated");
 			const jwtUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
