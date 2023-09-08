@@ -20,7 +20,7 @@ export default function useChannels(userId: string) {
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (joinedChannels.length > 0 && socket != undefined) {

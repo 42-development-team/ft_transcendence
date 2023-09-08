@@ -1,5 +1,4 @@
 import styles from '../Chat.module.css';
-import Image from "next/image";
 import { useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import { ChannelModel, ChannelType } from '@/app/utils/models';
 import { useEffect } from 'react';
@@ -8,7 +7,7 @@ type ChannelProps = {
     channel: ChannelModel
 }
 
-const DirectMessageChannel = ({channel :{name, type, id, unreadMessages, directMessageTargetUsername}}: ChannelProps) => {
+const DirectMessageChannel = ({channel :{type, id, unreadMessages, directMessageTargetUsername}}: ChannelProps) => {
     const { openChannel, openChannelId } = useChatBarContext();
 
     const handleClick = () => {
