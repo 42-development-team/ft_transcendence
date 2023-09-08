@@ -11,7 +11,7 @@ type BlockedProps = {
 
 const BlockUserItem = ({ user, unblockUser }: BlockedProps) => {
     const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
-	
+
 	const handleAction = (action: () => void) => {
         if (lockSubmit) return;
         setLockSubmit(true);
@@ -27,7 +27,8 @@ const BlockUserItem = ({ user, unblockUser }: BlockedProps) => {
 					{user.avatar.startsWith("https://")
 						? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
 							className="w-[inherit] rounded-[inherit]" />
-						: null
+                        : <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
+                            className="w-[inherit] rounded-[inherit]" />
 					}
 					<div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
 						<div className={`w-3 h-3 rounded-full ${getStatusColor(user.currentStatus)}`}></div>
