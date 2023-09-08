@@ -356,12 +356,15 @@ export class GameService {
     async reset(idx: number) {
         this.gameRooms[idx].data.ball.x = 0.5;
         this.gameRooms[idx].data.ball.y = 0.5;
-        let val = 1;
-        if (Math.random() < 0.5) {
-           val *= -1;
-        }
-        this.gameRooms[idx].data.ball.speed[0] = 0.3 * val;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * val;
+        let sign = 1;
+        
+        if (Math.random() < 0.5)
+           sign *= -1;
+        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+
+        if (Math.random() < 0.5)
+            sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -432,7 +435,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.05, 0.02],
+            speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
             incr: 0,
         }
 
