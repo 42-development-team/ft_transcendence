@@ -96,6 +96,23 @@ export class UsersService {
         return userCurrentStatus;
     }
 
+    async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
+        try {
+            await this.prisma.user.findUniqueOrThrow({
+                where: { id: blockedId },
+                include: {
+                    blockedBy: {
+                        where: { id: userId },
+                    },
+                },
+            });
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+
     /* U(pdate) */
 
     async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {

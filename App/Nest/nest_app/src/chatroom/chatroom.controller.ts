@@ -21,12 +21,18 @@ export class ChatroomController {
 	/* C(reate) */
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
+		const userId: number = req.user.sub;
 		if (createChatroomDto.type === 'direct_message') {
+			// Check if users blocked each other
+			const isUserBlocked = await this.userService.isUserBlocked(userId, Number(createChatroomDto.receiverId));
+			if (isUserBlocked) {
+				response.send(JSON.stringify("error"));
+				return ;
+			}
 			this.createDirectMessageChannel(createChatroomDto, req, response);
 			return ;
 		}
         try {
-			const userId: number = req.user.sub;
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
             this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
             response.status(HttpStatus.CREATED).send(newChatRoom);
