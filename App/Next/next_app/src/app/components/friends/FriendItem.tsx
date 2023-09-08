@@ -19,10 +19,8 @@ const FriendActions = ({user}: FriendProps) => {
 	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
 
 	const onProfileClick = () => {
-		// if (user && user.id){
 			console.log("userId = ", user.id);
 			sessionStorage.setItem("userId", user.id);
-		// }
 		if (sessionStorage.getItem("userId") === undefined)
 			setOpenAlert(true);
 		else
