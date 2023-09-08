@@ -11,24 +11,24 @@ export class FriendService {
 
     /* C(reate) */
     /* R(ead) */
-	async getFriends(userId: number) : Promise<FriendDto[]> {
-		const result = await this.prisma.user.findMany({
-			where: {
-				friendAddedBy: {
-					some: {
-						id: userId,
-					},
-				},
-			},
-			select: {
-				id: true,
-				username: true,
-				avatar: true,
-				currentStatus: true,
-			},
-		});
-		return plainToClass(FriendDto, result);
-	}
+	// async getFriends(userId: number) : Promise<FriendDto[]> {
+	// 	const result = await this.prisma.user.findMany({
+	// 		where: {
+	// 			friendAddedBy: {
+	// 				some: {
+	// 					id: userId,
+	// 				},
+	// 			},
+	// 		},
+	// 		select: {
+	// 			id: true,
+	// 			username: true,
+	// 			avatar: true,
+	// 			currentStatus: true,
+	// 		},
+	// 	});
+	// 	return plainToClass(FriendDto, result);
+	// }
 
 	async getBlockedUsers(userId: number) : Promise<FriendDto[]> {
 		const result = await this.prisma.user.findMany({
@@ -71,29 +71,26 @@ export class FriendService {
     }
 
 	async addFriend(userId: number, addedUserId: number) {
+		// transaction garantee that the 2 updates fail or succed together
 		try {
-			await this.prisma.user.update({
-				where: { id: userId },
-				data: {
-					friends: {
-						connect: { id: addedUserId },
+			await this.prisma.$transaction([
+				 this.prisma.user.update({
+					where: { id: userId },
+					data: {
+						friendRequestSent: {
+							push: addedUserId,
+						},
 					},
-				},
-				select: {
-					id: true,
-					username: true,
-					avatar: true,
-					currentStatus: true,
-				},
-			});
-			await this.prisma.user.update({
-				where: { id: addedUserId },
-				data: {
-					friendAddedBy: {
-						connect: { id: userId },
+				}),
+				 this.prisma.user.update({
+					where: { id: addedUserId },
+					data: {
+						friendRequestGot: {
+							push: userId,
+						},
 					},
-				},
-			});
+				}),
+			]);
 		} catch (e){
 			console.log(e);
 		}
