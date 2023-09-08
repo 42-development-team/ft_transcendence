@@ -17,16 +17,10 @@ export class ChatroomController {
 		private socketGateway: SocketGateway,
 	) { }
 
-	œ
 	/* C(reate) */
 	@Public()
 	@Post('new')
     async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
-        // const user: User = req.user;
-
-        // createChatroomDto.owner = user.id;
-        // createChatroomDto.admins = [user.id];
-
         try {
             const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
 

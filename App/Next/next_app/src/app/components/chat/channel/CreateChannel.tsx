@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import useChannels from '@/app/hooks/useChannels';
+import CreateChannelButton from './CreateChannelButton';
+
 
 interface CreateChannelProps {
   userId: string;
