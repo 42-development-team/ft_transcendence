@@ -19,9 +19,14 @@ export default function useGame() {
 			setData(body);
 		});
 
+		socket?.on('reconnectGame', (body: any) => {
+			setInGame(true);
+		});
+
 		return () => {
 			socket?.off('updateGame');
 			socket?.off('matchIsReady');
+			socket?.off('reconnectGame');
 		};
 	}, [socket]);
 

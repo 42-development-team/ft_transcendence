@@ -51,11 +51,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             return ;
 
         const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId) {
+        if (player2SocketId) { // game just created
             const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
+            this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
-        this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+        else { // game exists
+            newGameRoom.reconnect = true;
+            this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
+        }
+        // this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+
+
     }
 
     @SubscribeMessage('leaveQueue')
@@ -80,20 +87,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleLaunchGame(socket: Socket, id: number) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
-        let data: GameDto = await this.gameService.handleLaunchGame(id, userId);
-        if (data) {
-           this.gameLogic(data);
+        let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        if (room && room.data) {
+            if (room.reconnect === false)
+                this.gameLogic(room.data);
         }
+    }
+
+    async sleepAndCalculate(data: GameDto): Promise<GameDto> {
+        const promiseSleep = this.gameService.sleep(1000 / 60);
+        const promiseCalculate = this.gameService.calculateGame(data.id);
+    
+        await Promise.all([promiseSleep, promiseCalculate]);
+        return promiseCalculate;
     }
 
     async gameLogic(data: GameDto) {
         while (data.end === false) {
-            // var startTime = performance.now();
-            data = await this.gameService.calculateGame(data.id); // ATTENTION A LA DUREE DU SLEEP
+            data = await this.sleepAndCalculate(data);
             this.sendDataToRoom(data);
-            // var endTime = performance.now();
-            await this.gameService.sleep(1000 / 60);
-            // await this.gameService.sleep((1000 / 30) - (endTime - startTime));
         }
         await this.gameService.createGame(data);
         this.gameService.removeRoom(data.roomName);

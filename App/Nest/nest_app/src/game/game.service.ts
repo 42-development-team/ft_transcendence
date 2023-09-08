@@ -163,6 +163,7 @@ export class GameService {
             playerTwoId: player2Id,
             readyPlayerOne: false,
             readyPlayerTwo: false,
+            reconnect: false,
             data: this.setGameData(id, roomName, player1Id, player2Id),
         }
 
@@ -179,7 +180,7 @@ export class GameService {
         return ({newGameRoom, player2SocketId});
     }
 
-    async handleLaunchGame(id: number, userId: number) {
+    async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!LaunchGameRoom")
@@ -191,7 +192,7 @@ export class GameService {
         else if (this.gameRooms[idx].playerTwoId === userId)
             this.gameRooms[idx].readyPlayerTwo = true;
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
-            return this.gameRooms[idx].data;
+            return this.gameRooms[idx];
     }
 
     handleLeaveQueue(userId: UserIdDto) {
@@ -211,7 +212,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
         }
-        else {
+        else if (this.gameRooms[idx].data.player2.id === userId){
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
@@ -387,13 +388,13 @@ export class GameService {
         this.incrementSpeed(idx);
     };
 
-    async calculateGame(idx: number) {
+    async calculateGame(idx: number): Promise<GameDto> {
 
         // var startTime = performance.now()
 
         this.calculatePlayer(idx);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 11 || this.gameRooms[idx].data.player2.points > 11)
+        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
         this.gameRooms[idx].data.end = true;
 
         // var endTime = performance.now()
