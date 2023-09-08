@@ -180,16 +180,24 @@ export class UsersService {
         let user = await this.getUserFromLogin(login);
 		// console.log("Logging in user current status= ", user.currentStatus);
         if (!user) {
+            const duplicate = await this.getUserFromUsername(login);
+            let newUsername = login;
+            if (duplicate) {
+                let number = 1;
+                while (await this.getUserFromUsername(login + "(" + number + ")")) {
+                    number++;
+                }
+                newUsername = login + "(" + number + ")";
+            }
             const createUserDto: CreateUserDto = {
                 login: login,
-                username: login,
+                username: newUsername,
                 avatar: "noavatar.jpg",
                 isTwoFAEnabled: false,
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
             };
-
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {
