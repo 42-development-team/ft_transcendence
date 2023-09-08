@@ -7,6 +7,7 @@ import { User } from '@prisma/client'
 import { SocketGateway } from '../sockets/socket.gateway';
 import { ApiTags } from '@nestjs/swagger'
 import { InfoChatroomDto } from './dto/info-chatroom.dto';
+import { Public } from '../auth/public.routes'
 
 @ApiTags('ChatRoom')
 @Controller('chatroom')
@@ -16,20 +17,26 @@ export class ChatroomController {
 		private socketGateway: SocketGateway,
 	) { }
 
-
+	œ
 	/* C(reate) */
-	@Post()
-	create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any) {
-		const user: User = req.user;
+	@Public()
+	@Post('new')
+    async create(@Body() createChatroomDto: CreateChatroomDto, @Request() req: any, @Res() response: Response) {
+        // const user: User = req.user;
 
-		createChatroomDto.owner = user.id;
-		createChatroomDto.admins = [user.id];
+        // createChatroomDto.owner = user.id;
+        // createChatroomDto.admins = [user.id];
 
-		const newChatRoom = this.chatroomService.createChatRoom(createChatroomDto, user.id);
+        try {
+            const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, createChatroomDto.owner);
 
-		this.socketGateway.server.emit("NewChatRoom", newChatRoom);
-		return newChatRoom;
-	}
+            this.socketGateway.server.emit("NewChatRoom", newChatRoom);
+
+            response.status(HttpStatus.CREATED).send(newChatRoom);
+        } catch (error) {
+            response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
+        }
+    }
 
 	/* R(ead) */
 	@Get()

@@ -10,12 +10,18 @@ import FriendList from '../friends/FriendList';
 import useFriends from '@/app/hooks/useFriends';
 import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
+import CreateChannel from './channel/CreateChannel';
+import CreateChannelButton from './channel/CreateChannelButton';
 
 // Todo: do we need an emoji-picker ?
 // https://youtu.be/U2XnoKzxmeY?t=1605
 
-const ChatBar = ({ userId }) => {
-    const {isChatOpen, isFriendListOpen, isChatMembersOpen, isChannelJoinOpen} = useChatBarContext();
+interface ChatBarProps {
+    userId: string; // Define the correct type for userId (e.g., string)
+  }
+
+const ChatBar = ({ userId }: ChatBarProps) => {
+    const {isChatOpen, isFriendListOpen, isChatMembersOpen, isChannelJoinOpen, isCreateChannelOpen, toggleCreateChannelVisibility} = useChatBarContext();
     const {messages, send} = useChatMessages();
     const {channels} = useChannels();
     const {chatMessageBoxRef} = useChatScrolling<HTMLDivElement>(messages)
@@ -37,7 +43,12 @@ const ChatBar = ({ userId }) => {
             {isChannelJoinOpen &&
                 <JoinChannel />
             }
+            {/* <CreateChannelButton /> */}
+            {isCreateChannelOpen && (
+                <CreateChannel userId={userId} onClose={toggleCreateChannelVisibility} />
+            )}
         </div>
+
     )
 }
 

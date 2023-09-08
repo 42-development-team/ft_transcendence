@@ -14,6 +14,8 @@ type ChatBarContextType = {
     toggleChatMembersVisibility: () => void;
     isChannelJoinOpen: boolean;
     toggleChannelJoinVisibility: () => void;
+    isCreateChannelOpen: boolean;
+    toggleCreateChannelVisibility: () => void;
 }
 
 const ChatBarContextDefaultValues: ChatBarContextType = {
@@ -26,7 +28,10 @@ const ChatBarContextDefaultValues: ChatBarContextType = {
     isChatMembersOpen: false,
     toggleChatMembersVisibility: () => {},
     isChannelJoinOpen: false,
-    toggleChannelJoinVisibility: () => {}
+    toggleChannelJoinVisibility: () => {},
+    isCreateChannelOpen: false,
+    toggleCreateChannelVisibility: () => {},
+
 }
 
 const ChatBarContext = createContext<ChatBarContextType>(ChatBarContextDefaultValues);
@@ -36,6 +41,8 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
     const [isFriendListOpen, setFriendListOpen] = useState(false);
     const [isChatMembersOpen, setChatMembersOpen] = useState(false);
     const [isChannelJoinOpen, setChannelJoinOpen] = useState(false);
+    const [isCreateChannelOpen, setCreateChannelOpen] = useState(false); 
+
 
     const openChat = () => {
         setChatOpen(true);
@@ -77,11 +84,18 @@ export const ChatBarContextProvider = ({children} : {children: React.ReactNode})
         setChatMembersOpen(!isChatMembersOpen);
     }
 
+    const toggleCreateChannelVisibility = () => {
+        setCreateChannelOpen(!isCreateChannelOpen);
+        setChatOpen(false);
+        setChatMembersOpen(false);
+        setFriendListOpen(false);
+    }
+
     return (
         <ChatBarContext.Provider value = {
-            {isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen, toggleChatMembersVisibility,
-            isChannelJoinOpen, toggleChannelJoinVisibility}
-            }>
+            { isChatOpen, openChat, closeChat, toggleChatVisibility, isFriendListOpen, toggleFriendListVisibility, isChatMembersOpen, toggleChatMembersVisibility,
+                isChannelJoinOpen, toggleChannelJoinVisibility, isCreateChannelOpen, toggleCreateChannelVisibility }
+        }>
             {children}
         </ChatBarContext.Provider>
     )

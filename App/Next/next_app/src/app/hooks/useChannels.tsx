@@ -11,7 +11,7 @@ export default function useChannels() {
 
     interface NewChannelInfo {
         name: string;
-        type: 'public' | 'private' | 'protected';
+        type: string;
         password?: string;
         owner: number;
         admins: number[];
@@ -21,10 +21,10 @@ export default function useChannels() {
         id: 'test-channel',
         name: 'test-channel',
         icon: '',
-        createdAt: "new Date", // Example date value
-        creatorId: "1", // Example creator ID
-        type: 'public', // Example channel type
-        joined: true, // Example joined timestamp
+        createdAt: "new Date",
+        creatorId: "1",
+        type: 'public',
+        joined: true,
     };
     
 
@@ -66,7 +66,6 @@ export default function useChannels() {
     [appendNewChannel]
     );
 
-    // Other code...
 
     return {
         channels,
