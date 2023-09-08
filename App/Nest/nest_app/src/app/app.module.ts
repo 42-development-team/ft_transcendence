@@ -28,7 +28,6 @@ import { FriendModule } from 'src/friend/friend.module';
 import { FriendController } from 'src/friend/friend.controller';
 
 //=============
-// import { SocketGateway } from '../sockets/socket.gateway';
 
 @Module({
   imports: [
@@ -45,7 +44,7 @@ import { FriendController } from 'src/friend/friend.controller';
     UserstatsModule,
     FriendModule,
     JwtModule.registerAsync({
-      inject: [ConfigService], // Inject ConfigService to access JWT_SECRET
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('jwtSecret'), 
         signOptions: { expiresIn: '1d' }, 
@@ -71,7 +70,6 @@ import { FriendController } from 'src/friend/friend.controller';
     CloudinaryService,
     GameService,
     UserStatsService,
-    // SocketGateway,
   ],
 })
 export class AppModule {}

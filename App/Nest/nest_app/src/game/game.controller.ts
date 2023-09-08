@@ -10,13 +10,6 @@ import { DeleteGameDto } from './dto/delete-game.dto';
 
 //===========
 // Todo: clean this shit up
-import { SocketGateway } from "src/sockets/socket.gateway";
-import { UserIdDto } from 'src/userstats/dto/user-id.dto';
-import { GetCurrentUserId } from 'src/common/custom-decorators/get-current-user-id.decorator';
-import { GameDto, PlayerDto, BallDto } from './dto/game-data.dto';
-import { GameRoomDto } from './dto/create-room.dto';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
 
 @Controller('game')
 export class GameController {
@@ -34,13 +27,14 @@ export class GameController {
      * create newGame with the first player in matchmaking room, 
      * return newGame
      */
-    @Post('create')    
-    async create(@Body() createGameDto: CreateGameDto) {
-        this.logger.log('Creating a new game');
-        const newGame = await this.gameService.createGame(createGameDto);
-        this.logger.log(`Successfully created game with ID ${newGame.id}`);
-        return newGame;
-    }
+
+    // @Post('create')    
+    // async create(@Body() createGameDto: CreateGameDto) {
+    //     this.logger.log('Creating a new game');
+    //     const newGame = await this.gameService.createGame(createGameDto);
+    //     this.logger.log(`Successfully created game with ID ${newGame.id}`);
+    //     return newGame;
+    // }
 
     /* R(ead) */ //with game id
     @Get('info/:id')

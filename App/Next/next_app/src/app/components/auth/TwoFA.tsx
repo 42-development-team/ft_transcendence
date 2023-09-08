@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import QrCodeDisplay from "./QrCodeDisplay";
@@ -35,7 +36,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
       setEnableBtnActivated(!data);
     }
     fetchData().catch(console.error);
-  }, [userId]);
+  }, [userId, isVisible]);
 
   useEffectTimer(isVisible, 2600, setIsVisible);
   useEffectTimer(disable2FA, 2600, setDisable2FA);
@@ -113,23 +114,18 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setDisable2FA(true);
 	  
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
+		setInputValue('');
 		if (!isValid) {
 		  setIsVisible(true);
 		  setColorText('text-red-700');
 		  setMessage("Error: code doesn't match");
 		  return;
 		}
-	  
+
 		if (activTwoFA) {
 		  try {
 			await turnOff();
-		  } catch (error) {
-			console.log(error);
-			return;
-		  }
-		} else {
-		  try {
-			await generateTwoFA(`${process.env.BACK_URL}/2fa/turn-on/`, userId, setImageUrl);
+			
 		  } catch (error) {
 			console.log(error);
 			return;

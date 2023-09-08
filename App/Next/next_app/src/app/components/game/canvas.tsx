@@ -20,40 +20,21 @@ function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: 
 }
 
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
-	context.fillStyle= 'rgba(0, 0, 0, 0.25';
+	context.fillStyle= 'rgba(0, 0, 0, 0.2';
 	context.beginPath();
 		context.fillRect(0, 0, width, height);
 	context.closePath();
 }
 
 function printMidLine(context: CanvasRenderingContext2D, width: number, height: number) {
-	let y = 0;
 
 	context.strokeStyle='#cba6f7';
 	context.beginPath();
-	while (y < height) {
-		context.moveTo(width / 2, y);
-		context.lineTo(width / 2, y + 0.01 * height);
-		context.stroke();
-		y += 0.02 * height;
-	}
+	context.setLineDash([2, 2]);
+	context.moveTo(width / 2, 0);
+	context.lineTo(width / 2, height);
+	context.stroke();
 	context.closePath();
-}
-
-// ======== MANAGE END GAME ==============//
-function win(context: CanvasRenderingContext2D, result: [PlayerInterface, PlayerInterface], width: number, height: number) {
-	
-	context.font='30px Arial';
-	context.fillStyle='red';
-	context.beginPath();
-		context.fillText(result[0].name + " won the game", 0.5 * width, 0.5 * height);
-		context.fillText(result[1].name + " lose the game", 0.5 * width, 0.7 * height);
-	context.closePath();
-}
-
-function finish(result: [PlayerInterface, PlayerInterface], animationId: number) {
-	// envoyer les infos au back
-	() => window.cancelAnimationFrame(animationId);
 }
 
 // ============ RENDER ==============//
@@ -115,14 +96,9 @@ const Canvas = ({...props}) => {
 			stopMove(e.code, data.id, userId);
 		}
 
-		const render = (): any => {
-
-			blurEffect(context, width, height);
-			printMidLine(context, width, height);
-			renderGame(context, data, width, height);
-
-		}
-		render();
+		blurEffect(context, width, height);
+		printMidLine(context, width, height);
+		renderGame(context, data, width, height);
 
 		document.addEventListener("keydown", handleKeyDown);
 		document.addEventListener("keyup", handleKeyRelease);
@@ -131,6 +107,7 @@ const Canvas = ({...props}) => {
 	return (
 		<div className="canvas w-full">
 			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
+			{/* <div className="verticalLineStyle" style={verticalLineStyle}></div> */}
 		</div>
 	);
 }
