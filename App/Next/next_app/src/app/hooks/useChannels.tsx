@@ -20,7 +20,7 @@ export default function useChannels(userId: string) {
     useEffect(() => {
         fetchChannelsInfo();
         fetchChannelsContent();
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (joinedChannels.length > 0 && socket != undefined) {
@@ -189,9 +189,7 @@ export default function useChannels(userId: string) {
             });
             return newChannelId;
         }
-        else {
-            return targetChannel.id;
-        }
+        return targetChannel.id;
     }
 
     const createNewChannel = async (newChannelInfo: NewChannelInfo): Promise<string> => {

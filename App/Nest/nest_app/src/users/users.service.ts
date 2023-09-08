@@ -119,20 +119,18 @@ export class UsersService {
     }
 
     async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
+        console.log("blockedId: ", blockedId);
         try {
+            // Check if user is blocked by the blockedId user
             await this.prisma.user.findUniqueOrThrow({
-                where: { id: blockedId },
-                include: {
-                    blockedBy: {
-                        where: { id: userId },
-                    },
-                },
+                where: { blockedBy: { some: { id: userId } }, id: blockedId },
             });
             return true;
         }
         catch (error) {
             return false;
         }
+        return false;
     }
 
     /* U(pdate) */
