@@ -18,6 +18,7 @@ type ChatMemberProps = {
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
     mute: (mutedId: string, muteDuration: number) => void
+    addFriend: (friendAddingId: string) => void
     blockUser: (blockedId: string) => void
     isBlocked: boolean
 }
@@ -25,7 +26,7 @@ const ChatMemberItem = ({
 	user,
     isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage, blockUser,
-    setAsAdmin, removeAdmin, mute, channelId, isBlocked
+    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthcontext();
@@ -112,6 +113,10 @@ const ChatMemberItem = ({
         blockUser(user.id);
     }
 
+    const addAsFriend = () => {
+        addFriend(user.id);
+    }
+
     const getColor = () => {
         if (user.isOwner) {
             return 'text-red';
@@ -143,7 +148,7 @@ const ChatMemberItem = ({
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
-                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked} />
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked} addAsFriend={addAsFriend}/>
         </div>
     )
 }
