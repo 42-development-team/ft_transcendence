@@ -94,7 +94,8 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			setUpdatingAvatar(true);
 			setMessage("Updating avatar...");
 			setIsVisibleTimerAvatar(true);
-			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			if (!wrongFormat)
+				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			setMessage("Avatar updated successfully");
 			setUpdatingAvatar(false);
 		} catch (error) {
@@ -150,6 +151,8 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
 		if (message !== null) {
 			setValidateAvatarEnabled(false);
+			setImageUrl(null);
+			setAvatarFile(null);
 			setIsVisibleTimerAvatar(true);
 			setUpdatingAvatar(true);
 			setWrongFormat(true);

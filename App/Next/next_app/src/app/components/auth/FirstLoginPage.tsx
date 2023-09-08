@@ -60,7 +60,8 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			setRedirecting(true);
 			setMessage("Updating avatar/username...")
 			setIsVisible(true);
-			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			if (!wrongFormat)
+				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			const updateData = {
 				newUsername: inputUserName,
 				userId: userId,
@@ -130,13 +131,16 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, msg: string | null) => {
-		if (msg !== null) {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
+		if (message !== null) {
 			setWrongFormat(true);
+			setImageUrl(null);
+			setAvatarFile(null);
 			setMessage(message);
 			console.log("Error during avatar upload:", message);
 			return;
 		}
+		console.log("Avatar successfully uploaded");
 		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
@@ -166,7 +170,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				}
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={null} disableChooseAvatar={false} disableImageResize={true}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			<div className='flex justify-center text-red-700'>
 				{wrongFormat && <p>{message}</p>}
