@@ -1,14 +1,14 @@
 "use client";
 
-
-
 import { useState, ChangeEvent, useEffect } from "react";
 import Image from 'next/image';
+import fileType, { fileTypeFromBuffer } from 'file-type';
+import { useEffectTimer } from "../auth/utils/useEffectTimer";
 
 const Avatar = (
     {
         children,
-        CallbackAvatarData = (AvFile: File | null, image: string) => {},
+        CallbackAvatarData = (AvFile: File | null, image: string, message: string | null) => {},
         imageUrlGetFromCloudinary = null,
         disableChooseAvatar = false,
         disableImageResize = false,
@@ -31,23 +31,75 @@ const Avatar = (
     }
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 
-        /* When the user selects an image for the avatar, 
+    useEffect(() => {
+        if (wrongFormat) {
+            setWrongFormat(false);
+            setImageUrl(null);
+            imageUrlGetFromCloudinary = null;
+        }
+    }, [wrongFormat]);
+
+    useEffect(() => {
+
+    }, [imageUrl]);
+
+    //check jpg
+    function checkIfJpg(arrayBuffer: ArrayBuffer) {
+        const bytes = new Uint8Array(arrayBuffer);
+        const jpgMagicNumber = [0xFF, 0xD8, 0xFF];
+
+        for (let i = 0; i < jpgMagicNumber.length; i++) {
+            if (bytes[i] !== jpgMagicNumber[i]) {
+                return (false);
+            }
+            return (true);
+        }
+
+    }
+
+    const isImage = (event: ProgressEvent<FileReader>) => {
+        const arrayBuffer = event.target?.result as ArrayBuffer;
+        if (checkIfJpg(arrayBuffer) == false) {
+            setWrongFormat(true);
+            CallbackAvatarData(null, null, "File is not a JPG image");
+            return ;
+        }
+        else {
+            setWrongFormat(false);
+        }
+    };
+
+    /* When the user selects an image for the avatar, 
     the handleAvatarChange function is called */
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setWrongFormat(true);
         const file = e.target.files?.[0] || null;
-      
+        
         if (!file) {
           // If no file is selected, reset the state for avatarFile and imageUrl
           setImageUrl(null);
-          CallbackAvatarData(null, null);
+          CallbackAvatarData(null, null, null);
           return;
         }
-      
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = isImage;
+            reader.readAsArrayBuffer(file);
+        }
+
+        if (wrongFormat) {
+            setImageUrl(null);
+            return ;
+        }
+
         if (!file.type.startsWith('image/')) {
           console.log('Selected file is not an image.');
           return;
         }
+
       
         const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
         if (file.size > maxFileSizeInBytes) {
@@ -56,7 +108,7 @@ const Avatar = (
         }
         const objectURL = URL.createObjectURL(file);
         setImageUrl(objectURL);
-        CallbackAvatarData(file, objectURL); //Send Avatar DAta to Parent Component
+        CallbackAvatarData(file, objectURL, null); //Send Avatar DAta to Parent Component
       };
 
     return (
