@@ -36,7 +36,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
       setEnableBtnActivated(!data);
     }
     fetchData().catch(console.error);
-  }, [userId]);
+  }, [userId, isVisible]);
 
   useEffectTimer(isVisible, 2600, setIsVisible);
   useEffectTimer(disable2FA, 2600, setDisable2FA);
