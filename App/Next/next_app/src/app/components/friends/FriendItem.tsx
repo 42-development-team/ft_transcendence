@@ -27,6 +27,15 @@ const FriendActions = ({user}: FriendProps) => {
 			window.location.href = "/profile";
 	}
 
+	const removeFriend = () => {
+		console.log("userId = ", user.id);
+		sessionStorage.setItem("userId", user.id);
+	if (sessionStorage.getItem("userId") === undefined)
+		setOpenAlert(true);
+	else
+		window.location.href = "/profile";
+}
+
 	const handleAction = (action: () => void) => {
 		if (lockSubmit) return;
 		setLockSubmit(true);
@@ -35,15 +44,17 @@ const FriendActions = ({user}: FriendProps) => {
 		setTimeout(() => setLockSubmit(false), 1500);
 	}
 
+	// todo callback func to remove friend
+	// todo callback func to invite to play
 	return (
         <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('Play')}>
-                Invite to play
-            </DropDownAction>
+            <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>
+				Invite to play
+			</DropDownAction>
             <DropDownAction onClick={() => handleAction(onProfileClick)}>
 				View profile
 			</DropDownAction>
-            <DropDownActionRed onClick={() => console.log('Remove Friend')}>
+            <DropDownActionRed onClick={() => handleAction(removeFriend)}>
                 Remove Friend
             </DropDownActionRed>
         </div>

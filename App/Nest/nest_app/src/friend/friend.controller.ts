@@ -36,6 +36,13 @@ export class FriendController {
 		res.send("Friend added successfully");
 	}
 
+	@Patch('removeFriend/:removedUserId')
+	async removeFriend(@Param('removedUserId') removedUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.removeFriend(userId, Number(removedUserId));
+		res.send("Friend removed successfully");
+	}
+
 	@Patch('block/:blockedId')
 	async blockUser(@Param('blockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
