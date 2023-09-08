@@ -189,7 +189,17 @@ export class UsersService {
                 isFirstLogin: true,
                 currentStatus: "online",
             };
-
+            const duplicate = await this.getUserFromUsername(login);
+            if (duplicate) {
+                let number = 1;
+                while (await this.getUserFromUsername(login + "(" + number + ")")) {
+                    number++;
+                }
+                await this.prisma.user.update({
+                    where: { username: login },
+                    data: { username: login + '(' + number + ')' },
+                });
+            }
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {
