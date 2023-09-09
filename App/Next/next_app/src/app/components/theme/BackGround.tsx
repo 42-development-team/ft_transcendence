@@ -10,32 +10,24 @@ import './styleBackground.css'
 
 export const BackgroundBall = () => {
 
-    const [isThemeChanged, setIsThemeChanged] = useState(false);
-    const { theme } = useContext(themeContext);
+    const { theme, setTheme } = useContext(themeContext);
 
-  useEffect(() => {
-    setIsThemeChanged(true);
-    const timeout = setTimeout(() => {
-      setIsThemeChanged(false);
-    }, 1800);
 
-    return () => clearTimeout(timeout);
-  }, [theme]);
     return (
         <div >
             <TransitionGroup>
                 <CSSTransition
                     key={localStorage.getItem('theme')}
-                    in={isThemeChanged}
+                    in={true}
                     appear={true}
                     timeout={1800}
                     classNames="fade"
                     unmountOnExit
                 >
                     <img
-                        src={typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src || theme}
+                        src={typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src}
                         alt="Bg"
-                        className=" blur-md -z-10 fixed w-full h-full object-cover"
+                        className="blur-lg -z-10 fixed w-full h-full object-cover"
                     />
                 </CSSTransition>
             </TransitionGroup>

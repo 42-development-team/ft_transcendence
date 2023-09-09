@@ -17,11 +17,13 @@ export default async function Profile() {
     }
 
     return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
-        <div className="flex h-full w-full"> 
-            <Chat userId={userId}/>
-            <div className="mx-[3vw] sm:mx-[7vw] my-[4vw] flex flex-col flex-grow">
-                <StatsWindow userId={userId} />
-                <UnderlineTabs userId={userId} />
+        <div className="flex w-full h-full">
+            <Chat userId={userId} />
+            <div className="flex h-[calc(100%-48px)] w-full">
+                <div className="mx-[3vw] sm:mx-[7vw] my-[4vw] flex flex-col flex-grow">
+                    <StatsWindow userId={userId} />
+                    <UnderlineTabs userId={userId} />
+                </div>
             </div>
         </div>
     )
