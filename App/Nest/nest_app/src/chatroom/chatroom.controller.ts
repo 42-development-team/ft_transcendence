@@ -132,7 +132,7 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		try {
 			await this.chatroomService.update(+id, updateChatroomDto, userId);
-			this.socketGateway.handleChatroomUpdate(id);
+			await this.socketGateway.handleChatroomUpdate(id);
 			response.send('success');
 		}
 		catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
-import { useContext, createContext, useState, useEffect } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
 import { delay } from "@/app/utils/delay";
 
@@ -40,47 +40,41 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		window.fetch = async (...args) => {
 			try {
 				let [resource, config] = args;
-				const response = await originalFetch(resource, config);
+				const response = await originalFetch(resource, config as RequestInit);
 				if (!response.ok && (response.status === 401 || response.status === 500)) {
 					setLoggedIn(false);
-					window.removeEventListener('beforeunload', handleTabClosing);
-					await delay(500);
 					window.location.href = "/";
 					return Promise.reject(response);
 				}
 				return response;
 			}
 			catch (error) {
-				console.log(error.message);
+				return ;
 			}
 		};
 	}, []);
 
 	useEffect(() => {
-		if (isLoggedIn && userId)
+		if (isLoggedIn && userId) {
 			initializeSocket(userId);
+		}
 	}, [isLoggedIn, userId]);
 
-	const handleTabClosing = (event: BeforeUnloadEvent) => {
-		if (!isLoggedIn) return ;
-		fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
-			credentials: "include",
+	const handleTabClosing = () => {
+		if (!isLoggedIn || userId == "") return ;
+		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				currentStatus: "offline",
-			}),
 		});
 	}
 
 	useEffect(() => {
-		if (isLoggedIn) {
+		if (isLoggedIn && userId != "") {
 			window.addEventListener('beforeunload', handleTabClosing);
 		}
 		return () => {
 			window.removeEventListener('beforeunload', handleTabClosing);
 		};
-	}, [isLoggedIn]);
+	}, [isLoggedIn, userId]);
 
 	const fetchProfile = async () => {
 		try {
@@ -93,7 +87,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 		catch (error) {
 			console.log("Error fetching profile: " + error);
-			logout();
+			await logout();
 		}
 	}
 
@@ -165,7 +159,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	useEffect(() => {
 		socket?.on('userInvited', (body: any) => {
-			setChannelNameInvited(body.room);
+			const {room} = body;
+			setChannelNameInvited(room);
 			setInvited(true);
 			const userInvited = body.user;
 			if (userInvited.id === userId) {
@@ -175,8 +170,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		})
 	}, [socket, invited]);
 
-	const handleOpen = () => {
-		delay(2000);
+	const handleOpen = async () => {
+		await delay(2000);
 		setOpen(!open);
 	}
 

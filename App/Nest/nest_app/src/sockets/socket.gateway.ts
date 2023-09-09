@@ -19,16 +19,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         private chatroomService: ChatroomService,
         private userService: UsersService,
         private memberShipService: MembershipService,
-    ) {
-        console.log("Socket Gateway created");
-    }
+    ) {}
 
     @WebSocketServer()
     server: Server;
 
     clients: Socket[] = [];
-    gameRooms: GameRoomDto[] = [];
-    queued: UserIdDto[] = [];
 
 	async handleConnection(client: Socket) {
 		const userId = await this.userService.getUserIdFromSocket(client);
@@ -146,23 +142,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
 
-    async handleOwnerUpdate(client: Socket, userId: number, roomId: string ) {
-        const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
-        if (client) {
-            console.log(`Client ${userId} (${client.id}) updated owner status in room ${room}`);
-        } else {
-            console.log(`Client ${userId} updated owner status in room ${room}`);
-        }
-        const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
-        this.server.to(room).emit('newConnectionOnChannel', {room, user});
-    }
-
 	async handleInvite(client: Socket, userId: number, roomId: string ) {
         const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
         const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
         if (client) {
             client.join(room);
-            client.emit('invitedRoom', { room }); // for the client to be notified when event is emit
+            client.emit('invitedRoom', { room });
             console.log(`Client ${userId} (${client.id}) invited to room ${room}`);
         } else {
             console.log(`Client ${userId} invited to room ${room}`);
@@ -170,24 +155,4 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.to(room).emit('userInvited', {room, user});
         this.server.to(room).emit('newConnectionOnChannel', {room, user});
     }
-
-    /*
-        if in the future we come back to the idea of centralizing socket.emit + adding user to channel in DB
-        for now not considered the best choice in order to keep HTTP status response and separation of concerns
-    */
-    // @SubscribeMessage('joinRoom')
-    // async joinRoom(@ConnectedSocket() client: Socket, room: string) {
-    //     console.log("room name got when emit joinroom: ", room);
-    //     const userId = await this.chatroomService.getUserIdFromSocket(client);
-    //     const password = await this.chatroomService.getPasswordFromChannelName(room);
-    //     const channelId = await this.chatroomService.getIdFromChannelName(room);
-
-    //     try {
-    //         const updateResult = await this.chatroomService.join(channelId, userId, password);
-    //         client.join(room);
-    //         console.log(`Client ${client.id} joined room ${room}`);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
 }
