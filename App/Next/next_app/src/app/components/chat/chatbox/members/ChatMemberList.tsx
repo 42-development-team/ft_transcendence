@@ -16,10 +16,11 @@ interface ChatMemberListProps {
     directMessage: (receiverId: string, senderId: string) => Promise<string>
     blockUser: (blockedId: string) => void
     blockedUsers: UserModel[]
+	friends: UserModel[]
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -217,7 +218,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -225,7 +227,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
 
     const AdminList = channel.members
@@ -234,7 +237,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
 
     const BannedList = channel.members
@@ -243,7 +247,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}/>
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         )
     )
 
