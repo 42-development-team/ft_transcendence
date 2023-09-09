@@ -122,10 +122,19 @@ export class UsersService {
         console.log("blockedId: ", blockedId);
         try {
             // Check if user is blocked by the blockedId user
-            await this.prisma.user.findUniqueOrThrow({
-                where: { blockedBy: { some: { id: userId } }, id: blockedId },
-            });
-            return true;
+            // await this.prisma.user.findUniqueOrThrow({
+            //     where: { blockedBy: { some: { id: userId } }, id: blockedId },
+            // });
+            // return true;
+			const user = await this.prisma.user.findFirst({
+				where: {
+					id: blockedId,
+					blockedBy: {
+						some: { id: userId },
+					},
+				},
+			});
+			return user !== null;
         }
         catch (error) {
             return false;
