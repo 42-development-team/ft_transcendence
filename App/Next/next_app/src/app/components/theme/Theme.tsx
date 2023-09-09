@@ -38,7 +38,7 @@ export const Theme = () => {
                         type="checkbox"
                         className="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-overlay0 transition-colors duration-300 checked:bg-pink-500 peer-checked:border-pink-500 peer-checked:before:bg-pink-500"
                         onClick={handleThemeChange}
-                        defaultChecked={theme === "mocha"}
+                        defaultChecked={localStorage.getItem('theme') === "latte" || localStorage.getItem('theme') === 'latte'}
                     />
                     <label
                         htmlFor="switch-component"
