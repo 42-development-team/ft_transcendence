@@ -3,7 +3,7 @@ import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
-import Game from "../game/page";
+import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 import Image from "next/image";
 import homeBackground from "../../../public/homeBackground.png";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { GameInterface, PlayerInterface, BallInterface } from "../../game/interfaces/game.interfaces";
+import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
