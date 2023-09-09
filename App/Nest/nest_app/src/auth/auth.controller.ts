@@ -54,7 +54,7 @@ export class AuthController {
         try {
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
-			this.authService.updateCurrentStatus(user, userId, "offline");
+			await this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }
@@ -99,8 +99,7 @@ export class AuthController {
     async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
         try {
             const userId = Number(updateData.userId);
-            const updatedUser = await this.userService.updateUsername(userId, updateData.newUsername);
-            return updatedUser;
+            return await this.userService.updateUsername(userId, updateData.newUsername);
         } catch (error) {
             console.error('Error updating username:', error);
             throw error;
@@ -110,7 +109,7 @@ export class AuthController {
     @Public()
 	@Get('firstLogin/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
-		try {;
+		try {
 			return await this.userService.getUserFromId(Number(userId));
 		} catch (error) {
 			return error;

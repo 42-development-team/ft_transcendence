@@ -40,27 +40,27 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		window.fetch = async (...args) => {
 			try {
 				let [resource, config] = args;
-				const response = await originalFetch(resource, config);
+				const response = await originalFetch(resource, config as RequestInit);
 				if (!response.ok && (response.status === 401 || response.status === 500)) {
 					setLoggedIn(false);
-					// window.removeEventListener('beforeunload', handleTabClosing);
 					window.location.href = "/";
 					return Promise.reject(response);
 				}
 				return response;
 			}
 			catch (error) {
-				console.log(error.message);
+				return ;
 			}
 		};
 	}, []);
 
 	useEffect(() => {
-		if (isLoggedIn && userId)
+		if (isLoggedIn && userId) {
 			initializeSocket(userId);
+		}
 	}, [isLoggedIn, userId]);
 
-	const handleTabClosing = (event: BeforeUnloadEvent) => {
+	const handleTabClosing = () => {
 		if (!isLoggedIn || userId == "") return ;
 		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
 			method: 'PUT',
@@ -87,7 +87,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 		catch (error) {
 			console.log("Error fetching profile: " + error);
-			logout();
+			await logout();
 		}
 	}
 
@@ -170,8 +170,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		})
 	}, [socket, invited]);
 
-	const handleOpen = () => {
-		delay(2000);
+	const handleOpen = async () => {
+		await delay(2000);
 		setOpen(!open);
 	}
 
