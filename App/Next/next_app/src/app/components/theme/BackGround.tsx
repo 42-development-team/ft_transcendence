@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Image from 'next/image';
-import homeBackground from '../../../../public/backgroundUpscale.png';
+import homeBackground from '../../../../public/backGroundDark.png';
 import homeBackgroundLight from '../../../../public/backgroundLightUpscale.png';
 import themeContext from "./themeContext";
 import './styleBackground.css'
