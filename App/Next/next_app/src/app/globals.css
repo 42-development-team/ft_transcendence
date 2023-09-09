@@ -108,18 +108,3 @@
 	}
 }
 
-/* Fade animation */
-
-.fade-appear {
-  opacity: 0;
-}
-
-.fade-appear-active {
-  opacity: 1;
-  transition: opacity 1000ms;
-}
-
-.image {
-  width: 200px;
-  height: 200px;
-}

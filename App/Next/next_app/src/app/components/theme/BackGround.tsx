@@ -6,34 +6,36 @@ import Image from 'next/image';
 import homeBackground from '../../../../public/backgroundUpscale.png';
 import homeBackgroundLight from '../../../../public/backgroundLightUpscale.png';
 import themeContext from "./themeContext";
+import './styleBackground.css'
 
 export const BackgroundBall = () => {
+
+    const [isThemeChanged, setIsThemeChanged] = useState(false);
     const { theme } = useContext(themeContext);
-    const [currentImage, setCurrentImage] = useState(0);
-    const images = [homeBackground, homeBackgroundLight];
-    const handleImageChange = () => {
-        setCurrentImage((prevImage) => (prevImage + 1) % images.length);
-    };
 
-    useEffect(() => {
-        setCurrentImage((prevImage) => (prevImage + 1) % images.length);
-    }, [theme]);
+  useEffect(() => {
+    setIsThemeChanged(true);
+    const timeout = setTimeout(() => {
+      setIsThemeChanged(false);
+    }, 1800);
 
+    return () => clearTimeout(timeout);
+  }, [theme]);
     return (
         <div >
             <TransitionGroup>
                 <CSSTransition
-                    key={currentImage}
-                    in={true}
+                    key={localStorage.getItem('theme')}
+                    in={isThemeChanged}
                     appear={true}
                     timeout={1800}
                     classNames="fade"
+                    unmountOnExit
                 >
                     <img
-                        src={images[currentImage].src}
+                        src={typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src || theme}
                         alt="Bg"
                         className=" blur-md -z-10 fixed w-full h-full object-cover"
-                        onChange={handleImageChange}
                     />
                 </CSSTransition>
             </TransitionGroup>
