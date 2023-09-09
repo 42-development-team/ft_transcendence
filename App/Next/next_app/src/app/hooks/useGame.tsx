@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { GameInterface } from "../game/interfaces/game.interfaces";
-import { useAuthcontext } from "../context/AuthContext";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function useGame() {
 
-	const {socket} = useAuthcontext();
+	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 
