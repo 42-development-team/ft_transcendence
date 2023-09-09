@@ -27,14 +27,13 @@ const FriendActions = ({user}: FriendProps) => {
 			window.location.href = "/profile";
 	}
 
-	const removeFriend = () => {
-		console.log("userId = ", user.id);
-		sessionStorage.setItem("userId", user.id);
-	if (sessionStorage.getItem("userId") === undefined)
-		setOpenAlert(true);
-	else
-		window.location.href = "/profile";
-}
+	const removeFriend = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/removeFriend/${user.id}`, {
+			credentials: "include",
+			method: "PATCH"
+		});
+		// const data = await response.json();
+	}
 
 	const handleAction = (action: () => void) => {
 		if (lockSubmit) return;
