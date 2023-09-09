@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 
 const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 

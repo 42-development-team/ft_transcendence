@@ -10,7 +10,9 @@ export const Theme = () => {
 
     const { theme, setTheme } = useContext(themeContext);
 
-    const handleThemeChange = () => {
+    const handleThemeChange = () => {        
+        if (typeof window === 'undefined')
+            return;
         const themeStored = localStorage.getItem('theme');
         if (themeStored) {
             const newTheme = themeStored === 'mocha' ? 'latte' : 'mocha';
@@ -22,12 +24,6 @@ export const Theme = () => {
         }
     };
 
-    const handleStorageTheme = () => {
-        if (typeof window === 'undefined')
-            return;
-
-    }
-
     return (
         <div className='flex flex-row'>
             <div className='flex flex-col justify-center'>
@@ -37,7 +33,7 @@ export const Theme = () => {
                         type="checkbox"
                         className="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-overlay0 transition-colors duration-300 checked:bg-pink-500 peer-checked:border-pink-500 peer-checked:before:bg-pink-500"
                         onClick={handleThemeChange}
-                        defaultChecked={localStorage.getItem('theme') === "latte"}
+                        defaultChecked={typeof window !== 'undefined' &&  localStorage.getItem('theme') === "latte"}
                     />
                     <label
                         htmlFor="switch-component"

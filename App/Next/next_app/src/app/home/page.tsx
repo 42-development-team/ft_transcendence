@@ -5,6 +5,8 @@ import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
+import Image from "next/image";
+import homeBackground from "../../../public/homeBackground.png";
 
 export default function Home() {
   const { login, userId } = useAuthContext();
