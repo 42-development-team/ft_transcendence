@@ -80,6 +80,12 @@ export class FriendService {
 	async addFriend(userId: number, addedUserId: number) {
 		// transaction garantee that the 2 updates fail or succed together
 		try {
+			const user= await this.prisma.user.findUnique({
+				where: { id: userId },
+			});
+			if (user.friends.includes(addedUserId)){
+				return;
+			}
 			await this.prisma.$transaction([
 				 this.prisma.user.update({
 					where: { id: userId },
