@@ -97,54 +97,6 @@ const ChatMemberActions = (
                     )}
                 </div>
             }
-<<<<<<< HEAD
-			<DropDownMenu>
-				<div aria-orientation="vertical" >
-					<DropDownAction onClick={() => handleAction(onProfileClick)}>View profile</DropDownAction>
-					<Alert
-						className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
-						variant='gradient'
-						open={openAlert}
-						icon={<AlertErrorIcon />}
-						animate={{
-							mount: { y: 0 },
-							unmount: { y: 100 },
-						}}>
-						{<p>User not found</p>}
-					</Alert>
-					{!isCurrentUser &&
-					<>
-						<DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
-						<DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
-						{!isBlocked &&
-							<DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
-						}
-					</>
-					}
-					{isCurrentUserOwner && user.isAdmin && !isCurrentUser &&
-						<DropDownActionRed onClick={() => handleAction(unsetAdmin)}>Remove admin</DropDownActionRed>
-					}
-					{ownerActionsEnabled && !user.isBanned &&
-						<DropDownAction onClick={() => handleAction(setAdmin)}>Set as admin</DropDownAction>
-					}
-					{adminActionsEnabled && user.isBanned &&
-						<DropDownActionRed onClick={() => handleAction(unbanUser)}>Unban</DropDownActionRed>
-					}
-					{adminActionsEnabled && !user.isBanned &&
-						<>
-							<DropDownActionRed onClick={() => handleAction(kickUser)}>Kick</DropDownActionRed>
-							<DropDownActionRed onClick={() => handleAction(banUser)}>Ban</DropDownActionRed>
-						</>
-					}
-					{isCurrentUser &&
-						<DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
-					}
-					{!isCurrentUser && !isFriend && !isFriendAdded &&
-						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add as friend</DropDownActionRed>
-					}
-				</div>
-			</DropDownMenu>
-=======
             <DropDownMenu>
                 <div aria-orientation="vertical" >
                     <DropDownAction onClick={() => handleAction(onProfileClick)}>View profile</DropDownAction>
@@ -188,9 +140,11 @@ const ChatMemberActions = (
                     {isCurrentUser &&
                         <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
+					{!isCurrentUser && !isFriend && !isFriendAdded &&
+						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add as friend</DropDownActionRed>
+					}
                 </div>
             </DropDownMenu>
->>>>>>> main
         </div>
     )
 }
