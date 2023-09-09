@@ -1,5 +1,5 @@
 
-import Canvas from '../components/game/canvas';
+import Canvas from './canvas';
 
 const Game = ({...props}) => {
 	
