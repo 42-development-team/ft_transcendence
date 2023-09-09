@@ -7,12 +7,12 @@ import { useEffectTimer } from "../auth/utils/useEffectTimer";
 import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
 import DoesUserNameExist from "../utils/DoesUsernameExist";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
 import { isAlphanumeric } from "../utils/isAlphanumeric";
 
 const SettingsPage = ({userId}: {userId: string}) => {
 
-	const { login } = useAuthcontext();
+	const { login } = useAuthContext();
 	useEffect(() => {
 	  login();
 	}, []);

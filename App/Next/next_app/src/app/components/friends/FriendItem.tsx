@@ -3,38 +3,64 @@ import Image from "next/image";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
+import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
+// import { Alert } from "@material-tailwind/react";
+import { useEffect, useRef, useState } from "react";
+import { useUserRole } from "../../components/chat/chatbox/members/UserRoleProvider";
 
 type FriendProps = {
-    user: UserModel
+	user: UserModel
 }
 
-const FriendActions = () => {
+const FriendActions = ({user}: FriendProps) => {
+	const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
+	const [ openAlert, setOpenAlert ] = useState(false);
+	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const [ isOpen, setIsOpen ] = useState(false);
 
-    // Todo: prevent double click
-    // const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
-	
-	// const handleAction = (action: () => void) => {
-    //     if (lockSubmit) return;
-    //     setLockSubmit(true);
-    //     action();
-	// 	console.log("unblockUser");
-    //     setTimeout(() => setLockSubmit(false), 1500);
-    // }
+	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
+	const onProfileClick = () => {
+			console.log("userId = ", user.id);
+			sessionStorage.setItem("userId", user.id);
+			if (sessionStorage.getItem("userId") === undefined)
+			setOpenAlert(true);
+			else
+			window.location.href = "/profile";
+		}
 
-    return (
-        <div aria-orientation="vertical" >
-            <DropDownAction onClick={() => console.log('Play')}>
-                Invite to play
-            </DropDownAction>
-            <DropDownAction onClick={() => console.log('View Profile')}>
-                View profile
-            </DropDownAction>
-            <DropDownActionRed onClick={() => console.log('Remove Friend')}>
-                Remove Friend 
+		const removeFriend = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/removeFriend/${user.id}`, {
+			credentials: "include",
+			method: "PATCH"
+		});
+		// const data = await response.json();
+	}
+
+	const handleAction = (action: () => void) => {
+		if (lockSubmit) return;
+		setLockSubmit(true);
+		action();
+		setIsOpen(false);
+		setTimeout(() => setLockSubmit(false), 1500);
+	}
+
+	// todo callback func to invite to play
+	return (
+		<div aria-orientation="vertical" >
+            <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>
+				Invite to play
+			</DropDownAction>
+            <DropDownAction onClick={() => handleAction(onProfileClick)}>
+				View profile
+			</DropDownAction>
+            <DropDownActionRed onClick={() => handleAction(removeFriend)}>
+                Remove Friend
             </DropDownActionRed>
         </div>
     )
 }
+
 
 const FriendItem = ({ user }: FriendProps) => {
     return (
@@ -53,9 +79,9 @@ const FriendItem = ({ user }: FriendProps) => {
                 </div>
                 <h1 className="font-medium text-sm">{user.username}</h1>
             </div>
-            <DropDownMenu >
-                <FriendActions />
-            </DropDownMenu>
+			<DropDownMenu>
+				 <FriendActions user={user}/>
+			</DropDownMenu>
         </div>
     )
 }

@@ -170,7 +170,7 @@ export class ChatroomService {
 		const chatroom = await this.prisma.chatRoom.findUniqueOrThrow({
 			where: {
 				id: id,
-				memberShips: { some: { userId: userId, isBanned: false } }
+				// memberShips: { some: { userId: userId, isBanned: false } }
 			},
 			include: {
 				messages: {
@@ -178,6 +178,10 @@ export class ChatroomService {
 				},
 				owner: true,
 				memberShips: {
+					where: {
+						userId: userId,
+						isBanned: false
+					},
 					include: { user: true }
 				}
 			},

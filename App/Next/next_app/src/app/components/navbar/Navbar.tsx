@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useAuthcontext } from '@/app/context/AuthContext';
+import { useAuthContext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
@@ -12,8 +12,7 @@ import { Theme } from "../theme/Theme";
 
 
 const Navbar = () => {
-    const {isLoggedIn, logout} = useAuthcontext();
-
+    const {isLoggedIn, logout} = useAuthContext();
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />

@@ -15,7 +15,7 @@ export class ChatroomController {
 		private chatroomService: ChatroomService,
 		private socketGateway: SocketGateway,
 		private userService: UsersService,
-		private membershipService: MembershipService,
+		private membershipService: MembershipService
 	) { }
 
 	/* C(reate) */

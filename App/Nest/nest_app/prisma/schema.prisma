@@ -28,6 +28,7 @@ model User {
 	games				Game[]			@relation("gamesPlayed")
 	blockedUsers		User[]			@relation("blockedUsers")
 	blockedBy			User[]			@relation("blockedUsers")
+	friends				Int[]
 }
 
 model Message {

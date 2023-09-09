@@ -34,34 +34,53 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [open, setOpen] = useState(false);
 	const [invited, setInvited] = useState(false);
 
+	// Exception catcher for fetch
+	useEffect(() => {
+		const { fetch : originalFetch } = window;
+		window.fetch = async (...args) => {
+			try {
+				let [resource, config] = args;
+				const response = await originalFetch(resource, config);
+				if (!response.ok && (response.status === 401 || response.status === 500)) {
+					setLoggedIn(false);
+					window.removeEventListener('beforeunload', handleTabClosing);
+					await delay(500);
+					window.location.href = "/";
+					return Promise.reject(response);
+				}
+				return response;
+			}
+			catch (error) {
+				console.log(error.message);
+			}
+		};
+	}, []);
+
 	useEffect(() => {
 		if (isLoggedIn && userId)
 			initializeSocket(userId);
 	}, [isLoggedIn, userId]);
 
+	const handleTabClosing = (event: BeforeUnloadEvent) => {
+		if (!isLoggedIn) return ;
+		fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
+			credentials: "include",
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				currentStatus: "offline",
+			}),
+		});
+	}
+
 	useEffect(() => {
 		if (isLoggedIn) {
-			const handleTabClosing = (event: BeforeUnloadEvent) => {
-				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
-					credentials: "include",
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						currentStatus: "offline",
-					}),
-				});
-
-			};
-			if (isLoggedIn) {
-				window.addEventListener('beforeunload', handleTabClosing);
-			}
-			return () => {
-				window.removeEventListener('beforeunload', handleTabClosing);
-			};
+			window.addEventListener('beforeunload', handleTabClosing);
 		}
-	}, [isLoggedIn, userId]);
+		return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		};
+	}, [isLoggedIn]);
 
 	const fetchProfile = async () => {
 		try {
@@ -75,7 +94,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		catch (error) {
 			console.log("Error fetching profile: " + error);
 			logout();
-		};
+		}
 	}
 
 	const login = async () => {
@@ -184,4 +203,4 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	)
 }
 
-export const useAuthcontext = () => useContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);

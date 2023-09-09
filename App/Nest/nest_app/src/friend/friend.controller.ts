@@ -1,4 +1,4 @@
-import { Controller, Request, Param, Patch, Get, Res } from '@nestjs/common';
+import { Controller, Request, Param, Patch, Get, Res, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { SocketGateway } from 'src/sockets/socket.gateway';
 import { UsersService } from 'src/users/users.service';
@@ -14,15 +14,39 @@ export class FriendController {
 	) { }
 
 	/* C(reate) */
+
+
 	/* R(ead) */
+	@Get('getFriends')
+	async getFriends(@Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const friends: FriendDto[] = await this.friendService.getFriends(userId);
+		res.send(friends);
+	}
+
 	@Get('blocked')
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const blockedUsers: FriendDto[] = await this.friendService.getBlockedUsers(userId);
+
 		res.send(blockedUsers);
-	}		
+	}
 
 	/* U(pdate) */
+	@Patch('addFriend/:addedUserId')
+	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.addFriend(userId, Number(addedUserId));
+		res.send("Friend added successfully");
+	}
+
+	@Patch('removeFriend/:removedUserId')
+	async removeFriend(@Param('removedUserId') removedUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.removeFriend(userId, Number(removedUserId));
+		res.send("Friend removed successfully");
+	}
+
 	@Patch('block/:blockedId')
 	async blockUser(@Param('blockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
