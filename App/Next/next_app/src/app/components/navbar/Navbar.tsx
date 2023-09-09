@@ -46,7 +46,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     }
 
     return (
-        <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
+        <div className={`${isLoggedIn ? 'px-6' : 'px-2'} flex items-center z-100 relative gap-4 text-lg transition-all`}>
             <Theme />
             {isLoggedIn &&
                 <NavDropDownMenu>
