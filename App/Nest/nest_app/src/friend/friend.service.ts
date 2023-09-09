@@ -106,20 +106,29 @@ export class FriendService {
 	async removeFriend(userId: number, removedUserId: number) {
 		// transaction garantee that the 2 updates fail or succed together
 		try {
+			const user = await this.prisma.user.findUnique({
+				where: { id: userId }
+			});
+			const updateFriends = user.friends.filter((friendId) => friendId !== removedUserId);
+			const userRemoved = await this.prisma.user.findUnique({
+				where: { id: removedUserId }
+			});
+			const updateFriendsRemoved = userRemoved.friends.filter((friendId) => friendId !== userId);
 			await this.prisma.$transaction([
-				 this.prisma.user.update({
+				this.prisma.user.update({
 					where: { id: userId },
 					data: {
 						friends: {
-							// pull: removedUserId,
+							set: updateFriends,
 						},
 					},
 				}),
-				 this.prisma.user.update({
+
+				this.prisma.user.update({
 					where: { id: removedUserId },
 					data: {
 						friends: {
-							// pull: userId,
+							set: updateFriendsRemoved,
 						},
 					},
 				}),
