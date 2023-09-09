@@ -20,15 +20,15 @@ interface ChatBarProps {
 const Chat = ({ userId }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
     const { friends, blockedUsers, blockUser, unblockUser } = useFriends();
-    const { 
-        channels, joinedChannels, 
+    const {
+        channels, joinedChannels,
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
         directMessage
     } = useChannels(userId);
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [ isCurrentUserAdmin, setIsCurrentUserAdmin ] = useState<boolean>(false);
     const [ isCurrentUserOwner, setIsCurrentUserOwner ] = useState<boolean>(false);
-    
+
     let currentUser = undefined;
 
     useEffect(() => {
@@ -67,7 +67,7 @@ const Chat = ({ userId }: ChatBarProps) => {
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers}/>
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} blockUser={blockUser} blockedUsers={blockedUsers}/>
+                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} blockUser={blockUser} blockedUsers={blockedUsers} friends={friends}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />
