@@ -3,31 +3,33 @@ import Image from "next/image";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
-import { Alert } from "@material-tailwind/react";
+import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
+// import { Alert } from "@material-tailwind/react";
 import { useEffect, useRef, useState } from "react";
 import { useUserRole } from "../../components/chat/chatbox/members/UserRoleProvider";
-// import FriendList from "./FriendList";
 
 type FriendProps = {
-    user: UserModel
+	user: UserModel
 }
 
 const FriendActions = ({user}: FriendProps) => {
 	const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
-	const [ isOpen, setIsOpen ] = useState(false);
 	const [ openAlert, setOpenAlert ] = useState(false);
 	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const [ isOpen, setIsOpen ] = useState(false);
 
+	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 	const onProfileClick = () => {
 			console.log("userId = ", user.id);
 			sessionStorage.setItem("userId", user.id);
-		if (sessionStorage.getItem("userId") === undefined)
+			if (sessionStorage.getItem("userId") === undefined)
 			setOpenAlert(true);
-		else
+			else
 			window.location.href = "/profile";
-	}
+		}
 
-	const removeFriend = async () => {
+		const removeFriend = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/removeFriend/${user.id}`, {
 			credentials: "include",
 			method: "PATCH"
@@ -43,10 +45,9 @@ const FriendActions = ({user}: FriendProps) => {
 		setTimeout(() => setLockSubmit(false), 1500);
 	}
 
-	// todo callback func to remove friend
 	// todo callback func to invite to play
 	return (
-        <div aria-orientation="vertical" >
+		<div aria-orientation="vertical" >
             <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>
 				Invite to play
 			</DropDownAction>
@@ -59,6 +60,7 @@ const FriendActions = ({user}: FriendProps) => {
         </div>
     )
 }
+
 
 const FriendItem = ({ user }: FriendProps) => {
     return (
@@ -76,9 +78,9 @@ const FriendItem = ({ user }: FriendProps) => {
                 </div>
                 <h1 className="font-medium text-sm">{user.username}</h1>
             </div>
-            <DropDownMenu >
-                <FriendActions user={user}/>
-            </DropDownMenu>
+			<DropDownMenu>
+				 <FriendActions user={user}/>
+			</DropDownMenu>
         </div>
     )
 }
