@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import sun from "../../../../public/sun.png";
@@ -29,6 +30,9 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (typeof window === 'undefined') 
       return;
+    if (localStorage.getItem("theme") === null) {
+      localStorage.setItem("theme", "mocha");
+    }
     setTheme(localStorage.getItem("theme") || "mocha");
   }, []);
 
