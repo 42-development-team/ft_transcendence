@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { GameInterface} from "../game/interfaces/game.interfaces";
-import { useAuthcontext } from "../context/AuthContext";
+import { GameInterface } from "../game/interfaces/game.interfaces";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function useGame() {
 
-	const {socket} = useAuthcontext();
+	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 
@@ -19,9 +19,20 @@ export default function useGame() {
 			setData(body);
 		});
 
+		socket?.on('reconnectGame', () => {
+			setInGame(true);
+		});
+
+		socket?.on('endOfGame', () => {
+			console.log('endOfGame');
+			setInGame(false);
+		});
+
 		return () => {
 			socket?.off('updateGame');
 			socket?.off('matchIsReady');
+			socket?.off('reconnectGame');
+			socket?.off('endOfGame');
 		};
 	}, [socket]);
 

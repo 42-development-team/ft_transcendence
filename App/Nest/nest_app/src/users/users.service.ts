@@ -3,11 +3,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto';
 import { User } from '@prisma/client'
 import { plainToClass } from 'class-transformer';
+import { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly prisma: PrismaService,
+        private configService: ConfigService,
+        private jwtService: JwtService,
     ) { }
 
     /* C(reate) */
@@ -49,6 +55,22 @@ export class UsersService {
         });
         return user.socketId;
     }
+
+    async getUserIdFromSocket(socket: Socket){
+		if (socket){
+			const authToken = socket.handshake.headers.cookie.split(";");
+			const jwtToken = authToken[0].split("=")[1];
+			const secret = this.configService.get<string>('jwtSecret');
+			const payload = this.jwtService.verify(jwtToken, { secret: secret });
+			const userId = payload.sub;
+			if(userId) {
+				return userId;
+			}
+			// Todo: if userId is undefined or null?
+			return null;
+		}
+		return null;
+	}
 
     async getUserFromUsername(username: string): Promise<CreateUserDto> {
         try {
@@ -94,6 +116,21 @@ export class UsersService {
         });
         const userCurrentStatus = user.currentStatus;
         return userCurrentStatus;
+    }
+
+    async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
+        console.log("blockedId: ", blockedId);
+        try {
+            // Check if user is blocked by the blockedId user
+            await this.prisma.user.findUniqueOrThrow({
+                where: { blockedBy: { some: { id: userId } }, id: blockedId },
+            });
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+        return false;
     }
 
     /* U(pdate) */
@@ -143,16 +180,24 @@ export class UsersService {
         let user = await this.getUserFromLogin(login);
 		// console.log("Logging in user current status= ", user.currentStatus);
         if (!user) {
+            const duplicate = await this.getUserFromUsername(login);
+            let newUsername = login;
+            if (duplicate) {
+                let number = 1;
+                while (await this.getUserFromUsername(login + "(" + number + ")")) {
+                    number++;
+                }
+                newUsername = login + "(" + number + ")";
+            }
             const createUserDto: CreateUserDto = {
                 login: login,
-                username: login,
+                username: newUsername,
                 avatar: "noavatar.jpg",
                 isTwoFAEnabled: false,
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
             };
-
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {

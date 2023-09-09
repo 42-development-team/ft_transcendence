@@ -7,12 +7,12 @@ import { useEffectTimer } from "../auth/utils/useEffectTimer";
 import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
 import DoesUserNameExist from "../utils/DoesUsernameExist";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
 import { isAlphanumeric } from "../utils/isAlphanumeric";
 
 const SettingsPage = ({userId}: {userId: string}) => {
 
-	const { login } = useAuthcontext();
+	const { login } = useAuthContext();
 	useEffect(() => {
 	  login();
 	}, []);
@@ -31,6 +31,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const [updatedUsername, setUpdatedUsername] = useState<boolean>(false);
 	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
 	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
+	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -93,7 +94,8 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			setUpdatingAvatar(true);
 			setMessage("Updating avatar...");
 			setIsVisibleTimerAvatar(true);
-			await UpdateAvatar(avatarFile, userId, setImageUrl);
+			if (!wrongFormat)
+				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			setMessage("Avatar updated successfully");
 			setUpdatingAvatar(false);
 		} catch (error) {
@@ -119,7 +121,6 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
 				setMessage("Username must be at least 3 characters long, and at most 15 characters long");
-				console.log("Username must be at least 3 characters long, and at most 15 characters long, newInput:", newinputUserName, "placeholder:", placeHolder);
 				setValidateUsernameEnabled(false);
 				setIsVisible(true);
 				return;
@@ -146,9 +147,21 @@ const SettingsPage = ({userId}: {userId: string}) => {
 
 	}
 
-	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
+	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
+		if (message !== null) {
+			setValidateAvatarEnabled(false);
+			setImageUrl(null);
+			setAvatarFile(null);
+			setIsVisibleTimerAvatar(true);
+			setUpdatingAvatar(true);
+			setWrongFormat(true);
+			setMessage(message);
+			console.log("Error during avatar upload:", message);
+			return ;
+		}
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
+		setWrongFormat(false);
 		if (childAvatarFile !== null && childImageUrl !== null)
 			setValidateAvatarEnabled(true);
 	}
@@ -199,13 +212,16 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
 			</Avatar>
 			{
-				!validateAvatarEnabled && updatingAvatar &&
+				!validateAvatarEnabled && updatingAvatar && isVisibleTimerAvatar &&
 				<div className=" text-green-400 text-center mb-2">
-					{isVisibleTimerAvatar && <p>{message}</p>}
+					{!wrongFormat && <p>{message}</p>}
+					<div className="text-red-700">
+						{ wrongFormat && <p>{message}</p>}
+					</div>
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{validateAvatarEnabled && !updatedUsername &&
+				{ !updatedUsername && validateAvatarEnabled &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>

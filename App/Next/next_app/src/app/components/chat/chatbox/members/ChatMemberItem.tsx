@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -30,7 +30,7 @@ const ChatMemberItem = ({
     setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
-	const { socket } = useAuthcontext();
+	const { socket } = useAuthContext();
 	const [ statusChange, setStatusChange ] = useState(false);
 	const [ isFriendAdded, setIsFriendAdded ] = useState(false);
 

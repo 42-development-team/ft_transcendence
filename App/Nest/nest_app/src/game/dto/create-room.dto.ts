@@ -5,5 +5,8 @@ export class GameRoomDto {
 	roomName: string;
 	playerOneId: number;
 	playerTwoId: number;
+	readyPlayerOne: boolean;
+	readyPlayerTwo: boolean;
+	reconnect: boolean;
 	data: GameDto;
 }

@@ -15,9 +15,7 @@ import { MembershipService } from 'src/membership/membership.service';
 export class ChatroomService {
 	constructor(
 		private prisma: PrismaService,
-		private jwtService: JwtService,
 		private userService: UsersService,
-		private configService: ConfigService,
 		private membershipService: MembershipService
 	) { }
 
@@ -478,24 +476,24 @@ export class ChatroomService {
 	// #endregion
 	// #region Retrieve
 
-	async getUserIdFromSocket(socket: Socket){
-		if (socket){
-			const authToken = socket.handshake.headers.cookie.split(";");
-			const jwtToken = authToken[0].split("=")[1];
-			const secret = this.configService.get<string>('jwtSecret');
-			const payload = this.jwtService.verify(jwtToken, { secret: secret });
-			const userId = payload.sub;
-			if(userId) {
-				return userId;
-			}
-			// Todo: if userId is undefined or null?
-			return null;
-		}
-		return null;
-	}
+	// async getUserIdFromSocket(socket: Socket){
+	// 	if (socket){
+	// 		const authToken = socket.handshake.headers.cookie.split(";");
+	// 		const jwtToken = authToken[0].split("=")[1];
+	// 		const secret = this.configService.get<string>('jwtSecret');
+	// 		const payload = this.jwtService.verify(jwtToken, { secret: secret });
+	// 		const userId = payload.sub;
+	// 		if(userId) {
+	// 			return userId;
+	// 		}
+	// 		// Todo: if userId is undefined or null?
+	// 		return null;
+	// 	}
+	// 	return null;
+	// }
 
     async getUserFromSocket(socket: Socket) {
-		const userId = await this.getUserIdFromSocket(socket);
+		const userId = await this.userService.getUserIdFromSocket(socket);
 		if(userId) {
 			return this.userService.getUserFromId(userId);
 		}

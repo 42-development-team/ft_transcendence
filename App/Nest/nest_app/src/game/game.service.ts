@@ -1,36 +1,50 @@
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateGameDto } from "./dto/create-game.dto";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
-
 //===========
+import { Socket } from 'socket.io';
+import { GameRoomDto } from "./dto/create-room.dto";
+import { UserIdDto } from "src/userstats/dto/user-id.dto";
+import { UsersService } from "src/users/users.service";
+
 
 @Injectable()
 export class GameService {
     constructor(
         private prisma: PrismaService,
-        // private socketGateway: SocketGateway,
+        private userService: UsersService,
     ) {}
 
+    gameRooms: GameRoomDto[] = [];
+    queued: UserIdDto[] = [];
+
+
     /* C(reate) */
-    async createGame(createGamedto: CreateGameDto) {
+    async createGame(data: GameDto) {
         
+        const createGameDto = {
+            winnerScore: Math.max(data.player1.points, data.player2.points),
+            loserScore: Math.min(data.player1.points, data.player2.points),
+            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+        }
+
         const newGame = await this.prisma.game.create({
             data: {
                 users: {
                     connect: [
-                        { id: createGamedto.winnerId },
-                        { id: createGamedto.loserId }
+                        { id: createGameDto.winnerId },
+                        { id: createGameDto.loserId }
                     ],
                 },
-                winner: { connect: { id: createGamedto.winnerId } },
-                loser: { connect: { id: createGamedto.loserId } },
-                winnerScore: createGamedto.winnerScore,
-                loserScore: createGamedto.loserScore,
+                winner: { connect: { id: createGameDto.winnerId } },
+                loser: { connect: { id: createGameDto.loserId } },
+                winnerScore: createGameDto.winnerScore,
+                loserScore: createGameDto.loserScore,
             },
         });
         return newGame;
@@ -111,11 +125,143 @@ export class GameService {
     }
 
     //=================================================//
+    //============= HANDLE SOCKET EVENTS ==============//
+    //=================================================//
+
+    async handleJoinQueue(player: Socket): Promise<{newGameRoom: GameRoomDto, player2SocketId: string}> {
+        try {
+            const userId = await this.userService.getUserIdFromSocket(player);
+            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (idx === -1) {
+                this.queued.push({userId});
+                if (this.queued.length >= 2)
+                   return this.handleJoinGame(player);
+            }
+            else {
+                const newGameRoom: GameRoomDto = this.gameRooms[idx];
+                const player2SocketId: string = undefined;
+                player?.join(this.gameRooms[idx].roomName);
+                return ({newGameRoom, player2SocketId});
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async handleJoinGame(player: Socket): Promise<{newGameRoom: GameRoomDto, player2SocketId: string}> {
+        const player2Id: number = this.queued[0].userId;
+        const player1Id: number = this.queued[1].userId;
+
+        // create room data
+        const id: number = this.gameRooms.length;
+        const roomName: string = player1Id + "_" + player2Id;
+        const newGameRoom: GameRoomDto = {
+            id: id,
+            roomName: roomName,
+            playerOneId: player1Id,
+            playerTwoId: player2Id,
+            readyPlayerOne: false,
+            readyPlayerTwo: false,
+            reconnect: false,
+            data: this.setGameData(id, roomName, player1Id, player2Id),
+        }
+
+        // add room to rooms list
+        this.gameRooms.push(newGameRoom);
+        // pop player from queue list
+        this.handleLeaveQueue(this.queued[0]);
+        this.handleLeaveQueue(this.queued[1]);
+
+        // Create room instance and join room
+        await player?.join(roomName);
+
+        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+        return ({newGameRoom, player2SocketId});
+    }
+
+    async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1) {
+            console.log("!LaunchGameRoom")
+            return ;
+        }
+
+        if (this.gameRooms[idx].playerOneId === userId)
+            this.gameRooms[idx].readyPlayerOne = true;
+        else if (this.gameRooms[idx].playerTwoId === userId)
+            this.gameRooms[idx].readyPlayerTwo = true;
+        if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
+            return this.gameRooms[idx];
+    }
+
+    handleLeaveQueue(userId: UserIdDto) {
+        const playerIndex = this.queued.indexOf(userId);
+        this.queued.splice(playerIndex, 1);
+    }
+
+    handleMove(event: string, id: number, userId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1) {
+            console.log("!MoveGameRoom")
+            return ;
+        }
+        if (this.gameRooms[idx].data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.setVelocity(-0.01, this.gameRooms[idx].data.player1);
+            else if (event === "ArrowDown")
+                this.setVelocity(0.01, this.gameRooms[idx].data.player1);
+        }
+        else if (this.gameRooms[idx].data.player2.id === userId){
+            if (event === "ArrowUp")
+                this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
+            else if (event === "ArrowDown")
+                this.setVelocity(0.01, this.gameRooms[idx].data.player2);
+        }
+    }
+
+    handleStopMove(event: string, id: number, userId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1) {
+            console.log("!StopMoveGameRoom")
+            return ;
+        }
+        if (this.gameRooms[idx].data.player1.id === userId) {
+            if (event === "ArrowUp")
+                this.killVelocity(this.gameRooms[idx].data.player1);
+            else if (event === "ArrowDown")
+                this.killVelocity(this.gameRooms[idx].data.player1);
+        }
+        else {
+            if (event === "ArrowUp")
+            this.killVelocity(this.gameRooms[idx].data.player2);
+        else if (event === "ArrowDown")
+            this.killVelocity(this.gameRooms[idx].data.player2);
+        }
+    }
+
+    async removeRoom(roomName: string) {
+        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+        if (idx === -1)
+            return ;
+        this.gameRooms.splice(idx, 1);
+    }
+
+    async getDataFromRoomId(id: number): Promise<GameDto> {
+        return this.gameRooms.find(game => game.id === id)?.data;
+    }
+
+    async sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    //=================================================//
     //================== GAME PLAY ====================//
     //=================================================//
     /* GamePlay Player */
-    async incrPoints(player: PlayerDto) {
-        player.points++;
+    async incrPoints(idx: number, player: number) {
+        if (player === 1)
+            this.gameRooms[idx].data.player1.points++;
+        else
+            this.gameRooms[idx].data.player2.points++;
     }
 
     async setVelocity(val: number, player: PlayerDto){
@@ -138,132 +284,126 @@ export class GameService {
         }
     }
 
-    async calculatePlayer(data: GameDto) {
-        this.move(data.player1);
-        this.move(data.player2);
+    async calculatePlayer(idx: number) {
+        this.move(this.gameRooms[idx].data.player1);
+        this.move(this.gameRooms[idx].data.player2);
     }
 
     /* GamePlay Ball */
     //========== BOUNCES =============//
-    async bounce(data: GameDto) {
-        this.borderBounce(data.ball);
-        this.paddleBounce(data);
-        this.score(data);
+    async bounce(idx: number) {
+        this.borderBounce(idx);
+        this.paddleBounce(idx);
+        this.score(idx);
     };
 
     //>>BORDER<<//
-    async borderBounce(ball: BallDto) {
-        if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
-            ball.speed[1] *= -1;
+    async borderBounce(idx: number) {
+        if (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.ball.r <= 0 || this.gameRooms[idx].data.ball.y + this.gameRooms[idx].data.ball.r >= 1)
+        this.gameRooms[idx].data.ball.speed[1] *= -1;
     }
 
     //>>PADDLE<//
-    async paddleBounce(data: GameDto) {
-        if (data.ball.speed[0] < 0)
-            this.paddleLeftBounce(data.ball, data.player1);
+    async paddleBounce(idx: number) {
+        if (this.gameRooms[idx].data.ball.speed[0] < 0)
+            this.paddleLeftBounce(idx);
         else
-            this.paddleRightBounce(data.ball, data.player2);
+            this.paddleRightBounce(idx);
     }
         
-    async paddleLeftBounce(ball: BallDto, player: PlayerDto) {
-        let dx = Math.abs(ball.x + ball.r - player.x);
-        let dy = Math.abs(ball.y - player.y);
+    async paddleLeftBounce(idx: number) {
+        let dx = Math.abs(this.gameRooms[idx].data.ball.x + this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player1.x);
+        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
 
-        if (dx <= (ball.r + player.w)) {
-            if (dy <= (ball.r + player.h / 2)) {
-                const coef = 10 * (ball.y - player.y);
-                const radian = (coef * player.angle) * (Math.PI / 180);
-                ball.speed[0] *= -1;
-                ball.speed[1] = Math.sin(radian);
+        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.w)) {
+            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.h / 2)) {
+                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
+                const radian = (coef * this.gameRooms[idx].data.player1.angle) * (Math.PI / 180);
+                this.gameRooms[idx].data.ball.speed[0] *= -1;
+                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
             }
         }
     };
     
-    async paddleRightBounce(ball: BallDto, player: PlayerDto) {
+    async paddleRightBounce(idx: number) {
         
-        let dx = Math.abs(ball.x - ball.r - player.x);
-        let dy = Math.abs(ball.y - player.y);
+        let dx = Math.abs(this.gameRooms[idx].data.ball.x - this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player2.x);
+        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
 
-        if (dx <= (ball.r + player.w)) {
-            if (dy <= (ball.r + player.h / 2)) {
-                const coef = 10 * (ball.y - player.y);
-                const radian = (coef * player.angle) * (Math.PI / 180);
-                ball.speed[0] *= -1;
-                ball.speed[1] = Math.sin(radian);
+        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.w)) {
+            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.h / 2)) {
+                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
+                const radian = (coef * this.gameRooms[idx].data.player2.angle) * (Math.PI / 180);
+                this.gameRooms[idx].data.ball.speed[0] *= -1;
+                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
             }
         }
     };
 
     //========== SCORE =============//
-    async score(data: GameDto) {
-        if (data.ball.x <= 0) {
-            this.incrPoints(data.player2);
-            this.reset(data.ball);
+    async score(idx: number) {
+        if (this.gameRooms[idx].data.ball.x <= 0) {
+            this.incrPoints(idx, 2);
+            this.reset(idx);
         }
-        else if(data.ball.x >= 1) {
-            this.incrPoints(data.player1);
-            this.reset(data.ball);
+        else if(this.gameRooms[idx].data.ball.x >= 1) {
+            this.incrPoints(idx, 1);
+            this.reset(idx);
         }
     }
 
     //========== RESET BALL =============//
-    async reset(ball: BallDto) {
-        ball.x = 0.5;
-        ball.y = 0.5;
-        let val = 1;
-        if (Math.random() < 0.5) {
-           val *= -1;
-        }
-        ball.speed[0] = 0.3 * val;
-        ball.speed[1] = Math.random() * val;
+    async reset(idx: number) {
+        this.gameRooms[idx].data.ball.x = 0.5;
+        this.gameRooms[idx].data.ball.y = 0.5;
+        let sign = 1;
+        
+        if (Math.random() < 0.5)
+           sign *= -1;
+        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+
+        if (Math.random() < 0.5)
+            sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
     }
 
     //========== MOVEMENT =============//
     //>>ACCELERATION<<//
-    async incrementSpeed(ball: BallDto) {
-        ball.incr++;
-        if (ball.incr === 10) {
-            ball.speed[0] += 0.01 * ball.speed[0];
-            ball.incr = 0;
+    async incrementSpeed(idx: number) {
+        this.gameRooms[idx].data.ball.incr++;
+        if (this.gameRooms[idx].data.ball.incr === 10) {
+            this.gameRooms[idx].data.ball.speed[0] += 0.01 * this.gameRooms[idx].data.ball.speed[0];
+            this.gameRooms[idx].data.ball.incr = 0;
         }
     }
 
     //>>UPDATE POSITION<<//
-    async updateBall(ball: BallDto) {
-        ball.x += ball.speed[0] / 100;
-        ball.y += ball.speed[1] / 100;
+    async updateBall(idx: number) {
+        this.gameRooms[idx].data.ball.x += this.gameRooms[idx].data.ball.speed[0] / 100;
+        this.gameRooms[idx].data.ball.y += this.gameRooms[idx].data.ball.speed[1] / 100;
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(data: GameDto) {
-        this.bounce(data);
-        this.updateBall(data.ball);
-        this.incrementSpeed(data.ball);
+    async calculateBall(idx: number) {
+        this.bounce(idx);
+        this.updateBall(idx);
+        this.incrementSpeed(idx);
     };
 
-    async calculateGame(data: GameDto): Promise<GameDto> {
-        this.calculatePlayer(data);
-        this.calculateBall(data);
-        if (data.player1.points > 11 || data.player2.points > 11)
-            data.end = true;
-        return data;
-    }
+    async calculateGame(idx: number): Promise<GameDto> {
 
+        this.calculatePlayer(idx);
+        this.calculateBall(idx);
+        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
+            this.gameRooms[idx].data.end = true;
+        
+        return {...this.gameRooms[idx].data};
+    }
+    
     //=================================================//
     //================== UPDATE GAME ==================//
     //=================================================//
-
-    // async update(data: GameDto) {
-    //     // TODO Check disconnected sockets
-    //     while (data.player1.points < 11 && data.player2.points < 11) {
-    //         data = await  this.calculateGame(data);
-    //         // this.socketGateway.sendGameData(data.roomName, data);
-    //         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    //         sleep(1/60);
-    //     }
-    // }
-
-    // Todo: put colors in frontend
+    
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,
@@ -295,7 +435,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.05, 0.02],
+            speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
             incr: 0,
         }
 
