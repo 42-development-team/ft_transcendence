@@ -12,9 +12,15 @@ export const Theme = () => {
     const {theme, setTheme} = useContext(themeContext);
 
     const handleThemeChange = () => {
-        console.log("Theme ", theme);
-        setTheme((prevTheme: string) => prevTheme === 'mocha' ? 'latte' : 'mocha');
-        localStorage.setItem("theme", theme);
+        const themeStored = localStorage.getItem('theme');
+        if (themeStored) {
+            const newTheme = themeStored === 'mocha' ? 'latte' : 'mocha';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        } else {
+            localStorage.setItem('theme', 'mocha');
+            setTheme('mocha');
+        }
     };
 
     const handleStorageTheme = () => {

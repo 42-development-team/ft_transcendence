@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import sun from "../../../../public/sun.png";
-import sunLight from "../../../../public/sunLight.png";
 import {useContext} from "react";
 import ThemeContext from './themeContext';
 
@@ -13,18 +10,13 @@ export const Body = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (typeof window === 'undefined') 
       return;
-
-    if (localStorage.getItem("theme") === null) {
-      localStorage.setItem("theme", "mocha");
-      setTheme("mocha");
+    const themeStored = localStorage.getItem('theme');
+    if (themeStored) {
+      setTheme(themeStored);
     }
     else {
-        
-        if ( theme !== undefined && theme !== null && theme !== localStorage.getItem("theme")) {
-          localStorage.setItem("theme", theme);
-        } else if (theme === undefined || theme === null) {
-            setTheme(localStorage.getItem("theme") || "mocha");
-        }
+      localStorage.setItem('theme', 'mocha');
+      setTheme('mocha');
     }
   }, []);
 
