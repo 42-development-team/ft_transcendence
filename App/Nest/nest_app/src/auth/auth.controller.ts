@@ -8,7 +8,6 @@ import { FirstLoginDto } from './dto/firstLoginDto';
 
 @Controller('auth')
 export class AuthController {
-
     constructor(
         private authService: AuthService,
         private userService: UsersService,

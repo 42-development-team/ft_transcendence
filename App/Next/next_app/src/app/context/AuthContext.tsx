@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
-import { useContext, createContext, useState, useEffect } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
 import { delay } from "@/app/utils/delay";
 
@@ -43,8 +43,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 				const response = await originalFetch(resource, config);
 				if (!response.ok && (response.status === 401 || response.status === 500)) {
 					setLoggedIn(false);
-					window.removeEventListener('beforeunload', handleTabClosing);
-					await delay(500);
+					// window.removeEventListener('beforeunload', handleTabClosing);
 					window.location.href = "/";
 					return Promise.reject(response);
 				}
@@ -62,25 +61,20 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}, [isLoggedIn, userId]);
 
 	const handleTabClosing = (event: BeforeUnloadEvent) => {
-		if (!isLoggedIn) return ;
-		fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
-			credentials: "include",
+		if (!isLoggedIn || userId == "") return ;
+		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				currentStatus: "offline",
-			}),
 		});
 	}
 
 	useEffect(() => {
-		if (isLoggedIn) {
+		if (isLoggedIn && userId != "") {
 			window.addEventListener('beforeunload', handleTabClosing);
 		}
 		return () => {
 			window.removeEventListener('beforeunload', handleTabClosing);
 		};
-	}, [isLoggedIn]);
+	}, [isLoggedIn, userId]);
 
 	const fetchProfile = async () => {
 		try {
@@ -165,7 +159,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	useEffect(() => {
 		socket?.on('userInvited', (body: any) => {
-			setChannelNameInvited(body.room);
+			const {room} = body;
+			setChannelNameInvited(room);
 			setInvited(true);
 			const userInvited = body.user;
 			if (userInvited.id === userId) {
