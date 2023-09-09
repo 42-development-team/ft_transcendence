@@ -3,7 +3,7 @@ import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
-import Game from "../game/Game";
+import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 
 export default function Home() {

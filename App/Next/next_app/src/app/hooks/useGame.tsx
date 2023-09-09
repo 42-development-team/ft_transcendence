@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { GameInterface } from "../game/interfaces/game.interfaces";
+import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 
 export default function useGame() {
