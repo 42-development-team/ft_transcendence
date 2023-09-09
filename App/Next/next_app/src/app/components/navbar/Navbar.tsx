@@ -2,19 +2,22 @@
 import Link from "next/link";
 import { useAuthcontext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image"
-import LogoutIcon from "../../../../public/collapse-right-svgrepo-com.svg";
-import LogoutIconLight from "../../../../public/collapse-right-light-theme.svg";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
 import { useEffect, useState } from "react";
+import { useContext } from "react";
+import themeContext from "../theme/themeContext";
+import React from "react";
+import { Theme } from "../theme/Theme";
+
 
 const Navbar = () => {
     const {isLoggedIn, logout} = useAuthcontext();
+
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
-            {isLoggedIn && <NavLinks logout={logout}/> }
+            {isLoggedIn && <NavLinks logout={logout} />}
         </div>
     );
 };
@@ -47,6 +50,7 @@ const NavLinks = ({logout} : {logout: () => void}) => {
     
     return (
         <div className="flex items-center z-100 relative gap-8 px-6 text-lg transition-all">
+            <Theme/>
             <NavDropDownMenu>
                 <DropDownActionLarge onClick={() => goToProfile()}>
                     Profile

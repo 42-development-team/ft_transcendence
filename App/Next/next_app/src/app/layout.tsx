@@ -3,7 +3,8 @@ import React from "react";
 import {AuthContextProvider} from "@/app/context/AuthContext";
 import Navbar from "@/components/navbar/Navbar";
 import { ChatBarContextProvider } from './context/ChatBarContextProvider';
-import { Theme } from './components/theme/Theme';
+import { Body } from './components/theme/Body';
+import ThemeProvider from './components/theme/themeProvider';
 
 export const metadata = {
   title: 'Pongolin',
@@ -18,7 +19,8 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <Theme>
+      <ThemeProvider>
+      <Body>
           <AuthContextProvider>
             <ChatBarContextProvider>
               <Navbar />
@@ -29,7 +31,8 @@ export default function RootLayout({
               {/* <p>{jwt?.value}</p> */}
             </ChatBarContextProvider>
           </AuthContextProvider>
-      </Theme>
+      </Body>
+      </ThemeProvider>
     </html>
   )
 }
