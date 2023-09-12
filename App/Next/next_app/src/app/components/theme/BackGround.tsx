@@ -2,9 +2,10 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Image from 'next/image';
-import homeBackground from '../../../../public/backGroundDark.png';
-import homeBackgroundLight from '../../../../public/backgroundLightUpscale.png';
+import Image from "next/image";
+import logoWhite from "../../../../public/logoWhite.png";
+import homeBackground from '../../../../public/background_11.png';
+import homeBackgroundLight from '../../../../public/backgroundLight_11.png';
 import themeContext from "./themeContext";
 import './styleBackground.css'
 
@@ -24,6 +25,7 @@ export const BackgroundBall = () => {
     console.log("tu est nul en css et en html et en js et en php et en python et en c et en c++ et en c# et en java et en ruby et en swift et en kotlin et en g et en go et en rust et en r et en r# et ");
     return (
         <div >
+            <Image src={logoWhite} alt="logo" className="fixed top-0 left-0 z-10 w-20 h-20 m-4" />
             <TransitionGroup>
                 <CSSTransition
                     key={localStorage.getItem('theme')}
@@ -31,14 +33,12 @@ export const BackgroundBall = () => {
                     appear={true}
                     timeout={900}
                     classNames="fade"
-                    // unmountOnExit
                     mountOnEnter
-                    // mountOnEnter={false}
                 >
                     <img
                         src={ typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src}
                         alt="Bg"
-                        className="blur-lg -z-10 fixed w-full h-full object-cover"
+                        className="blur-md -z-10 fixed w-full h-full object-cover"
                     />
                 </CSSTransition>
             </TransitionGroup>
