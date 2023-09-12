@@ -186,7 +186,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				}
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true} isOnProfilePage={false}>
 			</Avatar>
 			<div className='flex justify-center text-red-700'>
 				{wrongFormat && <p>{message}</p>}

@@ -65,8 +65,11 @@ const StatsWindow = ({ userId }: { userId: string }) => {
                 disableChooseAvatar={true} 
                 imageUrlGetFromCloudinary={imageUrl} 
                 CallbackAvatarData={handleCallBackDataFromAvatar} 
-                userName={statsData.userName} 
-                userId={userId}>
+                userName={statsData.userName}
+                id={statsData.userId}
+                currId={userId}
+                isOnProfilePage={true}
+            >
             </Avatar>
             <div className=" w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
                 bg-surface0 bg-opacity-90 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">
