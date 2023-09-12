@@ -13,8 +13,9 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
     const Router = useRouter();
     const [ openAlert, setOpenAlert ] = useState(false);
     const {theme} = useContext(ThemeContext);
-    const [elementsColor, setElementsColor] = useState<string>(theme === "latte" ? "red" : "peach");
-    
+    const [elementsColor, setElementsColor] = useState<string>(theme === "latte" ? "from-red" : "from-peach");
+    const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-red" : "text-peach");
+
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
         if (sessionStorage.getItem("userId") === undefined)
@@ -25,10 +26,12 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
 
     useEffect(() => {
         if (theme === "latte") {
-            setElementsColor("red");
+            setElementsColor("from-red");
+            setTextColor("text-red");
         }
         else {
-            setElementsColor("peach");
+            setElementsColor("from-peach");
+            setTextColor("text-peach");
         }
     }, [theme]);
 
@@ -37,8 +40,8 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
             { data !== undefined && data !== null && data.length !== 0 ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
-                    <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-surface1'
-                        : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
+                    <div key={index} className={`${item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r ' + elementsColor + ' to-surface1'
+                        : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}`}>
                         <span className="flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 px-2">
                             <div className="flex flex-row justify-center sm:pr-0 pr-2">
                                 <div className="flex flex-col justify-center">
@@ -50,7 +53,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                                     width={64} height={64} imageUrlGetFromCloudinary={item.avatar} disableChooseAvatar={true} disableImageResize={true} userName={item.username} userId={item.userId}
                                 />
                             </div>
-                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] text-maroon` 
+                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] ` + textColor
                                                                                 : 'flex flex-col justify-center hover:scale-110 hover:text-teal text-[1.4rem] md:text-[1.6rem]'} 
                                     onClick={() => onProfileClick(item.userId)}
                             >
@@ -58,7 +61,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                             </button>
                             <div className="flex flex-col justify-center pr-[4vw]">
                                 <div className="flex mb-2 justify-center text-center">Total Score</div>
-                                <div className="flex justify-center text-[1.4rem] md:text-[1.6rem] text-peach" style={{color : item.userId === currentUserId ? "peach" : "grey"}}>{item.totalScore} </div>
+                                <div className={`flex justify-center text-[1.4rem] md:text-[1.6rem] `+ textColor} style={{color : item.userId === currentUserId ? "peach" : "grey"}}>{item.totalScore} </div>
                             </div>
                         </span>
                     </div>

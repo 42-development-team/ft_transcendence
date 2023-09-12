@@ -8,11 +8,21 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
     const currentUserId = props.currentUserId;
     const [ openAlert, setOpenAlert ] = useState(false);
     const {theme} = useContext(ThemeContext);
-    const [HeaderColor, setHeaderColor] = useState<string>(theme === "latte" ? "" : "bg-surface0");
-
+    const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-red" : "text-peach");
+    const [elementsColor, setElementsColor] = useState<string>(theme === "latte" ? "from-red" : "from-peach");
+    const [textColorVs, setTextColorVs] = useState<string>(theme === "latte" ? "text-peach" : "text-red");
     useEffect(() => {
-
-    }, []);
+        if (theme === "latte") {
+            setTextColor("text-red");
+            setElementsColor("from-red");
+            setTextColorVs("text-maroon");
+        }
+        else {
+            setTextColor("text-peach");
+            setElementsColor("from-peach");
+            setTextColorVs("text-red");
+        }
+    }, [theme]);
 
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
@@ -27,14 +37,14 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
             { data.length !== 0 ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
-                    <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-surface1'
+                    <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r ' + elementsColor +' to-surface1'
                         : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
                         <span className=" flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 sm:px-2">
-                            <div className={`flex text-peach flex-col justify-center pl-[2vw] sm:pl-[5vw] sm:text-[1.6rem] md:text-[1.8rem]`} style={{ color: item.winner.id === currentUserId ? "peach" : "grey" }}>
+                            <div className={`flex flex-col justify-center pl-[2vw] sm:pl-[5vw] sm:text-[1.6rem] md:text-[1.8rem] ` + textColor} style={{ color: item.winner.id === currentUserId ? "peach" : "grey" }}>
                                 {item.winner.id === currentUserId ? "Win" : "Lose"}
                             </div>
                             <div className="flex flex-col justify-center">
-                                <div className="flex justify-center text-red sm:text-2xl">
+                                <div className={`flex justify-center sm:text-2xl ` + textColorVs}>
                                     VS
                                 </div>
                                 <button onClick={() => onProfileClick(item.winner.id === currentUserId ? item.loser.id : item.winner.id)} className="flex flex-col sm:text-[1.5rem] md:text-[1.7rem] text-gray-400 justify-center hover:scale-110 hover:text-teal ">
@@ -42,7 +52,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
                                 </button>
                             </div>
                             <div className="flex flex-col justify-center pr-[4vw]">
-                                <div className="flex text-peach justify-center sm:text-[1.5rem]" style={{ color: item.winner.id === currentUserId ? "Peach" : "grey" }}>
+                                <div className={`flex justify-center sm:text-[1.5rem] `+ textColor} style={{ color: item.winner.id === currentUserId ? "Peach" : "grey" }}>
                                     {item.winner.id === currentUserId ? item.winnerScore : item.loserScore} - {item.winner.id === currentUserId ? item.loserScore : item.winnerScore}
                                 </div>
                                 <div className="flex justify-center italic font-light">

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useContext } from "react";
 import Image from 'next/image';
-import fileType, { fileTypeFromBuffer } from 'file-type';
-import { useEffectTimer } from "../auth/utils/useEffectTimer";
+import ThemeContext from "../theme/themeContext";
 
 const Avatar = (
     {
@@ -32,6 +31,8 @@ const Avatar = (
 ) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [wrongFormat, setWrongFormat] = useState<boolean>(false);
+    const {theme} = useContext(ThemeContext);
+    const [textUsername, setTextUsername] = useState<string>(theme  === "latte" ? "text-base" : "text-text");
 
     useEffect(() => {
         if (wrongFormat) {
@@ -44,6 +45,15 @@ const Avatar = (
     useEffect(() => {
 
     }, [imageUrl]);
+
+    useEffect(() => {
+        if (theme === "latte") {
+            setTextUsername("text-surface0");
+        }
+        else {
+            setTextUsername("text-text");
+        }
+    }, [theme]);
 
     //check jpg
     function checkIfJpg(arrayBuffer: ArrayBuffer) {
@@ -113,7 +123,7 @@ const Avatar = (
 
     return (
         <div className="flex flex-col my-5 justify-center ">
-            <p className=" font-bold text-center text-overlay2 text-2xl mb-1">{userName}</p>
+            <p className={` font-bold text-center text-2xl mb-1 ` + textUsername }>{userName}</p>
             <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
                 {imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
                     <div className="flex justify-center">
