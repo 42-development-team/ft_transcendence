@@ -25,7 +25,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
             { data !== undefined && data !== null && data.length !== 0 ? (
             <div className="flex flex-col">
                 {data.map((item: any, index: number) => (
-                    <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-pink to-base'
+                    <div key={index} className={item.userId === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-surface1'
                         : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
                         <span className="flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 px-2">
                             <div className="flex flex-row justify-center sm:pr-0 pr-2">

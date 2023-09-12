@@ -69,10 +69,10 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   };
 
   return (
-    <div className=" backdrop-blur-xl mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-60 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]">
+    <div className="  mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-80 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]">
       <Tabs value={activeTab}>
         <TabsHeader
-          className="text-xl rounded-none bg-surface0 p-0 font-semibold h-[4vh]"
+          className="text-xl rounded-none bg-surface1 p-0 font-semibold h-[4vh]"
         >
           {data.map(({ label, value }) => (
             <Tab
@@ -80,8 +80,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               value={value}
               onClick={() => handleClick(value)}
               style={indicatorStyle}
-              className={`${activeTab === value ? "text-sapphire text-xl" : " text-gray-400"
-                } border-b-4 ${activeTab === value ? "border-sapphire" : "border-gray-500"
+              className={`${activeTab === value ? "text-peach text-xl" : " text-gray-400"
+                } border-b-4 ${activeTab === value ? "border-peach" : "border-gray-500"
                 }`}
             >
               {label}

@@ -3,7 +3,7 @@ const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 
 	return (
 		<div className="flex flex-col mx-[2vw] h-full text-text">
-			<p className=" flex flex-col mt-1 text-center text-2xl uppercase ">Stats</p>
+			<p className=" flex flex-col mt-1 text-center text-2xl text-peach uppercase ">Stats</p>
 			<div className="flex flex-row h-[inherit] w-full ">
 				<div className="flex flex-col w-full justify-center">
 					<div className="flex flex-col py-[1vw] justify-center h-full w-full ">
