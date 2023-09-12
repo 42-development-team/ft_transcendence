@@ -32,7 +32,7 @@ const ChatSideBar = ({ channels }: { channels: ChannelModel[] }) => {
 	}, [channels]);
 
 	return (
-		<div className="w-16 min-w-[4rem] bg-base h-full shadow-inner flex flex-col justify-start items-center">
+		<div className="bg-opacity-60 backdrop-blur-lg w-16 min-w-[4rem] bg-base h-full flex flex-col justify-start items-center">
 			<ul className="flex flex-col gap-2 p-1 absolute h-[calc(100vh-48px)] items-center">
 				<ShowFriends />
 				<JoinChannelButton />

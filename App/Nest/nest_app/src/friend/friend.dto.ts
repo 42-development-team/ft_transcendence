@@ -1,7 +1,7 @@
 
 export class FriendDto {
     id: string
-	userName: string;
+	username: string;
 	avatar: string;
     currentStatus: string;
 }

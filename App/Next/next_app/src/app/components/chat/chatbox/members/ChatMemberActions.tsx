@@ -21,25 +21,29 @@ type ChatMemberActionsProps = {
     unsetAdmin: () => void
     muteUser: (muteDuration: number) => void
     block: () => void
+	addAsFriend: () =>void
     isBlocked: boolean
+	isFriend: boolean
+	isFriendAdded: boolean
 }
 
 const ChatMemberActions = (
-    { 
+    {
         isCurrentUser, user,
-        kickUser, banUser, unbanUser, 
+        kickUser, banUser, unbanUser,
         leaveChannel, sendDirectMessage, muteUser,
-        setAdmin, unsetAdmin, block, isBlocked
+        setAdmin, unsetAdmin, block, isBlocked, addAsFriend, isFriend, isFriendAdded
     }: ChatMemberActionsProps) => {
 
     const onProfileClick = () => {
+        console.log("onProfileClick");
         sessionStorage.setItem("userId", user.id);
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
             window.location.href = "/profile";
     }
-    
+
     const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
     const [ isOpen, setIsOpen ] = useState(false);
     const [ openAlert, setOpenAlert ] = useState(false);
@@ -81,7 +85,7 @@ const ChatMemberActions = (
                     </Tooltip>
                     {isOpen && (
                         <div className="absolute z-10 mt-2 w-24 right-14 rounded-md bg-crust">
-                            {isMuted && 
+                            {isMuted &&
                                 <DropDownAction onClick={() => handleAction(() => muteUser(0))}>Unmute</DropDownAction>
                             }
                             <DropDownAction onClick={() => handleAction(() => muteUser(30))}>30s</DropDownAction>
@@ -95,7 +99,7 @@ const ChatMemberActions = (
             }
             <DropDownMenu>
                 <div aria-orientation="vertical" >
-                    <DropDownAction onClick={() => handleAction(() => onProfileClick)}>View profile</DropDownAction>
+                    <DropDownAction onClick={() => handleAction(onProfileClick)}>View profile</DropDownAction>
                     <Alert
                         className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
                         variant='gradient'
@@ -109,10 +113,12 @@ const ChatMemberActions = (
                     </Alert>
                     {!isCurrentUser &&
                     <>
-                        <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
                         <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>Invite to play</DropDownAction>
                         {!isBlocked &&
-                            <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            <>
+                                <DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>
+                                <DropDownActionRed onClick={() => handleAction(block)}>Block</DropDownActionRed>
+                            </>
                         }
                     </>
                     }
@@ -134,6 +140,9 @@ const ChatMemberActions = (
                     {isCurrentUser &&
                         <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
+					{!isCurrentUser && !isFriend && !isFriendAdded &&
+						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add as friend</DropDownActionRed>
+					}
                 </div>
             </DropDownMenu>
         </div>

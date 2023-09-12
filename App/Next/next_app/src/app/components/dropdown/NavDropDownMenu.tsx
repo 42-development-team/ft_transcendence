@@ -11,7 +11,7 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
     return (
-        <div ref={wrapperRef} className="relative inline-block text-left pt-1">
+        <div ref={wrapperRef} className="z-999 relative inline-block text-left pt-1">
             <button
                 type="button"
                 className="inline-flex justify-center w-full rounded-full px-2 py-2 bg-base 
@@ -29,7 +29,7 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
                 </svg>
             </button>
             {isOpen && 
-                <div className="absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
+                <div className="z-999 absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
                     {children}
                 </div>
             }

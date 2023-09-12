@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { GameInterface, PlayerInterface, BallInterface } from "../../game/interfaces/game.interfaces";
+import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
@@ -19,8 +19,13 @@ function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: 
 	context.closePath();
 }
 
+// is it usefull to clear canvas every render ?
+function clearCanvas(context: CanvasRenderingContext2D, width: number, height: number) {
+	context.clearRect(0, 0, width, height);
+}
+
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
-	context.fillStyle= 'rgba(0, 0, 0, 0.2';
+	context.fillStyle= 'rgba(0, 0, 0, 0.4';
 	context.beginPath();
 		context.fillRect(0, 0, width, height);
 	context.closePath();
@@ -76,7 +81,7 @@ const Canvas = ({...props}) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-		launchGame(data.id)
+			launchGame(data.id);
 	}, []);
 
 	useEffect(() => {
@@ -92,7 +97,7 @@ const Canvas = ({...props}) => {
 			move(e.code, data.id, userId);
 		}
 
-		function handleKeyRelease(e: any) {
+		function handleKeyUp(e: any) {
 			stopMove(e.code, data.id, userId);
 		}
 
@@ -101,13 +106,18 @@ const Canvas = ({...props}) => {
 		renderGame(context, data, width, height);
 
 		document.addEventListener("keydown", handleKeyDown);
-		document.addEventListener("keyup", handleKeyRelease);
+		document.addEventListener("keyup", handleKeyUp);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
+		}
+
 	}, [data]);
 
 	return (
 		<div className="canvas w-full">
 			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
-			{/* <div className="verticalLineStyle" style={verticalLineStyle}></div> */}
 		</div>
 	);
 }

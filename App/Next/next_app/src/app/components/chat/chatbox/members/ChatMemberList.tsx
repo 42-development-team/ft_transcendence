@@ -16,10 +16,11 @@ interface ChatMemberListProps {
     directMessage: (receiverId: string, senderId: string) => Promise<string>
     blockUser: (blockedId: string) => void
     blockedUsers: UserModel[]
+	friends: UserModel[]
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -96,6 +97,14 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 
     const handleDirectMessage = async (receiverId: string) => {
         const id = await directMessage(receiverId, userId);
+        if (id == 'error') {
+            setAlertMessage("You are blocked by this user.");
+            setOpenAlert(true);
+            await delay(2000);
+            setOpenAlert(false);
+            setAlertMessage("");
+            return ;
+        }
         openChannel(id);
     }
 
@@ -135,6 +144,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         }
     }
 
+
     const removeAdmin = async (removedAdminId: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/removeAdmin`, {
@@ -146,17 +156,17 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({removedAdminId}),
             });
             if (!response.ok) {
-                console.log("Error removing admin role: " + response.status);
+				console.log("Error removing admin role: " + response.status);
             }
         }
         catch (error) {
-            console.log("Error removing admin role: " + error);
+			console.log("Error removing admin role: " + error);
         }
     }
 
     const mute = async (mutedId: string, muteDuration: number) => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
                 credentials: "include",
                 method: 'PATCH',
                 headers: {
@@ -165,15 +175,34 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({mutedId, muteDuration}),
             });
             if (!response.ok) {
-                console.log("Error muting: " + response.status);
+				console.log("Error muting: " + response.status);
             }
             // Todo: manage response
         }
         catch (error) {
-            console.log("Error muting: " + error);
+			console.log("Error muting: " + error);
         }
     }
 
+	const addFriend = async (friendAddingId: string) => {
+		// Todo: alerts
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/friend/addFriend/${friendAddingId}`, {
+				credentials: "include",
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			});
+			// console.log(response);
+			if (!response.ok) {
+				console.log("Error adding user as a friend: " + response.status);
+			}
+		}
+		catch (error) {
+			console.log("Error adding user as a friend: " + error);
+		}
+	}
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -197,7 +226,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -205,7 +235,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
 
     const AdminList = channel.members
@@ -214,7 +245,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         ))
 
     const BannedList = channel.members
@@ -223,7 +255,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={friends.find(user => user.id == member.id) != undefined}/>
         )
     )
 
@@ -247,7 +280,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 				await delay(2000);
 				setOpenAlert(false);
 			}
-            if (response.status == 404) {
+            else if (response.status == 404) {
 				setOpenAlert(true);
 				setAlertMessage(responseData.message)
 				await delay(2000);
@@ -262,39 +295,23 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 		}
 
 		return (
-				<div className="relative grid h-10 w-full">
-					<Alert
-						className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
-						variant='gradient'
-						open={openAlert}
-						animate={{
-							mount: { y: 0 },
-							unmount: { y: 100 },
-						}}>
-						{alertMessage}
-					</Alert>
-					<div className="relative w-full">
-						<input
-							type="login"
-							className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-							placeholder=" "
-							value={login}
-							onChange={handleChange}
-							required
-						/>
-						<button
-							onClick={ handleInvite }
-							className="!absolute right-1 top-1 z-10 select-none rounded bg-pink-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
-							type="button"
-							data-ripple-light="true"
-						>
-							Invite
-						</button>
-						<label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-pink-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-pink-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-pink-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-							Username
-						</label>
-					</div>
-				</div>
+            <div className="relative grid h-10 w-full">
+                <div className="relative w-full">
+                    <input type="login"
+                        className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                        placeholder=" " value={login} onChange={handleChange}
+                        required
+                    />
+                    <button onClick={ handleInvite }
+                        className="!absolute right-1 top-1 z-10 select-none rounded bg-pink-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
+                        type="button" data-ripple-light="true" >
+                        Invite
+                    </button>
+                    <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-pink-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-pink-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-pink-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                        Username
+                    </label>
+                </div>
+            </div>
 		)
 	}
 
@@ -317,6 +334,14 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 <ChatMemberHeader>👪 Invite to your channel</ChatMemberHeader> }
 				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&
                 < InviteFieldButton /> }
+                <Alert className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"
+                    variant='gradient'
+                    open={openAlert}
+                    animate={{
+                        mount: { y: 0 },
+                        unmount: { y: 100 },}}>
+                    {alertMessage}
+                </Alert>
             </div>
         </div>
     )

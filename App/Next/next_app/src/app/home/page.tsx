@@ -1,13 +1,15 @@
 "use client"
 import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
-import { useAuthcontext } from "../context/AuthContext";
+import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
-import Game from "../game/page";
+import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
+import Image from "next/image";
+import homeBackground from "../../../public/homeBackground.png";
 
 export default function Home() {
-  const { login, userId } = useAuthcontext();
+  const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
   }, []);

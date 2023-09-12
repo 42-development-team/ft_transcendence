@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Avatar from "../../components/profile/Avatar";
 import Stats from "./Stats";
 import sessionStorageUser from "./sessionStorage";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
 
 const StatsWindow = ({ userId }: { userId: string }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -11,7 +11,7 @@ const StatsWindow = ({ userId }: { userId: string }) => {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [statsLoaded, setStatsLoaded] = useState<boolean>(false);
     const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
-    const { login } = useAuthcontext();
+    const { login } = useAuthContext();
 
     useEffect(() => {
         login();
@@ -68,8 +68,8 @@ const StatsWindow = ({ userId }: { userId: string }) => {
                 userName={statsData.userName} 
                 userId={userId}>
             </Avatar>
-            <div className="w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
-                bg-surface0 bg-opacity-70 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">
+            <div className=" w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
+                bg-surface0 bg-opacity-90 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">
                 <Stats userId={userId} stats={statsData}/>
             </div>
         </div>

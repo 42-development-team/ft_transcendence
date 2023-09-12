@@ -118,6 +118,30 @@ export class UsersService {
         return userCurrentStatus;
     }
 
+    async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
+        console.log("blockedId: ", blockedId);
+        try {
+            // Check if user is blocked by the blockedId user
+            // await this.prisma.user.findUniqueOrThrow({
+            //     where: { blockedBy: { some: { id: userId } }, id: blockedId },
+            // });
+            // return true;
+			const user = await this.prisma.user.findFirst({
+				where: {
+					id: blockedId,
+					blockedBy: {
+						some: { id: userId },
+					},
+				},
+			});
+			return user !== null;
+        }
+        catch (error) {
+            return false;
+        }
+        return false;
+    }
+
     /* U(pdate) */
 
     async updateUsername(id: number, updatedUsername: string): Promise<CreateUserDto> {
@@ -165,16 +189,24 @@ export class UsersService {
         let user = await this.getUserFromLogin(login);
 		// console.log("Logging in user current status= ", user.currentStatus);
         if (!user) {
+            const duplicate = await this.getUserFromUsername(login);
+            let newUsername = login;
+            if (duplicate) {
+                let number = 1;
+                while (await this.getUserFromUsername(login + "(" + number + ")")) {
+                    number++;
+                }
+                newUsername = login + "(" + number + ")";
+            }
             const createUserDto: CreateUserDto = {
                 login: login,
-                username: login,
+                username: newUsername,
                 avatar: "noavatar.jpg",
                 isTwoFAEnabled: false,
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
             };
-
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {

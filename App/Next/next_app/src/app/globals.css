@@ -73,7 +73,7 @@
 .shapes-5 {
 	width: 44px;
 	height: 44px;
-	color: 'lavender';
+	color: '#a6e3a1';
 	position: relative;
 }
 
@@ -107,3 +107,4 @@
 		transform: rotate(180deg)
 	}
 }
+

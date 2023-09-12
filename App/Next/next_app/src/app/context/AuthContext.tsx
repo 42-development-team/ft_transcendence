@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
-import { useContext, createContext, useState, useEffect } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { io, Socket } from 'socket.io-client';
 import { delay } from "@/app/utils/delay";
 
@@ -34,33 +34,46 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [open, setOpen] = useState(false);
 	const [invited, setInvited] = useState(false);
 
+	// Exception catcher for fetch
 	useEffect(() => {
-		if (isLoggedIn && userId)
+		const { fetch : originalFetch } = window;
+		window.fetch = async (...args) => {
+			try {
+				let [resource, config] = args;
+				const response = await originalFetch(resource, config as RequestInit);
+				if (!response.ok && (response.status === 401 || response.status === 500)) {
+					setLoggedIn(false);
+					window.location.href = "/";
+					return Promise.reject(response);
+				}
+				return response;
+			}
+			catch (error) {
+				return ;
+			}
+		};
+	}, []);
+
+	useEffect(() => {
+		if (isLoggedIn && userId) {
 			initializeSocket(userId);
+		}
 	}, [isLoggedIn, userId]);
 
-	useEffect(() => {
-		if (isLoggedIn) {
-			const handleTabClosing = (event: BeforeUnloadEvent) => {
-				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
-					credentials: "include",
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						currentStatus: "offline",
-					}),
-				});
+	const handleTabClosing = () => {
+		if (!isLoggedIn || userId == "") return ;
+		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
+			method: 'PUT',
+		});
+	}
 
-			};
-			if (isLoggedIn) {
-				window.addEventListener('beforeunload', handleTabClosing);
-			}
-			return () => {
-				window.removeEventListener('beforeunload', handleTabClosing);
-			};
+	useEffect(() => {
+		if (isLoggedIn && userId != "") {
+			window.addEventListener('beforeunload', handleTabClosing);
 		}
+		return () => {
+			window.removeEventListener('beforeunload', handleTabClosing);
+		};
 	}, [isLoggedIn, userId]);
 
 	const fetchProfile = async () => {
@@ -74,8 +87,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 		catch (error) {
 			console.log("Error fetching profile: " + error);
-			logout();
-		};
+			await logout();
+		}
 	}
 
 	const login = async () => {
@@ -146,7 +159,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	useEffect(() => {
 		socket?.on('userInvited', (body: any) => {
-			setChannelNameInvited(body.room);
+			const {room} = body;
+			setChannelNameInvited(room);
 			setInvited(true);
 			const userInvited = body.user;
 			if (userInvited.id === userId) {
@@ -156,8 +170,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		})
 	}, [socket, invited]);
 
-	const handleOpen = () => {
-		delay(2000);
+	const handleOpen = async () => {
+		await delay(2000);
 		setOpen(!open);
 	}
 
@@ -184,4 +198,4 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	)
 }
 
-export const useAuthcontext = () => useContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);
