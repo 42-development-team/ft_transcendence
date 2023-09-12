@@ -25,7 +25,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
                     <div key={index} className={item.winner.id === currentUserId ? 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-peach to-surface1'
                         : 'rounded pl-1 pb-1 flex flex-row justify-between h-[120px] m-2 my-4 text-xl font-bold bg-gradient-to-r from-gray-500 to-gray'}>
                         <span className=" flex flex-grow justify-between bg-gradient-to-r from-base to-surface0 sm:px-2">
-                            <div className={`flex flex-col justify-center pl-[2vw] sm:pl-[5vw] sm:text-[1.6rem] md:text-[1.8rem]`} style={{ color: item.winner.id === currentUserId ? "#fab387" : "grey" }}>
+                            <div className={`flex text-peach flex-col justify-center pl-[2vw] sm:pl-[5vw] sm:text-[1.6rem] md:text-[1.8rem]`} style={{ color: item.winner.id === currentUserId ? "peach" : "grey" }}>
                                 {item.winner.id === currentUserId ? "Win" : "Lose"}
                             </div>
                             <div className="flex flex-col justify-center">
@@ -37,7 +37,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
                                 </button>
                             </div>
                             <div className="flex flex-col justify-center pr-[4vw]">
-                                <div className="flex justify-center sm:text-[1.5rem]" style={{ color: item.winner.id === currentUserId ? "Peach" : "grey" }}>
+                                <div className="flex text-peach justify-center sm:text-[1.5rem]" style={{ color: item.winner.id === currentUserId ? "Peach" : "grey" }}>
                                     {item.winner.id === currentUserId ? item.winnerScore : item.loserScore} - {item.winner.id === currentUserId ? item.loserScore : item.winnerScore}
                                 </div>
                                 <div className="flex justify-center italic font-light">
