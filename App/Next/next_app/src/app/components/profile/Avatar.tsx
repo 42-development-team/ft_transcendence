@@ -113,7 +113,7 @@ const Avatar = (
 
     return (
         <div className="flex flex-col my-5 justify-center ">
-            <p className=" font-bold text-center text-2xl mb-1">{userName}</p>
+            <p className=" font-bold text-center text-overlay2 text-2xl mb-1">{userName}</p>
             <div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
                 {imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
                     <div className="flex justify-center">

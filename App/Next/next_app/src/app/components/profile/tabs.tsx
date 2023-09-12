@@ -8,6 +8,7 @@ import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 import getStatsLeaderBoard from "./getStatsLeaderBoard";
 import ThemeContext from "../theme/themeContext";
+import Head from "next/head";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -17,8 +18,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   const [statsLoaded, setStatsLoaded] = useState<any>(false);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
   const {theme} = useContext(ThemeContext);
-  const [HeaderColor, setHeaderColor] = useState<string>(theme === "latte" ? "bg-overlay2" : "bg-surface0");
-
+  const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "red" : "peach");
+  const [bodyColor, setBodyColor] = useState<string>(theme === "latte" ? "bg-overlay0" : "bg-surface0");
   useEffect(() => {
     let sessionUserId = null;
     sessionUserId = sessionStorageUser();
@@ -55,10 +56,14 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
-    if (theme === "latte")
-      setHeaderColor("bg-overlay2");
-    else
-      setHeaderColor("bg-surface0");
+    if (theme === "latte") {
+      setHeaderTextColor("red");
+      setBodyColor("bg-surface0");
+    }
+    else {
+      setHeaderTextColor("peach");
+      setBodyColor("bg-surface0");
+    }
   }, [theme]);
 
 
@@ -79,10 +84,10 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   };
 
   return (
-    <div className={`  mt-[1vw] rounded-lg transition hover:duration-[550ms] ${HeaderColor} bg-opacity-80 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]`}>
+    <div className={`  mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-80 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]`}>
       <Tabs value={activeTab}>
         <TabsHeader
-          className="text-xl rounded-none bg-surface1 p-0 font-semibold h-[4vh]"
+          className={`text-xl rounded-none bg-surface1 p-0 font-semibold h-[4vh]`}
         >
           {data.map(({ label, value }) => (
             <Tab
@@ -90,8 +95,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
               value={value}
               onClick={() => handleClick(value)}
               style={indicatorStyle}
-              className={`${activeTab === value ? "text-peach text-xl" : " text-gray-400"
-                } border-b-4 ${activeTab === value ? "border-peach" : "border-gray-500"
+              className={`${activeTab === value ? "text-" + headerTextColor + " text-xl" : " text-gray-400"
+                } border-b-4 ${activeTab === value ? "border-" + headerTextColor : "border-gray-500"
                 }`}
             >
               {label}

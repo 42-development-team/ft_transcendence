@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Avatar from "./Avatar";
 import { useRouter } from "next/navigation";
+import ThemeContext from "../theme/themeContext";
 
 
 
@@ -11,6 +12,8 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
     const currentUserId = props.currentUser;
     const Router = useRouter();
     const [ openAlert, setOpenAlert ] = useState(false);
+    const {theme} = useContext(ThemeContext);
+    const [elementsColor, setElementsColor] = useState<string>(theme === "latte" ? "red" : "peach");
     
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
@@ -19,6 +22,15 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
         else
             window.location.href = "/profile";
     }
+
+    useEffect(() => {
+        if (theme === "latte") {
+            setElementsColor("red");
+        }
+        else {
+            setElementsColor("peach");
+        }
+    }, [theme]);
 
     return (
         <div className="p-6 h-[50vh] overflow-auto">
@@ -38,7 +50,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                                     width={64} height={64} imageUrlGetFromCloudinary={item.avatar} disableChooseAvatar={true} disableImageResize={true} userName={item.username} userId={item.userId}
                                 />
                             </div>
-                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] text-pink` 
+                            <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] text-maroon` 
                                                                                 : 'flex flex-col justify-center hover:scale-110 hover:text-teal text-[1.4rem] md:text-[1.6rem]'} 
                                     onClick={() => onProfileClick(item.userId)}
                             >
