@@ -65,8 +65,9 @@ const StatsWindow = ({ userId }: { userId: string }) => {
                 disableChooseAvatar={true} 
                 imageUrlGetFromCloudinary={imageUrl} 
                 CallbackAvatarData={handleCallBackDataFromAvatar} 
-                userName={statsData.userName} 
-                id={userId}
+                userName={statsData.userName}
+                id={statsData.userId}
+                currId={userId}
                 isOnProfilePage={true}
             >
             </Avatar>

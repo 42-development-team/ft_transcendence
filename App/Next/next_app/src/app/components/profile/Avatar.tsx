@@ -4,8 +4,6 @@ import { useState, ChangeEvent, useEffect, useContext } from "react";
 import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
 import DropDownMenu from "../dropdown/DropDownMenu";
-import { useAuthContext } from "@/app/context/AuthContext";
-import { freemem } from "os";
 
 const Avatar = (
     {
@@ -16,6 +14,7 @@ const Avatar = (
         disableChooseAvatar = false,
         disableImageResize = false,
         userName = null,
+        currId = null,
         id = null,
         width = 212,
         height = 212,
@@ -29,6 +28,7 @@ const Avatar = (
         disableChooseAvatar?: boolean;
         disableImageResize?: boolean;
         userName?: string | null;
+        currId?: string | null;
         id?: string | null;
         width?: number;
         height?: number;
@@ -38,9 +38,8 @@ const Avatar = (
     const [wrongFormat, setWrongFormat] = useState<boolean>(false);
     const {theme} = useContext(ThemeContext);
     const [textUsername, setTextUsername] = useState<string>(theme  === "latte" ? "text-base" : "text-text");
-    const {userId} = useAuthContext();
 
-
+    console.log("username", userName)
     useEffect(() => {
         if (wrongFormat) {
             setWrongFormat(false);
@@ -61,7 +60,6 @@ const Avatar = (
             setTextUsername("text-text");
         }
             if(isOnProfilePage) {
-    console.log("id / currUserId: ", id, userId);
     }
     }, [theme]);
 
@@ -145,7 +143,7 @@ const Avatar = (
             <div className={` flex fex-row justify-center font-bold text-center text-2xl mb-1 ` + textUsername }>
                 <div>{userName}</div>
                 {
-                    isOnProfilePage && id !== userId &&
+                    isOnProfilePage && currId !== id &&
                     <DropDownMenu>TEST</DropDownMenu>
                 }
                 
