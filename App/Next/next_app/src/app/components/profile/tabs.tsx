@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
 import LeaderBoard from "./leaderboard";
 import sessionStorageUser from "./sessionStorage";
 import getGames from "./getGames";
 import getStatsLeaderBoard from "./getStatsLeaderBoard";
+import ThemeContext from "../theme/themeContext";
 
 export function UnderlineTabs({ userId }: { userId: string }) {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -15,6 +16,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   const [gamesLoaded, setGamesLoaded] = useState<any>(false);
   const [statsLoaded, setStatsLoaded] = useState<any>(false);
   const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
+  const {theme} = useContext(ThemeContext);
+  const [HeaderColor, setHeaderColor] = useState<string>(theme === "latte" ? "bg-overlay2" : "bg-surface0");
 
   useEffect(() => {
     let sessionUserId = null;
@@ -51,6 +54,13 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     setActiveTab(value);
   };
 
+  useEffect(() => {
+    if (theme === "latte")
+      setHeaderColor("bg-overlay2");
+    else
+      setHeaderColor("bg-surface0");
+  }, [theme]);
+
 
 
   const data = [
@@ -69,7 +79,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   };
 
   return (
-    <div className="  mt-[1vw] rounded-lg transition hover:duration-[550ms] bg-surface0 bg-opacity-80 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]">
+    <div className={`  mt-[1vw] rounded-lg transition hover:duration-[550ms] ${HeaderColor} bg-opacity-80 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.20)]`}>
       <Tabs value={activeTab}>
         <TabsHeader
           className="text-xl rounded-none bg-surface1 p-0 font-semibold h-[4vh]"

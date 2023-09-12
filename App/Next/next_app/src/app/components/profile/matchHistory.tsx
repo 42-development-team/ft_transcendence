@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ThemeContext from "../theme/themeContext";
 
 const matchHistory = ( props: { data: any, currentUserId: number } ) => {
@@ -8,6 +8,11 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
     const currentUserId = props.currentUserId;
     const [ openAlert, setOpenAlert ] = useState(false);
     const {theme} = useContext(ThemeContext);
+    const [HeaderColor, setHeaderColor] = useState<string>(theme === "latte" ? "" : "bg-surface0");
+
+    useEffect(() => {
+
+    }, []);
 
     const onProfileClick = (userId: number) => {
         sessionStorage.setItem("userId", userId.toString());
