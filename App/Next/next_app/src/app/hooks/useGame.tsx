@@ -8,6 +8,8 @@ export default function useGame() {
 	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
+	const [userId, setUserId] = useState<number | null>(null);
+	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
 
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -23,9 +25,13 @@ export default function useGame() {
 			setInGame(true);
 		});
 
-		socket?.on('endOfGame', () => {
-			console.log('endOfGame');
-			setInGame(false);
+		socket?.on('endOfGame', (body: any) => {
+			console.log(body);
+			const {winnerId, loserId} = body;
+			if (userId === winnerId)
+				setResult({id: winnerId, won: true});
+			else if (userId === loserId)
+				setResult({id: loserId, won: false});
 		});
 
 		return () => {
@@ -53,8 +59,9 @@ export default function useGame() {
 		socket?.emit("stopMove", event, id, userId);
 	}
 
-	const launchGame = async (id: number) => {
+	const launchGame = async (id: number, userId: number) => {
 		socket?.emit("launchGame", id);
+		setUserId(userId);
 	}
 
 	return {
@@ -64,6 +71,7 @@ export default function useGame() {
 		joinQueue,
 		launchGame,
 		inGame,
+		result,
 		data,
 	}
 }
