@@ -2,6 +2,7 @@ const CustomBtn = (
         {
             children,
             onClick, id="",
+            onChange,
             color="bg-mauve",
             disable=false,
             anim=true,
@@ -12,6 +13,7 @@ const CustomBtn = (
         {
             children: any,
             onClick: () => void,
+            onChange?: () => void,
             id?: string,
             color?: string,
             disable: boolean,
