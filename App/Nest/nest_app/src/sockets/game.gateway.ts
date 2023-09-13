@@ -50,7 +50,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             return ;
 
         const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId) {
+        if (player2SocketId ) {
+            if (newGameRoom.playerOneId === newGameRoom.playerTwoId) {
+                return ;
+            }
             const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
