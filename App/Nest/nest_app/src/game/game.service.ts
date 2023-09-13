@@ -17,7 +17,7 @@ export class GameService {
     constructor(
         private prisma: PrismaService,
         private userService: UsersService,
-    ) {}
+    ) { }
 
     gameRooms: GameRoomDto[] = [];
     queued: UserIdDto[] = [];
@@ -25,7 +25,7 @@ export class GameService {
 
     /* C(reate) */
     async createGame(data: GameDto) {
-        
+
         const createGameDto = {
             winnerScore: Math.max(data.player1.points, data.player2.points),
             loserScore: Math.min(data.player1.points, data.player2.points),
@@ -53,7 +53,7 @@ export class GameService {
     /* R(ead) */
     async getGame(id: number) {
         const game = await this.prisma.game.findUniqueOrThrow({
-            include: { loser: true, winner: true},
+            include: { loser: true, winner: true },
             where: { id: id },
         });
         return game;
@@ -90,14 +90,24 @@ export class GameService {
         return gameDtos;
     }
 
+    async getIsQueued(userId: number): Promise<boolean> {
+        const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
+        if (idx === -1) {
+            if (this.queued.find(user => user.userId === userId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /* U(pdate) */
     //TODO: now useless, remove when game finished
     async updateGame(updateGameDto: UpdateGameDto) {
         const game = await this.prisma.game.update({
             where: { id: updateGameDto.gameId },
             data: {
-                winner: { connect: {id: updateGameDto.winnerId} },
-                loser: {connect: {id: updateGameDto.loserId} },
+                winner: { connect: { id: updateGameDto.winnerId } },
+                loser: { connect: { id: updateGameDto.loserId } },
                 winnerScore: updateGameDto.winnerScore,
                 loserScore: updateGameDto.loserScore,
             },
@@ -110,7 +120,7 @@ export class GameService {
         const game = await this.prisma.game.update({
             where: { id: joinGameDto.gameId },
             data: {
-                users: { connect: {id: joinGameDto.playerTwoId} },
+                users: { connect: { id: joinGameDto.playerTwoId } },
             },
         });
         return game;
@@ -128,32 +138,32 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleJoinQueue(player: Socket): Promise<{newGameRoom: GameRoomDto, player2SocketId: string}> {
+    async handleJoinQueue(player: Socket): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
         try {
             const userId = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queued.find(user => user.userId === userId)) {
-                    console.log("user:", userId,  ":ALREADY QUEUED")
-                    return ;
+                    console.log("user:", userId, ":ALREADY QUEUED")
+                    return;
                 }
-                this.queued.push({userId});
+                this.queued.push({ userId });
                 if (this.queued.length >= 2)
-                   return this.handleJoinGame(player);
+                    return this.handleJoinGame(player);
             }
             else {
                 console.log("FOUND")
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
                 const player2SocketId: string = undefined;
                 player?.join(this.gameRooms[idx].roomName);
-                return ({newGameRoom, player2SocketId});
+                return ({ newGameRoom, player2SocketId });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(player: Socket): Promise<{newGameRoom: GameRoomDto, player2SocketId: string}> {
+    async handleJoinGame(player: Socket): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
         const player2Id: number = this.queued[0].userId;
         const player1Id: number = this.queued[1].userId;
 
@@ -181,14 +191,14 @@ export class GameService {
         await player?.join(roomName);
 
         const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-        return ({newGameRoom, player2SocketId});
+        return ({ newGameRoom, player2SocketId });
     }
 
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!LaunchGameRoom")
-            return ;
+            return;
         }
 
         if (this.gameRooms[idx].playerOneId === userId)
@@ -208,7 +218,7 @@ export class GameService {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!MoveGameRoom")
-            return ;
+            return;
         }
         if (this.gameRooms[idx].data.player1.id === userId) {
             if (event === "ArrowUp")
@@ -216,7 +226,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
         }
-        else if (this.gameRooms[idx].data.player2.id === userId){
+        else if (this.gameRooms[idx].data.player2.id === userId) {
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
@@ -228,7 +238,7 @@ export class GameService {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
             console.log("!StopMoveGameRoom")
-            return ;
+            return;
         }
         if (this.gameRooms[idx].data.player1.id === userId) {
             if (event === "ArrowUp")
@@ -238,16 +248,16 @@ export class GameService {
         }
         else {
             if (event === "ArrowUp")
-            this.killVelocity(this.gameRooms[idx].data.player2);
-        else if (event === "ArrowDown")
-            this.killVelocity(this.gameRooms[idx].data.player2);
+                this.killVelocity(this.gameRooms[idx].data.player2);
+            else if (event === "ArrowDown")
+                this.killVelocity(this.gameRooms[idx].data.player2);
         }
     }
 
     async removeRoom(roomName: string) {
         const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
         if (idx === -1)
-            return ;
+            return;
         this.gameRooms.splice(idx, 1);
     }
 
@@ -269,7 +279,7 @@ export class GameService {
             this.gameRooms[idx].data.player2.points++;
     }
 
-    async setVelocity(val: number, player: PlayerDto){
+    async setVelocity(val: number, player: PlayerDto) {
         player.velocity = val;
     }
 
@@ -278,7 +288,7 @@ export class GameService {
     }
 
     async move(player: PlayerDto) {
-        const val: number  = player.y + player.velocity;
+        const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
             if (val + player.h / 2 < 0.99)
                 player.y = val;
@@ -305,7 +315,7 @@ export class GameService {
     //>>BORDER<<//
     async borderBounce(idx: number) {
         if (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.ball.r <= 0 || this.gameRooms[idx].data.ball.y + this.gameRooms[idx].data.ball.r >= 1)
-        this.gameRooms[idx].data.ball.speed[1] *= -1;
+            this.gameRooms[idx].data.ball.speed[1] *= -1;
     }
 
     //>>PADDLE<//
@@ -315,7 +325,7 @@ export class GameService {
         else
             this.paddleRightBounce(idx);
     }
-        
+
     async paddleLeftBounce(idx: number) {
         let dx = Math.abs(this.gameRooms[idx].data.ball.x + this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player1.x);
         let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
@@ -329,9 +339,9 @@ export class GameService {
             }
         }
     };
-    
+
     async paddleRightBounce(idx: number) {
-        
+
         let dx = Math.abs(this.gameRooms[idx].data.ball.x - this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player2.x);
         let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
 
@@ -351,7 +361,7 @@ export class GameService {
             this.incrPoints(idx, 2);
             this.reset(idx);
         }
-        else if(this.gameRooms[idx].data.ball.x >= 1) {
+        else if (this.gameRooms[idx].data.ball.x >= 1) {
             this.incrPoints(idx, 1);
             this.reset(idx);
         }
@@ -362,9 +372,9 @@ export class GameService {
         this.gameRooms[idx].data.ball.x = 0.5;
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
-        
+
         if (Math.random() < 0.5)
-           sign *= -1;
+            sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
         if (Math.random() < 0.5)
@@ -401,14 +411,14 @@ export class GameService {
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
-        
-        return {...this.gameRooms[idx].data};
+
+        return { ...this.gameRooms[idx].data };
     }
-    
+
     //=================================================//
     //================== UPDATE GAME ==================//
     //=================================================//
-    
+
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,

@@ -20,6 +20,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
   const {theme} = useContext(ThemeContext);
   const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "red" : "peach");
   const [bodyColor, setBodyColor] = useState<string>(theme === "latte" ? "bg-overlay0" : "bg-surface0");
+  
   useEffect(() => {
     let sessionUserId = null;
     sessionUserId = sessionStorageUser();

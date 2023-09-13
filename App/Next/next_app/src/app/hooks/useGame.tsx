@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
+import LoadingContext from "../context/LoadingContext";
 
 export default function useGame() {
 
@@ -25,17 +26,18 @@ export default function useGame() {
 
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
-			setInGame(false);
+			// setInGame(false);
 		});
 
 		return () => {
+			socket?.off('isQueued');
+			socket?.off('isNotQueued');
 			socket?.off('updateGame');
 			socket?.off('matchIsReady');
 			socket?.off('reconnectGame');
 			socket?.off('endOfGame');
 		};
 	}, [socket]);
-
 
 	const joinQueue = async () => {
 		socket?.emit("joinQueue", 0);
@@ -57,12 +59,18 @@ export default function useGame() {
 		socket?.emit("launchGame", id);
 	}
 
+	const isUserQueued = async (userId: number) => {
+		socket?.emit("isUserQueued", userId);
+	}
+
 	return {
 		move,
 		stopMove,
 		leaveQueue,
 		joinQueue,
 		launchGame,
+		isUserQueued,
+		socket,
 		inGame,
 		data,
 	}
