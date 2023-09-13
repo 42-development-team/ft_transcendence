@@ -134,7 +134,7 @@ export class GameService {
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queued.find(user => user.userId === userId)) {
-                    console.log("ALREADY QUEUED")
+                    console.log("user:", userId,  ":ALREADY QUEUED")
                     return ;
                 }
                 this.queued.push({userId});
