@@ -19,7 +19,7 @@ export default function Home() {
       <Chat userId={userId} />
       {!inGame &&
         <div className="w-full p-4 h-full flex items-center justify-center">
-          <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
+          <Play leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       }
       {inGame &&

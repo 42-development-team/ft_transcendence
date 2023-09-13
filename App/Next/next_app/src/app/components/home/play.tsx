@@ -9,6 +9,7 @@ import useGame from '@/app/hooks/useGame';
 import Canvas from '../game/canvas';
 import ThemeContext from '../theme/themeContext';
 import { CSSTransition } from 'react-transition-group';
+import { IsQueued } from '../game/IsQueued';
 
 const Play = ({...props}) => {
 
@@ -18,6 +19,17 @@ const Play = ({...props}) => {
 	const {leaveQueue, joinQueue} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
+	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
+
+	useEffect(() => {
+		const getIsQueued = async () => {
+			const isqueued = await IsQueued(props.userId);
+			if (isqueued !== undefined)
+				setUserAlreadyQueued(isqueued);
+		}
+		getIsQueued();
+		console.log("userAlreadyQueued?:", userAlreadyQueued);
+	}, [props.userId])
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -35,14 +47,11 @@ const Play = ({...props}) => {
 		else {
 			setButtonText("Play")
 		}
-		console.log("useEffect", loading, disable)
 	}, [loading])
 
 	const matchmaking = async () => {
 		setLoading(true)
 		setDisable(true)
-		console.log("disable?" , disable)
-		console.log("loading?" , loading)
 		await joinQueue();
 
 		//TODO: handle matchmaking
@@ -59,7 +68,7 @@ const Play = ({...props}) => {
 	return (
 		<div className='flex flex-col '>
 			<div className='flex flex-col justify-center items-center'>
-				{loading? (
+				{loading || userAlreadyQueued ? (
 					<div className='flex flex-col'>
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>

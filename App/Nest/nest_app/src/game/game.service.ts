@@ -90,6 +90,13 @@ export class GameService {
         return gameDtos;
     }
 
+    async getIsQueued(userId: number): Promise<boolean> {
+        const idx: number = this.queued.findIndex(user => user.userId === userId);
+        if (idx === -1)
+            return false;
+        return true;
+    }
+
     /* U(pdate) */
     //TODO: now useless, remove when game finished
     async updateGame(updateGameDto: UpdateGameDto) {
