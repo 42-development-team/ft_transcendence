@@ -1,4 +1,3 @@
-"use client";
 
 export const IsQueued = async (userId: number) : Promise<boolean> => {
 	try {
@@ -10,8 +9,8 @@ export const IsQueued = async (userId: number) : Promise<boolean> => {
 			method: "GET",
 		});
 		const data = await response.json();
-		if (data) {
-			isQueued = data.isQueued;
+		if (await data) {
+			isQueued = await data.isQueued;
 		}
 		return isQueued;
 
