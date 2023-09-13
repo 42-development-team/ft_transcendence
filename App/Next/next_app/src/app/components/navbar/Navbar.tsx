@@ -4,16 +4,18 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
-
+import LoadingContext from "@/app/context/LoadingContext";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
+    const { gameLoading } = useContext(LoadingContext);
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
+            {gameLoading && <Loading />}
             <NavLinks logout={logout} isLoggedIn={isLoggedIn}/>
         </div>
     );
@@ -25,6 +27,14 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             href={isLoggedIn ? "/home" : "/"}>
             Pong
         </Link>
+    )
+}
+
+const Loading = () => {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
+        </div>
     )
 }
 
