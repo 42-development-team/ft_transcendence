@@ -110,8 +110,8 @@
 
 /* Loader navbar */
 .shapes-4 {
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	color: '#a6e3a1';
 	position: relative;
 }
@@ -125,7 +125,7 @@
 		conic-gradient(from 0deg, #0000, currentColor 1deg 120deg, #0000 121deg) top right,
 		conic-gradient(from 120deg, #0000, currentColor 1deg 120deg, #0000 121deg) bottom,
 		conic-gradient(from 240deg, #0000, currentColor 1deg 120deg, #0000 121deg) top left;
-	background-size: 18px 18px;
+	background-size: 20px 20px;
 	background-repeat: no-repeat;
 	animation: sp5 2.5s infinite cubic-bezier(0.3, 1, 0, 1);
 }

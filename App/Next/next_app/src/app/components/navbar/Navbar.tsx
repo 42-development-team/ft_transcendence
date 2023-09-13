@@ -11,11 +11,10 @@ import LoadingContext from "@/app/context/LoadingContext";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
-    const { gameLoading } = useContext(LoadingContext);
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
-            {gameLoading && <Loading />}
+            
             <NavLinks logout={logout} isLoggedIn={isLoggedIn}/>
         </div>
     );
@@ -32,7 +31,7 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 
 const Loading = () => {
     return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center h-screen mr-2">
             <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
         </div>
     )
@@ -42,6 +41,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const router = useRouter();
     const pathname = usePathname();
     const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const { gameLoading } = useContext(LoadingContext);
 
     useEffect(() => {
         setIsButtonClicked(false);
@@ -57,6 +57,8 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
 
     return (
         <div className={`${isLoggedIn ? 'px-6' : 'px-2'} flex items-center z-100 relative gap-4 text-lg transition-all`}>
+    
+            {gameLoading && <Loading />}
             <Theme />
             {isLoggedIn &&
                 <NavDropDownMenu>
