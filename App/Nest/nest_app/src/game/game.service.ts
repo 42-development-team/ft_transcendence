@@ -133,11 +133,16 @@ export class GameService {
             const userId = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
+                if (this.queued.find(user => user.userId === userId)) {
+                    console.log("ALREADY QUEUED")
+                    return ;
+                }
                 this.queued.push({userId});
                 if (this.queued.length >= 2)
                    return this.handleJoinGame(player);
             }
             else {
+                console.log("FOUND")
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
                 const player2SocketId: string = undefined;
                 player?.join(this.gameRooms[idx].roomName);

@@ -8,6 +8,7 @@ import { join } from 'path'
 import useGame from '@/app/hooks/useGame';
 import Canvas from '../game/canvas';
 import ThemeContext from '../theme/themeContext';
+import { CSSTransition } from 'react-transition-group';
 
 const Play = ({...props}) => {
 
@@ -27,11 +28,22 @@ const Play = ({...props}) => {
 		}
 	}, [theme]);
 
+	useEffect(() => {
+		if (loading) {
+			setButtonText("Cancel")
+		}
+		else {
+			setButtonText("Play")
+		}
+		console.log("useEffect", loading, disable)
+	}, [loading])
+
 	const matchmaking = async () => {
 		setLoading(true)
 		setDisable(true)
-		setButtonText("Calling racket master...")
-		joinQueue();
+		console.log("disable?" , disable)
+		console.log("loading?" , loading)
+		await joinQueue();
 
 		//TODO: handle matchmaking
 	}
@@ -40,7 +52,7 @@ const Play = ({...props}) => {
 		setLoading(false)
 		setDisable(false)
 		setButtonText("Play")
-		leaveQueue();
+		await leaveQueue();
 
 	}
 
@@ -52,12 +64,13 @@ const Play = ({...props}) => {
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>
 						</div>
-							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>{buttonText}</div>
+							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Calling racket master...</div>
 					</div>
 				) : (
 					<CustomBtnPlay
 						disable={disable}
-						onClick={matchmaking}>
+						onClick={matchmaking}
+					>
 						{!loading && buttonText}
 					</CustomBtnPlay>
 				)}
@@ -66,7 +79,7 @@ const Play = ({...props}) => {
 				<div className='flex flex-row justify-center'>
 					<div className='flex '>
 					<CustomBtnPlay onClick={cancelMatchmaking} width={110} height={60} color='bg-red-500' disable={false} anim={false}>
-						Cancel
+						{buttonText}
 					</CustomBtnPlay>
 					</div>
 				</div>
