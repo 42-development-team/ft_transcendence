@@ -8,13 +8,14 @@ import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
 import LoadingContext from "@/app/context/LoadingContext";
+import useGame from "@/app/hooks/useGame";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
-            <NavLinks logout={logout} isLoggedIn={isLoggedIn}/>
+            <NavLinks logout={logout} isLoggedIn={isLoggedIn} />
         </div>
     );
 };
@@ -29,9 +30,39 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 }
 
 const Loading = () => {
+    const { socket } = useAuthContext();
+    const { isUserQueued } = useGame();
+    const [userAlreadyQueued, setUserAlreadyQueued] = useState(false);
+    const { userId } = useAuthContext();
+    const { gameLoading } = useContext(LoadingContext);
+
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return;
+        }
+        socket?.on('isQueued', () => {
+            setUserAlreadyQueued(true);
+        });
+        socket?.on('isNotQueued', () => {
+            setUserAlreadyQueued(false);
+        }
+        );
+    }, [socket]);
+
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return;
+        }
+        isUserQueued(parseInt(userId));
+    }, [socket]);
+
     return (
-        <div className="flex items-center justify-center h-screen mr-2">
-            <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
+        <div>
+            {userAlreadyQueued &&
+                <div className="flex items-center justify-center h-screen mr-2">
+                    <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
+                </div>
+            }
         </div>
     )
 }
@@ -56,7 +87,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
 
     return (
         <div className={`${isLoggedIn ? 'px-6' : 'px-2'} flex items-center z-100 relative gap-4 text-lg transition-all`}>
-    
+
             {gameLoading && <Loading />}
             <Theme />
             {isLoggedIn &&

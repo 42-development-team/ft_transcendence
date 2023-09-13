@@ -93,9 +93,7 @@ export class GameService {
     async getIsQueued(userId: number): Promise<boolean> {
         const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (idx === -1) {
-            console.log("LADEDANS")
             if (this.queued.find(user => user.userId === userId)) {
-                console.log("user:", userId, ":Loading")
                 return true;
             }
         }

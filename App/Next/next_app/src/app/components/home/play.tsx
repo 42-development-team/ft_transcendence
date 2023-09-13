@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import ThemeContext from '../theme/themeContext';
+import LoadingContext from '@/app/context/LoadingContext';
 
 const Play = ({...props}) => {
 
@@ -13,6 +14,7 @@ const Play = ({...props}) => {
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
+	const {gameLoading, setGameLoading} = useContext(LoadingContext);
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
@@ -56,6 +58,7 @@ const Play = ({...props}) => {
 		setLoading(true)
 		setUserAlreadyQueued(true);
 		setDisable(true)
+		setGameLoading(true);
 		await joinQueue();
 
 		//TODO: handle matchmaking
@@ -65,6 +68,7 @@ const Play = ({...props}) => {
 		setLoading(false)
 		setUserAlreadyQueued(false);
 		setDisable(false)
+		setGameLoading(false);
 		setButtonText("Play")
 		await leaveQueue();
 
