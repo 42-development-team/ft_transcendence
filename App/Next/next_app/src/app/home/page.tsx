@@ -1,4 +1,5 @@
 "use client"
+
 import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
@@ -10,16 +11,17 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
+    
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, launchGame, inGame, data} = useGame();
+	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, data} = useGame();
 
   return (
     <div className="flex flex-auto w-full h-full">
       <Chat userId={userId} />
       {!inGame &&
         <div className="w-full p-4 h-full flex items-center justify-center">
-          <Play leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
+          <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       }
       {inGame &&

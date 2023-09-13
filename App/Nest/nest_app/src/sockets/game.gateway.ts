@@ -66,6 +66,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.gameService.handleLeaveQueue(userId);
     }
 
+    @SubscribeMessage('isUserQueued')
+    async isUserQueued(socket: Socket, userId: number) {
+        const isQueued = await this.gameService.getIsQueued(userId);
+        if (isQueued)
+            socket.emit('isQueued');
+        else
+            socket.emit('isNotQueued');
+    }
+
     @SubscribeMessage('move')
     async handleMove(socket: Socket, @MessageBody() body: any) {
         const [event, id, userId] = body;

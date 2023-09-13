@@ -1,35 +1,38 @@
 "use client";
 
-import { Spinner } from '@material-tailwind/react'
 import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
-import CustomBtn from '../CustomBtn'
-import { join } from 'path'
-import useGame from '@/app/hooks/useGame';
-import Canvas from '../game/canvas';
 import ThemeContext from '../theme/themeContext';
-import { CSSTransition } from 'react-transition-group';
-import { IsQueued } from '../game/IsQueued';
 
 const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {leaveQueue, joinQueue} = props;
+	const {leaveQueue, joinQueue, isUserQueued, userId, socket} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
 
 	useEffect(() => {
-		const getIsQueued = async () => {
-			const isqueued = await IsQueued(props.userId);
-			if (isqueued !== undefined)
-				setUserAlreadyQueued(isqueued);
+		if (typeof window === "undefined") {
+			return;
 		}
-		getIsQueued();
-		console.log("userAlreadyQueued?:", userAlreadyQueued);
-	}, [props.userId])
+		socket?.on('isQueued', () => {
+			setUserAlreadyQueued(true);
+		});
+		socket?.on('isNotQueued', () => {
+			setUserAlreadyQueued(false);
+		}
+		);
+	}, [socket]);
+	
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		isUserQueued(parseInt(userId));
+	}, [socket]);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -41,16 +44,17 @@ const Play = ({...props}) => {
 	}, [theme]);
 
 	useEffect(() => {
-		if (loading) {
+		if (loading || userAlreadyQueued) {
 			setButtonText("Cancel")
 		}
 		else {
 			setButtonText("Play")
 		}
-	}, [loading])
+	}, [loading, userAlreadyQueued])
 
 	const matchmaking = async () => {
 		setLoading(true)
+		setUserAlreadyQueued(true);
 		setDisable(true)
 		await joinQueue();
 
@@ -59,6 +63,7 @@ const Play = ({...props}) => {
 
 	const cancelMatchmaking = async () => {
 		setLoading(false)
+		setUserAlreadyQueued(false);
 		setDisable(false)
 		setButtonText("Play")
 		await leaveQueue();
@@ -84,7 +89,7 @@ const Play = ({...props}) => {
 					</CustomBtnPlay>
 				)}
 			</div>
-			{loading &&
+			{(loading || userAlreadyQueued) &&
 				<div className='flex flex-row justify-center'>
 					<div className='flex '>
 					<CustomBtnPlay onClick={cancelMatchmaking} width={110} height={60} color='bg-red-500' disable={false} anim={false}>

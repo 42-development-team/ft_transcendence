@@ -55,14 +55,6 @@ export class GameController {
         res.status(HttpStatus.OK).send(games);
     }
 
-    @Get('infoQueued/:userId')
-    async getIsQueued(@Param('userId') userId: number, @Res() res: Response) {
-        this.logger.log('Getting isQueued');
-        const isQueued = await this.gameService.getIsQueued(userId);
-        this.logger.log(`Successfully got isQueued of user with ID ${userId}: ${isQueued}`);
-        res.status(HttpStatus.OK).send(isQueued);
-    }
-
     /* U(pdate) */
     @Patch('update')
     async updateGame(@Body() updateGameDto: UpdateGameDto) {
