@@ -70,7 +70,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect{
         client.leave(room);
         client.emit('leftRoom', {room});
         console.log(`Client ${userId} (${client.id}) left room ${room}`);
-        this.server.to(room).emit('newDisconnectionOnChannel', {room, userId});
+        this.server.to(room).emit('newDisconnecgit checkout -b FT-361-fix-joining-game-with-only-one-usertionOnChannel', {room, userId});
     }
 
     @SubscribeMessage('message')

@@ -40,7 +40,6 @@ const Avatar = (
     const { theme } = useContext(ThemeContext);
     const [textUsername, setTextUsername] = useState<string>(theme === "latte" ? "text-base" : "text-text");
 
-    console.log("username", userName)
     useEffect(() => {
         if (wrongFormat) {
             setWrongFormat(false);
