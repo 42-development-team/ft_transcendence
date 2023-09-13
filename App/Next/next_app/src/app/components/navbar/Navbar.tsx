@@ -14,7 +14,6 @@ const Navbar = () => {
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
-            
             <NavLinks logout={logout} isLoggedIn={isLoggedIn}/>
         </div>
     );

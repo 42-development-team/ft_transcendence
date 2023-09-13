@@ -25,7 +25,7 @@ export default function useGame() {
 
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
-			setInGame(false);
+			// setInGame(false);
 		});
 
 		return () => {
