@@ -17,18 +17,19 @@ export default function Home() {
 	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, data} = useGame();
 
   return (
-    <div className="flex flex-auto w-full h-full">
+    <div className="flex w-full h-full">
       <Chat userId={userId} />
       {!inGame &&
-        <div className="w-full p-4 h-full flex items-center justify-center">
+        <div className="w-inherit p-4 h-inherit flex items-center justify-center">
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       }
       {inGame &&
-        <div className="flex item-center">
+        <div className="flex flex-grow h-inherit w-inherit">
         <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId}/>
         </div>
       }
     </div>
   );
+
 }

@@ -35,6 +35,7 @@ const Play = ({...props}) => {
 		if (typeof window === "undefined") {
 			return;
 		}
+		console.log("!!!!")
 		isUserQueued(parseInt(userId));
 	}, [socket]);
 
