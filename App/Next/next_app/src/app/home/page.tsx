@@ -20,7 +20,7 @@ export default function Home() {
     <div className="flex w-full h-full">
       <Chat userId={userId} />
       {!inGame &&
-        <div className="w-full p-4 h-full flex items-center justify-center">
+        <div className="w-inherit p-4 h-inherit flex items-center justify-center">
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       }
@@ -31,5 +31,5 @@ export default function Home() {
       }
     </div>
   );
-  
+
 }
