@@ -4,7 +4,7 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
 import LoadingContext from "@/app/context/LoadingContext";
@@ -30,38 +30,15 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 }
 
 const Loading = () => {
-    const { socket } = useAuthContext();
-    const { isUserQueued } = useGame();
-    const { userId } = useAuthContext();
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
-
-    useEffect(() => {
-        if (typeof window === "undefined") {
-            return;
-        }
-        socket?.on('isQueued', () => {
-			setGameLoading(true);
-
-        });
-        socket?.on('isNotQueued', () => {
-            setGameLoading(false);
-        }
-        );
-    }, [socket]);
-
-    useEffect(() => {
-        if (typeof window === "undefined") {
-            return;
-        }
-        isUserQueued(parseInt(userId));
-    }, [socket]);
+    
 
     return (
         <div>
             {gameLoading  &&  /*window.location.pathname !== "/home" && */
                 <div className="flex items-center justify-center h-screen mr-2">
                     <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
-                    <div className="ml-4 flex text-peach">Search..</div>
+                    <div className="ml-4 flex text-peach">Queue up...</div>
                 </div>
             }
         </div>
@@ -72,8 +49,24 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const router = useRouter();
     const pathname = usePathname();
     const [isButtonClicked, setIsButtonClicked] = useState(false);
-    const { gameLoading } = useContext(LoadingContext);
+    const { gameLoading, setGameLoading } = useContext(LoadingContext);
+    const { socket } = useAuthContext();
+    const { isUserQueued } = useGame();
+    const { userId } = useAuthContext();
 
+    useEffect(() => {
+        socket?.on('isQueued', () => {
+            setGameLoading(true);
+        });
+        socket?.on('isNotQueued', () => {
+            setGameLoading(false);
+        });
+    }, [socket]);
+
+    useEffect(() => {
+        socket?.emit("isUserQueued", parseInt(userId));
+    }, [socket]);
+    
     useEffect(() => {
         setIsButtonClicked(false);
     }, [pathname]);
