@@ -51,7 +51,6 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
     const { socket } = useAuthContext();
-    const { isUserQueued } = useGame();
     const { userId } = useAuthContext();
 
     useEffect(() => {
