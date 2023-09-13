@@ -22,9 +22,11 @@ const Play = ({...props}) => {
 		}
 		socket?.on('isQueued', () => {
 			setUserAlreadyQueued(true);
+			setGameLoading(true);
 		});
 		socket?.on('isNotQueued', () => {
 			setUserAlreadyQueued(false);
+			setGameLoading(false);
 		}
 		);
 	}, [socket]);

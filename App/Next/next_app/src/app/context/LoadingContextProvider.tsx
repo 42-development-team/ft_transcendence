@@ -4,7 +4,7 @@ import { useState } from 'react';
 import LoadingContext from './LoadingContext';
 
 export default function LoadingProvider({ children }: any) {
-	const [gameLoading, setGameLoading] = useState('latte');
+	const [gameLoading, setGameLoading] = useState(false);
 
 	return (
 		<LoadingContext.Provider value={{ gameLoading, setGameLoading }}>

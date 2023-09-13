@@ -32,19 +32,19 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 const Loading = () => {
     const { socket } = useAuthContext();
     const { isUserQueued } = useGame();
-    const [userAlreadyQueued, setUserAlreadyQueued] = useState(false);
     const { userId } = useAuthContext();
-    const { gameLoading } = useContext(LoadingContext);
+    const { gameLoading, setGameLoading } = useContext(LoadingContext);
 
     useEffect(() => {
         if (typeof window === "undefined") {
             return;
         }
         socket?.on('isQueued', () => {
-            setUserAlreadyQueued(true);
+			setGameLoading(true);
+
         });
         socket?.on('isNotQueued', () => {
-            setUserAlreadyQueued(false);
+            setGameLoading(false);
         }
         );
     }, [socket]);
@@ -58,9 +58,10 @@ const Loading = () => {
 
     return (
         <div>
-            {userAlreadyQueued &&
+            {gameLoading  &&  /*window.location.pathname !== "/home" && */
                 <div className="flex items-center justify-center h-screen mr-2">
                     <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
+                    <div className="ml-4 flex text-peach">Search..</div>
                 </div>
             }
         </div>
