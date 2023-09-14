@@ -4,17 +4,18 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
-import { useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
-
+import LoadingContext from "@/app/context/LoadingContext";
+import useGame from "@/app/hooks/useGame";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
     return (
         <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
             <Logo isLoggedIn={isLoggedIn} />
-            <NavLinks logout={logout} isLoggedIn={isLoggedIn}/>
+            <NavLinks logout={logout} isLoggedIn={isLoggedIn} />
         </div>
     );
 };
@@ -28,11 +29,43 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
     )
 }
 
+const Loading = () => {
+    const { gameLoading, setGameLoading } = useContext(LoadingContext);
+    
+
+    return (
+        <div>
+            {gameLoading  &&  /*window.location.pathname !== "/home" && */
+                <div className="flex items-center justify-center h-screen mr-2">
+                    <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
+                    <div className="ml-4 flex text-peach">Queue up...</div>
+                </div>
+            }
+        </div>
+    )
+}
+
 const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Boolean }) => {
     const router = useRouter();
     const pathname = usePathname();
     const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const { gameLoading, setGameLoading } = useContext(LoadingContext);
+    const { socket } = useAuthContext();
+    const { userId } = useAuthContext();
 
+    useEffect(() => {
+        socket?.on('isQueued', () => {
+            setGameLoading(true);
+        });
+        socket?.on('isNotQueued', () => {
+            setGameLoading(false);
+        });
+    }, [socket]);
+
+    useEffect(() => {
+        socket?.emit("isUserQueued", parseInt(userId));
+    }, [socket]);
+    
     useEffect(() => {
         setIsButtonClicked(false);
     }, [pathname]);
@@ -47,6 +80,8 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
 
     return (
         <div className={`${isLoggedIn ? 'px-6' : 'px-2'} flex items-center z-100 relative gap-4 text-lg transition-all`}>
+
+            {gameLoading && <Loading />}
             <Theme />
             {isLoggedIn &&
                 <NavDropDownMenu>

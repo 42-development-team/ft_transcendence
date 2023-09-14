@@ -1,4 +1,5 @@
 "use client"
+
 import Chat from "@/components/chat/Chat";
 import { useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
@@ -11,31 +12,18 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
+    
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, launchGame, setUid, inGame, data, result} = useGame();
+	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, setUid, socket, inGame, result, data} = useGame();
 
   console.log("result:", result);
   return (
-    // <div className="flex flex-auto w-full h-full">
-    //   <Chat userId={userId} />
-    //   {inGame === false &&
-    //     <div className="w-full p-4 h-full flex items-center justify-center">
-    //       <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
-    //     </div>
-    //   }
-    //   {inGame === true && result === undefined ?
-    //       <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId}/>
-    //       :
-    //       <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
-    //       // <Result result={result}/>
-    //   }
-    // </div>
-    <div className="flex flex-auto w-full h-full">
+    <div className="flex w-full h-full">
       <Chat userId={userId} />
       {inGame === false ?
         <div className="w-full p-4 h-full flex items-center justify-center">
-          <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
+          <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       :
           <Game move={move} stopMove={stopMove} launchGame={launchGame} setUid={setUid} data={data} userId={userId} result={result}/>

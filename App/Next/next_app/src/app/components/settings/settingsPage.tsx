@@ -221,7 +221,11 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				</div>
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true} isOnProfilePage={false} >
+				CallbackAvatarData={handleCallBackDataFromAvatar} 
+				imageUrlGetFromCloudinary={imageUrl}
+				disableChooseAvatar={false}
+				disableImageResize={true}
+				isOnProfilePage={false}>
 			</Avatar>
 			{
 				!validateAvatarEnabled && updatingAvatar && isVisibleTimerAvatar &&

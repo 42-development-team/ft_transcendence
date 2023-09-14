@@ -1,23 +1,42 @@
 "use client";
 
-import { Spinner } from '@material-tailwind/react'
 import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
-import CustomBtn from '../CustomBtn'
-import { join } from 'path'
-import useGame from '@/app/hooks/useGame';
-import Canvas from '../game/canvas';
 import ThemeContext from '../theme/themeContext';
-import { CSSTransition } from 'react-transition-group';
+import LoadingContext from '@/app/context/LoadingContext';
 
 const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {leaveQueue, joinQueue} = props;
+	const {leaveQueue, joinQueue, isUserQueued, userId, socket} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
+	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
+	const {gameLoading, setGameLoading} = useContext(LoadingContext);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		socket?.on('isQueued', () => {
+			setUserAlreadyQueued(true);
+			setGameLoading(true);
+		});
+		socket?.on('isNotQueued', () => {
+			setUserAlreadyQueued(false);
+			setGameLoading(false);
+		}
+		);
+	}, [socket]);
+	
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		isUserQueued(parseInt(userId));
+	}, [socket]);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -29,28 +48,28 @@ const Play = ({...props}) => {
 	}, [theme]);
 
 	useEffect(() => {
-		if (loading) {
+		if (loading || userAlreadyQueued) {
 			setButtonText("Cancel")
 		}
 		else {
 			setButtonText("Play")
 		}
-		console.log("useEffect", loading, disable)
-	}, [loading])
+	}, [loading, userAlreadyQueued])
 
 	const matchmaking = async () => {
 		setLoading(true)
+		setUserAlreadyQueued(true);
 		setDisable(true)
-		console.log("disable?" , disable)
-		console.log("loading?" , loading)
+		setGameLoading(true);
 		await joinQueue();
 
-		//TODO: handle matchmaking
 	}
 
 	const cancelMatchmaking = async () => {
 		setLoading(false)
+		setUserAlreadyQueued(false);
 		setDisable(false)
+		setGameLoading(false);
 		setButtonText("Play")
 		await leaveQueue();
 
@@ -59,7 +78,7 @@ const Play = ({...props}) => {
 	return (
 		<div className='flex flex-col '>
 			<div className='flex flex-col justify-center items-center'>
-				{loading? (
+				{loading || userAlreadyQueued ? (
 					<div className='flex flex-col'>
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>
@@ -75,7 +94,7 @@ const Play = ({...props}) => {
 					</CustomBtnPlay>
 				)}
 			</div>
-			{loading &&
+			{(loading || userAlreadyQueued) &&
 				<div className='flex flex-row justify-center'>
 					<div className='flex '>
 					<CustomBtnPlay onClick={cancelMatchmaking} width={110} height={60} color='bg-red-500' disable={false} anim={false}>
