@@ -35,7 +35,6 @@ const Play = ({...props}) => {
 		if (typeof window === "undefined") {
 			return;
 		}
-		console.log("!!!!")
 		isUserQueued(parseInt(userId));
 	}, [socket]);
 
@@ -64,7 +63,6 @@ const Play = ({...props}) => {
 		setGameLoading(true);
 		await joinQueue();
 
-		//TODO: handle matchmaking
 	}
 
 	const cancelMatchmaking = async () => {
