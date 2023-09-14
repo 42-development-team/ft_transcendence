@@ -12,12 +12,10 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
-    
   }, []);
 
 	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, result, data} = useGame();
 
-  console.log("result:", result);
   return (
     <div className="flex w-full h-full">
       <Chat userId={userId} />

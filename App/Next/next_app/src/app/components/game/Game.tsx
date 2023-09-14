@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect } from 'react';
 import Canvas from './canvas';
 import Result from './result';
 
