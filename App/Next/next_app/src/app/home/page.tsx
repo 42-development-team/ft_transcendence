@@ -13,7 +13,7 @@ export default function Home() {
     login();
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, launchGame, inGame, data, result} = useGame();
+	const {move, stopMove, leaveQueue, joinQueue, launchGame, setUid, inGame, data, result} = useGame();
 
   console.log("result:", result);
   return (
@@ -38,7 +38,7 @@ export default function Home() {
           <Play leaveQueue={leaveQueue} joinQueue={joinQueue}/>
         </div>
       :
-          <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} result={result}/>
+          <Game move={move} stopMove={stopMove} launchGame={launchGame} setUid={setUid} data={data} userId={userId} result={result}/>
       }
     </div>
   );

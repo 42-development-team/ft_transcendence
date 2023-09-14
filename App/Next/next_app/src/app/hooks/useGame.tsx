@@ -8,7 +8,7 @@ export default function useGame() {
 	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
-	const [userId, setUserId] = useState<number | null>(null);
+	const [uid, setUid] = useState<number | null>(null);
 	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
 
 	useEffect(() => {
@@ -27,18 +27,17 @@ export default function useGame() {
 
 		socket?.on('endOfGame', (body: any) => {
 			const {winnerId, loserId} = body;
-			console.log("winner:", winnerId, "loser:", loserId);
-			console.log("userId", userId);
-			if (userId === winnerId) {
-				const {id, won} = {id: winnerId, won: true};
-				console.log("id: ",id, "won:", won);
-				setResult({id: winnerId, won: true});
-			}
-			else if (userId === loserId) {
-				const {id, won} = {id: loserId, won: true};
-				console.log("id: ",id, "won:", won);
-				setResult({id: loserId, won: false});
-			}
+			console.log("EOG userId:", uid);
+			// if (userId === winnerId) {
+			// 	const {id, won} = {id: winnerId, won: true};
+			// 	console.log("id: ",id, "won:", won);
+			// 	setResult({id: winnerId, won: true});
+			// }
+			// else if (userId === loserId) {
+			// 	const {id, won} = {id: loserId, won: true};
+			// 	console.log("id: ",id, "won:", won);
+			// 	setResult({id: loserId, won: false});
+			// }
 		});
 
 		return () => {
@@ -66,9 +65,7 @@ export default function useGame() {
 		socket?.emit("stopMove", event, id, userId);
 	}
 
-	const launchGame = async (id: number, userId: number) => {
-		console.log("launchGame: id:", id, "userId:", userId);
-		setUserId(userId);
+	const launchGame = async (id: number) => {
 		socket?.emit("launchGame", id);
 	}
 
@@ -78,6 +75,7 @@ export default function useGame() {
 		leaveQueue,
 		joinQueue,
 		launchGame,
+		setUid,
 		inGame,
 		result,
 		data,
