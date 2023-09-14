@@ -2,7 +2,7 @@
     import { createContext } from 'react';
 
     const ThemeContext = createContext({
-      theme: localStorage.getItem("theme") ? localStorage.getItem("theme") : 'mocha',
+      theme: typeof window !== undefined ? "mocha" : localStorage.getItem("theme") || 'mocha',
       setTheme: (theme: any) => {}
     });
 

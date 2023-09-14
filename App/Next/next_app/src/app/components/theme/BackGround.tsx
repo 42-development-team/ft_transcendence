@@ -13,7 +13,7 @@ export const BackgroundBall = () => {
 
     const { theme, setTheme } = useContext(themeContext);
     const [entered, setEntered] = useState<boolean>(false);
-    
+    let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -28,7 +28,7 @@ export const BackgroundBall = () => {
             <Image src={logoWhite} alt="logo" className="fixed top-0 left-0 z-10 w-20 h-20 m-4" />
             <TransitionGroup>
                 <CSSTransition
-                    key={localStorage.getItem('theme')}
+                    key={storage}
                     in={entered}
                     appear={true}
                     timeout={900}
