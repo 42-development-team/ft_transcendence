@@ -22,7 +22,12 @@ const Result = ({...props}) => {
     }, [result.id]);
 
     return (
-        <div className="Winner">
+        // <div className="Winner">
+        // <div className="h-screen flex items-center justify-center">
+        <div className="flex flex-col my-5 justify-center ">
+            <div className=" flex fex-row items-center justify-center font-bold text-center text-2xl mb-2">
+
+        {/* <div className="grid place-items-center w-64 h-40 rounded-lg bg-black"></div> */}
             {user?.avatar &&
                 <Avatar
                     width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
@@ -34,7 +39,11 @@ const Result = ({...props}) => {
                 :
                 <p>You Lose...</p>
             }
-        </div>
+      </div>
+      </div>
+      
+
+        // {/* </div> */}
     );
 };
 
