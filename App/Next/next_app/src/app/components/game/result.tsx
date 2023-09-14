@@ -13,7 +13,7 @@ const getUser = async (userId: number) => {
 const Result = ({...props}) => {
 
     const {id, won} = props;
-    const [user, setUser] = useState<null | any>(getUser(id));
+    const [user, setUser] = useState<any>(getUser(id));
 
 // avatar : reutiliser composant avatar / se referer a leaderBoard
 // fetch user et envoyer avatar au composant avatar / isOnProfilePage to false

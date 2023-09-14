@@ -26,12 +26,19 @@ export default function useGame() {
 		});
 
 		socket?.on('endOfGame', (body: any) => {
-			console.log(body);
 			const {winnerId, loserId} = body;
-			if (userId === winnerId)
+			console.log("winner:", winnerId, "loser:", loserId);
+			console.log("userId", userId);
+			if (userId === winnerId) {
+				const {id, won} = {id: winnerId, won: true};
+				console.log("id: ",id, "won:", won);
 				setResult({id: winnerId, won: true});
-			else if (userId === loserId)
+			}
+			else if (userId === loserId) {
+				const {id, won} = {id: loserId, won: true};
+				console.log("id: ",id, "won:", won);
 				setResult({id: loserId, won: false});
+			}
 		});
 
 		return () => {
@@ -60,8 +67,9 @@ export default function useGame() {
 	}
 
 	const launchGame = async (id: number, userId: number) => {
-		socket?.emit("launchGame", id);
+		console.log("launchGame: id:", id, "userId:", userId);
 		setUserId(userId);
+		socket?.emit("launchGame", id);
 	}
 
 	return {

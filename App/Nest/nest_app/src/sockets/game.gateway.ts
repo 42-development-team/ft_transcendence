@@ -104,7 +104,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
         }
         const results = await this.gameService.createGame(data);
-        this.server.to(data.roomName).emit('endOfGame', results);
+        const winnerId: number = results.gameWonId;
+        const loserId: number = results.gameLosedId;
+        this.server.to(data.roomName).emit('endOfGame', {winnerId, loserId});
         this.gameService.removeRoom(data.roomName);
     }
 
