@@ -15,7 +15,7 @@ export default function Home() {
     
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, setUid, socket, inGame, result, data} = useGame();
+	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, result, data} = useGame();
 
   console.log("result:", result);
   return (
@@ -26,7 +26,7 @@ export default function Home() {
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       :
-          <Game move={move} stopMove={stopMove} launchGame={launchGame} setUid={setUid} data={data} userId={userId} result={result}/>
+          <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} result={result}/>
       }
     </div>
   );

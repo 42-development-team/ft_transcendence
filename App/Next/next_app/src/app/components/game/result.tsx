@@ -2,21 +2,20 @@
 
 import Avatar from "../profile/Avatar";
 import { useEffect, useState } from "react";
+import getUserNameById from "../utils/getUserNameById";
+import getAvatar from "../utils/getAvatar";
 
-const getUser = async (userId: number) => {
-    return await fetch(`${process.env.BACK_URL}/users/${userId}`, {
-        method: "GET",
-        credentials: "include",
-    }
-)};
+const getUser = async (id: string) => {
+    const avatar: string = await getAvatar(id);
+    const userName: string = await getUserNameById(id);
+
+    return {id: id, userName: userName, avatar: avatar};
+}
 
 const Result = ({...props}) => {
-
     const {id, won} = props;
-    const [user, setUser] = useState<any>(getUser(id));
-
-// avatar : reutiliser composant avatar / se referer a leaderBoard
-// fetch user et envoyer avatar au composant avatar / isOnProfilePage to false
+    console.log("id:", id);
+    const user = getUser(id);
     return (
         <div className="Winner">
             <Avatar

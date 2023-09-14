@@ -6,11 +6,11 @@ import Result from './result';
 
 const Game = ({...props}) => {
 	
-	const {move, stopMove, launchGame, setUid, data, userId, result} = props;
+	const {move, stopMove, launchGame, data, userId, result} = props;
 
 	return (
 		result === undefined ?
-		<Canvas move={move} stopMove={stopMove} launchGame={launchGame}  setUid={setUid} data={data} userId={userId}/>
+		<Canvas move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId}/>
 		:
 		<Result result={result}/>
 	);
