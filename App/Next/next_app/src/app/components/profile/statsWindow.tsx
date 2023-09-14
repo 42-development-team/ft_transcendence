@@ -4,6 +4,7 @@ import Avatar from "../../components/profile/Avatar";
 import Stats from "./Stats";
 import sessionStorageUser from "./sessionStorage";
 import { useAuthContext } from "@/app/context/AuthContext";
+import getAvatarById from "../utils/getAvatarById";
 
 const StatsWindow = ({ userId }: { userId: string }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -25,15 +26,10 @@ const StatsWindow = ({ userId }: { userId: string }) => {
             userId = sessionUserId as string;
         }
 
+
         const getAvatar = async () => {
-            const response = await fetch(`${process.env.BACK_URL}/avatars/${userId}`, {
-                credentials: "include",
-                method: "GET",
-            });
-            const data = await response.json();
-            setImageUrl(await data.avatar);
+            setImageUrl(await getAvatarById(userId));
             setAvatarLoaded(true);
-            return (data.avatar);
         }
 
         const getStats = async () => {
@@ -62,9 +58,9 @@ const StatsWindow = ({ userId }: { userId: string }) => {
     return (
         <div className="flex flex-col sm:flex-row mb-5 ">
             <Avatar
-                disableChooseAvatar={true} 
-                imageUrlGetFromCloudinary={imageUrl} 
-                CallbackAvatarData={handleCallBackDataFromAvatar} 
+                disableChooseAvatar={true}
+                imageUrlGetFromCloudinary={imageUrl}
+                CallbackAvatarData={handleCallBackDataFromAvatar}
                 userName={statsData.userName}
                 id={statsData.userId}
                 currId={userId}
@@ -73,7 +69,7 @@ const StatsWindow = ({ userId }: { userId: string }) => {
             </Avatar>
             <div className=" w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
                 bg-surface0 bg-opacity-90 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">
-                <Stats userId={userId} stats={statsData}/>
+                <Stats userId={userId} stats={statsData} />
             </div>
         </div>
     )
