@@ -1,6 +1,7 @@
 "use client";
 import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
 import React, { useContext, createContext, useState, useEffect } from "react";
+import LoadingContext from "./LoadingContext";
 import { io, Socket } from 'socket.io-client';
 import { delay } from "@/app/utils/delay";
 
@@ -33,6 +34,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const ENDPOINT = `${process.env.BACK_URL}`;
 	const [open, setOpen] = useState(false);
 	const [invited, setInvited] = useState(false);
+	const { gameLoading, setGameLoading } = useContext(LoadingContext);
 
 	// Exception catcher for fetch
 	useEffect(() => {
@@ -62,7 +64,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	const handleTabClosing = () => {
 		if (!isLoggedIn || userId == "") return ;
-		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
+		fetch(`${process.env.BACK_URL}/imageUrlGetFromCloudinary={imageUrl}users/set_offline/${userId}`, {
 			method: 'PUT',
 		});
 	}
@@ -105,6 +107,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		setLoggedIn(false);
 		setUniqueLogin("");
 		setUserId("");
+		setGameLoading(false);
 		socket?.disconnect();
 	}
 
