@@ -20,6 +20,8 @@ export default function useGame() {
 			setInGame(true);
 			setData(body);
 			setGameLoading(false);
+			if (window.location.pathname !== "/home")
+				window.location.href = "/home";
 		});
 
 		socket?.on('reconnectGame', () => {
