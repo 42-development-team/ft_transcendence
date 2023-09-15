@@ -9,6 +9,7 @@ export default function useGame() {
 	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
+	const {gameLoading, setGameLoading} = useContext(LoadingContext);
 
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -18,6 +19,7 @@ export default function useGame() {
 		socket?.on('matchIsReady', (body: any) => {
 			setInGame(true);
 			setData(body);
+			setGameLoading(false);
 		});
 
 		socket?.on('reconnectGame', () => {
@@ -27,6 +29,10 @@ export default function useGame() {
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
 			// setInGame(false);
+		});
+
+		socket?.on('surrender', () => { //TODO: implement in backlogical
+			setInGame(false);
 		});
 
 		return () => {
