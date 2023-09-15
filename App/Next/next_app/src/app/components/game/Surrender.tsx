@@ -14,6 +14,7 @@ const Surrender = () => {
                 Surrender
             </CustomBtn>
         </div>
+    );
 }
 
 export default Surrender;
