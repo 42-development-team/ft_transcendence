@@ -24,7 +24,7 @@ export class PlayerDto {
 
 export class GameDto {
 	id: number;
-	surrenderId: null | number;
+	forfeiterId: null | number;
 	roomName: string;
 	end: boolean;
 	player1: PlayerDto;

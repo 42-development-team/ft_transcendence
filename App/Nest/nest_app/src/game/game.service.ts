@@ -138,11 +138,13 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async surrender(id: number) {
+    async surrender(id: number, forfeiterId: number) {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1 ) {
+            console.log("Could not find game with id:", id);
             return ;
         }
+        this.gameRooms[idx].data.forfeiterId = forfeiterId;
         this.gameRooms[idx].data.end = true;
     }
 
@@ -465,7 +467,7 @@ export class GameService {
         let data: GameDto = {
             id: id,
             roomName: roomName,
-            surrenderId: null,
+            forfeiterId: null,
             end: false,
             player1: player1,
             player2: player2,

@@ -28,7 +28,7 @@ export default function useGame() {
 
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
-			// setInGame(false);
+			setInGame(false);
 		});
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
