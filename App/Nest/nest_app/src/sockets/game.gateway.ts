@@ -101,7 +101,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('surrender')
     async handleSurrender(socket: Socket, {id, userId}: {id: number, userId: number}) {
         this.gameService.surrender(id, userId);
-        console.log('id: ' + id + ' userId: ' + userId);
     }
 
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {

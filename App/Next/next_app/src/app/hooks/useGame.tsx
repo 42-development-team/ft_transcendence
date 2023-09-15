@@ -1,4 +1,5 @@
 "use client";
+
 import { useContext, useEffect, useState } from "react";
 import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
@@ -10,7 +11,6 @@ export default function useGame() {
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const {gameLoading, setGameLoading} = useContext(LoadingContext);
-
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
@@ -28,6 +28,7 @@ export default function useGame() {
 
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
+			window.location.href = "/home";
 			// setInGame(false);
 		});
 
