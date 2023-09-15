@@ -69,6 +69,10 @@ export default function useGame() {
 		socket?.emit("isUserQueued", userId);
 	}
 
+	const surrender = async (id: number) => {
+		socket?.emit("surrender", id);
+	}
+
 	return {
 		move,
 		stopMove,

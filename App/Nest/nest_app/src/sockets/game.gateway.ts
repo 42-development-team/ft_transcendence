@@ -98,6 +98,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         }
     }
 
+    @SubscribeMessage('surrender')
+    async handleSurrender(socket: Socket, id: number) {
+        this.gameService.surrender(id);
+    }
+
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000 / 60);
         const promiseCalculate = this.gameService.calculateGame(data.id);

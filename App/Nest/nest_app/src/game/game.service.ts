@@ -138,6 +138,14 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
+    async surrender(id: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1 ) {
+            return ;
+        }
+        this.gameRooms[idx].data.end = true;
+    }
+
     async handleJoinQueue(player: Socket): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
         try {
             const userId = await this.userService.getUserIdFromSocket(player);
@@ -457,6 +465,7 @@ export class GameService {
         let data: GameDto = {
             id: id,
             roomName: roomName,
+            surrenderId: null,
             end: false,
             player1: player1,
             player2: player2,

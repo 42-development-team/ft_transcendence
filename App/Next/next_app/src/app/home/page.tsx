@@ -28,7 +28,7 @@ export default function Home() {
       }
       {
         inGame &&
-        <div className="flex flex-col flex-grow h-inherit w-inherit">
+        <div className="flex flex-col justify-center flex-grow h-full w-full">
           <Surrender />
           <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} />
         </div>

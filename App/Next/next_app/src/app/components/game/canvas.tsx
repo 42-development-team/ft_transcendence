@@ -116,7 +116,7 @@ const Canvas = ({...props}) => {
 	}, [data]);
 
 	return (
-		<div className="flex justify-center items-center canvas h-full w-full">
+		<div className="flex justify-center items-center canvas h-[9/16vw] w-full">
 			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
