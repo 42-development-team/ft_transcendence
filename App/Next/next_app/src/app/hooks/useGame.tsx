@@ -17,14 +17,16 @@ export default function useGame() {
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
+			if (window.location.pathname !== "/home")
+				window.location.href = "/home";
 			setInGame(true);
 			setData(body);
 			setGameLoading(false);
-			if (window.location.pathname !== "/home")
-				window.location.href = "/home";
 		});
 
 		socket?.on('reconnectGame', () => {
+			if (window.location.pathname !== "/home")
+				window.location.href = "/home";
 			setInGame(true);
 		});
 
