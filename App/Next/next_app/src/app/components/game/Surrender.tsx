@@ -1,17 +1,20 @@
+"use client";
+
 import CustomBtn from "../CustomBtn";
 import useGame from "@/app/hooks/useGame";
 import { useAuthContext } from "@/app/context/AuthContext";
 
 const Surrender = () => {
-    const {surrender} = useGame();
+    const {surrender, data} = useGame();
     const {userId} = useAuthContext();
     return (
         <div className="flex justify-center">
             <CustomBtn
                 id="Surrender"
-                onClick={() => {
+                onClick={async () => {
                     console.log("Surrender"); //Handle surrend action => end of game
-                    surrender(parseInt(userId));
+                    if (data)
+                        await surrender(data.id, parseInt(userId));
                 }}
                 disable={false}
                 anim={true}
