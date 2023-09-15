@@ -80,6 +80,7 @@ export default function useGame() {
 		joinQueue,
 		launchGame,
 		isUserQueued,
+		surrender,
 		socket,
 		inGame,
 		data,

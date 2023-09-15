@@ -104,5 +104,20 @@
 		],
 		"coverageDirectory": "../coverage",
 		"testEnvironment": "node"
+	},
+	"next-unused": {
+		"include": [
+			"src/app/test.tsx"
+		],
+		"exclude": [],
+		"entrypoints": [
+			"src",
+			"test",
+			"dist",
+			"custom_decorators",
+			"node_modules",
+			"seeds",
+			"prisma"
+		]
 	}
 }
