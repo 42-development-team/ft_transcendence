@@ -24,11 +24,12 @@ export default function Home() {
   return (
     <div className="flex w-full h-full">
       <Chat userId={userId} />
-      {inGame === false && inGameContext === false ?
+      {result === undefined ? (
+      inGame === false && inGameContext === false ? (
         <div className="w-full p-4 h-full flex items-center justify-center">
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId} />
-        </div>
-        :
+        </div> )
+        : (
         <div className="flex flex-col justify-center flex-grow h-full w-full">
           <Surrender surrender={surrender} socket={socket as Socket} data={data}/>
           <Game
@@ -43,8 +44,23 @@ export default function Home() {
             result={result}
             setResult={setResult}
             setInGame={setInGame} />
-        </div>
-      }
+        </div> )
+       ) : (
+      <div className="flex flex-col justify-center flex-grow h-full w-full">
+          <Game
+          socket={socket}
+          move={move}
+          stopMove={stopMove}
+          launchGame={launchGame}
+          leaveQueue={leaveQueue}
+          joinQueue={joinQueue}
+          data={data}
+          userId={userId}
+          result={result}
+          setResult={setResult}
+          setInGame={setInGame} />
+      </div>
+      )}
     </div>
   );
 }

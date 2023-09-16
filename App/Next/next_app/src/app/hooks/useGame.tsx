@@ -17,8 +17,10 @@ export default function useGame() {
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
 	const { inGameContext, setInGameContext } = useContext(IsInGameContext);
 
+	useEffect(() => {
 
-
+		socket?.emit('isInGame', userId)
+	}, [socket]);
 	
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -40,6 +42,7 @@ export default function useGame() {
 		socket?.on('endOfGame', (body: any) => {
 			const { winnerId, loserId } = body;
 			setInGame(false);
+			setInGameContext(false);
 			if (parseInt(userId) === winnerId)
 				setResult({ id: winnerId, won: true });
 			else if (parseInt(userId) === loserId)
@@ -57,9 +60,10 @@ export default function useGame() {
 			setInGame(true);
 		});
 
-		socket?.on('isAlreadyInGame', () => {
+		socket?.on('isAlreadyInGame', (body: any) => {
 			setInGameContext(true);
 			setInGame(true);
+			setData(body);
 		});
 
 		return () => {

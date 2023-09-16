@@ -64,13 +64,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('isInGame')
-    async isAlreadyInGame(socket: Socket, gameId: number) {
-        const data = await this.gameService.getDataFromRoomId(gameId);
-        console.log('userId', gameId, 'datasaasda: ', data);
+    async isAlreadyInGame(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        console.log('userId', userId, 'datasaasda: ', data);
         const isAlreadyInGame = data ? true : false;
         if (isAlreadyInGame) {
             console.log('isAlreadyInGame');
-            socket.emit('isAlreadyInGame');
+            socket.emit('isAlreadyInGame', data);
         }
         return ;
     }
