@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
+import { useAuthContext } from "@/app/context/AuthContext";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
@@ -67,13 +68,10 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 };
 
 const Canvas = ({...props}) => {
-	
 	if (window === undefined)
 		return ;
 
-	const {move, stopMove, launchGame, data, userId} = props;
-	if (!data)
-		return ;
+	const {socket, move, stopMove, launchGame, data, userId, setData} = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
@@ -81,6 +79,7 @@ const Canvas = ({...props}) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
+		if (data)
 			launchGame(data.id);
 	}, []);
 

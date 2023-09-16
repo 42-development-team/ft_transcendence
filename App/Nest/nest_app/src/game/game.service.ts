@@ -210,7 +210,7 @@ export class GameService {
             console.log("!LaunchGameRoom")
             return;
         }
-
+        console.log("LaunchGameRoom, userId:", userId)
         if (this.gameRooms[idx].playerOneId === userId)
             this.gameRooms[idx].readyPlayerOne = true;
         else if (this.gameRooms[idx].playerTwoId === userId)
@@ -264,8 +264,8 @@ export class GameService {
         }
     }
 
-    async removeRoom(roomName: string) {
-        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+    async removeRoom(gameId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
         if (idx === -1)
             return;
         this.gameRooms.splice(idx, 1);
@@ -273,6 +273,10 @@ export class GameService {
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
         return this.gameRooms.find(game => game.id === id)?.data;
+    }
+
+    async getDataFromUserId(userId: number): Promise<GameDto> {
+        return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)?.data;
     }
 
     async sleep(ms: number): Promise<void> {

@@ -4,22 +4,22 @@ import { useContext, useEffect, useState } from "react";
 import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
+import { useRouter } from "next/navigation";
 
 export default function useGame() {
 
 	const {socket} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
+	const router = useRouter();
 	const {gameLoading, setGameLoading} = useContext(LoadingContext);
+
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
-			if (window.location.pathname !== "/home") {
-				return ;
-			}
 			setInGame(true);
 			setData(body);
 			setGameLoading(false);
@@ -31,12 +31,16 @@ export default function useGame() {
 
 		socket?.on('endOfGame', () => {
 			console.log('endOfGame');
-			window.location.href = "/home";
-			// setInGame(false);
+			router.push("/home");
+			setInGame(false);
 		});
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
 			setInGame(false);
+		});
+
+		socket?.on('sendDataToUser', (body: any) => {
+			setData(body);
 		});
 
 		return () => {
@@ -46,6 +50,8 @@ export default function useGame() {
 			socket?.off('matchIsReady');
 			socket?.off('reconnectGame');
 			socket?.off('endOfGame');
+			socket?.off('surrender');
+			socket?.off('sendDataToUser');
 		};
 	}, [socket]);
 
@@ -77,12 +83,6 @@ export default function useGame() {
 		socket?.emit("surrender", {id, userId});
 	}
 
-	const redirect = async (path: string) => {
-		if (path !== "/home") {
-			window.location.href = "/home";
-		}
-	}
-
 	return {
 		move,
 		stopMove,
@@ -91,7 +91,6 @@ export default function useGame() {
 		launchGame,
 		isUserQueued,
 		surrender,
-		redirect,
 		socket,
 		inGame,
 		data,

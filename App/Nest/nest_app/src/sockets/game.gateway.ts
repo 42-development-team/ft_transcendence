@@ -48,11 +48,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         if (!result)
             return ;
-
+        
         const {newGameRoom, player2SocketId} = result;
         if (player2SocketId ) {
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
+            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
+            console.log('data: ', newGameRoom.data);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
         else {
@@ -92,10 +94,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        console.log('launchGame before gamelogic')
         if (room && room.data) {
+            console.log('launchGame in gamelogic')
             if (room.reconnect === false)
+                room.reconnect = true;
                 this.gameLogic(room.data);
         }
+    }
+
+    @SubscribeMessage('retrieveData')
+    async handleRetrieveData(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        socket?.emit('sendDataToUser', data);
     }
 
     @SubscribeMessage('surrender')
@@ -120,7 +131,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         await this.gameService.createGame(data);
         console.log(data.roomName);
         this.server.to(data.roomName).emit('endOfGame');
-        this.gameService.removeRoom(data.roomName);
+        this.gameService.removeRoom(data.id);
     }
 
     async sendDataToRoom(data: GameDto) {

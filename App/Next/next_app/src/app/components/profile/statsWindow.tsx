@@ -26,7 +26,6 @@ const StatsWindow = ({ userId }: { userId: string }) => {
             userId = sessionUserId as string;
         }
 
-
         const getAvatar = async () => {
             setImageUrl(await getAvatarById(userId));
             setAvatarLoaded(true);

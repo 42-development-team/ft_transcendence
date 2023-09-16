@@ -8,7 +8,6 @@ import { use, useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
 import LoadingContext from "@/app/context/LoadingContext";
-import useGame from "@/app/hooks/useGame";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
@@ -50,7 +49,6 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
     const { socket, userId} = useAuthContext();
-    const { redirect } = useGame();
 
     useEffect(() => {
         socket?.on('isQueued', () => {
@@ -59,6 +57,12 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
         socket?.on('isNotQueued', () => {
             setGameLoading(false);
         });
+        socket?.on('redirect', (string: string) => {
+            if (window.location.pathname !== "/home")
+                router.push("/home");
+            console.log(string);
+        });
+
     }, [socket]);
 
     useEffect(() => {

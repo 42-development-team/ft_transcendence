@@ -12,7 +12,6 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
-
   }, []);
 
   const { move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, data } = useGame();
@@ -30,7 +29,7 @@ export default function Home() {
         inGame &&
         <div className="flex flex-col justify-center flex-grow h-full w-full">
           <Surrender />
-          <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} />
+          <Game socket={socket} move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} />
         </div>
       }
     </div>
