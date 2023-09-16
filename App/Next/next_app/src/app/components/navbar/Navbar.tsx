@@ -57,11 +57,11 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
         socket?.on('isNotQueued', () => {
             setGameLoading(false);
         });
-        socket?.on('redirect', (string: string) => {
-            if (window.location.pathname !== "/home")
-                router.push("/home");
-            console.log(string);
-        });
+        // socket?.on('redirect', (string: string) => {
+        //     if (window.location.pathname !== "/home")
+        //         router.push("/home");
+        //     console.log(string);
+        // });
 
     }, [socket]);
 

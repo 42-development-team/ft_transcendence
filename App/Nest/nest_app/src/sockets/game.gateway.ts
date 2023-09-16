@@ -53,7 +53,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (player2SocketId ) {
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
-            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
+            // this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
             console.log('data: ', newGameRoom.data);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
