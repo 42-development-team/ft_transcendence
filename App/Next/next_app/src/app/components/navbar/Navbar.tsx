@@ -60,6 +60,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
         socket?.on('redirect', (string: string) => {
             if (window.location.pathname !== "/home")
                 router.push("/home");
+            setGameLoading(false);
             console.log(string);
         });
 
