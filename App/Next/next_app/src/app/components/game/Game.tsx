@@ -13,11 +13,12 @@ const Game = ({ ...props }) => {
 
 	return (
 		<div>
-			{data &&
-				result === undefined ?
+			{
+				(result === undefined || result === null) ? (
 				<Canvas move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} />
-				:
+			) : (
 				<Result socket={socket} result={result} setResult={setResult} setInGame={setInGame} leaveQueue={leaveQueue} joinQueue={joinQueue} />
+			)
 			}
 		</div>
 	);

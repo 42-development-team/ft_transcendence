@@ -14,7 +14,7 @@ export default function Home() {
     login();
   }, []);
 
-	const {move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGame, result, setResult, data} = useGame();
+  const { move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGame, result, setResult, data } = useGame();
 
   return (
     <div className="flex w-full h-full">
@@ -23,9 +23,22 @@ export default function Home() {
         <div className="w-full p-4 h-full flex items-center justify-center">
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId} />
         </div>
-      :
-          <><Surrender />
-          <Game socket={socket} move={move} stopMove={stopMove} launchGame={launchGame} leaveQueue={leaveQueue} joinQueue={joinQueue} data={data} userId={userId} result={result} setResult={setResult} setInGame={setInGame} /></>
+        :
+        <div className="flex flex-col justify-center flex-grow h-full w-full">
+          <Surrender />
+          <Game
+            socket={socket}
+            move={move}
+            stopMove={stopMove}
+            launchGame={launchGame}
+            leaveQueue={leaveQueue}
+            joinQueue={joinQueue}
+            data={data}
+            userId={userId}
+            result={result}
+            setResult={setResult}
+            setInGame={setInGame} />
+        </div>
       }
     </div>
   );
