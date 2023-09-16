@@ -63,7 +63,6 @@ export default function useGame() {
 		socket?.on('isAlreadyInGame', (body: any) => {
 			setInGameContext(true);
 			setInGame(true);
-			setData(body);
 		});
 
 		return () => {

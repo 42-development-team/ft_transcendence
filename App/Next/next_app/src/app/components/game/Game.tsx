@@ -6,7 +6,7 @@ import Result from './result';
 const Game = ({ ...props }) => {
 	useEffect(() => {
 		if (!data)
-			socket?.emit("retrieveData", userId);
+			socket?.emit("retrieveData", props.userId);
 	}, []);
 
 	const { socket, move, stopMove, launchGame, leaveQueue, joinQueue, data, userId, result, setResult, setInGame } = props;
