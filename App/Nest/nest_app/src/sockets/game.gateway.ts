@@ -107,7 +107,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     async gameLogic(data: GameDto) {
-        console.log(data.roomName);
         while (data.end === false) {
             await this.sleepAndCalculate(data);
             this.sendDataToRoom(data);

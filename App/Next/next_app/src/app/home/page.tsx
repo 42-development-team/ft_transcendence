@@ -24,7 +24,7 @@ export default function Home() {
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId}/>
         </div>
       :
-          <Game move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} result={result}/>
+          <Game move={move} stopMove={stopMove} launchGame={launchGame} leaveQueue={leaveQueue} joinQueue={joinQueue} data={data} userId={userId} result={result}/>
       }
     </div>
   );
