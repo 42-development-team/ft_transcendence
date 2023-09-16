@@ -31,7 +31,7 @@
   "devDependencies": {
     "@catppuccin/tailwindcss": "^0.1.6",
     "@material-tailwind/react": "^2.1.2",
-    "@types/bcryptjs": "^2.4.3",
+    "@types/bcryptjs": "^2.4.4",
     "@types/react-transition-group": "^4.4.6",
     "autoprefixer": "^10.4.15",
     "bcryptjs": "^2.4.3",

@@ -31,7 +31,6 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 
 const Loading = () => {
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
-    
 
     return (
         <div>
@@ -50,8 +49,8 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const pathname = usePathname();
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
-    const { socket } = useAuthContext();
-    const { userId } = useAuthContext();
+    const { socket, userId} = useAuthContext();
+    const { redirect } = useGame();
 
     useEffect(() => {
         socket?.on('isQueued', () => {

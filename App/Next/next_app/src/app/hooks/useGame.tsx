@@ -17,16 +17,15 @@ export default function useGame() {
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
-			if (window.location.pathname !== "/home")
-				window.location.href = "/home";
+			if (window.location.pathname !== "/home") {
+				return ;
+			}
 			setInGame(true);
 			setData(body);
 			setGameLoading(false);
 		});
 
 		socket?.on('reconnectGame', () => {
-			if (window.location.pathname !== "/home")
-				window.location.href = "/home";
 			setInGame(true);
 		});
 
@@ -78,6 +77,12 @@ export default function useGame() {
 		socket?.emit("surrender", {id, userId});
 	}
 
+	const redirect = async (path: string) => {
+		if (path !== "/home") {
+			window.location.href = "/home";
+		}
+	}
+
 	return {
 		move,
 		stopMove,
@@ -86,6 +91,7 @@ export default function useGame() {
 		launchGame,
 		isUserQueued,
 		surrender,
+		redirect,
 		socket,
 		inGame,
 		data,
