@@ -62,7 +62,6 @@ const Play = ({...props}) => {
 		setDisable(true)
 		setGameLoading(true);
 		await joinQueue();
-
 	}
 
 	const cancelMatchmaking = async () => {
@@ -72,7 +71,6 @@ const Play = ({...props}) => {
 		setGameLoading(false);
 		setButtonText("Play")
 		await leaveQueue();
-
 	}
 
 	return (

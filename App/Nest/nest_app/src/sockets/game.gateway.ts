@@ -91,6 +91,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
+        console.log('game.gateway - New Game Starts');
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
@@ -123,14 +124,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     async gameLogic(data: GameDto) {
-        console.log(data.roomName);
         while (data.end === false) {
             await this.sleepAndCalculate(data);
             this.sendDataToRoom(data);
         }
-        await this.gameService.createGame(data);
-        console.log(data.roomName);
-        this.server.to(data.roomName).emit('endOfGame');
+        const results = await this.gameService.createGame(data);
+        const winnerId: number = results.gameWonId;
+        const loserId: number = results.gameLosedId;
+        this.server.to(data.roomName).emit('endOfGame', {winnerId, loserId});
         this.gameService.removeRoom(data.id);
     }
 

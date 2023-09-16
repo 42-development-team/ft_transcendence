@@ -8,10 +8,11 @@ import { useRouter } from "next/navigation";
 
 export default function useGame() {
 
-	const {socket} = useAuthContext();
+	const {socket, userId} = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const router = useRouter();
+	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
 	const {gameLoading, setGameLoading} = useContext(LoadingContext);
 
 	useEffect(() => {
@@ -29,10 +30,13 @@ export default function useGame() {
 			setInGame(true);
 		});
 
-		socket?.on('endOfGame', () => {
-			console.log('endOfGame');
-			router.push("/home");
-			setInGame(false);
+		socket?.on('endOfGame', (body: any) => {
+			const {winnerId, loserId} = body;
+
+			if (parseInt(userId) === winnerId)
+				setResult({id: winnerId, won: true});
+			else if (parseInt(userId) === loserId)
+				setResult({id: loserId, won: false});
 		});
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
@@ -63,20 +67,20 @@ export default function useGame() {
 		socket?.emit("leaveQueue");
 	}
 
-	const move = async (event: string, id: number, userId: number) => {
-		socket?.emit("move", event, id, userId);
+	const move = async (event: string, id: number, uid: number) => {
+		socket?.emit("move", event, id, uid);
 	}
 
-	const stopMove = async (event: string, id: number, userId: number) => {
-		socket?.emit("stopMove", event, id, userId);
+	const stopMove = async (event: string, id: number, uid: number) => {
+		socket?.emit("stopMove", event, id, uid);
 	}
 
 	const launchGame = async (id: number) => {
 		socket?.emit("launchGame", id);
 	}
 
-	const isUserQueued = async (userId: number) => {
-		socket?.emit("isUserQueued", userId);
+	const isUserQueued = async (uid: number) => {
+		socket?.emit("isUserQueued", uid);
 	}
 
 	const surrender = async (id: number, userId: number) => {
@@ -93,6 +97,9 @@ export default function useGame() {
 		surrender,
 		socket,
 		inGame,
+		setInGame,
+		result,
+		setResult,
 		data,
 	}
 }
