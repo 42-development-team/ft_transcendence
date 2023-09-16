@@ -83,7 +83,9 @@ export default function useGame() {
 		isUserQueued,
 		socket,
 		inGame,
+		setInGame,
 		result,
+		setResult,
 		data,
 	}
 }

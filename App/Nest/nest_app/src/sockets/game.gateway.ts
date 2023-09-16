@@ -89,6 +89,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
+        console.log('game.gateway - New Game Starts');
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
