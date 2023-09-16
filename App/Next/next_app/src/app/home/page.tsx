@@ -1,17 +1,18 @@
 "use client"
 
 import Chat from "@/components/chat/Chat";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 import Surrender from "../components/game/Surrender";
 import { Socket } from "socket.io-client";
+import InGameContext from "../context/inGameContext";
 
 export default function Home() {
   const { login, userId } = useAuthContext();
-  const [isAlreadyInGame, setIsAlreadyInGame] = useState<boolean>(false);
+  const { inGameContext } = useContext(InGameContext);
 
   useEffect(() => {
     login();
@@ -23,7 +24,7 @@ export default function Home() {
   return (
     <div className="flex w-full h-full">
       <Chat userId={userId} />
-      {inGame === false ?
+      {inGame === false && inGameContext === false ?
         <div className="w-full p-4 h-full flex items-center justify-center">
           <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId} />
         </div>

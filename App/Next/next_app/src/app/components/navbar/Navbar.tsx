@@ -8,6 +8,7 @@ import { use, useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
 import LoadingContext from "@/app/context/LoadingContext";
+import InGameContext from "@/app/context/inGameContext";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
@@ -48,6 +49,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const pathname = usePathname();
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const { gameLoading, setGameLoading } = useContext(LoadingContext);
+    const { inGameContext, setInGameContext } = useContext(InGameContext);
     const { socket, userId} = useAuthContext();
 
     useEffect(() => {
@@ -57,11 +59,13 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
         socket?.on('isNotQueued', () => {
             setGameLoading(false);
         });
-        socket?.on('redirect', (string: string) => {
-            if (window.location.pathname !== "/home")
-                router.push("/home");
+        socket?.on('redirect', (data: any) => {
+            setInGameContext(true);
+            if (window.location.pathname !== "/home") {
+                router.push('/home')
+            }
             setGameLoading(false);
-            console.log(string);
+            console.log(data);
         });
 
     }, [socket]);

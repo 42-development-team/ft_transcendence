@@ -272,7 +272,7 @@ export class GameService {
     }
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
-        return this.gameRooms.find(game => game.id === id)?.data;
+        return this.gameRooms.find(game => game.id === id).data;
     }
 
     async getDataFromUserId(userId: number): Promise<GameDto> {

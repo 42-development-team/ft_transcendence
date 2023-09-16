@@ -5,6 +5,7 @@ import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
 import { useRouter } from "next/navigation";
+import IsInGameContext from "../context/inGameContext";
 
 export default function useGame() {
 
@@ -14,29 +15,33 @@ export default function useGame() {
 	const router = useRouter();
 	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
+	const { inGameContext, setInGameContext } = useContext(IsInGameContext);
 
-	useEffect(() => {
-		socket?.emit('isInGame');
-	}, []);
+
+
 	
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
+			setInGameContext(false);
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
 			setInGame(true);
 			setData(body);
 			setGameLoading(false);
+			setInGameContext(true);
 		});
 
 		socket?.on('reconnectGame', () => {
+			setInGameContext(true);
 			setInGame(true);
 		});
 
 		socket?.on('endOfGame', (body: any) => {
 			const { winnerId, loserId } = body;
-
+			setInGameContext(false);
+			setInGame(false);
 			if (parseInt(userId) === winnerId)
 				setResult({ id: winnerId, won: true });
 			else if (parseInt(userId) === loserId)
@@ -45,14 +50,18 @@ export default function useGame() {
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
 			setInGame(false);
+			setInGameContext(false);
+			router.push('/home');
 		});
 
 		socket?.on('sendDataToUser', (body: any) => {
 			setData(body);
+			setInGameContext(true);
 			setInGame(true);
 		});
 
 		socket?.on('isAlreadyInGame', () => {
+			setInGameContext(true);
 			setInGame(true);
 		});
 
@@ -65,6 +74,7 @@ export default function useGame() {
 			socket?.off('endOfGame');
 			socket?.off('surrender');
 			socket?.off('sendDataToUser');
+			socket?.off('isAlreadyInGame');
 		};
 	}, [socket]);
 
