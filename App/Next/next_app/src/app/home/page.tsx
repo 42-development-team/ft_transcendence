@@ -1,7 +1,7 @@
 "use client"
 
 import Chat from "@/components/chat/Chat";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
@@ -11,10 +11,13 @@ import { Socket } from "socket.io-client";
 
 export default function Home() {
   const { login, userId } = useAuthContext();
+  const [isAlreadyInGame, setIsAlreadyInGame] = useState<boolean>(false);
+
   useEffect(() => {
     login();
   }, []);
 
+  
   const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGame, result, setResult, data } = useGame();
 
   return (

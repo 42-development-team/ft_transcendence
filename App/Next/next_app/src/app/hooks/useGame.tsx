@@ -8,13 +8,17 @@ import { useRouter } from "next/navigation";
 
 export default function useGame() {
 
-	const {socket, userId} = useAuthContext();
+	const { socket, userId } = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const router = useRouter();
-	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
-	const {gameLoading, setGameLoading} = useContext(LoadingContext);
+	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
+	const { gameLoading, setGameLoading } = useContext(LoadingContext);
 
+	useEffect(() => {
+		socket?.emit('isInGame');
+	}, []);
+	
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
@@ -31,21 +35,26 @@ export default function useGame() {
 		});
 
 		socket?.on('endOfGame', (body: any) => {
-			const {winnerId, loserId} = body;
+			const { winnerId, loserId } = body;
 
 			if (parseInt(userId) === winnerId)
-				setResult({id: winnerId, won: true});
+				setResult({ id: winnerId, won: true });
 			else if (parseInt(userId) === loserId)
-				setResult({id: loserId, won: false});
+				setResult({ id: loserId, won: false });
 		});
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
 			setInGame(false);
 		});
 
-		// socket?.on('sendDataToUser', (body: any) => {
-		// 	setData(body);
-		// });
+		socket?.on('sendDataToUser', (body: any) => {
+			setData(body);
+			setInGame(true);
+		});
+
+		socket?.on('isAlreadyInGame', () => {
+			setInGame(true);
+		});
 
 		return () => {
 			socket?.off('isQueued');

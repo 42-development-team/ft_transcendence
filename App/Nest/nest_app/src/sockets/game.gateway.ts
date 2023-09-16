@@ -53,14 +53,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (player2SocketId ) {
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
-            // this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
+            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
             console.log('data: ', newGameRoom.data);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
         else {
-            newGameRoom.reconnect = true;
+            // newGameRoom.reconnect = true;
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
+    }
+
+    @SubscribeMessage('isInGame')
+    async isAlreadyInGame(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromRoomId(userId);
+        console.log('datasaasda: ', data);
+        const isAlreadyInGame = data ? true : false;
+        if (isAlreadyInGame) {
+            console.log('isAlreadyInGame');
+            socket.emit('isAlreadyInGame');
+        }
+        return ;
     }
 
     @SubscribeMessage('leaveQueue')
@@ -99,6 +111,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (room && room.data) {
             console.log('launchGame in gamelogic')
             if (room.reconnect === false) {
+                room.reconnect = true;
                 this.gameLogic(room.data);
             }
         }
