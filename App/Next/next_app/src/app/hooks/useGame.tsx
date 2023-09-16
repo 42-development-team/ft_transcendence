@@ -10,6 +10,7 @@ export default function useGame() {
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
+	const {gameLoading, setGameLoading} = useContext(LoadingContext);
 
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -19,6 +20,7 @@ export default function useGame() {
 		socket?.on('matchIsReady', (body: any) => {
 			setInGame(true);
 			setData(body);
+			setGameLoading(false);
 		});
 
 		socket?.on('reconnectGame', () => {
@@ -32,6 +34,10 @@ export default function useGame() {
 				setResult({id: winnerId, won: true});
 			else if (parseInt(userId) === loserId)
 				setResult({id: loserId, won: false});
+		});
+
+		socket?.on('surrender', () => { //TODO: implement in backlogical
+			setInGame(false);
 		});
 
 		return () => {
