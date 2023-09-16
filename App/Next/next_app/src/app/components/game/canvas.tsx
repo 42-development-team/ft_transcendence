@@ -12,11 +12,11 @@ const canvasStyle: any = {
 
 // ======== PRINT CANVAS SCORE AND CONTOUR ==============//
 function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: PlayerInterface, width: number, height: number) {
-	context.font='30px Arial';
-	context.fillStyle='#cba6f7';
+	context.font = '30px Arial';
+	context.fillStyle = '#cba6f7';
 	context.beginPath();
-		context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
-		context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
+	context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
+	context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
 	context.closePath();
 }
 
@@ -26,15 +26,15 @@ function clearCanvas(context: CanvasRenderingContext2D, width: number, height: n
 }
 
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
-	context.fillStyle= 'rgba(0, 0, 0, 0.4';
+	context.fillStyle = 'rgba(0, 0, 0, 0.4';
 	context.beginPath();
-		context.fillRect(0, 0, width, height);
+	context.fillRect(0, 0, width, height);
 	context.closePath();
 }
 
 function printMidLine(context: CanvasRenderingContext2D, width: number, height: number) {
 
-	context.strokeStyle='#cba6f7';
+	context.strokeStyle = '#cba6f7';
 	context.beginPath();
 	context.setLineDash([2, 2]);
 	context.moveTo(width / 2, 0);
@@ -44,19 +44,19 @@ function printMidLine(context: CanvasRenderingContext2D, width: number, height: 
 }
 
 // ============ RENDER ==============//
-function renderBall(context: CanvasRenderingContext2D, ball: BallInterface, width:  number, height: number) {
+function renderBall(context: CanvasRenderingContext2D, ball: BallInterface, width: number, height: number) {
 	context.fillStyle = ball.color;
 	context.beginPath();
-		context.arc(ball.x * width, ball.y * height , ball.r * width, 0, ball.pi2, false);
-		context.fill();
-		context.stroke();
+	context.arc(ball.x * width, ball.y * height, ball.r * width, 0, ball.pi2, false);
+	context.fill();
+	context.stroke();
 	context.closePath();
 };
 
-function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, width:  number, height: number) {
+function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, width: number, height: number) {
 	context.fillStyle = p.color;
 	context.beginPath();
-		context.fillRect(p.x * width - p.w * width / 2, p.y * height - p.h * height / 2, p.w * width, p.h * height);
+	context.fillRect(p.x * width - p.w * width / 2, p.y * height - p.h * height / 2, p.w * width, p.h * height);
 	context.closePath();
 }
 
@@ -67,11 +67,11 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 	printScore(context, data.player1, data.player2, width, height);
 };
 
-const Canvas = ({...props}) => {
+const Canvas = ({ ...props }) => {
 	if (window === undefined)
-		return ;
+		return;
 
-	const {socket, move, stopMove, launchGame, data, userId, setData} = props;
+	const { socket, move, stopMove, launchGame, data, userId, setData } = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
@@ -86,10 +86,10 @@ const Canvas = ({...props}) => {
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas)
-			return ;
+			return;
 		const context = canvas.getContext('2d');
 		if (!context)
-			return ;
+			return;
 		height = width * (9 / 16);
 
 		function handleKeyDown(e: any) {
@@ -116,7 +116,7 @@ const Canvas = ({...props}) => {
 
 	return (
 		<div className="flex justify-center items-center canvas h-[9/16vw] w-full">
-			<canvas className="border-2 border-color-#cba6f7" id = "cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
+			<canvas className="border-2 border-color-#cba6f7" id="cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
 		</div>
 	);
 }

@@ -98,9 +98,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log('launchGame before gamelogic')
         if (room && room.data) {
             console.log('launchGame in gamelogic')
-            if (room.reconnect === false)
-                room.reconnect = true;
+            if (room.reconnect === false) {
                 this.gameLogic(room.data);
+            }
         }
     }
 
@@ -111,7 +111,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('surrender')
-    async handleSurrender(socket: Socket, {id, userId}: {id: number, userId: number}) {
+    async handleSurrender(socket: Socket, @MessageBody() body: any) {
+        console.log('surrender');
+        const [id, userId] = body;
+        console.log("id: ", id, "userId: ", userId)
         this.gameService.surrender(id, userId);
     }
 

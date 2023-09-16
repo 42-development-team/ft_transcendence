@@ -7,14 +7,15 @@ import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 import Surrender from "../components/game/Surrender";
-import Result from "../components/game/result";
+import { Socket } from "socket.io-client";
+
 export default function Home() {
   const { login, userId } = useAuthContext();
   useEffect(() => {
     login();
   }, []);
 
-  const { move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGame, result, setResult, data } = useGame();
+  const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGame, result, setResult, data } = useGame();
 
   return (
     <div className="flex w-full h-full">
@@ -25,7 +26,7 @@ export default function Home() {
         </div>
         :
         <div className="flex flex-col justify-center flex-grow h-full w-full">
-          <Surrender />
+          <Surrender surrender={surrender} socket={socket as Socket} data={data}/>
           <Game
             socket={socket}
             move={move}

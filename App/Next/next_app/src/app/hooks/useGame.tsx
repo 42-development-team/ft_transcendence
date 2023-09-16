@@ -43,9 +43,9 @@ export default function useGame() {
 			setInGame(false);
 		});
 
-		socket?.on('sendDataToUser', (body: any) => {
-			setData(body);
-		});
+		// socket?.on('sendDataToUser', (body: any) => {
+		// 	setData(body);
+		// });
 
 		return () => {
 			socket?.off('isQueued');
@@ -84,7 +84,7 @@ export default function useGame() {
 	}
 
 	const surrender = async (id: number, userId: number) => {
-		socket?.emit("surrender", {id, userId});
+		socket?.emit("surrender", id, userId);
 	}
 
 	return {
