@@ -1,4 +1,3 @@
-"use client";
 
 const getAvatarById = async ( userId: string ) => {
     try {

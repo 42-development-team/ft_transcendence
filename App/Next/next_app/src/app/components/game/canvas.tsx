@@ -81,7 +81,7 @@ const Canvas = ({...props}) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-			launchGame(data.id);
+		launchGame(data.id);
 	}, []);
 
 	useEffect(() => {
