@@ -37,7 +37,6 @@ const Result = ({...props}) => {
     }
 
     return (
-        // <div className="h-screen flex items-center justify-center">
         <div className="flex flex-col my-5 justify-center ">
             {queued ?
                 <CustomBtn
@@ -75,9 +74,6 @@ const Result = ({...props}) => {
             }
             </div>
         </div>
-        // <div>
-        // </div>
-
     );
 };
 
