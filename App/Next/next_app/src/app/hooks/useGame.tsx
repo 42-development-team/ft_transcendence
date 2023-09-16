@@ -23,7 +23,6 @@ export default function useGame() {
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
-			setInGameContext(false);
 		});
 
 		socket?.on('matchIsReady', (body: any) => {
@@ -40,7 +39,6 @@ export default function useGame() {
 
 		socket?.on('endOfGame', (body: any) => {
 			const { winnerId, loserId } = body;
-			setInGameContext(false);
 			setInGame(false);
 			if (parseInt(userId) === winnerId)
 				setResult({ id: winnerId, won: true });
@@ -50,7 +48,6 @@ export default function useGame() {
 
 		socket?.on('surrender', () => { //TODO: implement in backlogical
 			setInGame(false);
-			setInGameContext(false);
 			router.push('/home');
 		});
 
