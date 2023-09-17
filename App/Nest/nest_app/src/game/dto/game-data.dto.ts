@@ -17,6 +17,7 @@ export class PlayerDto {
 	h: number;
     points: number;
 	velocity: number;
+	velocitx: number;
 	angle: number;
 };
 

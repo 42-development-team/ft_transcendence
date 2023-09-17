@@ -225,13 +225,26 @@ export class GameService {
                 this.setVelocity(-0.01, this.gameRooms[idx].data.player1);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
+            if (this.gameRooms[idx].data.mode) {
+                if (event === "ArrowLeft")
+                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player1);
+                else if (event === "ArrowRight")
+                    this.setVelocitx(0.01, this.gameRooms[idx].data.player1);
+            }
         }
         else if (this.gameRooms[idx].data.player2.id === userId) {
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, this.gameRooms[idx].data.player2);
+            if (this.gameRooms[idx].data.mode) {
+                if (event === "ArrowLeft")
+                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player2);
+                else if (event === "ArrowRight")
+                    this.setVelocitx(0.01, this.gameRooms[idx].data.player2);
+            }
         }
+
     }
 
     handleStopMove(event: string, id: number, userId: number) {
@@ -287,7 +300,33 @@ export class GameService {
         player.velocity = 0;
     }
 
-    async movePlayer(player: PlayerDto, mode: boolean) {
+    async setVelocitx(val: number, player: PlayerDto) {
+        player.velocitx = val;
+    }
+
+    async killVelocitx(player: PlayerDto) {
+        player.velocitx = 0;
+    }
+
+    async movePlayerMode(player: PlayerDto) {
+        const valy: number = player.y + player.velocity;
+        const valx: number = player.x + player.velocitx;
+
+        if (valy >= 1) {
+            player.y = valy - 1;
+        }
+        else if (valy <= 0) {
+            player.y = 1 + valy;
+        }
+        else
+            player.y = valy;
+
+        if (valx < 0.48 && valx > 0.02) {
+            player.x = valx;
+        }
+    }
+
+    async movePlayer(player: PlayerDto) {
         const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
             if (val + player.h / 2 < 0.99)
@@ -295,13 +334,19 @@ export class GameService {
         }
         else {
             if (val - player.h / 2 > 0.01)
-                player.y = val;
+            player.y = val;
         }
     }
 
     async calculatePlayer(idx: number, mode: boolean) {
-        this.movePlayer(this.gameRooms[idx].data.player1, mode);
-        this.movePlayer(this.gameRooms[idx].data.player2, mode);
+        if (mode) {
+            this.movePlayerMode(this.gameRooms[idx].data.player1);
+            this.movePlayerMode(this.gameRooms[idx].data.player2);
+        }
+        else {
+            this.movePlayer(this.gameRooms[idx].data.player1);
+            this.movePlayer(this.gameRooms[idx].data.player2);
+        }
     }
 
     /* GamePlay Ball */
@@ -399,7 +444,7 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(idx: number, mode: boolean) {
+    async calculateBall(idx: number) {
         this.bounce(idx);
         this.updateBall(idx);
         this.incrementSpeed(idx);
@@ -408,7 +453,7 @@ export class GameService {
     async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
 
         this.calculatePlayer(idx, mode);
-        this.calculateBall(idx, mode);
+        this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
 
@@ -428,6 +473,7 @@ export class GameService {
             w: 0.01,
             h: 0.15,
             velocity: 0,
+            velocitx: 0,
             angle: 60,
             points: 0,
         }
@@ -440,6 +486,7 @@ export class GameService {
             w: 0.01,
             h: 0.15,
             velocity: 0,
+            velocitx: 0,
             angle: 60,
             points: 0,
         }
