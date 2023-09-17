@@ -20,8 +20,8 @@ export class GameService {
     ) { }
 
     gameRooms: GameRoomDto[] = [];
-    queued: UserIdDto[] = [];
-
+    queue: UserIdDto[] = [];
+    modeQueue: UserIdDto[] = [];
 
     /* C(reate) */
     async createGame(data: GameDto) {
@@ -93,7 +93,7 @@ export class GameService {
     async getIsQueued(userId: number): Promise<boolean> {
         const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (idx === -1) {
-            if (this.queued.find(user => user.userId === userId)) {
+            if (this.queue.find(user => user.userId === userId)) {
                 return true;
             }
         }
@@ -143,12 +143,12 @@ export class GameService {
             const userId = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
-                if (this.queued.find(user => user.userId === userId)) {
+                if (this.queue.find(user => user.userId === userId)) {
                     console.log("user:", userId, ":ALREADY QUEUED")
                     return;
                 }
-                this.queued.push({ userId });
-                if (this.queued.length >= 2)
+                this.queue.push({ userId });
+                if (this.queue.length >= 2)
                     return this.handleJoinGame(player);
             }
             else {
@@ -164,8 +164,9 @@ export class GameService {
     }
 
     async handleJoinGame(player: Socket): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
-        const player2Id: number = this.queued[0].userId;
-        const player1Id: number = this.queued[1].userId;
+        const player2Id: number = this.queue[0].userId;
+        const player1Id: number = this.queue[1].userId;
+        const mode = false;
 
         // create room data
         const id: number = this.gameRooms.length;
@@ -178,14 +179,14 @@ export class GameService {
             readyPlayerOne: false,
             readyPlayerTwo: false,
             reconnect: false,
-            data: this.setGameData(id, roomName, player1Id, player2Id),
+            data: this.setGameData(id, roomName, player1Id, player2Id, mode)
         }
 
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
-        this.handleLeaveQueue(this.queued[0]);
-        this.handleLeaveQueue(this.queued[1]);
+        this.handleLeaveQueue(this.queue[0]);
+        this.handleLeaveQueue(this.queue[1]);
 
         // Create room instance and join room
         await player?.join(roomName);
@@ -210,8 +211,8 @@ export class GameService {
     }
 
     handleLeaveQueue(userId: UserIdDto) {
-        const playerIndex = this.queued.indexOf(userId);
-        this.queued.splice(playerIndex, 1);
+        const playerIndex = this.queue.indexOf(userId);
+        this.queue.splice(playerIndex, 1);
     }
 
     handleMove(event: string, id: number, userId: number) {
@@ -472,7 +473,7 @@ export class GameService {
     //================== UPDATE GAME ==================//
     //=================================================//
 
-    setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number): GameDto {
+    setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number, mode: boolean): GameDto {
         let player1: PlayerDto = {
             id: playerOneId,
             color: '#cba6f7aa',
@@ -513,7 +514,7 @@ export class GameService {
             id: id,
             roomName: roomName,
             end: false,
-            mode: true,
+            mode: mode,
             player1: player1,
             player2: player2,
             ball: ball,
