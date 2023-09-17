@@ -257,13 +257,21 @@ export class GameService {
             if (event === "ArrowUp")
                 this.killVelocity(this.gameRooms[idx].data.player1);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player1);
+            this.killVelocity(this.gameRooms[idx].data.player1);
+            if (this.gameRooms[idx].data.mode) {
+                if (event === "ArrowLeft" || event === "ArrowRight")
+                    this.killVelocitx(this.gameRooms[idx].data.player1);
+            }
         }
         else {
             if (event === "ArrowUp")
                 this.killVelocity(this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
                 this.killVelocity(this.gameRooms[idx].data.player2);
+            if (this.gameRooms[idx].data.mode) {
+                if (event === "ArrowLeft" || event === "ArrowRight")
+                    this.killVelocitx(this.gameRooms[idx].data.player2);
+            }
         }
     }
 
