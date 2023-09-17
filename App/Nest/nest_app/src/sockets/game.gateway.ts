@@ -101,7 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000 / 60);
-        const promiseCalculate = this.gameService.calculateGame(data.id);
+        const promiseCalculate = this.gameService.calculateGame(data.id, data.mode);
     
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;

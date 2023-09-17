@@ -287,7 +287,7 @@ export class GameService {
         player.velocity = 0;
     }
 
-    async move(player: PlayerDto) {
+    async movePlayer(player: PlayerDto, mode: boolean) {
         const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
             if (val + player.h / 2 < 0.99)
@@ -299,9 +299,9 @@ export class GameService {
         }
     }
 
-    async calculatePlayer(idx: number) {
-        this.move(this.gameRooms[idx].data.player1);
-        this.move(this.gameRooms[idx].data.player2);
+    async calculatePlayer(idx: number, mode: boolean) {
+        this.movePlayer(this.gameRooms[idx].data.player1, mode);
+        this.movePlayer(this.gameRooms[idx].data.player2, mode);
     }
 
     /* GamePlay Ball */
@@ -399,16 +399,16 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(idx: number) {
+    async calculateBall(idx: number, mode: boolean) {
         this.bounce(idx);
         this.updateBall(idx);
         this.incrementSpeed(idx);
     };
 
-    async calculateGame(idx: number): Promise<GameDto> {
+    async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
 
-        this.calculatePlayer(idx);
-        this.calculateBall(idx);
+        this.calculatePlayer(idx, mode);
+        this.calculateBall(idx, mode);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
 
@@ -458,6 +458,7 @@ export class GameService {
             id: id,
             roomName: roomName,
             end: false,
+            mode: true,
             player1: player1,
             player2: player2,
             ball: ball,

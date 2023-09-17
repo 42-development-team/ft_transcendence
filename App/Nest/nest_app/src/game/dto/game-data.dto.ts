@@ -24,6 +24,7 @@ export class GameDto {
 	id: number;
 	roomName: string;
 	end: boolean;
+	mode: boolean;
 	player1: PlayerDto;
 	player2: PlayerDto;
 	ball: BallDto;
