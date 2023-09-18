@@ -136,7 +136,7 @@ export class UserStatsService {
 		});
 	}
 
-	async updateUserStatsFromAllGames( userId: number ) {
+	async updateUserStatsFromAllGamesOnEndGame( userId: number ) {
 		const games = await this.gameService.getGames(userId);
 		const user = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
@@ -153,17 +153,25 @@ export class UserStatsService {
 			userName: user.username,
 			avatar: user.avatar,
 		}
+		let i: number = 0;
 		for( let game of games ) {
 			if ( game.winner.id === userId ) {
 				updateStatsDto.win++;
 				updateStatsDto.played++;
 				updateStatsDto.totalScore += 100;
+				if ( i == 0 ) {
+					updateStatsDto.winStreak++;
+				}
 		} else {
 				updateStatsDto.lose++;
 				updateStatsDto.played++;
 				if (updateStatsDto.totalScore >= 100)
 					updateStatsDto.totalScore -= 100;
+				if ( i == 0 ) {
+					updateStatsDto.winStreak = 0;
+				}
 			}
+			i++;
 		}
 		updateStatsDto.ratio = Number((updateStatsDto.win / updateStatsDto.lose).toFixed(1));
 
