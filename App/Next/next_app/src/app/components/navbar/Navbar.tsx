@@ -81,6 +81,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const goToProfile = () => {
         if (isButtonClicked) return;
         setIsButtonClicked(true);
+        setInGameContext(false);
         if (sessionStorage.getItem("userId"))
             sessionStorage.removeItem("userId");
         router.push('/profile');
@@ -97,6 +98,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
                         Profile
                     </DropDownActionLarge >
                     <DropDownActionLarge onClick={() => {
+                        setInGameContext(false);
                         if (isButtonClicked) return;
                         setIsButtonClicked(true);
                         router.push('/settings')
