@@ -9,6 +9,8 @@ import { GetGameDto } from "./dto/get-game.dto";
 import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
+import { UserstatsController } from "src/userstats/userstats.controller";
+import { UserStatsService } from "src/userstats/userstats.service";
 
 
 @Injectable()
@@ -16,6 +18,7 @@ export class GameService {
     constructor(
         private prisma: PrismaService,
         private userService: UsersService,
+        private userStatsService: UserStatsService,
     ) { }
 
     gameRooms: GameRoomDto[] = [];
@@ -24,29 +27,33 @@ export class GameService {
 
     /* C(reate) */
     async createGame(data: GameDto) {
-
-        const createGameDto = {
-            winnerScore: Math.max(data.player1.points, data.player2.points),
-            loserScore: Math.min(data.player1.points, data.player2.points),
-            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
-            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
-        }
-
-        const newGame = await this.prisma.game.create({
-            data: {
-                users: {
-                    connect: [
-                        { id: createGameDto.winnerId },
-                        { id: createGameDto.loserId }
-                    ],
+        try {
+            const createGameDto = {
+                winnerScore: Math.max(data.player1.points, data.player2.points),
+                loserScore: Math.min(data.player1.points, data.player2.points),
+                winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
+                loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+            }
+    
+            const newGame = await this.prisma.game.create({
+                data: {
+                    users: {
+                        connect: [
+                            { id: createGameDto.winnerId },
+                            { id: createGameDto.loserId }
+                        ],
+                    },
+                    winner: { connect: { id: createGameDto.winnerId } },
+                    loser: { connect: { id: createGameDto.loserId } },
+                    winnerScore: createGameDto.winnerScore,
+                    loserScore: createGameDto.loserScore,
                 },
-                winner: { connect: { id: createGameDto.winnerId } },
-                loser: { connect: { id: createGameDto.loserId } },
-                winnerScore: createGameDto.winnerScore,
-                loserScore: createGameDto.loserScore,
-            },
-        });
-        return newGame;
+            });
+            return newGame;
+        }  catch (error) {
+            console.log(error);
+            return ;
+        }
     }
 
     /* R(ead) */
