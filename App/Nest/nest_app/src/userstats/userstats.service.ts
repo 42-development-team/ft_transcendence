@@ -4,6 +4,8 @@ import { UserStatsDto } from "./dto/userstats.dto";
 import { stat } from "fs";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { GameService } from "src/game/game.service";
+import { GameUserDto } from "src/game/dto/game-user.dto";
+import { GetGameDto } from "src/game/dto/get-game.dto";
 
 @Injectable()
 export class UserStatsService {
@@ -138,11 +140,22 @@ export class UserStatsService {
 
 	async updateUserStatsFromAllGames( userId: number ) {
 		try {
-			const games = await this.gameService.getGames(userId);
-			const user = await this.prisma.user.findUniqueOrThrow({
+			const games: GetGameDto[] = await this.gameService.getGamesAsc(userId);
+			let user = await this.prisma.user.findUniqueOrThrow({
 				include: { userStats: true },
 				where: { id: userId },
 			});
+			if (user.userStats === undefined || !user.userStats) {
+				const newUserStats = await this.createUserStats({ userId: userId });
+				if ( !newUserStats ) {
+					throw new Error("UserStats Creation failed");
+				}
+				user = await this.prisma.user.findUniqueOrThrow({
+					include: { userStats: true },
+					where: { id: userId },
+				});
+			}
+
 			let updateStatsDto: UserStatsDto = {
 				userId: userId,
 				winStreak: user.userStats.winStreak,
@@ -155,20 +168,21 @@ export class UserStatsService {
 				avatar: user.avatar,
 			}
 			let i: number = 0;
+			let gamesLenght = games.length;
 			for( let game of games ) {
 				if ( game.winner.id === userId ) {
 					updateStatsDto.win++;
 					updateStatsDto.played++;
-					updateStatsDto.totalScore += 100;
-					if ( i == 0 ) {
+					updateStatsDto.totalScore += Math.max(100 - updateStatsDto.totalScore / 100, 20);
+					if ( i == gamesLenght - 1 ) {
 						updateStatsDto.winStreak++;
 					}
 			} else {
 					updateStatsDto.lose++;
 					updateStatsDto.played++;
-					if (updateStatsDto.totalScore >= 100)
-						updateStatsDto.totalScore -= 100;
-					if ( i == 0 ) {
+					if ( i != 0 && updateStatsDto.totalScore >= 100 )
+					updateStatsDto.totalScore -= 100;
+					if ( i == gamesLenght - 1 ) {
 						updateStatsDto.winStreak = 0;
 					}
 				}

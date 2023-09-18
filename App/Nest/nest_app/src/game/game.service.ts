@@ -99,6 +99,37 @@ export class GameService {
         return gameDtos;
     }
 
+    async getGamesAsc(userId: number): Promise<GetGameDto[]> {
+        const games = await this.prisma.game.findMany({
+            orderBy: { createdAt: 'asc' },
+            include: { loser: true, winner: true },
+            where: { users: { some: { id: userId } } },
+        });
+
+        const gameDtos: GetGameDto[] = games.map((game) => {
+            const winnerDto: GameUserDto = {
+                id: game.winner.id,
+                username: game.winner.username,
+            };
+
+            const loserDto: GameUserDto = {
+                id: game.loser.id,
+                username: game.loser.username,
+            };
+
+            return {
+                id: game.id,
+                createdAt: game.createdAt,
+                gameDuration: game.gameDuration,
+                winnerScore: game.winnerScore,
+                loserScore: game.loserScore,
+                winner: winnerDto,
+                loser: loserDto,
+            };
+        });
+        return gameDtos;
+    }
+
     async getIsQueued(userId: number): Promise<boolean> {
         const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (idx === -1) {
