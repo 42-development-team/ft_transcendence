@@ -51,7 +51,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (player2SocketId ) {
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
-            // this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
+            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
         else {
@@ -71,7 +71,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('leaveQueue')
     handleLeaveQueue(socket: Socket, userId: number) {
-        console.log("game.gateWay - leaveQueue");
         this.gameService.handleLeaveQueue(userId);
     }
 

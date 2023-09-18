@@ -18,11 +18,6 @@ export default function Home() {
     login();
   }, []);
 
-  useEffect(() => {
-    console.log("in game boolean", inGame);
-    console.log("in game context boolean", inGameContext);
-  }, [inGameContext]);
-
   const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();
 
   return (
@@ -30,7 +25,15 @@ export default function Home() {
       <Chat userId={userId} />
       { inGame === false && inGameContext === false ? (
           <div className="w-full p-4 h-full flex items-center justify-center">
-            <Play socket={socket} isUserQueued={isUserQueued} leaveQueue={leaveQueue} joinQueue={joinQueue} userId={userId} changeMode={changeMode} mode={mode}/>
+            <Play
+              socket={socket}
+              isUserQueued={isUserQueued}
+              leaveQueue={leaveQueue}
+              joinQueue={joinQueue}
+              userId={userId}
+              changeMode={changeMode}
+              mode={mode}
+            />
           </div>
         ) : (
           <div className="flex flex-col justify-center flex-grow h-full w-full">

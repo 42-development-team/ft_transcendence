@@ -9,19 +9,27 @@ const Game = ({ ...props }) => {
 			socket?.emit("retrieveData", props.userId);
 	}, []);
 
-	useEffect(() => {
-		console.log("result:", result);
-	}, []);
-
 	const { socket, move, stopMove, launchGame, leaveQueue, joinQueue, data, userId, result, setResult, setInGameContext } = props;
 
 	return (
 		<div>
 			{ data && (
 				(result === undefined || result === null) ? (
-				<Canvas move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId} />
+				<Canvas
+					move={move}
+					stopMove={stopMove}
+					launchGame={launchGame}
+					data={data}
+					userId={userId}
+				/>
 			) : (
-				<Result result={result} setResult={setResult} leaveQueue={leaveQueue} joinQueue={joinQueue} setInGameContext={setInGameContext}/>
+				<Result
+					result={result}
+					setResult={setResult}
+					leaveQueue={leaveQueue}
+					joinQueue={joinQueue}
+					setInGameContext={setInGameContext}
+				/>
 			))
 			}
 		</div>

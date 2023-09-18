@@ -39,14 +39,12 @@ export default function useGame() {
 
 		socket?.on('endOfGame', (body: any) => {
 			const { winnerId, loserId } = body;
-			if (parseInt(userId) === winnerId) {
-				console.log("SET RESULT");
+
+			if (parseInt(userId) === winnerId)
 				setResult({ id: winnerId, won: true });
-			}
-			else if (parseInt(userId) === loserId) {
-				console.log("SET RESULT");
+			else if (parseInt(userId) === loserId)
 				setResult({ id: loserId, won: false });
-			}
+
 			setInGame(false);
 		});
 
