@@ -26,7 +26,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 	async handleConnection(client: Socket) {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
-			console.log('Client connected in game: ' + client.id);
 			this.clients.push(client);
 		} else {
 			console.log('User not authenticated');
@@ -66,7 +65,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('isInGame')
     async isAlreadyInGame(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
-        console.log('userId', userId, 'datasaasda: ', data);
         const isAlreadyInGame = data ? true : false;
         if (isAlreadyInGame) {
             console.log('isAlreadyInGame');

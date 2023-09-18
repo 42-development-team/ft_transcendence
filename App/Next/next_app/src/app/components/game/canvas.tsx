@@ -68,7 +68,7 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 };
 
 const Canvas = ({ ...props }) => {
-	if (window === undefined)
+	if (typeof window === 'undefined')
 		return;
 
 	const { socket, move, stopMove, launchGame, data, userId, setData } = props;
