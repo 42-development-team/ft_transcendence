@@ -155,31 +155,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     // Friend related events
-    async handleFriendRequest(userId: number, friendId: number) {
+    async handleFriendUpdate(userId: number, friendId: number) {
         const userSocketId = await this.userService.getUserSocketFromId(userId);
         const userSocket = this.clients.find(c => c.id === userSocketId);
         if (userSocket) {
-            userSocket.emit('friendRequest', { friendId });
+            userSocket.emit('friendUpdate', { friendId });
         }
         const friendSocketId = await this.userService.getUserSocketFromId(friendId);
         const friendSocket = this.clients.find(c => c.id === friendSocketId);
         if (friendSocket) {
-            friendSocket.emit('friendRequest', { userId });
+            friendSocket.emit('friendUpdate', { userId });
         }
-        console.log(`Client ${userId} (${userSocket.id}) sent friend request to ${friendId}`);
-    }
-
-    async handleFriendRemoval(userId: number, friendId: number) {
-        const userSocketId = await this.userService.getUserSocketFromId(userId);
-        const userSocket = this.clients.find(c => c.id === userSocketId);
-        if (userSocket) {
-            userSocket.emit('friendRemoval', { friendId });
-        }
-        const friendSocketId = await this.userService.getUserSocketFromId(friendId);
-        const friendSocket = this.clients.find(c => c.id === friendSocketId);
-        if (friendSocket) {
-            friendSocket.emit('friendRemoval', { userId });
-        }
-        console.log(`Client ${userId} (${userSocket.id}) remove friend: ${friendId}`);
     }
 }

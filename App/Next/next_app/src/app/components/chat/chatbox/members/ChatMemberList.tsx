@@ -187,7 +187,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 	const addFriend = async (friendAddingId: string) => {
 		// Todo: alerts
 		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/addFriend/${friendAddingId}`, {
+			const response = await fetch(`${process.env.BACK_URL}/friend/requestFriend/${friendAddingId}`, {
 				credentials: "include",
 				method: 'PATCH',
 				headers: {

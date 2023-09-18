@@ -8,6 +8,21 @@ type FriendProps = {
 }
 
 const FriendInvite = ({ user, hideActions }: FriendProps) => {
+
+	const acceptFriendRequest = async () => {
+		await fetch(`${process.env.BACK_URL}/friend/acceptFriend/${user.id}`, {
+			credentials: "include",
+			method: "PATCH"
+		});
+	}
+
+	const refuseFriendRequest = async () => {
+		await fetch(`${process.env.BACK_URL}/friend/refuseFriend/${user.id}`, {
+			credentials: "include",
+			method: "PATCH"
+		});
+	}
+
     return (
         <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
             <div className="flex items-center">
@@ -27,12 +42,12 @@ const FriendInvite = ({ user, hideActions }: FriendProps) => {
 			{!hideActions &&
 				<div className="flex gap-4">
 					<button
-						onClick={() => console.log("Accept")}
+						onClick={acceptFriendRequest}
 						className="bg-green rounded text-base py-1 px-2 hover:bg-teal">
 						Accept
 					</button>
 					<button
-						onClick={() => console.log("Ignore")}
+						onClick={refuseFriendRequest}
 						className="bg-surface2 rounded py-1 px-2 hover:bg-base">
 						Ignore
 					</button>

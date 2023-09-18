@@ -114,7 +114,7 @@ export class FriendService {
 		return plainToClass(FriendDto, result);
 	}
 
-	async addFriend(userId: number, addedUserId: number) {
+	async requestFriend(userId: number, addedUserId: number) {
 		// transaction garantee that the 2 updates fail or succed together
 		try {
 			const user = await this.prisma.user.findUnique({
@@ -127,17 +127,13 @@ export class FriendService {
 				this.prisma.user.update({
 					where: { id: userId },
 					data: {
-						sentFriendRequest: {
-							push: addedUserId,
-						},
+						sentFriendRequest: { push: addedUserId },
 					},
 				}),
 				this.prisma.user.update({
 					where: { id: addedUserId },
 					data: {
-						receivedFriendRequest: {
-							push: userId,
-						},
+						receivedFriendRequest: { push: userId },
 					},
 				}),
 			]);
@@ -177,6 +173,61 @@ export class FriendService {
 				}),
 			]);
 		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	async acceptFriend(userId: number, acceptedUserId: number) {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: { id: userId },
+			});
+			if (user.friends.includes(acceptedUserId)) {
+				return;
+			}
+			await this.prisma.$transaction([
+				this.prisma.user.update({
+					where: { id: userId },
+					data: {
+						friends: { push: acceptedUserId },
+						receivedFriendRequest: { set: user.receivedFriendRequest.filter((id) => id !== acceptedUserId) },
+					},
+				}),
+				this.prisma.user.update({
+					where: { id: acceptedUserId },
+					data: {
+						friends: { push: userId },
+						sentFriendRequest: { set: user.sentFriendRequest.filter((id) => id !== acceptedUserId) },
+					},
+				}),
+			]);
+		}
+		catch (e) {
+			console.log(e);
+		}
+	}
+
+	async refuseFriend(userId: number, refusedUserId: number) {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: { id: userId },
+			});
+			await this.prisma.$transaction([
+				this.prisma.user.update({
+					where: { id: userId },
+					data: {
+						receivedFriendRequest: { set: user.receivedFriendRequest.filter((id) => id !== refusedUserId) },
+					},
+				}),
+				this.prisma.user.update({
+					where: { id: refusedUserId },
+					data: {
+						sentFriendRequest: { set: user.sentFriendRequest.filter((id) => id !== refusedUserId) },
+					},
+				}),
+			]);
+		}
+		catch (e) {
 			console.log(e);
 		}
 	}

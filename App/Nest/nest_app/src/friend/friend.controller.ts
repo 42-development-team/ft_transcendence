@@ -45,11 +45,11 @@ export class FriendController {
 	}
 
 	/* U(pdate) */
-	@Patch('addFriend/:addedUserId')
-	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
+	@Patch('requestFriend/:addedUserId')
+	async requestFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
-		await this.friendService.addFriend(userId, Number(addedUserId));
-		this.socketGateway.handleFriendRequest(userId, Number(addedUserId));
+		await this.friendService.requestFriend(userId, Number(addedUserId));
+		this.socketGateway.handleFriendUpdate(userId, Number(addedUserId));
 		res.send("Friend request send successfully");
 	}
 
@@ -57,8 +57,24 @@ export class FriendController {
 	async removeFriend(@Param('removedUserId') removedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		await this.friendService.removeFriend(userId, Number(removedUserId));
-		this.socketGateway.handleFriendRemoval(userId, Number(removedUserId));
+		this.socketGateway.handleFriendUpdate(userId, Number(removedUserId));
 		res.send("Friend removed successfully");
+	}
+
+	@Patch('acceptFriend/:acceptedUserId')
+	async acceptFriend(@Param('acceptedUserId') acceptedUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.acceptFriend(userId, Number(acceptedUserId));
+		this.socketGateway.handleFriendUpdate(userId, Number(acceptedUserId));
+		res.send("Friend request accepted successfully");
+	}
+
+	@Patch('refuseFriend/:refusedUserId')
+	async refuseFriend(@Param('refusedUserId') refusedUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.refuseFriend(userId, Number(refusedUserId));
+		this.socketGateway.handleFriendUpdate(userId, Number(refusedUserId));
+		res.send("Friend request refused successfully");
 	}
 
 	@Patch('block/:blockedId')

@@ -16,25 +16,21 @@ export default function useFriends() {
 	}, []);
 
 	useEffect(() => {
-		socket?.on('friendRequest', (body: any) => {
-			fetchFriends();
-		});
-		socket?.on('friendRemoval', (body: any) => {
+		socket?.on('friendUpdate', (body: any) => {
 			fetchFriends();
 		});
 
 		return () => {
-			socket?.off('friendRequest');
-			socket?.off('friendRemoval');
+			socket?.off('friendUpdate');
 		}
 	}, [socket, friends]);
 
 	const fetchFriends = async () => {
+		fetchFriendsRequest();
+		fetchInvitedFriends();
 		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
 		setFriends(data);
-		fetchFriendsRequest();
-		fetchInvitedFriends();
 	}
 	const fetchInvitedFriends = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/getInvitedFriends`, { credentials: "include", method: "GET" });
