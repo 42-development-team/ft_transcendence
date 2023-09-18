@@ -7,15 +7,15 @@ import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class FriendService {
-    constructor(
-        private prisma: PrismaService,
+	constructor(
+		private prisma: PrismaService,
 		private userService: UsersService,
 		private chatroomService: ChatroomService,
-    ) {}
+	) { }
 
-    /* C(reate) */
-    /* R(ead) */
-	async getFriends(userId: number) : Promise<FriendDto[]> {
+	/* C(reate) */
+	/* R(ead) */
+	async getFriends(userId: number): Promise<FriendDto[]> {
 		const user = await this.prisma.user.findFirst({
 			where: { id: userId },
 			select: { friends: true },
@@ -35,7 +35,7 @@ export class FriendService {
 		return friendDtos;
 	}
 
-	async getInvitedFriends(userId: number) : Promise<FriendDto[]> {
+	async getInvitedFriends(userId: number): Promise<FriendDto[]> {
 		const user = await this.prisma.user.findFirst({
 			where: { id: userId },
 			select: { sentFriendRequest: true },
@@ -55,7 +55,7 @@ export class FriendService {
 		return friendDtos;
 	}
 
-	async getFriendsRequest(userId: number) : Promise<FriendDto[]> {
+	async getFriendsRequest(userId: number): Promise<FriendDto[]> {
 		const user = await this.prisma.user.findFirst({
 			where: { id: userId },
 			select: { receivedFriendRequest: true },
@@ -75,7 +75,7 @@ export class FriendService {
 		return friendDtos;
 	}
 
-	async getBlockedUsers(userId: number) : Promise<FriendDto[]> {
+	async getBlockedUsers(userId: number): Promise<FriendDto[]> {
 		const result = await this.prisma.user.findMany({
 			where: {
 				blockedBy: {
@@ -94,37 +94,37 @@ export class FriendService {
 		return plainToClass(FriendDto, result);
 	}
 
-    /* U(pdate) */
-    async blockUser(blockedId: number, userId: number) : Promise<FriendDto>{
-        const result = await this.prisma.user.update({
-            where: { id: blockedId },
-            data: {
-                blockedBy: {
-                    connect: { id: userId },
-                },
-            },
-            select: {
-                id: true,
-                username: true,
-                avatar: true,
-                currentStatus: true,
-            },
-        });
+	/* U(pdate) */
+	async blockUser(blockedId: number, userId: number): Promise<FriendDto> {
+		const result = await this.prisma.user.update({
+			where: { id: blockedId },
+			data: {
+				blockedBy: {
+					connect: { id: userId },
+				},
+			},
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+				currentStatus: true,
+			},
+		});
 		// Remove friendship
-        return plainToClass(FriendDto, result);
-    }
+		return plainToClass(FriendDto, result);
+	}
 
 	async addFriend(userId: number, addedUserId: number) {
 		// transaction garantee that the 2 updates fail or succed together
 		try {
-			const user= await this.prisma.user.findUnique({
+			const user = await this.prisma.user.findUnique({
 				where: { id: userId },
 			});
-			if (user.friends.includes(addedUserId)){
+			if (user.friends.includes(addedUserId)) {
 				return;
 			}
 			await this.prisma.$transaction([
-				 this.prisma.user.update({
+				this.prisma.user.update({
 					where: { id: userId },
 					data: {
 						sentFriendRequest: {
@@ -132,7 +132,7 @@ export class FriendService {
 						},
 					},
 				}),
-				 this.prisma.user.update({
+				this.prisma.user.update({
 					where: { id: addedUserId },
 					data: {
 						receivedFriendRequest: {
@@ -141,7 +141,7 @@ export class FriendService {
 					},
 				}),
 			]);
-		} catch (e){
+		} catch (e) {
 			console.log(e);
 		}
 	}
@@ -176,12 +176,12 @@ export class FriendService {
 					},
 				}),
 			]);
-		} catch (e){
+		} catch (e) {
 			console.log(e);
 		}
 	}
 
-	async removeDirectMessagesForBlockedUser(blockedId: number, userId: number) : Promise<any> {
+	async removeDirectMessagesForBlockedUser(blockedId: number, userId: number): Promise<any> {
 		try {
 			const chatroom = await this.chatroomService.checkForExistingDirectMessageChannel(blockedId, userId);
 			if (chatroom) {
@@ -196,8 +196,8 @@ export class FriendService {
 		}
 	}
 
-    /* D(elete) */
-	async unblockUser(blockedId: number, userId: number) : Promise<FriendDto> {
+	/* D(elete) */
+	async unblockUser(blockedId: number, userId: number): Promise<FriendDto> {
 		const result = await this.prisma.user.update({
 			where: { id: blockedId },
 			data: {

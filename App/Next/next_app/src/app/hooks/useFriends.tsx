@@ -13,8 +13,6 @@ export default function useFriends() {
 	useEffect(() => {
 		fetchBlockedUsers();
 		fetchFriends();
-		fetchFriendsRequest();
-		fetchInvitedFriends();
 	}, []);
 
 	useEffect(() => {
@@ -31,17 +29,12 @@ export default function useFriends() {
 		}
 	}, [socket, friends]);
 
-	// useEffect(() => {
-	// 	if (friends.length > 0)
-	// 		console.log("friends: " + JSON.stringify(friends, null, 2));
-	// 	if (blockedUsers.length > 0)
-	// 		console.log("blockedUsers: " + JSON.stringify(blockedUsers, null, 2))
-	// }, [friends, blockedUsers]);
-
 	const fetchFriends = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
 		setFriends(data);
+		fetchFriendsRequest();
+		fetchInvitedFriends();
 	}
 	const fetchInvitedFriends = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/getInvitedFriends`, { credentials: "include", method: "GET" });
@@ -77,18 +70,6 @@ export default function useFriends() {
 		const newBlockedUsers = blockedUsers.filter((user: UserModel) => user.id !== unblockedUser.id);
 		setBlockedUsers(newBlockedUsers);
 	}
-
-	// const updateFriends = (newFriend: UserModel) => {
-	// 	const exisitingUserIndex = friends.findIndex((user: UserModel) => user.id === newFriend.id);
-	// 	if (exisitingUserIndex !== -1) {
-	// 		const newFriends = [...friends];
-	// 		newFriends[exisitingUserIndex] = newFriend;
-	// 		setFriends(newFriends);
-	// 	}
-	// 	else {
-	// 		setFriends([...friends, newFriend]);
-	// 	}
-	// }
 
 	const blockUser = async (blockedId: string) => {
 		try {
