@@ -1,29 +1,47 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../context/AuthContext";
 import { UserModel } from "../utils/models";
 
 export default function useFriends() {
+	const { socket } = useAuthContext();
 	const [friends, setFriends] = useState<UserModel[]>([])
+	const [invitedFriends, setInvitedFriends] = useState<UserModel[]>([])
+	const [requestedFriends, setRequestedFriends] = useState<UserModel[]>([])
 	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
 	useEffect(() => {
 		fetchBlockedUsers();
 		fetchFriends();
-		// Todo: fetch friends
 	}, []);
 
-	// useEffect(() => {
-	// 	if (friends.length > 0)
-	// 		console.log("friends: " + JSON.stringify(friends, null, 2));
-	// 	if (blockedUsers.length > 0)
-	// 		console.log("blockedUsers: " + JSON.stringify(blockedUsers, null, 2))
-	// }, [friends, blockedUsers]);
+	useEffect(() => {
+		socket?.on('friendUpdate', (body: any) => {
+			fetchFriends();
+		});
+
+		return () => {
+			socket?.off('friendUpdate');
+		}
+	}, [socket, friends]);
 
 	const fetchFriends = async () => {
+		fetchFriendsRequest();
+		fetchInvitedFriends();
 		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
-		// data.forEach((friend: any) => console.log(friend.userName));
 		setFriends(data);
+	}
+	const fetchInvitedFriends = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/getInvitedFriends`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setInvitedFriends(data);
+	}
+
+	const fetchFriendsRequest = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/getFriendsRequest`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setRequestedFriends(data);
 	}
 
 	const fetchBlockedUsers = async () => {
@@ -47,18 +65,6 @@ export default function useFriends() {
 	const removeBlockedUser = (unblockedUser: UserModel) => {
 		const newBlockedUsers = blockedUsers.filter((user: UserModel) => user.id !== unblockedUser.id);
 		setBlockedUsers(newBlockedUsers);
-	}
-
-	const updateFriends = (newFriend: UserModel) => {
-		const exisitingUserIndex = friends.findIndex((user: UserModel) => user.id === newFriend.id);
-		if (exisitingUserIndex !== -1) {
-			const newFriends = [...friends];
-			newFriends[exisitingUserIndex] = newFriend;
-			setFriends(newFriends);
-		}
-		else {
-			setFriends([...friends, newFriend]);
-		}
 	}
 
 	const blockUser = async (blockedId: string) => {
@@ -92,5 +98,7 @@ export default function useFriends() {
 		blockedUsers,
 		blockUser,
 		unblockUser,
+		invitedFriends,
+		requestedFriends,
 	}
 }

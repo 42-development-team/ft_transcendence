@@ -12,10 +12,11 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels(userId: string) {
-    const { socket } = useAuthContext();
+    const { socket, socketReady } = useAuthContext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
+    let alreadyJoined = false;
 
     useEffect(() => {
         fetchChannelsInfo();
@@ -23,10 +24,10 @@ export default function useChannels(userId: string) {
     }, [userId]);
 
     useEffect(() => {
-        if (joinedChannels.length > 0 && socket != undefined) {
+        if (!alreadyJoined && joinedChannels.length > 0 && socket && socket.id) {
             joinPreviousChannels();
         }
-    }, [joinedChannels, socket]);
+    }, [joinedChannels, socket, socketReady]);
 
     useEffect(() => {
         // Update the notification count to 0 when the channel is open
@@ -352,13 +353,14 @@ export default function useChannels(userId: string) {
     }
 
     const joinPreviousChannels = useCallback(() => {
+        alreadyJoined = true;
         joinedChannels.forEach(channel => {
             if (!channel.joined) {
                 socket?.emit("joinRoom", channel.name);
                 channel.joined = true;
             }
         });
-    }, [socket, joinedChannels]);
+    }, [socket, joinedChannels, alreadyJoined]);
 
     return {
         socket,

@@ -1,5 +1,4 @@
 'use client';
-
 import Image from 'next/image';
 import sun from "../../../../public/sun.png";
 import sunLight from "../../../../public/sunLight.png";

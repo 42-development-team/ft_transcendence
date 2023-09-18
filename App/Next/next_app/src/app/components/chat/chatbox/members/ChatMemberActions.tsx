@@ -24,7 +24,6 @@ type ChatMemberActionsProps = {
 	addAsFriend: () =>void
     isBlocked: boolean
 	isFriend: boolean
-	isFriendAdded: boolean
 }
 
 const ChatMemberActions = (
@@ -32,7 +31,7 @@ const ChatMemberActions = (
         isCurrentUser, user,
         kickUser, banUser, unbanUser,
         leaveChannel, sendDirectMessage, muteUser,
-        setAdmin, unsetAdmin, block, isBlocked, addAsFriend, isFriend, isFriendAdded
+        setAdmin, unsetAdmin, block, isBlocked, addAsFriend, isFriend 
     }: ChatMemberActionsProps) => {
 
     const onProfileClick = () => {
@@ -70,6 +69,7 @@ const ChatMemberActions = (
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
+    // Todo: invite to game button (if user is online)
     return (
         <div className="flex flex-row gap-2">
             {adminActionsEnabled && !user.isBanned &&
@@ -140,8 +140,8 @@ const ChatMemberActions = (
                     {isCurrentUser &&
                         <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
-					{!isCurrentUser && !isFriend && !isFriendAdded &&
-						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add as friend</DropDownActionRed>
+					{!isCurrentUser && !isFriend &&
+						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add friend</DropDownActionRed>
 					}
                 </div>
             </DropDownMenu>

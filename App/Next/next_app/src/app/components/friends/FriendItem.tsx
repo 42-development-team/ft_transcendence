@@ -4,16 +4,13 @@ import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
-// import { Alert } from "@material-tailwind/react";
-import { useEffect, useRef, useState } from "react";
-import { useUserRole } from "../../components/chat/chatbox/members/UserRoleProvider";
+import { useRef, useState } from "react";
 
 type FriendProps = {
 	user: UserModel
 }
 
 const FriendActions = ({user}: FriendProps) => {
-	const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
 	const [ openAlert, setOpenAlert ] = useState(false);
 	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
@@ -23,10 +20,8 @@ const FriendActions = ({user}: FriendProps) => {
 	const onProfileClick = () => {
 			console.log("userId = ", user.id);
 			sessionStorage.setItem("userId", user.id);
-			if (sessionStorage.getItem("userId") === undefined)
-			setOpenAlert(true);
-			else
-			window.location.href = "/profile";
+			if (sessionStorage.getItem("userId") !== undefined)
+				window.location.href = "/profile";
 		}
 
 		const removeFriend = async () => {
