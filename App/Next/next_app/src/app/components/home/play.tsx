@@ -4,13 +4,14 @@ import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import ThemeContext from '../theme/themeContext';
 import LoadingContext from '@/app/context/LoadingContext';
+import CustomBtn from '../CustomBtn';
 
 const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {leaveQueue, joinQueue, isUserQueued, userId, socket} = props;
+	const {leaveQueue, joinQueue, isUserQueued, userId, socket, setMode} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);

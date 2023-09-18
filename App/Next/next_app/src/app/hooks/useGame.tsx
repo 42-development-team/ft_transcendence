@@ -11,6 +11,7 @@ export default function useGame() {
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [result, setResult] = useState<{id: number, won: boolean} | undefined>(undefined);
 	const {gameLoading, setGameLoading} = useContext(LoadingContext);
+	const [mode, setMode] = useState<boolean>(false);
 
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -50,8 +51,10 @@ export default function useGame() {
 		};
 	}, [socket]);
 
+	useEffect(() => {leaveQueue()}, [mode]);
+
 	const joinQueue = async () => {
-		socket?.emit("joinQueue", 0);
+		socket?.emit("joinQueue", mode);
 	}
 
 	const leaveQueue = async () => {
@@ -87,5 +90,7 @@ export default function useGame() {
 		result,
 		setResult,
 		data,
+		mode,
+		setMode,
 	}
 }

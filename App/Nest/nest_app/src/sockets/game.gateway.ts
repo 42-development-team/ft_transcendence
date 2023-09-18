@@ -43,8 +43,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinQueue')
-    async handleJoinQueue(player: Socket) {
-        const result = await this.gameService.handleJoinQueue(player);
+    async handleJoinQueue(player: Socket, mode: boolean) {
+        const result = await this.gameService.handleJoinQueue(player, mode);
 
         if (!result)
             return ;
