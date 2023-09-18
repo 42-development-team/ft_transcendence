@@ -6,7 +6,7 @@ import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
-import Surrender from "../components/game/Surrender";
+// import Surrender from "../components/game/Surrender";
 import { Socket } from "socket.io-client";
 import InGameContext from "../context/inGameContext";
 
@@ -37,9 +37,9 @@ export default function Home() {
           </div>
         ) : (
           <div className="flex flex-col justify-center flex-grow h-full w-full">
-            <Surrender surrender={surrender} socket={socket as Socket} data={data}/>
             <Game
               socket={socket}
+              surrender={surrender}
               move={move}
               stopMove={stopMove}
               launchGame={launchGame}

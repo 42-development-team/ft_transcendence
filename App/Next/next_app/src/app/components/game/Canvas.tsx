@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
 import { useAuthContext } from "@/app/context/AuthContext";
+import Surrender from "./Surrender";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
