@@ -1,6 +1,7 @@
 import { UserModel } from "@/app/utils/models";
 import Image from "next/image";
 import { getStatusColor } from "@/app/utils/getStatusColor";
+import { useState } from "react";
 
 type FriendProps = {
 	user: UserModel
@@ -8,6 +9,14 @@ type FriendProps = {
 }
 
 const FriendInvite = ({ user, hideActions }: FriendProps) => {
+    const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+
+	const handleAction = (action: () => void) => {
+        if (lockSubmit) return;
+        setLockSubmit(true);
+        action();
+        setTimeout(() => setLockSubmit(false), 1500);
+    }
 
 	const acceptFriendRequest = async () => {
 		await fetch(`${process.env.BACK_URL}/friend/acceptFriend/${user.id}`, {
@@ -42,12 +51,12 @@ const FriendInvite = ({ user, hideActions }: FriendProps) => {
 			{!hideActions &&
 				<div className="flex gap-4">
 					<button
-						onClick={acceptFriendRequest}
+						onClick={() => handleAction(() => acceptFriendRequest)}
 						className="bg-green rounded text-base py-1 px-2 hover:bg-teal">
 						Accept
 					</button>
 					<button
-						onClick={refuseFriendRequest}
+						onClick={() => handleAction(() => refuseFriendRequest)}
 						className="bg-surface2 rounded py-1 px-2 hover:bg-base">
 						Ignore
 					</button>
