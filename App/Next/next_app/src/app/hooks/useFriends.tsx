@@ -4,7 +4,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { UserModel } from "../utils/models";
 
 export default function useFriends() {
-	// const { socket } = useAuthContext();
+	const { socket } = useAuthContext();
 	const [friends, setFriends] = useState<UserModel[]>([])
 	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
@@ -13,21 +13,19 @@ export default function useFriends() {
 		fetchFriends();
 	}, []);
 
-	// useEffect(() => {
-	// 	socket?.on('friendRequest', (body: any) => {
-	// 		console.log("friendRequest: " + JSON.stringify(body, null, 2));
-	// 		// updateFriends(body);
-	// 	});
-	// 	socket?.on('friendRemoval', (body: any) => {
-	// 		console.log("friendRemoval: " + JSON.stringify(body, null, 2));
-	// 		// updateFriends(body);
-	// 	});
+	useEffect(() => {
+		socket?.on('friendRequest', (body: any) => {
+			fetchFriends();
+		});
+		socket?.on('friendRemoval', (body: any) => {
+			fetchFriends();
+		});
 
-	// 	return () => {
-	// 		socket?.off('friendRequest');
-	// 		socket?.off('friendRemoval');
-	// 	}
-	// }, [socket, friends]);
+		return () => {
+			socket?.off('friendRequest');
+			socket?.off('friendRemoval');
+		}
+	}, [socket, friends]);
 
 	// useEffect(() => {
 	// 	if (friends.length > 0)

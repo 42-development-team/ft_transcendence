@@ -60,7 +60,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}, []);
 
 	useEffect(() => {
-		if (isLoggedIn && userId) {
+		if (isLoggedIn && userId && !socketReady) {
 			initializeSocket(userId);
 		}
 	}, [isLoggedIn, userId]);
@@ -128,6 +128,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		});
 		socket?.on('disconnect', (reason) => {
 			console.log('Disconnected from socket.io server', reason);
+			setSocketReady(false);
 		});
 		socket?.on('connect', () => {
 			console.log('Connected to socket.io server');

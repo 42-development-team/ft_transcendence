@@ -27,7 +27,6 @@ export class FriendController {
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const blockedUsers: FriendDto[] = await this.friendService.getBlockedUsers(userId);
-
 		res.send(blockedUsers);
 	}
 
