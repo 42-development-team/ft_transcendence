@@ -409,9 +409,7 @@ export class GameService {
 
     //>>PADDLE<//
     async paddleBounce(idx: number) {
-        if (this.gameRooms[idx].data.ball.speed[0] < 0)
             this.paddleLeftBounce(idx);
-        else
             this.paddleRightBounce(idx);
     }
 
@@ -498,7 +496,7 @@ export class GameService {
 
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 1 || this.gameRooms[idx].data.player2.points > 1)
+        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
 
         return { ...this.gameRooms[idx].data };
