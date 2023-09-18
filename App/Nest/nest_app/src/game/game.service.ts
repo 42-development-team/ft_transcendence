@@ -49,6 +49,8 @@ export class GameService {
                     loserScore: createGameDto.loserScore,
                 },
             });
+            await this.userStatsService.updateUserStatsFromAllGames(createGameDto.winnerId);
+            await this.userStatsService.updateUserStatsFromAllGames(createGameDto.loserId);
             return newGame;
         }  catch (error) {
             console.log(error);

@@ -136,44 +136,49 @@ export class UserStatsService {
 		});
 	}
 
-	async updateUserStatsFromAllGamesOnEndGame( userId: number ) {
-		const games = await this.gameService.getGames(userId);
-		const user = await this.prisma.user.findUniqueOrThrow({
-			include: { userStats: true },
-			where: { id: userId },
-		});
-		let updateStatsDto: UserStatsDto = {
-			userId: userId,
-			winStreak: user.userStats.winStreak,
-			win: 0,
-			lose: 0,
-			totalScore: 0,
-			ratio: 0,
-			played: 0,
-			userName: user.username,
-			avatar: user.avatar,
-		}
-		let i: number = 0;
-		for( let game of games ) {
-			if ( game.winner.id === userId ) {
-				updateStatsDto.win++;
-				updateStatsDto.played++;
-				updateStatsDto.totalScore += 100;
-				if ( i == 0 ) {
-					updateStatsDto.winStreak++;
-				}
-		} else {
-				updateStatsDto.lose++;
-				updateStatsDto.played++;
-				if (updateStatsDto.totalScore >= 100)
-					updateStatsDto.totalScore -= 100;
-				if ( i == 0 ) {
-					updateStatsDto.winStreak = 0;
-				}
+	async updateUserStatsFromAllGames( userId: number ) {
+		try {
+			const games = await this.gameService.getGames(userId);
+			const user = await this.prisma.user.findUniqueOrThrow({
+				include: { userStats: true },
+				where: { id: userId },
+			});
+			let updateStatsDto: UserStatsDto = {
+				userId: userId,
+				winStreak: user.userStats.winStreak,
+				win: 0,
+				lose: 0,
+				totalScore: 0,
+				ratio: 0,
+				played: 0,
+				userName: user.username,
+				avatar: user.avatar,
 			}
-			i++;
+			let i: number = 0;
+			for( let game of games ) {
+				if ( game.winner.id === userId ) {
+					updateStatsDto.win++;
+					updateStatsDto.played++;
+					updateStatsDto.totalScore += 100;
+					if ( i == 0 ) {
+						updateStatsDto.winStreak++;
+					}
+			} else {
+					updateStatsDto.lose++;
+					updateStatsDto.played++;
+					if (updateStatsDto.totalScore >= 100)
+						updateStatsDto.totalScore -= 100;
+					if ( i == 0 ) {
+						updateStatsDto.winStreak = 0;
+					}
+				}
+				i++;
+			}
+			updateStatsDto.ratio = Number((updateStatsDto.win / updateStatsDto.lose).toFixed(1));
+			await this.updateUserStats(userId, updateStatsDto);
+		} catch (error) {
+			console.log(error);
 		}
-		updateStatsDto.ratio = Number((updateStatsDto.win / updateStatsDto.lose).toFixed(1));
 
 	}
 
