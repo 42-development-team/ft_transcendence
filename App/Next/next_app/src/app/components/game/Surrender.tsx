@@ -13,7 +13,6 @@ const Surrender = ( {...props} ) => {
             <CustomBtn
                 id="Surrender"
                 onClick={async () => {
-                    console.log("Surrenderdata: game.id:", data.id, "userId:" , userId); //Handle surrend action => end of game
                     if (data)
                         surrender(data.id, parseInt(userId));
                 }}

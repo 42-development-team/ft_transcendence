@@ -154,7 +154,6 @@ export class GameService {
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queued.find(user => user.userId === userId)) {
-                    console.log("user:", userId, ":ALREADY QUEUED")
                     return;
                 }
                 this.queued.push({ userId });
@@ -162,7 +161,6 @@ export class GameService {
                     return this.handleJoinGame(player);
             }
             else {
-                console.log("FOUND")
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
                 const player2SocketId: string = undefined;
                 player?.join(this.gameRooms[idx].roomName);
@@ -210,7 +208,6 @@ export class GameService {
             console.log("!LaunchGameRoom")
             return;
         }
-        console.log("LaunchGameRoom, userId:", userId)
         if (this.gameRooms[idx].playerOneId === userId)
             this.gameRooms[idx].readyPlayerOne = true;
         else if (this.gameRooms[idx].playerTwoId === userId)

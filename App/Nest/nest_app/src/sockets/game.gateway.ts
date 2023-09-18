@@ -53,11 +53,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
-            console.log('data: ', newGameRoom.data);
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
         else {
-            // newGameRoom.reconnect = true;
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
     }
@@ -67,7 +65,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const data = await this.gameService.getDataFromUserId(userId);
         const isAlreadyInGame = data ? true : false;
         if (isAlreadyInGame) {
-            console.log('isAlreadyInGame');
             socket.emit('isAlreadyInGame', data);
         }
         return ;
@@ -101,13 +98,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
-        console.log('game.gateway - New Game Starts');
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
-        console.log('launchGame before gamelogic')
         if (room && room.data) {
-            console.log('launchGame in gamelogic')
             if (room.reconnect === false) {
                 room.reconnect = true;
                 this.gameLogic(room.data);
@@ -119,13 +113,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleRetrieveData(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
         socket?.emit('sendDataToUser', data);
+        socket?.join(data.roomName);
     }
 
     @SubscribeMessage('surrender')
     async handleSurrender(socket: Socket, @MessageBody() body: any) {
-        console.log('surrender');
         const [id, userId] = body;
-        console.log("id: ", id, "userId: ", userId)
         this.gameService.surrender(id, userId);
     }
 
