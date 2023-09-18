@@ -5,7 +5,6 @@ import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
-import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -62,7 +61,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('leaveQueue')
-    handleLeaveQueue(userId: UserIdDto) {
+    handleLeaveQueue(socket: Socket, userId: number) {
+        console.log("game.gateWay - leaveQueue");
         this.gameService.handleLeaveQueue(userId);
     }
 
@@ -89,10 +89,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
-        console.log('game.gateway - New Game Starts');
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
             if (room.reconnect === false)
                 this.gameLogic(room.data);

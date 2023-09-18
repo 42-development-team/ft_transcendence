@@ -48,12 +48,13 @@ export default function useGame() {
 			socket?.off('matchIsReady');
 			socket?.off('reconnectGame');
 			socket?.off('endOfGame');
+			socket?.off('surrender');
 		};
 	}, [socket]);
 
-	useEffect(() => {leaveQueue()}, [mode]);
 
 	const changeMode = () => {
+		leaveQueue();
 		if (mode === true)
 			setMode(false);
 		else
@@ -66,7 +67,7 @@ export default function useGame() {
 	}
 
 	const leaveQueue = async () => {
-		socket?.emit("leaveQueue");
+		socket?.emit("leaveQueue", parseInt(userId));
 	}
 
 	const move = async (event: string, id: number, uid: number) => {
@@ -99,5 +100,6 @@ export default function useGame() {
 		setResult,
 		data,
 		changeMode,
+		mode
 	}
 }

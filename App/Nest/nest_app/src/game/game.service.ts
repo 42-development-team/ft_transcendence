@@ -8,7 +8,6 @@ import { GetGameDto } from "./dto/get-game.dto";
 //===========
 import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
-import { UserIdDto } from "src/userstats/dto/user-id.dto";
 import { UsersService } from "src/users/users.service";
 
 
@@ -20,8 +19,8 @@ export class GameService {
     ) { }
 
     gameRooms: GameRoomDto[] = [];
-    queue: UserIdDto[] = [];
-    modeQueue: UserIdDto[] = [];
+    queue: number[] = [];
+    modeQueue: number[] = [];
 
     /* C(reate) */
     async createGame(data: GameDto) {
@@ -93,7 +92,7 @@ export class GameService {
     async getIsQueued(userId: number): Promise<boolean> {
         const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (idx === -1) {
-            if (this.queue.find(user => user.userId === userId)) {
+            if (this.queue.find(user => user === userId)) {
                 return true;
             }
         }
@@ -140,20 +139,20 @@ export class GameService {
 
     async handleJoinQueue(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
         try {
-            const userId = await this.userService.getUserIdFromSocket(player);
+            const userId: number = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
-                if (this.queue.find(user => user.userId === userId) || this.modeQueue.find(user => user.userId === userId)) {
+                if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
                     console.log("user:", userId, ":ALREADY QUEUED")
                     return;
                 }
                 if (mode) {
-                    this.modeQueue.push({ userId });
+                    this.modeQueue.push(userId);
                     if (this.modeQueue.length >= 2)
                         return this.handleJoinGame(player, mode);
                 }
                 else {
-                    this.queue.push({ userId });
+                    this.queue.push(userId);
                     if (this.queue.length >= 2)
                         return this.handleJoinGame(player, mode);
                 }
@@ -174,12 +173,12 @@ export class GameService {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
-            player2Id = this.modeQueue[0].userId;
-            player1Id = this.modeQueue[1].userId;
+            player2Id = this.modeQueue[0];
+            player1Id = this.modeQueue[1];
         }
         else {
-            player2Id = this.queue[0].userId;
-            player1Id = this.queue[1].userId;
+            player2Id = this.queue[0];
+            player1Id = this.queue[1];
         }
 
         // create room data
@@ -199,8 +198,8 @@ export class GameService {
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
-        this.handleLeaveQueue({userId: player1Id});
-        this.handleLeaveQueue({userId: player2Id});
+        this.handleLeaveQueue(player1Id);
+        this.handleLeaveQueue(player2Id);
 
         // Create room instance and join room
         await player?.join(roomName);
@@ -224,17 +223,19 @@ export class GameService {
             return this.gameRooms[idx];
     }
 
-    handleLeaveQueue(userId: UserIdDto) {
-            const modeidx = this.modeQueue.indexOf(userId);
-            if (modeidx !== -1)
-                this.modeQueue.splice(modeidx, 1);
-            else {
-                const idx = this.queue.indexOf(userId);
-                if (idx === -1)
+    handleLeaveQueue(userId: number) {
+        const modeidx = this.modeQueue.findIndex(user => user === userId);
+
+        if (modeidx !== -1)
+            this.modeQueue.splice(modeidx, 1);
+        else {
+            const idx = this.queue.findIndex(user => user === userId);
+
+            if (idx === -1)
                 return
             this.queue.splice(idx, 1);
-            }
         }
+    }
 
     handleMove(event: string, id: number, userId: number) {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
