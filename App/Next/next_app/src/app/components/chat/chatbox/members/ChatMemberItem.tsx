@@ -32,7 +32,6 @@ const ChatMemberItem = ({
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthContext();
 	const [ statusChange, setStatusChange ] = useState(false);
-	const [ isFriendAdded, setIsFriendAdded ] = useState(false);
 
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
@@ -117,7 +116,6 @@ const ChatMemberItem = ({
 
     const addAsFriend = () => {
         addFriend(user.id);
-		setIsFriendAdded(true);
     }
 
     const getColor = () => {
@@ -152,7 +150,7 @@ const ChatMemberItem = ({
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked}
-				isFriend={isFriend} addAsFriend={addAsFriend} isFriendAdded={isFriendAdded}/>
+				isFriend={isFriend} addAsFriend={addAsFriend} />
         </div>
     )
 }

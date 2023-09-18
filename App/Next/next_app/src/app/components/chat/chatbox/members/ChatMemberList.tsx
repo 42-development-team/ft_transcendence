@@ -9,6 +9,7 @@ import { useUserRole } from "../members/UserRoleProvider"
 import { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
+import { request } from 'http';
 
 interface ChatMemberListProps {
     channel: ChannelModel
@@ -17,10 +18,12 @@ interface ChatMemberListProps {
     blockUser: (blockedId: string) => void
     blockedUsers: UserModel[]
 	friends: UserModel[]
+    requestedFriends: UserModel[];
+    invitedFriends: UserModel[];
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends, requestedFriends, invitedFriends }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -187,7 +190,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 	const addFriend = async (friendAddingId: string) => {
 		// Todo: alerts
 		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/addFriend/${friendAddingId}`, {
+			const response = await fetch(`${process.env.BACK_URL}/friend/requestFriend/${friendAddingId}`, {
 				credentials: "include",
 				method: 'PATCH',
 				headers: {
@@ -215,6 +218,12 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         return <></>
     }
 
+    const isFriend = (memberId: string) =>  {
+        return friends.find(user => user.id == memberId) != undefined 
+            || requestedFriends.find(user => user.id == memberId) != undefined 
+            || invitedFriends.find(user => user.id == memberId) != undefined;
+    }
+
     // Chat member list
     // Todo: sort by ASCII
 
@@ -227,7 +236,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)}/>
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -236,7 +245,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)}/>
         ))
 
     const AdminList = channel.members
@@ -246,7 +255,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)}/>
         ))
 
     const BannedList = channel.members
@@ -256,7 +265,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)}/>
         )
     )
 
