@@ -8,7 +8,7 @@ import CustomBtn from "../CustomBtn";
 
 
 const Result = ({...props}) => {
-    const { result, setResult, joinQueue, leaveQueue, setInGameContext} = props;
+    const { result, setResult, joinQueue, setInGameContext} = props;
 
     const [user, setUser] = useState<{id: string, userName: string, avatar: string}>();
     const [queued, setQueued] = useState<boolean>(false);
@@ -31,47 +31,29 @@ const Result = ({...props}) => {
         setInGameContext(false);
 	}
 
-    const cancelMatchmaking = async () => {
-        setQueued(false);
-        await leaveQueue();
-    }
-
     return (
         <div className="flex flex-col my-5 justify-center ">
-            {queued ?
-                <CustomBtn
+            <CustomBtn
                 anim={true}
                 color={'bg-mauve'}
-                id="Cancel" 
-                onClick={cancelMatchmaking} 
+                id="Play Again Button" 
+                onClick={matchmaking} 
                 disable={false}
-                >
-                    Cancel
-                </CustomBtn>
-            :
-                <CustomBtn
-                    anim={true}
-                    color={'bg-mauve'}
-                    id="Play Again Button" 
-                    onClick={matchmaking} 
-                    disable={false}
-                >
-                    Play Again
-                </CustomBtn>
-            }
+            >
+                Play Again
+            </CustomBtn>
             <div className=" flex fex-row items-center justify-center font-bold text-center text-2xl mb-2">
-
-            {user?.avatar &&
-                <Avatar
-                    width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
-                />
-            }
-            {
-                result.won === true ?
-                <p>You Won!</p>
-                :
-                <p>You Lose...</p>
-            }
+                {user?.avatar &&
+                    <Avatar
+                        width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
+                    />
+                }
+                {
+                    result.won === true ?
+                    <p>You Won!</p>
+                    :
+                    <p>You Lose...</p>
+                }
             </div>
         </div>
     );
