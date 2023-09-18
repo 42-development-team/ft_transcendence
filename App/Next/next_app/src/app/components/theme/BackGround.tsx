@@ -1,6 +1,8 @@
 'use client';
 import React, { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import Image from "next/image";
+import logoWhite from "../../../../public/logoWhite.png";
 import homeBackground from '../../../../public/background_11.png';
 import homeBackgroundLight from '../../../../public/backgroundLight_11.png';
 import themeContext from "./themeContext";
@@ -21,6 +23,7 @@ export const BackgroundBall = () => {
 
 	return (
 		<div >
+			<Image src={logoWhite} alt="logo" className="fixed top-0 left-0 z-10 w-20 h-20 m-4" />
 			<TransitionGroup>
 				<CSSTransition
 					key={storage}
@@ -28,7 +31,8 @@ export const BackgroundBall = () => {
 					appear={true}
 					timeout={900}
 					classNames="fade"
-					mountOnEnter >
+					mountOnEnter
+				>
 					<img
 						src={typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src}
 						alt="Bg"

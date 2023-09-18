@@ -1,16 +1,39 @@
+"use client";
+import React, { useEffect } from "react";
 import Canvas from './canvas';
 import Result from './result';
 
-const Game = ({...props}) => {
-	
-	const {socket, move, stopMove, launchGame, leaveQueue, joinQueue, data, userId, result, setResult, setInGame} = props;
+const Game = ({ ...props }) => {
+	useEffect(() => {
+		if (!data)
+			socket?.emit("retrieveData", props.userId);
+	}, []);
+
+	const { socket, move, stopMove, launchGame, leaveQueue, joinQueue, data, userId, result, setResult, setInGameContext } = props;
 
 	return (
-		result === undefined ?
-		<Canvas move={move} stopMove={stopMove} launchGame={launchGame} data={data} userId={userId}/>
-		:
-		<Result socket={socket} result={result} setResult={setResult} setInGame={setInGame} leaveQueue={leaveQueue} joinQueue={joinQueue}/>
+		<div>
+			{ data && (
+				(result === undefined || result === null) ? (
+				<Canvas
+					move={move}
+					stopMove={stopMove}
+					launchGame={launchGame}
+					data={data}
+					userId={userId}
+				/>
+			) : (
+				<Result
+					result={result}
+					setResult={setResult}
+					leaveQueue={leaveQueue}
+					joinQueue={joinQueue}
+					setInGameContext={setInGameContext}
+				/>
+			))
+			}
+		</div>
 	);
 }
-	
+
 export default Game;

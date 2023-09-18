@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import sun from "../../../../public/sun.png";
 import sunLight from "../../../../public/sunLight.png";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import themeContext from './themeContext';
 
 export const Theme = () => {
@@ -49,9 +49,9 @@ export const Theme = () => {
                 {
                     sun && sunLight ? (
                         theme === 'mocha' ? (
-                            <Image className={" m-2"} alt="Sun-dark" src={sunLight} height={22} width={22} />
+                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} />
                         ) : (
-                            <Image className={"m-2"} alt="Sun-light" src={sun} height={22} width={22} />
+                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} />
                         )
                     ) : (
                         <div className="m-2">☀️</div>
