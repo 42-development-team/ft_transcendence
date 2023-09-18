@@ -49,7 +49,7 @@ export default function useGame() {
 				setResult({ id: loserId, won: false });
 		});
 
-		socket?.on('surrender', () => { //TODO: implement in backlogical
+		socket?.on('surrender', () => { 
 			setInGame(false);
 			router.push('/home');
 		});
