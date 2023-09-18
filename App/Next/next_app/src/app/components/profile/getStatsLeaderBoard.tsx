@@ -1,6 +1,8 @@
 
 const getStatsLeaderBoard = async ( {userId}: {userId: number} ) => {
     try {
+        if (userId === undefined)
+            return null;
         const response = await fetch(`${process.env.BACK_URL}/userstats/info/leaderBoard/${userId}`, {
             credentials: "include",
             method: "GET",

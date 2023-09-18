@@ -50,7 +50,6 @@ export class AvatarsController {
   async getAvatar(@Param('id') id: string) {
     try {
       const userId = Number(id);
-      console.log(userId);
       if ( !userId ) {
         throw new BadRequestException('Invalid user ID');
       }

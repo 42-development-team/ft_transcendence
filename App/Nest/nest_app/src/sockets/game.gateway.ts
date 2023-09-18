@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocketGateway, ConnectedSocket, MessageBody, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Redirect } from '@nestjs/common';
 import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
@@ -26,7 +26,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 	async handleConnection(client: Socket) {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
-			console.log('Client connected in game: ' + client.id);
 			this.clients.push(client);
 		} else {
 			console.log('User not authenticated');
@@ -48,17 +47,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         if (!result)
             return ;
-
+        
         const {newGameRoom, player2SocketId} = result;
         if (player2SocketId ) {
             const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
             await player2Socket?.join(newGameRoom.roomName);
+            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
             this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
         }
         else {
-            newGameRoom.reconnect = true;
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
+    }
+
+    @SubscribeMessage('isInGame')
+    async isAlreadyInGame(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        const isAlreadyInGame = data ? true : false;
+        if (isAlreadyInGame) {
+            socket.emit('isAlreadyInGame', data);
+        }
+        return ;
     }
 
     @SubscribeMessage('leaveQueue')
@@ -89,14 +98,28 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
-        console.log('game.gateway - New Game Starts');
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
         if (room && room.data) {
-            if (room.reconnect === false)
+            if (room.reconnect === false) {
+                room.reconnect = true;
                 this.gameLogic(room.data);
+            }
         }
+    }
+
+    @SubscribeMessage('retrieveData')
+    async handleRetrieveData(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        socket?.emit('sendDataToUser', data);
+        socket?.join(data.roomName);
+    }
+
+    @SubscribeMessage('surrender')
+    async handleSurrender(socket: Socket, @MessageBody() body: any) {
+        const [id, userId] = body;
+        this.gameService.surrender(id, userId);
     }
 
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
@@ -116,7 +139,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const winnerId: number = results.gameWonId;
         const loserId: number = results.gameLosedId;
         this.server.to(data.roomName).emit('endOfGame', {winnerId, loserId});
-        this.gameService.removeRoom(data.roomName);
+        this.gameService.removeRoom(data.id);
     }
 
     async sendDataToRoom(data: GameDto) {
