@@ -11,7 +11,7 @@ const Play = ({...props}) => {
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const {leaveQueue, joinQueue, isUserQueued, userId, socket, setMode} = props;
+	const {leaveQueue, joinQueue, isUserQueued, userId, socket, changeMode} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);

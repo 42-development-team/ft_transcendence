@@ -53,6 +53,14 @@ export default function useGame() {
 
 	useEffect(() => {leaveQueue()}, [mode]);
 
+	const changeMode = () => {
+		if (mode === true)
+			setMode(false);
+		else
+			setMode(true);
+		console.log('mode', mode);
+	}
+
 	const joinQueue = async () => {
 		socket?.emit("joinQueue", mode);
 	}
@@ -90,7 +98,6 @@ export default function useGame() {
 		result,
 		setResult,
 		data,
-		mode,
-		setMode,
+		changeMode,
 	}
 }
