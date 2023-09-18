@@ -181,7 +181,9 @@ export class UserStatsService {
 					updateStatsDto.lose++;
 					updateStatsDto.played++;
 					if ( i != 0 && updateStatsDto.totalScore >= 100 )
-					updateStatsDto.totalScore -= 100;
+						updateStatsDto.totalScore -= 100;
+					else
+						updateStatsDto.totalScore = 0;
 					if ( i == gamesLenght - 1 ) {
 						updateStatsDto.winStreak = 0;
 					}
