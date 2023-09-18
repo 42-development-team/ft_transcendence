@@ -5,7 +5,6 @@ import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
-import { UserIdDto } from 'src/userstats/dto/user-id.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -42,8 +41,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('joinQueue')
-    async handleJoinQueue(player: Socket) {
-        const result = await this.gameService.handleJoinQueue(player);
+    async handleJoinQueue(player: Socket, mode: boolean) {
+        const result = await this.gameService.handleJoinQueue(player, mode);
 
         if (!result)
             return ;
@@ -71,7 +70,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('leaveQueue')
-    handleLeaveQueue(userId: UserIdDto) {
+    handleLeaveQueue(socket: Socket, userId: number) {
+        console.log("game.gateWay - leaveQueue");
         this.gameService.handleLeaveQueue(userId);
     }
 
@@ -101,6 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         const userId: number = await this.userService.getUserIdFromSocket(socket);
 
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
             if (room.reconnect === false) {
                 room.reconnect = true;
@@ -124,7 +125,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000 / 60);
-        const promiseCalculate = this.gameService.calculateGame(data.id);
+        const promiseCalculate = this.gameService.calculateGame(data.id, data.mode);
     
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;

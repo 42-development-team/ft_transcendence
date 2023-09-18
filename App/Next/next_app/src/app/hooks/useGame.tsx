@@ -12,6 +12,7 @@ export default function useGame() {
 	const { socket, userId } = useAuthContext();
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
+	const [mode, setMode] = useState<boolean>(false);
 	const router = useRouter();
 	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
@@ -78,12 +79,22 @@ export default function useGame() {
 		};
 	}, [socket]);
 
+
+	const changeMode = () => {
+		leaveQueue();
+		if (mode === true)
+			setMode(false);
+		else
+			setMode(true);
+		console.log('mode', mode);
+	}
+
 	const joinQueue = async () => {
-		socket?.emit("joinQueue", 0);
+		socket?.emit("joinQueue", mode);
 	}
 
 	const leaveQueue = async () => {
-		socket?.emit("leaveQueue");
+		socket?.emit("leaveQueue", parseInt(userId));
 	}
 
 	const move = async (event: string, id: number, uid: number) => {
@@ -120,5 +131,7 @@ export default function useGame() {
 		result,
 		setResult,
 		data,
+		changeMode,
+		mode
 	}
 }
