@@ -70,6 +70,7 @@ const ChatMemberActions = (
 
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
+    // Todo: invite to game button (if user is online)
     return (
         <div className="flex flex-row gap-2">
             {adminActionsEnabled && !user.isBanned &&
@@ -141,7 +142,7 @@ const ChatMemberActions = (
                         <DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
                     }
 					{!isCurrentUser && !isFriend && !isFriendAdded &&
-						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add as friend</DropDownActionRed>
+						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add friend</DropDownActionRed>
 					}
                 </div>
             </DropDownMenu>

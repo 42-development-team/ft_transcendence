@@ -15,7 +15,6 @@ export class FriendController {
 
 	/* C(reate) */
 
-
 	/* R(ead) */
 	@Get('getFriends')
 	async getFriends(@Request() req: any, @Res() res: Response) {
@@ -37,6 +36,7 @@ export class FriendController {
 	async addFriend(@Param('addedUserId') addedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		await this.friendService.addFriend(userId, Number(addedUserId));
+		this.socketGateway.handleFriendRequest(userId, Number(addedUserId));
 		res.send("Friend added successfully");
 	}
 
@@ -44,6 +44,7 @@ export class FriendController {
 	async removeFriend(@Param('removedUserId') removedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		await this.friendService.removeFriend(userId, Number(removedUserId));
+		this.socketGateway.handleFriendRemoval(userId, Number(removedUserId));
 		res.send("Friend removed successfully");
 	}
 

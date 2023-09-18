@@ -12,6 +12,7 @@ type AuthContextType = {
 	uniqueLogin: string;
 	userId: string;
 	socket: Socket | undefined,
+	socketReady: boolean,
 }
 
 const AuthContextDefaultValues: AuthContextType = {
@@ -21,6 +22,7 @@ const AuthContextDefaultValues: AuthContextType = {
 	uniqueLogin: "",
 	userId: "",
 	socket: undefined,
+	socketReady: false,
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextDefaultValues);
@@ -35,6 +37,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [open, setOpen] = useState(false);
 	const [invited, setInvited] = useState(false);
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
+	const [socketReady, setSocketReady] = useState(false);
 
 	// Exception catcher for fetch
 	useEffect(() => {
@@ -128,6 +131,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		});
 		socket?.on('connect', () => {
 			console.log('Connected to socket.io server');
+			setSocketReady(true);
 		});
 
 		return () => {
@@ -179,7 +183,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	}
 
 	return (
-		<AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, socket }}>
+		<AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, socket, socketReady }}>
 			{children}
 			<Dialog open={open} handler={handleOpen} className="mt-auto">
 				<DialogHeader>

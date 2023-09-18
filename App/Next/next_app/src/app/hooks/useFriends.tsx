@@ -1,16 +1,33 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../context/AuthContext";
 import { UserModel } from "../utils/models";
 
 export default function useFriends() {
+	// const { socket } = useAuthContext();
 	const [friends, setFriends] = useState<UserModel[]>([])
 	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
 	useEffect(() => {
 		fetchBlockedUsers();
 		fetchFriends();
-		// Todo: fetch friends
 	}, []);
+
+	// useEffect(() => {
+	// 	socket?.on('friendRequest', (body: any) => {
+	// 		console.log("friendRequest: " + JSON.stringify(body, null, 2));
+	// 		// updateFriends(body);
+	// 	});
+	// 	socket?.on('friendRemoval', (body: any) => {
+	// 		console.log("friendRemoval: " + JSON.stringify(body, null, 2));
+	// 		// updateFriends(body);
+	// 	});
+
+	// 	return () => {
+	// 		socket?.off('friendRequest');
+	// 		socket?.off('friendRemoval');
+	// 	}
+	// }, [socket, friends]);
 
 	// useEffect(() => {
 	// 	if (friends.length > 0)
@@ -49,17 +66,17 @@ export default function useFriends() {
 		setBlockedUsers(newBlockedUsers);
 	}
 
-	const updateFriends = (newFriend: UserModel) => {
-		const exisitingUserIndex = friends.findIndex((user: UserModel) => user.id === newFriend.id);
-		if (exisitingUserIndex !== -1) {
-			const newFriends = [...friends];
-			newFriends[exisitingUserIndex] = newFriend;
-			setFriends(newFriends);
-		}
-		else {
-			setFriends([...friends, newFriend]);
-		}
-	}
+	// const updateFriends = (newFriend: UserModel) => {
+	// 	const exisitingUserIndex = friends.findIndex((user: UserModel) => user.id === newFriend.id);
+	// 	if (exisitingUserIndex !== -1) {
+	// 		const newFriends = [...friends];
+	// 		newFriends[exisitingUserIndex] = newFriend;
+	// 		setFriends(newFriends);
+	// 	}
+	// 	else {
+	// 		setFriends([...friends, newFriend]);
+	// 	}
+	// }
 
 	const blockUser = async (blockedId: string) => {
 		try {
