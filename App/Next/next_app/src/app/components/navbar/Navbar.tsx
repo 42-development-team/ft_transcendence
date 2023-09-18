@@ -4,11 +4,10 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { useRouter, usePathname } from "next/navigation";
 import { DropDownActionLarge, DropDownSeparator } from "../dropdown/DropDownItem";
 import NavDropDownMenu from "../dropdown/NavDropDownMenu";
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { Theme } from "../theme/Theme";
 import LoadingContext from "@/app/context/LoadingContext";
-import useGame from "@/app/hooks/useGame";
 
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
@@ -30,8 +29,7 @@ const Logo = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 }
 
 const Loading = () => {
-    const { gameLoading, setGameLoading } = useContext(LoadingContext);
-    
+    const { gameLoading } = useContext(LoadingContext);
 
     return (
         <div>
@@ -80,7 +78,6 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
 
     return (
         <div className={`${isLoggedIn ? 'px-6' : 'px-2'} flex items-center z-100 relative gap-4 text-lg transition-all`}>
-
             {gameLoading && <Loading />}
             <Theme />
             {isLoggedIn &&
