@@ -25,11 +25,13 @@ export class GameService {
     /* C(reate) */
     async createGame(data: GameDto) {
 
+        const [winner, loser] = this.getGameWinnerLoser(data);
+
         const createGameDto = {
-            winnerScore: Math.max(data.player1.points, data.player2.points),
-            loserScore: Math.min(data.player1.points, data.player2.points),
-            winnerId: data.player1.points > data.player2.points ? data.player1.id : data.player2.id,
-            loserId: data.player1.points > data.player2.points ? data.player2.id : data.player1.id,
+            winnerScore: winner.points,
+            loserScore: loser.points,
+            winnerId: winner.id,
+            loserId: loser.id,
         }
 
         const newGame = await this.prisma.game.create({
@@ -556,4 +558,20 @@ export class GameService {
 
         return data;
     }
+
+    getGameWinnerLoser(data: GameDto): [PlayerDto, PlayerDto] {
+
+        if (data.forfeiterId) {
+            if (data.forfeiterId === data.player1.id) {
+                return [data.player2, data.player1]
+            }
+            if (data.forfeiterId === data.player2.id) {
+                return [data.player1, data.player2]
+            }
+        }
+        if (data.player1.points > data.player2.points)
+            return [data.player1, data.player2];
+        return [data.player2, data.player1];
+    }
 }
+

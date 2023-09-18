@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from "react";
 import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
-import { useRouter } from "next/navigation";
 import IsInGameContext from "../context/inGameContext";
 
 export default function useGame() {
@@ -13,13 +12,11 @@ export default function useGame() {
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [mode, setMode] = useState<boolean>(false);
-	const router = useRouter();
 	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
 	const { inGameContext, setInGameContext } = useContext(IsInGameContext);
 
 	useEffect(() => {
-
 		socket?.emit('isInGame', userId)
 	}, [socket]);
 	
@@ -42,17 +39,15 @@ export default function useGame() {
 
 		socket?.on('endOfGame', (body: any) => {
 			const { winnerId, loserId } = body;
-			setInGame(false);
-			setInGameContext(false);
-			if (parseInt(userId) === winnerId)
+			if (parseInt(userId) === winnerId) {
+				console.log("SET RESULT");
 				setResult({ id: winnerId, won: true });
-			else if (parseInt(userId) === loserId)
+			}
+			else if (parseInt(userId) === loserId) {
+				console.log("SET RESULT");
 				setResult({ id: loserId, won: false });
-		});
-
-		socket?.on('surrender', () => { 
+			}
 			setInGame(false);
-			router.push('/home');
 		});
 
 		socket?.on('sendDataToUser', (body: any) => {
@@ -127,7 +122,7 @@ export default function useGame() {
 		surrender,
 		socket,
 		inGame,
-		setInGame,
+		setInGameContext,
 		result,
 		setResult,
 		data,
