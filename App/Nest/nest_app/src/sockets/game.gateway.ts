@@ -112,6 +112,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('retrieveData')
     async handleRetrieveData(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
+        if (!data)
+            console.log("Error retrieving Game Data: data is null");
         socket?.emit('sendDataToUser', data);
         socket?.join(data.roomName);
     }
