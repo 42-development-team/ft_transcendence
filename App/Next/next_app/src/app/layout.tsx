@@ -7,7 +7,7 @@ import { Body } from './components/theme/Body';
 import ThemeProvider from './components/theme/themeProvider';
 import { BackgroundBall } from './components/theme/BackGround';
 import LoadingProvider from './context/LoadingContextProvider';
-
+import InGameProvider from './context/inGameContextProvider';
 export const metadata = {
 	title: 'Pongolin',
 	description: 'Awesome pong game',
@@ -22,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<AuthContextProvider>
 						<ChatBarContextProvider>
 							<LoadingProvider>
+								<InGameProvider>
 								<Navbar />
 								{/* <div className='flex flex-col flex-auto items-stretch'> */}
 								<BackgroundBall />
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									{children}
 								</div>
 								{/* <p>{jwt?.value}</p> */}
+								</InGameProvider>
 							</LoadingProvider>
 						</ChatBarContextProvider>
 					</AuthContextProvider>

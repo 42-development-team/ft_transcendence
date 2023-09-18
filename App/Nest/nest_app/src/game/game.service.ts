@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Redirect } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -137,13 +137,22 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
+    async surrender(id: number, forfeiterId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1 ) {
+            console.log("Could not find game with id:", id);
+            return ;
+        }
+        this.gameRooms[idx].data.forfeiterId = forfeiterId;
+        this.gameRooms[idx].data.end = true;
+    }
+    
     async handleJoinQueue(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
         try {
             const userId: number = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
-                    console.log("user:", userId, ":ALREADY QUEUED")
                     return;
                 }
                 if (mode) {
@@ -158,7 +167,6 @@ export class GameService {
                 }
             }
             else {
-                console.log("FOUND")
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
                 const player2SocketId: string = undefined;
                 player?.join(this.gameRooms[idx].roomName);
@@ -214,7 +222,6 @@ export class GameService {
             console.log("game.service-handleLaunchGame: !LaunchGameRoom")
             return;
         }
-
         if (this.gameRooms[idx].playerOneId === userId)
             this.gameRooms[idx].readyPlayerOne = true;
         else if (this.gameRooms[idx].playerTwoId === userId)
@@ -298,15 +305,19 @@ export class GameService {
         }
     }
 
-    async removeRoom(roomName: string) {
-        const idx: number = this.gameRooms.findIndex(game => game.roomName === roomName);
+    async removeRoom(gameId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
         if (idx === -1)
             return;
         this.gameRooms.splice(idx, 1);
     }
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
-        return this.gameRooms.find(game => game.id === id)?.data;
+        return this.gameRooms.find(game => game.id === id).data;
+    }
+
+    async getDataFromUserId(userId: number): Promise<GameDto> {
+        return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)?.data;
     }
 
     async sleep(ms: number): Promise<void> {
@@ -485,7 +496,7 @@ export class GameService {
 
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
+        if (this.gameRooms[idx].data.player1.points > 1 || this.gameRooms[idx].data.player2.points > 1)
             this.gameRooms[idx].data.end = true;
 
         return { ...this.gameRooms[idx].data };
@@ -535,6 +546,7 @@ export class GameService {
         let data: GameDto = {
             id: id,
             roomName: roomName,
+            forfeiterId: null,
             end: false,
             mode: mode,
             player1: player1,

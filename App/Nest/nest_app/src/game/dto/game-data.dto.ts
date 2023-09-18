@@ -1,3 +1,5 @@
+import { defaultIfEmpty } from "rxjs";
+
 export class BallDto {
 	color: string;
 	x: number;
@@ -23,6 +25,7 @@ export class PlayerDto {
 
 export class GameDto {
 	id: number;
+	forfeiterId: null | number;
 	roomName: string;
 	end: boolean;
 	mode: boolean;
