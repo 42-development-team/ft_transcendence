@@ -17,14 +17,50 @@ export class FriendService {
     /* R(ead) */
 	async getFriends(userId: number) : Promise<FriendDto[]> {
 		const user = await this.prisma.user.findFirst({
-			where: {
-				id: userId
-			},
-			select: {
-				friends: true,
-			},
+			where: { id: userId },
+			select: { friends: true },
 		});
 		const friends = user.friends;
+		const friendDtos: FriendDto[] = [];
+		for (let id of friends) {
+			const friend = this.userService.getUserFromId(id);
+			const friendDto: FriendDto = {
+				id: id.toString(),
+				username: (await friend).username,
+				avatar: (await friend).avatar,
+				currentStatus: (await friend).currentStatus
+			};
+			friendDtos.push(friendDto);
+		}
+		return friendDtos;
+	}
+
+	async getInvitedFriends(userId: number) : Promise<FriendDto[]> {
+		const user = await this.prisma.user.findFirst({
+			where: { id: userId },
+			select: { sentFriendRequest: true },
+		});
+		const friends = user.sentFriendRequest;
+		const friendDtos: FriendDto[] = [];
+		for (let id of friends) {
+			const friend = this.userService.getUserFromId(id);
+			const friendDto: FriendDto = {
+				id: id.toString(),
+				username: (await friend).username,
+				avatar: (await friend).avatar,
+				currentStatus: (await friend).currentStatus
+			};
+			friendDtos.push(friendDto);
+		}
+		return friendDtos;
+	}
+
+	async getFriendsRequest(userId: number) : Promise<FriendDto[]> {
+		const user = await this.prisma.user.findFirst({
+			where: { id: userId },
+			select: { receivedFriendRequest: true },
+		});
+		const friends = user.receivedFriendRequest;
 		const friendDtos: FriendDto[] = [];
 		for (let id of friends) {
 			const friend = this.userService.getUserFromId(id);
@@ -91,7 +127,7 @@ export class FriendService {
 				 this.prisma.user.update({
 					where: { id: userId },
 					data: {
-						friends: {
+						sentFriendRequest: {
 							push: addedUserId,
 						},
 					},
@@ -99,7 +135,7 @@ export class FriendService {
 				 this.prisma.user.update({
 					where: { id: addedUserId },
 					data: {
-						friends: {
+						receivedFriendRequest: {
 							push: userId,
 						},
 					},

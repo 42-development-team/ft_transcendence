@@ -6,11 +6,15 @@ import { UserModel } from "../utils/models";
 export default function useFriends() {
 	const { socket } = useAuthContext();
 	const [friends, setFriends] = useState<UserModel[]>([])
+	const [invitedFriends, setInvitedFriends] = useState<UserModel[]>([])
+	const [requestedFriends, setRequestedFriends] = useState<UserModel[]>([])
 	const [blockedUsers, setBlockedUsers] = useState<UserModel[]>([])
 
 	useEffect(() => {
 		fetchBlockedUsers();
 		fetchFriends();
+		fetchFriendsRequest();
+		fetchInvitedFriends();
 	}, []);
 
 	useEffect(() => {
@@ -37,8 +41,18 @@ export default function useFriends() {
 	const fetchFriends = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/getFriends`, { credentials: "include", method: "GET" });
 		const data = await response.json();
-		// data.forEach((friend: any) => console.log(friend.userName));
 		setFriends(data);
+	}
+	const fetchInvitedFriends = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/getInvitedFriends`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setInvitedFriends(data);
+	}
+
+	const fetchFriendsRequest = async () => {
+		const response = await fetch(`${process.env.BACK_URL}/friend/getFriendsRequest`, { credentials: "include", method: "GET" });
+		const data = await response.json();
+		setRequestedFriends(data);
 	}
 
 	const fetchBlockedUsers = async () => {
@@ -107,5 +121,7 @@ export default function useFriends() {
 		blockedUsers,
 		blockUser,
 		unblockUser,
+		invitedFriends,
+		requestedFriends,
 	}
 }

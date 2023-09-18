@@ -23,6 +23,20 @@ export class FriendController {
 		res.send(friends);
 	}
 
+	@Get('getInvitedFriends')
+	async getInvitedFriends(@Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const friends: FriendDto[] = await this.friendService.getInvitedFriends(userId);
+		res.send(friends);
+	}
+
+	@Get('getFriendsRequest')
+	async getFriendsRequest(@Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		const friends: FriendDto[] = await this.friendService.getFriendsRequest(userId);
+		res.send(friends);
+	}
+
 	@Get('blocked')
 	async getBlockedUsers(@Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
@@ -36,7 +50,7 @@ export class FriendController {
 		const userId = req.user.sub;
 		await this.friendService.addFriend(userId, Number(addedUserId));
 		this.socketGateway.handleFriendRequest(userId, Number(addedUserId));
-		res.send("Friend added successfully");
+		res.send("Friend request send successfully");
 	}
 
 	@Patch('removeFriend/:removedUserId')

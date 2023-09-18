@@ -29,8 +29,8 @@ model User {
 	blockedUsers			User[]			@relation("blockedUsers")
 	blockedBy				User[]			@relation("blockedUsers")
 	friends					Int[]
-	pendingFriendInvite		Int[]
-	pendingFriendRequest	Int[]
+	receivedFriendRequest	Int[]
+	sentFriendRequest		Int[]
 }
 
 model Message {
