@@ -68,7 +68,8 @@ const Chat = ({ userId }: ChatBarProps) => {
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
                     <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} blockUser={blockUser} 
-                        blockedUsers={blockedUsers} friends={friends}/>
+                        blockedUsers={blockedUsers} friends={friends}
+                        requestedFriends={requestedFriends} invitedFriends={invitedFriends}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />
