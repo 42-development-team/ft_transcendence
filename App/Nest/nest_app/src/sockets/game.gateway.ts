@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocketGateway, ConnectedSocket, MessageBody, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Injectable, Redirect } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
@@ -71,7 +71,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     @SubscribeMessage('leaveQueue')
     handleLeaveQueue(socket: Socket, userId: number) {
-        console.log("game.gateWay - leaveQueue");
         this.gameService.handleLeaveQueue(userId);
     }
 
@@ -137,9 +136,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.sendDataToRoom(data);
         }
         const results = await this.gameService.createGame(data);
-        const winnerId: number = results.gameWonId;
-        const loserId: number = results.gameLosedId;
-        this.server.to(data.roomName).emit('endOfGame', {winnerId, loserId});
+        this.server.to(data.roomName).emit('endOfGame', {winnerId: results.gameWonId, loserId: results.gameLosedId});
         this.gameService.removeRoom(data.id);
     }
 

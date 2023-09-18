@@ -8,7 +8,7 @@ import CustomBtn from "../CustomBtn";
 
 
 const Result = ({...props}) => {
-    const { socket, result, setResult, setInGame, joinQueue, leaveQueue} = props;
+    const { result, setResult, joinQueue, leaveQueue, setInGameContext} = props;
 
     const [user, setUser] = useState<{id: string, userName: string, avatar: string}>();
     const [queued, setQueued] = useState<boolean>(false);
@@ -27,8 +27,8 @@ const Result = ({...props}) => {
     const matchmaking = async () => {
 		setQueued(true);
 		await joinQueue();
-        setInGame(false);
         setResult(undefined);
+        setInGameContext(false);
 	}
 
     const cancelMatchmaking = async () => {
