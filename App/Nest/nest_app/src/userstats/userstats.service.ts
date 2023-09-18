@@ -2,11 +2,18 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { UserIdDto } from "./dto/user-id.dto";
 import { UserStatsDto } from "./dto/userstats.dto";
 import { stat } from "fs";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { GameService } from "src/game/game.service";
+import { GameUserDto } from "src/game/dto/game-user.dto";
+import { GetGameDto } from "src/game/dto/get-game.dto";
 
 @Injectable()
 export class UserStatsService {
-	constructor(private prisma: PrismaService) {}
+	constructor(
+		private prisma: PrismaService,
+		@Inject(forwardRef(() => GameService))
+		 private gameService: GameService
+		 ) {}
 
 	/* C(reate) */
 	async createUserStats( userIdDto: UserIdDto ) {
@@ -105,12 +112,89 @@ export class UserStatsService {
 					win: userUpdateDto.win,
 					lose: userUpdateDto.lose,
 					totalScore: userUpdateDto.totalScore,
-					ratio: Number((userUpdateDto.win / userUpdateDto.lose).toFixed(1)),
+					ratio: Number((userUpdateDto.win / userUpdateDto.played).toFixed(1)),
 					played: userUpdateDto.played,
 			},
 		});
-		console.log(Number((userUpdateDto.win / userUpdateDto.lose).toFixed(1)));
 		
+	}
+
+	async updateUserStatsOnEndGame( userId: number, userUpdateDto: UserStatsDto ) {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			include: { userStats: true },
+			where: { id: userId },
+		});
+		const updatedStats = await this.prisma.userStats.update({
+			include: { user: true},
+			where: { userId: user.id },
+			data: { 
+					winStreak: user.userStats.winStreak + userUpdateDto.winStreak,
+					win: user.userStats.win + userUpdateDto.win,
+					lose: user.userStats.lose + userUpdateDto.lose,
+					totalScore: user.userStats.totalScore + userUpdateDto.totalScore,
+					ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.lose + userUpdateDto.lose)).toFixed(1)),
+					played: user.userStats.played + userUpdateDto.played,
+			},
+		});
+	}
+
+	async updateUserStatsFromAllGames( userId: number ) {
+		try {
+			const games: GetGameDto[] = await this.gameService.getGamesAsc(userId);
+			let user = await this.prisma.user.findUniqueOrThrow({
+				include: { userStats: true },
+				where: { id: userId },
+			});
+			if (user.userStats === undefined || !user.userStats) {
+				const newUserStats = await this.createUserStats({ userId: userId });
+				if ( !newUserStats ) {
+					throw new Error("UserStats Creation failed");
+				}
+				user = await this.prisma.user.findUniqueOrThrow({
+					include: { userStats: true },
+					where: { id: userId },
+				});
+			}
+
+			let updateStatsDto: UserStatsDto = {
+				userId: userId,
+				winStreak: user.userStats.winStreak,
+				win: 0,
+				lose: 0,
+				totalScore: 0,
+				ratio: 0,
+				played: 0,
+				userName: user.username,
+				avatar: user.avatar,
+			}
+			let i: number = 0;
+			let gamesLenght = games.length;
+			for( let game of games ) {
+				if ( game.winner.id === userId ) {
+					updateStatsDto.win++;
+					updateStatsDto.played++;
+					updateStatsDto.totalScore += Math.max(100 - updateStatsDto.totalScore / 100, 20);
+					if ( i == gamesLenght - 1 ) {
+						updateStatsDto.winStreak++;
+					}
+			} else {
+					updateStatsDto.lose++;
+					updateStatsDto.played++;
+					if ( i != 0 && updateStatsDto.totalScore >= 100 )
+						updateStatsDto.totalScore -= 100;
+					else
+						updateStatsDto.totalScore = 0;
+					if ( i == gamesLenght - 1 ) {
+						updateStatsDto.winStreak = 0;
+					}
+				}
+				i++;
+			}
+			updateStatsDto.ratio = Number((updateStatsDto.win / updateStatsDto.played).toFixed(1));
+			await this.updateUserStats(userId, updateStatsDto);
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	/* D(elete) */

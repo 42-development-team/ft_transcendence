@@ -9,6 +9,8 @@ import { GetGameDto } from "./dto/get-game.dto";
 import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
+import { UserstatsController } from "src/userstats/userstats.controller";
+import { UserStatsService } from "src/userstats/userstats.service";
 
 
 @Injectable()
@@ -16,6 +18,7 @@ export class GameService {
     constructor(
         private prisma: PrismaService,
         private userService: UsersService,
+        private userStatsService: UserStatsService,
     ) { }
 
     gameRooms: GameRoomDto[] = [];
@@ -24,8 +27,8 @@ export class GameService {
 
     /* C(reate) */
     async createGame(data: GameDto) {
-
-        const [winner, loser] = this.getGameWinnerLoser(data);
+        try {
+            const [winner, loser] = this.getGameWinnerLoser(data);
 
         const createGameDto = {
             winnerScore: winner.points,
@@ -33,22 +36,27 @@ export class GameService {
             winnerId: winner.id,
             loserId: loser.id,
         }
-
-        const newGame = await this.prisma.game.create({
-            data: {
-                users: {
-                    connect: [
-                        { id: createGameDto.winnerId },
-                        { id: createGameDto.loserId }
-                    ],
+            const newGame = await this.prisma.game.create({
+                data: {
+                    users: {
+                        connect: [
+                            { id: createGameDto.winnerId },
+                            { id: createGameDto.loserId }
+                        ],
+                    },
+                    winner: { connect: { id: createGameDto.winnerId } },
+                    loser: { connect: { id: createGameDto.loserId } },
+                    winnerScore: createGameDto.winnerScore,
+                    loserScore: createGameDto.loserScore,
                 },
-                winner: { connect: { id: createGameDto.winnerId } },
-                loser: { connect: { id: createGameDto.loserId } },
-                winnerScore: createGameDto.winnerScore,
-                loserScore: createGameDto.loserScore,
-            },
-        });
-        return newGame;
+            });
+            await this.userStatsService.updateUserStatsFromAllGames(createGameDto.winnerId);
+            await this.userStatsService.updateUserStatsFromAllGames(createGameDto.loserId);
+            return newGame;
+        }  catch (error) {
+            console.log(error);
+            return ;
+        }
     }
 
     /* R(ead) */
@@ -63,6 +71,37 @@ export class GameService {
     async getGames(userId: number): Promise<GetGameDto[]> {
         const games = await this.prisma.game.findMany({
             orderBy: { createdAt: 'desc' },
+            include: { loser: true, winner: true },
+            where: { users: { some: { id: userId } } },
+        });
+
+        const gameDtos: GetGameDto[] = games.map((game) => {
+            const winnerDto: GameUserDto = {
+                id: game.winner.id,
+                username: game.winner.username,
+            };
+
+            const loserDto: GameUserDto = {
+                id: game.loser.id,
+                username: game.loser.username,
+            };
+
+            return {
+                id: game.id,
+                createdAt: game.createdAt,
+                gameDuration: game.gameDuration,
+                winnerScore: game.winnerScore,
+                loserScore: game.loserScore,
+                winner: winnerDto,
+                loser: loserDto,
+            };
+        });
+        return gameDtos;
+    }
+
+    async getGamesAsc(userId: number): Promise<GetGameDto[]> {
+        const games = await this.prisma.game.findMany({
+            orderBy: { createdAt: 'asc' },
             include: { loser: true, winner: true },
             where: { users: { some: { id: userId } } },
         });

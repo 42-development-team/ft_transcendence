@@ -12,8 +12,8 @@ async function seedFeeding() {
     await seedUsers();
     await seedChatRooms();
     await seedMessages();
-    await seedUserStats();
-    await seedGames();
+    // await seedUserStats();
+    // await seedGames();
 	await seedMemberShips();
 }
 
@@ -49,21 +49,21 @@ async function seedMemberShips() {
     }
   }
 
-async function seedGames() {
-    for (let game of games) {
-        await prisma.game.create({
-            data: game,
-        });
-    }
-}
+// async function seedGames() {
+//     for (let game of games) {
+//         await prisma.game.create({
+//             data: game,
+//         });
+//     }
+// }
 
-async function seedUserStats() {
-    for (let userStats of UserStats) {
-        await prisma.userStats.create({
-            data: userStats,
-        });
-    }
-}
+// async function seedUserStats() {
+//     for (let userStats of UserStats) {
+//         await prisma.userStats.create({
+//             data: userStats,
+//         });
+//     }
+// }
 
 seedFeeding().catch((e) => {
     console.error(e);

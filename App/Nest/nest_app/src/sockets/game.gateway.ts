@@ -111,6 +111,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('retrieveData')
     async handleRetrieveData(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
+        if (data === undefined || !data)
+            console.log("Error retrieving Game Data: data is null");
         socket?.emit('sendDataToUser', data);
         socket?.join(data.roomName);
     }
@@ -132,11 +134,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async gameLogic(data: GameDto) {
         while (data.end === false) {
             await this.sleepAndCalculate(data);
-            this.sendDataToRoom(data);
+            await this.sendDataToRoom(data);
         }
         const results = await this.gameService.createGame(data);
+        console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', {winnerId: results.gameWonId, loserId: results.gameLosedId});
-        this.gameService.removeRoom(data.id);
+        await this.gameService.removeRoom(data.id);
     }
 
     async sendDataToRoom(data: GameDto) {
