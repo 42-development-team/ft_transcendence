@@ -1,13 +1,11 @@
 "use client"
 
 import Chat from "@/components/chat/Chat";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
-// import Surrender from "../components/game/Surrender";
-import { Socket } from "socket.io-client";
 import InGameContext from "../context/inGameContext";
 
 export default function Home() {
@@ -43,7 +41,6 @@ export default function Home() {
               move={move}
               stopMove={stopMove}
               launchGame={launchGame}
-              leaveQueue={leaveQueue}
               joinQueue={joinQueue}
               data={data}
               userId={userId}

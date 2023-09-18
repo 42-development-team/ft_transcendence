@@ -2,8 +2,6 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
-import { useAuthContext } from "@/app/context/AuthContext";
-import Surrender from "./Surrender";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
@@ -19,11 +17,6 @@ function printScore(context: CanvasRenderingContext2D, p1: PlayerInterface, p2: 
 	context.fillText(p1.points.toString(), 0.45 * width, 0.05 * height);
 	context.fillText(p2.points.toString(), 0.53 * width, 0.05 * height);
 	context.closePath();
-}
-
-// is it usefull to clear canvas every render ?
-function clearCanvas(context: CanvasRenderingContext2D, width: number, height: number) {
-	context.clearRect(0, 0, width, height);
 }
 
 function blurEffect(context: CanvasRenderingContext2D, width: number, height: number) {
@@ -72,7 +65,7 @@ const Canvas = ({ ...props }) => {
 	if (typeof window === 'undefined')
 		return;
 
-	const { socket, move, stopMove, launchGame, data, userId, setData } = props;
+	const { move, stopMove, launchGame, data, userId } = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
