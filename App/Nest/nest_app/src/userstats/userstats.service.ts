@@ -193,7 +193,6 @@ export class UserStatsService {
 		} catch (error) {
 			console.log(error);
 		}
-
 	}
 
 	/* D(elete) */
