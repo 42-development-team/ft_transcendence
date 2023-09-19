@@ -70,18 +70,27 @@ export class UserStatsService {
 		return statsDto;
 	}
 
+	async creteUserStatsIfNotExists( user: any ) {
+		if (user.userStats === undefined || !user.userStats) {
+			const newUserStats = await this.createUserStats({ userId: user.id });
+			if ( !newUserStats ) {
+				throw new Error("UserStats Creation failed");
+			}
+		}
+		user = await this.prisma.user.findUniqueOrThrow({
+			include: { userStats: true },
+			where: { id: user.id },
+		});
+		return user;
+	}
+
 	async getLeaderBoard(userId: number) : Promise<UserStatsDto[]>{
 		const user = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
 			where: { id: userId },
 		});
 		const username = user.username;
-		if (user.userStats === undefined || !user.userStats) {
-			const newUserStats = await this.createUserStats({ userId: userId });
-			if (!newUserStats) {
-				throw new Error("UserStats Creation failed");
-			}
-		}
+		await this.creteUserStatsIfNotExists(user);
 		const leaderBoard = await this.prisma.userStats.findMany({
 			include: { user: true },
 			orderBy: { totalScore: 'desc' },
@@ -119,79 +128,61 @@ export class UserStatsService {
 		
 	}
 
-	async updateUserStatsOnEndGame( userId: number, userUpdateDto: UserStatsDto ) {
-		const user = await this.prisma.user.findUniqueOrThrow({
+	async updateUserStatsOnEndGame( userId: number, isWinner: boolean, newElo: number ) {
+		let user = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
 			where: { id: userId },
 		});
-		const updatedStats = await this.prisma.userStats.update({
-			include: { user: true},
-			where: { userId: user.id },
-			data: { 
-					winStreak: user.userStats.winStreak + userUpdateDto.winStreak,
-					win: user.userStats.win + userUpdateDto.win,
-					lose: user.userStats.lose + userUpdateDto.lose,
-					totalScore: user.userStats.totalScore + userUpdateDto.totalScore,
-					ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.lose + userUpdateDto.lose)).toFixed(1)),
-					played: user.userStats.played + userUpdateDto.played,
-			},
-		});
+		const win = isWinner ? 1 : 0;
+		try {
+			user = await this.creteUserStatsIfNotExists(user);
+			const updatedStats = await this.prisma.userStats.update({
+				include: { user: true},
+				where: { userId: user.id },
+				data: {
+					winStreak: win === 1 ? user.userStats.winStreak + 1 : 0,
+					win: {
+						increment: win,
+					},
+					lose: {
+						increment: isWinner ? 0 : 1,
+					},
+					totalScore: newElo,
+					ratio: Number(((user.userStats.win + win) / (user.userStats.played + 1)).toFixed(1)),
+					played: {
+						increment: 1,
+					}
+				},
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
-	async updateUserStatsFromAllGames( userId: number ) {
+	async eloComputing( winnerId: number, loserId: number ) {
 		try {
-			const games: GetGameDto[] = await this.gameService.getGamesAsc(userId);
-			let user = await this.prisma.user.findUniqueOrThrow({
+			let winner = await this.prisma.user.findUniqueOrThrow({
 				include: { userStats: true },
-				where: { id: userId },
+				where: { id: winnerId },
 			});
-			if (user.userStats === undefined || !user.userStats) {
-				const newUserStats = await this.createUserStats({ userId: userId });
-				if ( !newUserStats ) {
-					throw new Error("UserStats Creation failed");
-				}
-				user = await this.prisma.user.findUniqueOrThrow({
-					include: { userStats: true },
-					where: { id: userId },
-				});
-			}
+			let loser = await this.prisma.user.findUniqueOrThrow({
+				include: { userStats: true },
+				where: { id: loserId },
+			});
+			winner = await this.creteUserStatsIfNotExists(winner);
+			loser = await this.creteUserStatsIfNotExists(loser);
 
-			let updateStatsDto: UserStatsDto = {
-				userId: userId,
-				winStreak: user.userStats.winStreak,
-				win: 0,
-				lose: 0,
-				totalScore: 0,
-				ratio: 0,
-				played: 0,
-				userName: user.username,
-				avatar: user.avatar,
-			}
-			let i: number = 0;
-			let gamesLenght = games.length;
-			for( let game of games ) {
-				if ( game.winner.id === userId ) {
-					updateStatsDto.win++;
-					updateStatsDto.played++;
-					updateStatsDto.totalScore += Math.max(100 - updateStatsDto.totalScore / 100, 20);
-					if ( i == gamesLenght - 1 ) {
-						updateStatsDto.winStreak++;
-					}
-			} else {
-					updateStatsDto.lose++;
-					updateStatsDto.played++;
-					if ( i != 0 && updateStatsDto.totalScore >= 100 )
-						updateStatsDto.totalScore -= 100;
-					else
-						updateStatsDto.totalScore = 0;
-					if ( i == gamesLenght - 1 ) {
-						updateStatsDto.winStreak = 0;
-					}
-				}
-				i++;
-			}
-			updateStatsDto.ratio = Number((updateStatsDto.win / updateStatsDto.played).toFixed(1));
-			await this.updateUserStats(userId, updateStatsDto);
+			const winnerElo = winner.userStats.totalScore;
+			const loserElo = loser.userStats.totalScore;
+			const eloDiff = Math.min(loserElo - winnerElo, 400);
+			const expectedScore = 1 / (1 + Math.pow(10, eloDiff / 400));
+			const kFactor = 32;
+			const eloWinnerChange = Math.round(kFactor * (1 - expectedScore));
+			const eloLoserChange = Math.round(kFactor * (0 - expectedScore));
+			const newWinnerElo = winnerElo + eloWinnerChange;
+			const newLoserElo = loserElo + eloLoserChange;
+			await this.updateUserStatsOnEndGame(winnerId, true, newWinnerElo);
+			await this.updateUserStatsOnEndGame(loserId, false, newLoserElo);
 		} catch (error) {
 			console.log(error);
 		}
