@@ -7,6 +7,8 @@ import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 import InGameContext from "../context/inGameContext";
+import Pong from "../../../public/pong.svg"
+import Image from "next/image";
 
 export default function Home() {
   const { login, userId } = useAuthContext();
@@ -23,6 +25,7 @@ export default function Home() {
       <Chat userId={userId} />
       { inGame === false && inGameContext === false ? (
           <div className="w-full p-4 h-full flex items-center justify-center">
+            <img src={Pong.src} alt="Pong" className="w-1/2 h-1/2" />
             <Play
               socket={socket}
               isUserQueued={isUserQueued}
