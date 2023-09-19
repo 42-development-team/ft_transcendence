@@ -23,7 +23,6 @@ export const BackgroundBall = () => {
 
 	return (
 		<div >
-			<Image src={logoWhite} alt="logo" className="fixed top-0 left-0 z-10 w-20 h-20 m-4" />
 			<TransitionGroup>
 				<CSSTransition
 					key={storage}
