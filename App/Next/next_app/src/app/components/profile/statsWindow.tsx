@@ -23,8 +23,6 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [statsData, setStatsData] = useState<any>("null");
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
-	const [statsLoaded, setStatsLoaded] = useState<boolean>(false);
-	const [avatarLoaded, setAvatarLoaded] = useState<boolean>(false);
 	const { login } = useAuthContext();
 
 	useEffect(() => {
@@ -41,7 +39,6 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 
 		const getAvatar = async () => {
 			setImageUrl(await getAvatarById(userId));
-			setAvatarLoaded(true);
 		}
 
 		const getStats = async () => {
@@ -51,16 +48,16 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 			});
 			const data = await response.json();
 			setStatsData(await data);
-			setStatsLoaded(true);
 		}
 
 		try {
+			if (userId === undefined || userId === "") return ;
 			getAvatar();
 			getStats();
 		} catch (error) {
 			console.log("Error response when fetching userstats/info:", error);
 		}
-	}, [statsLoaded, avatarLoaded]);
+	}, [userId]);
 
 	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null) => {
 		setAvatarFile(childAvatarFile);
