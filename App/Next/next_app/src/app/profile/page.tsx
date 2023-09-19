@@ -1,7 +1,6 @@
 "use client";
 import StatsWindow from "../components/profile/statsWindow";
 import { UnderlineTabs } from "../components/profile/tabs";
-import getJwt from '@/app/utils/getJwt';
 import Chat from "@/components/chat/Chat";
 import useFriends from "@/hooks/useFriends";
 import { useAuthContext } from "@/context/AuthContext";
