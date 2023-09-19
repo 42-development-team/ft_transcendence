@@ -2,9 +2,6 @@
 import { useState, ChangeEvent, useEffect, useContext } from "react";
 import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
-import DropDownMenu from "../dropdown/DropDownMenu";
-import { DropDownAction, DropDownActionRed } from "../dropdown/DropDownItem";
-import useFriends from "@/app/hooks/useFriends";
 
 type AvatarProps = {
 	children?: any;
@@ -50,28 +47,6 @@ const Avatar = (
 	useEffect(() => {
 		setTextUsername(theme === "latte" ? "text-surface0" : "text-text");
 	}, [theme]);
-
-	// Prevent spam clicking
-	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
-	const handleAction = (action: () => void) => {
-		if (lockSubmit) return;
-		setLockSubmit(true);
-		action();
-		setTimeout(() => setLockSubmit(false), 1500);
-	}
-
-	// Friend
-	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const [isBlocked, setIsBlocked] = useState<boolean>(false);
-    const { friends, addFriend, blockedUsers, blockUser, unblockUser, invitedFriends, requestedFriends } = useFriends();
-
-	useEffect(() => {
-		if (currId == null || id == null) return;
-		setIsFriend(friends.find(user => user.id == id) != undefined 
-			|| requestedFriends.find(user => user.id == id) != undefined 
-			|| invitedFriends.find(user => user.id == id) != undefined);
-		setIsBlocked(blockedUsers.find(user => user.id == id) != undefined);
-	}, [friends, invitedFriends, requestedFriends, id]);
 
 	//check jpg / png
 	function checkFormat(arrayBuffer: ArrayBuffer) {
@@ -149,7 +124,8 @@ const Avatar = (
 				<div>{userName}</div>
 				{isOnProfilePage && currId !== id &&
 					<div className="ml-2">
-						<DropDownMenu>
+						{children}
+						{/* <DropDownMenu>
 							{!isFriend && !isBlocked &&
 							<>
 								<DropDownAction onClick={() => handleAction(() => {
@@ -171,7 +147,7 @@ const Avatar = (
 										unblockUser(id)
 								})}>Unblock</DropDownActionRed>
 							}
-						</DropDownMenu>
+						</DropDownMenu> */}
 					</div>
 				}
 			</div>

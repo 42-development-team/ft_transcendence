@@ -21,7 +21,6 @@ export default function useFriends() {
 		});
 		socket?.on('blockUpdate', (body: any) => {
 			fetchBlockedUsers();
-			console.log("blockUpdate");
 		});
 
 		return () => {
@@ -73,30 +72,12 @@ export default function useFriends() {
 	const fetchBlockedUsers = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/blocked`, { credentials: "include", method: "GET" });
 		const data = await response.json();
-		console.log(JSON.stringify(data));
 		setBlockedUsers(data);
-	}
-
-	const updateBlockedUsers = (newBlockedUser: UserModel) => {
-		const exisitingUserIndex = blockedUsers.findIndex((user: UserModel) => user.id === newBlockedUser.id);
-		if (exisitingUserIndex !== -1) {
-			const newBlockedUsers = [...blockedUsers];
-			newBlockedUsers[exisitingUserIndex] = newBlockedUser;
-			setBlockedUsers(newBlockedUsers);
-		}
-		else {
-			setBlockedUsers([...blockedUsers, newBlockedUser]);
-		}
-	}
-
-	const removeBlockedUser = (unblockedUser: UserModel) => {
-		const newBlockedUsers = blockedUsers.filter((user: UserModel) => user.id !== unblockedUser.id);
-		setBlockedUsers(newBlockedUsers);
 	}
 
 	const blockUser = async (blockedId: string) => {
 		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/block/${blockedId}`, {
+			await fetch(`${process.env.BACK_URL}/friend/block/${blockedId}`, {
 				credentials: "include",
 				method: "PATCH",
 			});
@@ -108,7 +89,7 @@ export default function useFriends() {
 
 	const unblockUser = async (unblockedId: string) => {
 		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/unblock/${unblockedId}`, {
+			await fetch(`${process.env.BACK_URL}/friend/unblock/${unblockedId}`, {
 				credentials: "include",
 				method: "PATCH",
 			});
