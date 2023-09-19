@@ -10,7 +10,7 @@ const Game = ({ ...props }) => {
 			socket?.emit("retrieveData", props.userId);
 	}, []);
 
-	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, userId, result, setResult, setInGameContext } = props;
+	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
 	return (
 		<div>
@@ -28,6 +28,7 @@ const Game = ({ ...props }) => {
 						launchGame={launchGame}
 						data={data}
 						userId={userId}
+						mode={mode}
 						/>
 				</div>
 			) : (

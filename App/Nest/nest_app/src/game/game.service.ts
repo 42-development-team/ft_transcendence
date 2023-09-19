@@ -259,9 +259,9 @@ export class GameService {
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player1);
+                    this.setVelocitx(-0.005, this.gameRooms[idx].data.player1);
                 else if (event === "ArrowRight")
-                    this.setVelocitx(0.01, this.gameRooms[idx].data.player1);
+                    this.setVelocitx(0.005, this.gameRooms[idx].data.player1);
             }
         }
         else if (this.gameRooms[idx].data.player2.id === userId) {
@@ -271,9 +271,9 @@ export class GameService {
                 this.setVelocity(0.01, this.gameRooms[idx].data.player2);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player2);
+                    this.setVelocitx(-0.005, this.gameRooms[idx].data.player2);
                 else if (event === "ArrowRight")
-                    this.setVelocitx(0.01, this.gameRooms[idx].data.player2);
+                    this.setVelocitx(0.005, this.gameRooms[idx].data.player2);
             }
         }
 
@@ -356,18 +356,15 @@ export class GameService {
         const valy: number = player.y + player.velocity;
         const valx: number = player.x + player.velocitx;
 
-        if (valy >= 1) {
+        if (valy >= 1)
             player.y = valy - 1;
-        }
-        else if (valy <= 0) {
+        else if (valy <= 0)
             player.y = 1 + valy;
-        }
         else
             player.y = valy;
 
-        if (valx < 0.48 && valx > 0.02) {
+        if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
             player.x = valx;
-        }
     }
 
     async movePlayer(player: PlayerDto) {
@@ -395,9 +392,9 @@ export class GameService {
 
     /* GamePlay Ball */
     //========== BOUNCES =============//
-    async bounce(idx: number) {
+    async bounce(idx: number, mode: boolean) {
         this.borderBounce(idx);
-        this.paddleBounce(idx);
+        this.paddleBounce(idx, mode);
         this.score(idx);
     };
 
@@ -408,36 +405,93 @@ export class GameService {
     }
 
     //>>PADDLE<//
-    async paddleBounce(idx: number) {
+    async paddleBounce(idx: number, mode: boolean) {
+        if (mode) {
+            this.paddleModePlayer(idx);
+        }
+        else {
             this.paddleLeftBounce(idx);
             this.paddleRightBounce(idx);
+        }
+    }
+
+    async paddleModePlayer(idx: number) {
+        const ball = this.gameRooms[idx].data.ball;
+        const player = this.gameRooms[idx].data.player1;
+
+        let dx: number;
+        // if ( o | )
+        if (ball.x < player.x) {
+            dx = Math.abs(ball.x + ball.r - player.x - player.w);
+            if (ball.speed[0] > 0) {}
+            else {}
+        }
+        // else if ( | o )
+        else {
+            dx = Math.abs(ball.x - ball.r - player.x + player.w);
+            if (ball.speed[0] > 0) {}
+            else {}
+        }
+  
+            // if ( o -> )
+                
+            // if ( <- o)
+    
+        // const dx = Math.abs(ball.x + ball.r - player.x);
+        const dy = Math.abs(ball.y - player.y);
+
+        // rigth to left
+        if (dx <= (ball.r + player.w + player.velocitx) && dy <= (ball.r + player.h / 2)) {
+            const coef = 10 * (ball.y - player.y);
+            const radian = (coef * player.angle) * (Math.PI / 180);
+
+            ball.speed[0] *= -1;
+            ball.speed[1] = Math.sin(radian);
+    
+            // Handle paddle movement on the x-axis
+            if (player.velocitx > 0) {
+                ball.speed[0] += player.velocitx;
+            }
+            else if (player.velocitx < 0) {
+                ball.speed[0] -= player.velocitx;
+            }
+        }
+        // left to rigth
+        const ddx = Math.abs(ball.x - ball.r - player.x);
+
+
     }
 
     async paddleLeftBounce(idx: number) {
-        let dx = Math.abs(this.gameRooms[idx].data.ball.x + this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player1.x);
-        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
+        const ball = this.gameRooms[idx].data.ball;
+        const player = this.gameRooms[idx].data.player1;
 
-        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.w)) {
-            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.h / 2)) {
-                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
-                const radian = (coef * this.gameRooms[idx].data.player1.angle) * (Math.PI / 180);
-                this.gameRooms[idx].data.ball.speed[0] *= -1;
-                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
+        let dx = Math.abs(ball.x + ball.r - player.x);
+        let dy = Math.abs(ball.y - player.y);
+
+        if (dx <= (ball.r + player.w)) {
+            if (dy <= (ball.r + player.h / 2)) {
+                const coef = 10 * (ball.y - player.y);
+                const radian = (coef * player.angle) * (Math.PI / 180);
+                ball.speed[0] *= -1;
+                ball.speed[1] = Math.sin(radian);
             }
         }
     };
 
     async paddleRightBounce(idx: number) {
+        const ball = this.gameRooms[idx].data.ball;
+        const player = this.gameRooms[idx].data.player2;
 
-        let dx = Math.abs(this.gameRooms[idx].data.ball.x - this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player2.x);
-        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
+        let dx = Math.abs(ball.x - ball.r - player.x);
+        let dy = Math.abs(ball.y - player.y);
 
-        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.w)) {
-            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.h / 2)) {
-                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
-                const radian = (coef * this.gameRooms[idx].data.player2.angle) * (Math.PI / 180);
-                this.gameRooms[idx].data.ball.speed[0] *= -1;
-                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
+        if (dx <= (ball.r + player.w)) {
+            if (dy <= (ball.r + player.h / 2)) {
+                const coef = 10 * (ball.y - player.y);
+                const radian = (coef * player.angle) * (Math.PI / 180);
+                ball.speed[0] *= -1;
+                ball.speed[1] = Math.sin(radian);
             }
         }
     };
@@ -460,13 +514,16 @@ export class GameService {
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
 
-        if (Math.random() < 0.5)
-            sign *= -1;
-        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+        // CHANGE
+        // if (Math.random() < 0.5)
+        //     sign *= -1;
+        // this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+        this.gameRooms[idx].data.ball.speed[0] = -0.3;
 
-        if (Math.random() < 0.5)
-            sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
+        // if (Math.random() < 0.5)
+        //     sign *= -1;
+        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
+        this.gameRooms[idx].data.ball.speed[1] = 0;
     }
 
     //========== MOVEMENT =============//
@@ -486,8 +543,8 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(idx: number) {
-        this.bounce(idx);
+    async calculateBall(idx: number, mode: boolean) {
+        this.bounce(idx, mode);
         this.updateBall(idx);
         this.incrementSpeed(idx);
     };
@@ -495,7 +552,7 @@ export class GameService {
     async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
 
         this.calculatePlayer(idx, mode);
-        this.calculateBall(idx);
+        this.calculateBall(idx, mode);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
 
@@ -539,7 +596,9 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
+            // speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
+            // CHANGE
+            speed: [-0.3, 0],
             incr: 0,
         }
 

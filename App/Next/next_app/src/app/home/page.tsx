@@ -43,6 +43,7 @@ export default function Home() {
               launchGame={launchGame}
               joinQueue={joinQueue}
               data={data}
+              mode={mode}
               userId={userId}
               result={result}
               setResult={setResult}
