@@ -17,7 +17,7 @@ export default function Home() {
   const { theme } = useContext(themeContext);
   let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
   const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
-  const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#0073e6]");
+  const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
   const [pSpace, setPSpace] = useState<number>(-15);
 
   if (typeof window !== "undefined") {
