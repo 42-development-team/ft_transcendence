@@ -23,7 +23,8 @@ export default function Home() {
   if (typeof window !== "undefined") {
     window.addEventListener('resize', () => {
       setFontSize(Math.max(window.innerWidth / 9, 80));
-      if (window.innerWidth < 500)
+      console.log(window.innerWidth);
+      if (window.innerWidth < 1000)
         setPSpace(-15);
       else {
         setPSpace(-35);
@@ -43,11 +44,11 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window === 'undefined')
-      setFontSize(150);
+      setFontSize(80);
     else {
-      setFontSize(window.innerWidth / 8);
-      if (window.innerWidth < 500)
-        setPSpace(-10);
+      setFontSize(Math.max((window.innerWidth / 9), 80));
+      if (window.innerWidth < 1000)
+        setPSpace(-15);
       else {
         setPSpace(-35);
       }
