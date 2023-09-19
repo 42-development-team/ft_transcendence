@@ -393,108 +393,67 @@ export class GameService {
     /* GamePlay Ball */
     //========== BOUNCES =============//
     async bounce(idx: number, mode: boolean) {
-        this.borderBounce(idx);
-        this.paddleBounce(idx, mode);
+        const ball = this.gameRooms[idx].data.ball;
+        const player1 = this.gameRooms[idx].data.player1;
+        const player2 = this.gameRooms[idx].data.player2;
+        this.borderBounce(ball);
+        this.paddleBounce(ball, player1, player2, mode);
         this.score(idx);
     };
 
     //>>BORDER<<//
-    async borderBounce(idx: number) {
-        if (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.ball.r <= 0 || this.gameRooms[idx].data.ball.y + this.gameRooms[idx].data.ball.r >= 1)
-            this.gameRooms[idx].data.ball.speed[1] *= -1;
+    async borderBounce(ball: BallDto) {
+        if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
+            ball.speed[1] *= -1;
     }
 
     //>>PADDLE<//
-    async paddleBounce(idx: number, mode: boolean) {
-        if (mode) {
-            this.paddleModePlayer(idx);
-        }
-        else {
-            this.paddleLeftBounce(idx);
-            this.paddleRightBounce(idx);
-        }
+    async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto, mode: boolean) {
+        // if (mode) {
+            this.paddleModePlayer(ball, player1);
+            this.paddleModePlayer(ball, player2);
+        // }
+        // else {
+            // this.paddleLeftBounce(idx);
+            // this.paddleRightBounce(idx);
+        // }
     }
 
-    async paddleModePlayer(idx: number) {
-        const ball = this.gameRooms[idx].data.ball;
-        const player = this.gameRooms[idx].data.player1;
+    async paddleModePlayer(ball: BallDto, player: PlayerDto) {
+        // const ball = this.gameRooms[idx].data.ball;
+        // const player = this.gameRooms[idx].data.player1;
 
         let dx: number;
+        const dy: number = Math.abs(ball.y - player.y);
         // if ( o | )
         if (ball.x < player.x) {
-            dx = Math.abs(ball.x + ball.r - player.x - player.w);
-            if (ball.speed[0] > 0) {}
-            else {}
+            dx = Math.abs(player.x - player.w - ball.x + ball.r);
         }
-        // else if ( | o )
+        // else ( | o )
         else {
             dx = Math.abs(ball.x - ball.r - player.x + player.w);
-            if (ball.speed[0] > 0) {}
-            else {}
         }
-  
-            // if ( o -> )
-                
-            // if ( <- o)
-    
-        // const dx = Math.abs(ball.x + ball.r - player.x);
-        const dy = Math.abs(ball.y - player.y);
-
-        // rigth to left
-        if (dx <= (ball.r + player.w + player.velocitx) && dy <= (ball.r + player.h / 2)) {
+        if (dx <= (ball.r + player.w) && dy <= (ball.r + player.h / 2)) {
+            
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
+            
+            if (ball.x < player.x)
+                ball.speed[0] = -Math.abs(ball.speed[0]);
+            else
+                ball.speed[0] = Math.abs(ball.speed[0]);
 
-            ball.speed[0] *= -1;
-            ball.speed[1] = Math.sin(radian);
-    
-            // Handle paddle movement on the x-axis
             if (player.velocitx > 0) {
-                ball.speed[0] += player.velocitx;
+                ball.speed[0] += 0.03;
             }
             else if (player.velocitx < 0) {
-                ball.speed[0] -= player.velocitx;
+                ball.speed[0] -= 0.03;
             }
+            console.log("speed:", ball.speed[0]);
+            
+            ball.speed[1] = Math.sin(radian);
         }
-        // left to rigth
-        const ddx = Math.abs(ball.x - ball.r - player.x);
-
-
     }
-
-    async paddleLeftBounce(idx: number) {
-        const ball = this.gameRooms[idx].data.ball;
-        const player = this.gameRooms[idx].data.player1;
-
-        let dx = Math.abs(ball.x + ball.r - player.x);
-        let dy = Math.abs(ball.y - player.y);
-
-        if (dx <= (ball.r + player.w)) {
-            if (dy <= (ball.r + player.h / 2)) {
-                const coef = 10 * (ball.y - player.y);
-                const radian = (coef * player.angle) * (Math.PI / 180);
-                ball.speed[0] *= -1;
-                ball.speed[1] = Math.sin(radian);
-            }
-        }
-    };
-
-    async paddleRightBounce(idx: number) {
-        const ball = this.gameRooms[idx].data.ball;
-        const player = this.gameRooms[idx].data.player2;
-
-        let dx = Math.abs(ball.x - ball.r - player.x);
-        let dy = Math.abs(ball.y - player.y);
-
-        if (dx <= (ball.r + player.w)) {
-            if (dy <= (ball.r + player.h / 2)) {
-                const coef = 10 * (ball.y - player.y);
-                const radian = (coef * player.angle) * (Math.PI / 180);
-                ball.speed[0] *= -1;
-                ball.speed[1] = Math.sin(radian);
-            }
-        }
-    };
 
     //========== SCORE =============//
     async score(idx: number) {
