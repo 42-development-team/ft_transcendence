@@ -79,7 +79,7 @@ model UserStats {
 	win			Int			@default(0)
 	ratio		Float		@default(0)
 	played		Int			@default(0)
-	totalScore	Int			@default(0)
+	totalScore	Int			@default(1000)
 	lose		Int			@default(0)
 	userId		Int			@unique
 	user		User		@relation(fields: [userId], references: [id])
