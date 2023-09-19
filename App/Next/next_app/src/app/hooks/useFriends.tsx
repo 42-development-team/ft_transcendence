@@ -19,9 +19,14 @@ export default function useFriends() {
 		socket?.on('friendUpdate', (body: any) => {
 			fetchFriends();
 		});
+		socket?.on('blockUpdate', (body: any) => {
+			fetchBlockedUsers();
+			console.log("blockUpdate");
+		});
 
 		return () => {
 			socket?.off('friendUpdate');
+			socket?.off('blockUpdate');
 		}
 	}, [socket, friends]);
 
@@ -68,6 +73,7 @@ export default function useFriends() {
 	const fetchBlockedUsers = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/blocked`, { credentials: "include", method: "GET" });
 		const data = await response.json();
+		console.log(JSON.stringify(data));
 		setBlockedUsers(data);
 	}
 
@@ -94,7 +100,6 @@ export default function useFriends() {
 				credentials: "include",
 				method: "PATCH",
 			});
-			updateBlockedUsers(await response.json());
 		}
 		catch (error) {
 			console.log("Block user:" + error);
@@ -107,7 +112,6 @@ export default function useFriends() {
 				credentials: "include",
 				method: "PATCH",
 			});
-			removeBlockedUser(await response.json());
 		}
 		catch (error) {
 			console.log("Block user:" + error);
