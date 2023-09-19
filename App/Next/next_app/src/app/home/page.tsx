@@ -1,5 +1,4 @@
 "use client"
-
 import Chat from "@/components/chat/Chat";
 import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
@@ -7,13 +6,13 @@ import Play from "../components/home/play";
 import Game from "../components/game/Game";
 import useGame from "../hooks/useGame";
 import InGameContext from "../context/inGameContext";
-import Pong from "../../../public/pong.png"
-import Image from "next/image";
 import themeContext from "../components/theme/themeContext";
+import useFriends from "@/hooks/useFriends";
 
 export default function Home() {
   const { login, userId } = useAuthContext();
   const { inGameContext } = useContext(InGameContext);
+  const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
   const [fontSize, setFontSize] = useState<number>(typeof window !== 'undefined' ? window.innerWidth / 8 : 0);
   const { theme } = useContext(themeContext);
   let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
@@ -43,15 +42,16 @@ export default function Home() {
       setFontSize(window.innerWidth / 8);
   }, [window]);
 
-  useEffect(() => {
-    login();
-  }, []);
+	useEffect(() => {
+		login();
+	}, []);
 
-  const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();
+	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();
 
   return (
     <div className="flex w-full h-full">
-      <Chat userId={userId} />
+			<Chat userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
+				addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} />
       {inGame === false && inGameContext === false ? (
         <div className="w-full p-4 h-full flex flex-col items-center justify-evenly">
           <div className="flex basis-1/6" />
