@@ -10,7 +10,7 @@ const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
-	const [disable, setDisable] = useState(false)
+	const [disable, setDisable] = useState(true)
 	const {leaveQueue, joinQueue, isUserQueued, userId, socket, changeMode, mode} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
@@ -36,6 +36,7 @@ const Play = ({...props}) => {
 		if (typeof window === "undefined") {
 			return;
 		}
+		setDisable(false);
 		isUserQueued(parseInt(userId));
 	}, [socket]);
 
