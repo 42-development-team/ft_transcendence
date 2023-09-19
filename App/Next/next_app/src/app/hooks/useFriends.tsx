@@ -25,6 +25,8 @@ export default function useFriends() {
 		}
 	}, [socket, friends]);
 
+	// FRIENDS
+
 	const fetchFriends = async () => {
 		fetchFriendsRequest();
 		fetchInvitedFriends();
@@ -44,6 +46,25 @@ export default function useFriends() {
 		setRequestedFriends(data);
 	}
 
+	const addFriend = async (friendAddingId: string) => {
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/friend/requestFriend/${friendAddingId}`, {
+				credentials: "include",
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			});
+			if (!response.ok) {
+				console.log("Error adding user as a friend: " + response.status);
+			}
+		}
+		catch (error) {
+			console.log("Error adding user as a friend: " + error);
+		}
+	}
+
+	// BLOCKED USERS
 	const fetchBlockedUsers = async () => {
 		const response = await fetch(`${process.env.BACK_URL}/friend/blocked`, { credentials: "include", method: "GET" });
 		const data = await response.json();
@@ -95,10 +116,11 @@ export default function useFriends() {
 
 	return {
 		friends,
+		invitedFriends,
+		requestedFriends,
+		addFriend,
 		blockedUsers,
 		blockUser,
 		unblockUser,
-		invitedFriends,
-		requestedFriends,
 	}
 }

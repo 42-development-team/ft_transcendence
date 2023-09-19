@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Chat from "@/components/chat/Chat";
 
 export default async function Profile() {
+    // Todo: move isFriend and addFriend functions to useFriend
     const payload = await getJwt();
     let userId = "";
     if (payload !== null && payload !== undefined) {

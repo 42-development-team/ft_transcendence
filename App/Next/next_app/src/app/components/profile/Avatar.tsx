@@ -3,7 +3,8 @@ import { useState, ChangeEvent, useEffect, useContext } from "react";
 import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
 import DropDownMenu from "../dropdown/DropDownMenu";
-import { DropDownActionLarge, DropDownActionRed } from "../dropdown/DropDownItem";
+import { DropDownAction, DropDownActionRed } from "../dropdown/DropDownItem";
+import useFriends from "@/app/hooks/useFriends";
 
 type AvatarProps = {
 	children?: any;
@@ -32,8 +33,7 @@ const Avatar = (
 		id = null,
 		width = 212,
 		height = 212,
-	}: AvatarProps
-) => {
+	}: AvatarProps ) => {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const { theme } = useContext(ThemeContext);
@@ -48,12 +48,30 @@ const Avatar = (
 	}, [wrongFormat]);
 
 	useEffect(() => {
-		if (theme === "latte") {
-			setTextUsername("text-surface0");
-		} else {
-			setTextUsername("text-text");
-		}
+		setTextUsername(theme === "latte" ? "text-surface0" : "text-text");
 	}, [theme]);
+
+	// Prevent spam clicking
+	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
+	const handleAction = (action: () => void) => {
+		if (lockSubmit) return;
+		setLockSubmit(true);
+		action();
+		setTimeout(() => setLockSubmit(false), 1500);
+	}
+
+	// Friend
+	const [isFriend, setIsFriend] = useState<boolean>(false);
+	const [isBlocked, setIsBlocked] = useState<boolean>(false);
+    const { friends, addFriend, blockedUsers, blockUser, unblockUser, invitedFriends, requestedFriends } = useFriends();
+
+	useEffect(() => {
+		if (currId == null || id == null) return;
+		setIsFriend(friends.find(user => user.id == id) != undefined 
+			|| requestedFriends.find(user => user.id == id) != undefined 
+			|| invitedFriends.find(user => user.id == id) != undefined);
+		setIsBlocked(blockedUsers.find(user => user.id == id) != undefined);
+	}, [friends, invitedFriends, requestedFriends, id]);
 
 	//check jpg / png
 	function checkFormat(arrayBuffer: ArrayBuffer) {
@@ -132,9 +150,27 @@ const Avatar = (
 				{isOnProfilePage && currId !== id &&
 					<div className="ml-2">
 						<DropDownMenu>
-							<DropDownActionLarge onClick={() => { }}>ADD/DELETE</DropDownActionLarge> {/*ADD or DELETE friend */}
-							<DropDownActionLarge onClick={() => { }}>PLAY</DropDownActionLarge>
-							<DropDownActionRed onClick={() => { }}>BLOCK</DropDownActionRed>
+							{!isFriend && !isBlocked &&
+							<>
+								<DropDownAction onClick={() => handleAction(() => {
+									if (id != null)
+										addFriend(id)
+								})}>Add Friend</DropDownAction>
+								<DropDownActionRed onClick={() => handleAction(() => {
+									if (id != null)
+										blockUser(id)
+								})}>Block</DropDownActionRed>
+							</>
+							}
+							{!isBlocked && 
+								<DropDownAction onClick={() => handleAction(() => console.log("test"))}>Invite to play</DropDownAction>
+							}
+							{isBlocked &&
+								<DropDownActionRed onClick={() => handleAction(() => {
+									if (id != null)
+										unblockUser(id)
+								})}>Unblock</DropDownActionRed>
+							}
 						</DropDownMenu>
 					</div>
 				}
