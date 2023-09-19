@@ -175,7 +175,7 @@ export class UserStatsService {
 			const winnerElo = winner.userStats.totalScore;
 			const loserElo = loser.userStats.totalScore;
 			const eloDiff = Math.min(loserElo - winnerElo, 400);
-			const expectedScore = 1 / (1 + Math.pow(10, eloDiff / 400));
+			const expectedScore = 1 / (1 + Math.pow(10, eloDiff / 400)); //https://fr.wikipedia.org/wiki/Classement_Elo
 			const kFactor = 32;
 			const eloWinnerChange = Math.round(kFactor * (1 - expectedScore));
 			const eloLoserChange = Math.round(kFactor * (0 - expectedScore));
