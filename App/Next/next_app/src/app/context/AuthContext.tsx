@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	const handleTabClosing = () => {
 		if (!isLoggedIn || userId == "") return ;
-		fetch(`${process.env.BACK_URL}/imageUrlGetFromCloudinary={imageUrl}users/set_offline/${userId}`, {
+		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
 			method: 'PUT',
 		});
 	}

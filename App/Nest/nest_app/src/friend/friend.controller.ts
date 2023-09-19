@@ -97,6 +97,7 @@ export class FriendController {
 				blockedUserSocket.emit('leftRoom', {room: room.name});
 			}
 		}
+		this.socketGateway.handleBlockUpdate(userId);
 		res.send(user);
 	}
 
@@ -105,6 +106,7 @@ export class FriendController {
 	async unblockUser(@Param('unblockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const user: FriendDto = await this.friendService.unblockUser(Number(blockedId), userId);
+		this.socketGateway.handleBlockUpdate(userId);
 		res.send(user);
 	}
 }

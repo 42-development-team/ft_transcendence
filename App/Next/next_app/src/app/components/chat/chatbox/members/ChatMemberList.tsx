@@ -20,10 +20,12 @@ interface ChatMemberListProps {
 	friends: UserModel[]
     requestedFriends: UserModel[];
     invitedFriends: UserModel[];
+    addFriend: (friendAddingId: string) => void;
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends, requestedFriends, invitedFriends }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, 
+        friends, requestedFriends, invitedFriends, addFriend }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -186,26 +188,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 			console.log("Error muting: " + error);
         }
     }
-
-	const addFriend = async (friendAddingId: string) => {
-		// Todo: alerts
-		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/requestFriend/${friendAddingId}`, {
-				credentials: "include",
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-			});
-			// console.log(response);
-			if (!response.ok) {
-				console.log("Error adding user as a friend: " + response.status);
-			}
-		}
-		catch (error) {
-			console.log("Error adding user as a friend: " + error);
-		}
-	}
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import useChannels from '@/app/hooks/useChannels';
-import { ChannelModel } from '@/app/utils/models';
+import { ChannelModel, UserModel } from '@/app/utils/models';
 import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextProvider';
 import ChatSideBar from './ChatSideBar';
 import ChatMessagesBox from './chatbox/ChatMessageBox';
@@ -15,11 +15,19 @@ import ChannelSettings from './channel/ChannelSettings';
 
 interface ChatBarProps {
     userId: string;
+    friends: UserModel[];
+    invitedFriends: UserModel[];
+    requestedFriends: UserModel[];
+    addFriend: (friendAddingId: string) => void;
+    blockedUsers: UserModel[];
+    blockUser: (userId: string) => void;
+    unblockUser: (userId: string) => void;
 }
 
-const Chat = ({ userId }: ChatBarProps) => {
+const Chat = ({ 
+    userId, friends, invitedFriends, requestedFriends, addFriend,
+    blockedUsers, blockUser, unblockUser }: ChatBarProps) => {
     const { chatBarState, openChannelId, updateChatBarState } = useChatBarContext();
-    const { friends, blockedUsers, blockUser, unblockUser, invitedFriends, requestedFriends } = useFriends();
     const {
         channels, joinedChannels,
         createNewChannel, joinChannel, sendToChannel, setCurrentChannelId,
@@ -67,9 +75,10 @@ const Chat = ({ userId }: ChatBarProps) => {
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers}/>
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
-                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} blockUser={blockUser} 
-                        blockedUsers={blockedUsers} friends={friends}
-                        requestedFriends={requestedFriends} invitedFriends={invitedFriends}/>
+                    <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} 
+                        blockUser={blockUser} blockedUsers={blockedUsers}
+                        addFriend={addFriend}
+                        friends={friends} requestedFriends={requestedFriends} invitedFriends={invitedFriends}/>
                 }
                 {chatBarState == ChatBarState.ChannelSettingsOpen && currentChannel &&
                     <ChannelSettings channel={currentChannel} />
