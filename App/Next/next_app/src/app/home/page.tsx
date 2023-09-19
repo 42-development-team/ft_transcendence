@@ -13,15 +13,16 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   const { inGameContext } = useContext(InGameContext);
   const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
-  const [fontSize, setFontSize] = useState<number>(typeof window !== 'undefined' ? window.innerWidth / 8 : 0);
+  const [fontSize, setFontSize] = useState<number>(typeof window !== 'undefined' ? window.innerWidth / 9 : 0);
   const { theme } = useContext(themeContext);
   let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
   const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
   const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#0073e6]");
+  const [pSpace, setPSpace] = useState<string>("-10px");
 
   if (typeof window !== "undefined") {
     window.addEventListener('resize', () => {
-      setFontSize(window.innerWidth / 8);
+      setFontSize(Math.max(window.innerWidth / 9, 80));
     });
   }
 
@@ -30,8 +31,8 @@ export default function Home() {
       setColorText("text-[#e7a446]");
       setNeonColor("#ea76cb");
     } else {
-      setColorText("text-[#f0f471]");
-      setNeonColor("#0073e6");
+      setColorText("text-[#e7a446]");
+      setNeonColor("#cba6f9");
     }
   }, [theme]);
 
@@ -56,13 +57,13 @@ export default function Home() {
         <div className="w-full p-4 h-full flex flex-col items-center justify-evenly">
           <div className="flex basis-1/6" />
           <div
-            className={`flex cyber ` + colorText}
+            className={`flex cyber pointer-events-none ` + colorText}
             style={{
               fontSize: fontSize + 'px',
               fontFamily: "Cy",
               textShadow: `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}`
             }}>
-            PONG
+            <span style={{ letterSpacing: "-38px" }}>P</span>ONG
           </div>
           <div className="basis-1/5" />
           <div className="basis-3/6">
