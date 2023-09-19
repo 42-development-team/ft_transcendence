@@ -90,12 +90,6 @@ export class UserStatsService {
 			where: { id: userId },
 		});
 		const username = user.username;
-		// if (user.userStats === undefined || !user.userStats) {
-		// 	const newUserStats = await this.createUserStats({ userId: userId });
-		// 	if (!newUserStats) {
-		// 		throw new Error("UserStats Creation failed");
-		// 	}
-		// }
 		await this.creteUserStatsIfNotExists(user);
 		const leaderBoard = await this.prisma.userStats.findMany({
 			include: { user: true },
@@ -146,7 +140,7 @@ export class UserStatsService {
 				include: { user: true},
 				where: { userId: user.id },
 				data: {
-					winStreak: user.userStats.winStreak + win,
+					winStreak: win === 1 ? user.userStats.winStreak + 1 : 0,
 					win: {
 						increment: win,
 					},
