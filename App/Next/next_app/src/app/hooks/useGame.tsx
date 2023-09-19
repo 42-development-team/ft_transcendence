@@ -79,7 +79,6 @@ export default function useGame() {
 			setMode(false);
 		else
 			setMode(true);
-		console.log('mode', mode);
 	}
 
 	const joinQueue = async () => {
