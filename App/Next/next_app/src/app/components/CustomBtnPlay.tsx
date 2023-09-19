@@ -27,7 +27,7 @@ const CustomBtn = (
         }
     ) => {
     return (
-        <div className="flex flex-col ">
+        <div className="flex flex-col " style={{userSelect:"none"}}>
         <button
             type="button"
             id={id}
