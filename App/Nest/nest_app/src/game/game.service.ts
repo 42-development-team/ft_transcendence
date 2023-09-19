@@ -254,15 +254,17 @@ export class GameService {
         }
         const player1 = this.gameRooms[idx].data.player1;
         const player2 = this.gameRooms[idx].data.player2;
+        
         if (player1.id === userId) {
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, player1);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player1);
+            
             if (this.gameRooms[idx].data.mode) {
-                if (event === "ArrowLeft"  && player1.x > 0.02)
+                if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player1);
-                else if (event === "ArrowRight"  && player1.x < 0.48)
+                else if (event === "ArrowRight")
                     this.setVelocitx(0.005, player1);
             }
         }
@@ -271,10 +273,11 @@ export class GameService {
                 this.setVelocity(-0.01, player2);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player2);
+            
             if (this.gameRooms[idx].data.mode) {
-                if (event === "ArrowLeft" && player2.x > 0.58)
+                if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player2);
-                else if (event === "ArrowRight" && player2.x < 0.98)
+                else if (event === "ArrowRight")
                     this.setVelocitx(0.005, player2);
             }
         }
@@ -367,6 +370,8 @@ export class GameService {
 
         if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
             player.x = valx;
+        else
+            this.killVelocitx(player);
     }
 
     async movePlayer(player: PlayerDto) {
@@ -434,10 +439,14 @@ export class GameService {
             else
                 ball.speed[0] = Math.abs(ball.speed[0]);
 
-            if (player.velocitx > 0)
+            if (player.velocitx > 0) {
+                console.log("speed up", ball.speed[0]);
                 ball.speed[0] += 0.03;
-            else if (player.velocitx < 0)
+            }
+            else if (player.velocitx < 0) {
+                console.log("speed up", ball.speed[0]);
                 ball.speed[0] -= 0.03;
+            }
             ball.speed[1] = Math.sin(radian);
         }
     }
@@ -463,12 +472,11 @@ export class GameService {
         // CHANGE
         // if (Math.random() < 0.5)
         //     sign *= -1;
-        // this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
-        this.gameRooms[idx].data.ball.speed[0] = -0.3;
+        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
         // if (Math.random() < 0.5)
         //     sign *= -1;
-        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
+        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
         this.gameRooms[idx].data.ball.speed[1] = 0;
     }
 
@@ -543,8 +551,8 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            // speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
             // CHANGE
+            // speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
             speed: [-0.3, 0],
             incr: 0,
         }
