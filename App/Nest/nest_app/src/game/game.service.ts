@@ -439,14 +439,10 @@ export class GameService {
             else
                 ball.speed[0] = Math.abs(ball.speed[0]);
 
-            if (player.velocitx > 0) {
-                console.log("speed up", ball.speed[0]);
+            if (player.velocitx > 0)
                 ball.speed[0] += 0.03;
-            }
-            else if (player.velocitx < 0) {
-                console.log("speed up", ball.speed[0]);
+            else if (player.velocitx < 0)
                 ball.speed[0] -= 0.03;
-            }
             ball.speed[1] = Math.sin(radian);
         }
     }
@@ -469,15 +465,13 @@ export class GameService {
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
 
-        // CHANGE
-        // if (Math.random() < 0.5)
-        //     sign *= -1;
+        if (Math.random() < 0.5)
+            sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
-        // if (Math.random() < 0.5)
-        //     sign *= -1;
-        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
-        this.gameRooms[idx].data.ball.speed[1] = 0;
+        if (Math.random() < 0.5)
+            sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -551,9 +545,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            // CHANGE
-            // speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
-            speed: [-0.3, 0],
+            speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
             incr: 0,
         }
 
