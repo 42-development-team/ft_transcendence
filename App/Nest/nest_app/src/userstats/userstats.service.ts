@@ -137,13 +137,19 @@ export class UserStatsService {
 		const updatedStats = await this.prisma.userStats.update({
 			include: { user: true},
 			where: { userId: user.id },
-			data: { 
-					winStreak: user.userStats.winStreak + userUpdateDto.winStreak,
-					win: user.userStats.win + userUpdateDto.win,
-					lose: user.userStats.lose + userUpdateDto.lose,
-					totalScore: user.userStats.totalScore + userUpdateDto.totalScore,
-					ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.played + userUpdateDto.played)).toFixed(1)),
-					played: user.userStats.played + userUpdateDto.played,
+			data: {
+				winStreak: userUpdateDto.winStreak == 0 ? 0 : user.userStats.winStreak + 1,
+				win: {
+					increment: userUpdateDto.win == 0 ? 0 : 1,
+				},
+				lose: {
+					increment: userUpdateDto.lose == 0 ? 0 : 1,
+				},
+				totalScore: user.userStats.totalScore + userUpdateDto.totalScore,
+				ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.played + userUpdateDto.played)).toFixed(1)),
+				played: {
+					increment: 1,
+				}
 			},
 		});
 	}
