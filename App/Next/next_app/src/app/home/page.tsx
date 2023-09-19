@@ -60,7 +60,7 @@ export default function Home() {
             style={{
               fontSize: fontSize + 'px',
               fontFamily: "Cy",
-              textShadow: `0 0 35px black ,4px 4px 15px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}`
+              textShadow: `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}`
             }}>
             PONG
           </div>
