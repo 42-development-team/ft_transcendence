@@ -120,10 +120,20 @@ export class UserStatsService {
 	}
 
 	async updateUserStatsOnEndGame( userId: number, userUpdateDto: UserStatsDto ) {
-		const user = await this.prisma.user.findUniqueOrThrow({
+		let user = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
 			where: { id: userId },
 		});
+		if (user.userStats === undefined || !user.userStats) {
+			const newUserStats = await this.createUserStats({ userId: userId });
+			if ( !newUserStats ) {
+				throw new Error("UserStats Creation failed");
+			}
+			user = await this.prisma.user.findUniqueOrThrow({
+				include: { userStats: true },
+				where: { id: userId },
+			});
+		}
 		const updatedStats = await this.prisma.userStats.update({
 			include: { user: true},
 			where: { userId: user.id },
@@ -132,7 +142,7 @@ export class UserStatsService {
 					win: user.userStats.win + userUpdateDto.win,
 					lose: user.userStats.lose + userUpdateDto.lose,
 					totalScore: user.userStats.totalScore + userUpdateDto.totalScore,
-					ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.lose + userUpdateDto.lose)).toFixed(1)),
+					ratio: Number(((user.userStats.win + userUpdateDto.win) / (user.userStats.played + userUpdateDto.played)).toFixed(1)),
 					played: user.userStats.played + userUpdateDto.played,
 			},
 		});
