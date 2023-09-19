@@ -41,6 +41,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     }
 
     try {
+
+      if (userIdNumber === 0) return ;
       fetchGame(userIdNumber);
       fetchStats(userIdNumber);
       if (stats === undefined)
@@ -49,7 +51,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
       console.log("Error response when fetching userstats/info:", error);
     }
 
-  }, [gamesLoaded, statsLoaded]);
+  }, [userId]);
 
   const handleClick = (value: string) => {
     setActiveTab(value);
