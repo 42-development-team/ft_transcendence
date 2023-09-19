@@ -32,12 +32,12 @@ const CustomBtn = (
             type="button"
             id={id}
             disabled={disable}
-            style={{opacity: disable? 0.5 : 1, fontSize: 32, fontFamily: "Cy", textShadow:' 0 0 15px white', background: 'linear-gradient(to right, #e7a446, #fab387)'}}
+            style={{opacity: disable? 0.5 : 1, fontSize: 32, fontFamily: "Cy", textShadow:' 0 0 15px #f5c2e7',   background: 'linear-gradient(to right, #e7a446 0%, #e7a446 35%, #fab387 100%)'}}
             className={` ${anim && ' text-lg focus:ring-4 shadow-lg transform active:scale-75 transition-transform'}
 			h-[${height}px] w-[${width}px] font-bold text-2xl rounded-lg text-base ${color} 
             disabled:pointer-events-none disabled:bg-transparent hover:brightness-110
 			hover:bg-pink
-            drop-shadow-xl m-4 p-3 text-purple `}
+            l m-4 p-3 text-purple `}
             onClick={onClick}>
             {children}
         </button>
