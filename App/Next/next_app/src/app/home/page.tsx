@@ -13,7 +13,7 @@ export default function Home() {
   const { login, userId } = useAuthContext();
   const { inGameContext } = useContext(InGameContext);
   const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
-  const [fontSize, setFontSize] = useState<number>(typeof window !== 'undefined' ? window.innerWidth / 9 : 80);
+  const [fontSize, setFontSize] = useState<number>(typeof window !== 'undefined' ? window.innerWidth / 8.5 : 80);
   const { theme } = useContext(themeContext);
   let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
   const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
@@ -22,7 +22,7 @@ export default function Home() {
 
   if (typeof window !== "undefined") {
     window.addEventListener('resize', () => {
-      setFontSize(Math.max(window.innerWidth / 9, 80));
+      setFontSize(Math.max(window.innerWidth / 8.5, 80));
       console.log(window.innerWidth);
       if (window.innerWidth < 1000)
         setPSpace(-15);
@@ -46,7 +46,7 @@ export default function Home() {
     if (typeof window === 'undefined')
       setFontSize(80);
     else {
-      setFontSize(Math.max((window.innerWidth / 9), 80));
+      setFontSize(Math.max((window.innerWidth / 8.5), 80));
       if (window.innerWidth < 1000)
         setPSpace(-15);
       else {
