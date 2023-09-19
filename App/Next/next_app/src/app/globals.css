@@ -147,3 +147,14 @@
 	}
 }
 
+/* Font cyber */
+@font-face {
+	font-family: 'Cy';
+	src: url('../../public/Cyberpunk.woff') format('woff');
+	
+}
+
+.cyber {
+	font-size: 200px;
+	font-family: 'Cy', sans-serif;
+}
