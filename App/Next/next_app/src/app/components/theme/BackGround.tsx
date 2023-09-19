@@ -1,8 +1,6 @@
 'use client';
 import React, { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Image from "next/image";
-import logoWhite from "../../../../public/logoWhite.png";
 import homeBackground from '../../../../public/background_11.png';
 import homeBackgroundLight from '../../../../public/backgroundLight_11.png';
 import themeContext from "./themeContext";
