@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, ChangeEvent, useEffect, useContext } from "react";
 import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
@@ -47,10 +46,6 @@ const Avatar = (
 			imageUrlGetFromCloudinary = null;
 		}
 	}, [wrongFormat]);
-
-	useEffect(() => {
-
-	}, [imageUrl]);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -107,22 +102,18 @@ const Avatar = (
 			return;
 		}
 
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = isImage;
-			reader.readAsArrayBuffer(file);
-		}
+		const reader = new FileReader();
+		reader.onload = isImage;
+		reader.readAsArrayBuffer(file);
 
 		if (wrongFormat) {
 			setImageUrl(null);
 			return;
 		}
-
 		if (!file.type.startsWith('image/')) {
 			console.log('Selected file is not an image.');
 			return;
 		}
-
 
 		const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
 		if (file.size > maxFileSizeInBytes) {
@@ -131,28 +122,22 @@ const Avatar = (
 		}
 		const objectURL = URL.createObjectURL(file);
 		setImageUrl(objectURL);
-		CallbackAvatarData(file, objectURL, null); //Send Avatar DAta to Parent Component
-	};
-
-	/* factice onClick just for testing DropDown, TODO: remove and create some file and real function */
-	const onAddClick = () => { };
-	/* */
+		CallbackAvatarData(file, objectURL, null); //Send Avatar Data to Parent Component
+	}
 
 	return (
 		<div className="flex flex-col my-5 justify-center ">
 			<div className={` flex fex-row items-center justify-center font-bold text-center text-2xl mb-2 ` + textUsername}>
 				<div>{userName}</div>
-				{
-					isOnProfilePage && currId !== id &&
+				{isOnProfilePage && currId !== id &&
 					<div className="ml-2">
 						<DropDownMenu>
-							<DropDownActionLarge onClick={onAddClick}>ADD/DELETE</DropDownActionLarge> {/*ADD or DELETE friend */}
-							<DropDownActionLarge onClick={onAddClick}>PLAY</DropDownActionLarge>
-							<DropDownActionRed onClick={onAddClick}>BLOCK</DropDownActionRed>
+							<DropDownActionLarge onClick={() => { }}>ADD/DELETE</DropDownActionLarge> {/*ADD or DELETE friend */}
+							<DropDownActionLarge onClick={() => { }}>PLAY</DropDownActionLarge>
+							<DropDownActionRed onClick={() => { }}>BLOCK</DropDownActionRed>
 						</DropDownMenu>
 					</div>
 				}
-
 			</div>
 			<div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
@@ -163,8 +148,7 @@ const Avatar = (
 							alt="Selected Avatar"
 							width={width}
 							height={height}
-							className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`}
-						/>
+							className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`} />
 					</div>
 				) : (
 					<div className="flex justify-center">
@@ -174,8 +158,7 @@ const Avatar = (
 							alt="Default Avatar"
 							width={width}
 							height={height}
-							className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`}
-						/>
+							className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`} />
 					</div>
 				)}
 				{!disableChooseAvatar &&
@@ -188,14 +171,12 @@ const Avatar = (
 							id="avatarInput"
 							accept="image/*"
 							onChange={handleAvatarChange}
-							className="hidden"
-						/>
+							className="hidden" />
 					</div>
 				}
 			</div>
 		</div>
 	)
-
 }
 
 export default Avatar;
