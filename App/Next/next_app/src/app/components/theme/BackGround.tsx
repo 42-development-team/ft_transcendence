@@ -23,7 +23,7 @@ export const BackgroundBall = () => {
 		<div >
 			<TransitionGroup>
 				<CSSTransition
-					key={storage}
+					key={localStorage.getItem("theme")}
 					in={entered}
 					appear={true}
 					timeout={900}
