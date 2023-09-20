@@ -20,8 +20,17 @@ export default function GameInviteProvider({ children }: any) {
 			setInviteSent(false);
 		});
 		socket?.on('receiveInvite', (body: any) => {
+			/* create a timer on invitedBy attribute */
+
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
+			const timeoutId = setTimeout(() => {
+				setInvitedBy("");
+				setMode(false);
+			  }, 5000);
+		  
+			  // Cleanup the timeout when the component unmounts or when the event is triggered again
+			  return () => clearTimeout(timeoutId);
 		});
 
 		return () => {
