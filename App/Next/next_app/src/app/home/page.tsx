@@ -41,18 +41,19 @@ export default function Home() {
 		}
 	}, [theme]);
 
-	useEffect(() => {
-		if (typeof window === 'undefined')
-			setFontSize(80);
-		else {
-			setFontSize(Math.max((window.innerWidth / 8.5), 80));
-			if (window.innerWidth < 1000)
-				setPSpace(-15);
-			else {
-				setPSpace(-35);
-			}
-		}
-	}, [window]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined')
+      setFontSize(80);
+    else {
+      setFontSize(Math.max((window.innerWidth / 8.5), 80));
+      if (window.innerWidth < 1000)
+        setPSpace(-15);
+      else {
+        setPSpace(-35);
+      }
+    }
+  }, []);
 
 	useEffect(() => {
 		login();
