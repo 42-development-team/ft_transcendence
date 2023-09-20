@@ -537,7 +537,7 @@ export class GameService {
 
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 1 || this.gameRooms[idx].data.player2.points > 1)
+        if (this.gameRooms[idx].data.player1.points > 100 || this.gameRooms[idx].data.player2.points > 100)
             this.gameRooms[idx].data.end = true;
 
         return { ...this.gameRooms[idx].data };

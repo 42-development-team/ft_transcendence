@@ -16,7 +16,7 @@ const Game = ({ ...props }) => {
 		<div>
 			{ data && (
 				(result === undefined || result === null) ? (
-				<div>
+				<div className="">
 					<Surrender
 						surrender={surrender}
 						socket={socket}
