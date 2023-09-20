@@ -7,19 +7,19 @@ import { useEffect, useState } from "react";
 type ProfileActionsProps = {
 	userId: string;
 	currentId: string;
-    friends: UserModel[];
-    invitedFriends: UserModel[];
-    requestedFriends: UserModel[];
-    addFriend: (friendAddingId: string) => void;
-    blockedUsers: UserModel[];
-    blockUser: (userId: string) => void;
-    unblockUser: (userId: string) => void;
+	friends: UserModel[];
+	invitedFriends: UserModel[];
+	requestedFriends: UserModel[];
+	addFriend: (friendAddingId: string) => void;
+	blockedUsers: UserModel[];
+	blockUser: (userId: string) => void;
+	unblockUser: (userId: string) => void;
 }
 
 const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedFriends,
 	addFriend, blockedUsers, blockUser, unblockUser }: ProfileActionsProps) => {
 	const [isFriend, setIsFriend] = useState<boolean>(false);
-	const [isFriendOrInvited, setIsFriendOrInvited] = useState<boolean>(false);
+	const [isInvitedFriend, setIsInvitedFriend] = useState<boolean>(false);
 	const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
 	// Prevent spam clicking
@@ -42,28 +42,31 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 	useEffect(() => {
 		if (userId == null || currentId == null) return;
 		setIsFriend(friends.find(user => user.id == currentId) != undefined);
-		setIsFriendOrInvited(friends.find(user => user.id == currentId) != undefined 
-			|| requestedFriends.find(user => user.id == currentId) != undefined 
+		setIsInvitedFriend(requestedFriends.find(user => user.id == currentId) != undefined
 			|| invitedFriends.find(user => user.id == currentId) != undefined);
 		setIsBlocked(blockedUsers.find(user => user.id == currentId) != undefined);
 	}, [friends, invitedFriends, requestedFriends, currentId, blockedUsers]);
 
 	return (
 		<DropDownMenu>
-			{!isFriendOrInvited && !isBlocked &&
+			{!lockSubmit &&
 				<>
-					<DropDownAction onClick={() => handleAction(() => addFriend(currentId))}>Add Friend</DropDownAction>
-					<DropDownActionRed onClick={() => handleAction(() => blockUser(currentId))}>Block</DropDownActionRed>
+					{!isInvitedFriend && !isFriend && !isBlocked &&
+						<DropDownAction onClick={() => handleAction(() => addFriend(currentId))}>Add Friend</DropDownAction>
+					}
+					{!isBlocked &&
+						<DropDownAction onClick={() => handleAction(() => console.log("test"))}>Invite to play</DropDownAction>
+					}
+					{!isBlocked && !isFriend &&
+						<DropDownActionRed onClick={() => handleAction(() => blockUser(currentId))}>Block</DropDownActionRed>
+					}
+					{isBlocked &&
+						<DropDownActionRed onClick={() => handleAction(() => unblockUser(currentId))}>Unblock</DropDownActionRed>
+					}
+					{isFriend &&
+						<DropDownActionRed onClick={() => handleAction(removeFriend)}>Remove Friend</DropDownActionRed>
+					}
 				</>
-			}
-			{!isBlocked &&
-				<DropDownAction onClick={() => handleAction(() => console.log("test"))}>Invite to play</DropDownAction>
-			}
-			{isBlocked &&
-				<DropDownActionRed onClick={() => handleAction(() => unblockUser(currentId))}>Unblock</DropDownActionRed>
-			}
-			{isFriend &&
-				<DropDownActionRed onClick={() => handleAction(removeFriend)}>Remove Friend</DropDownActionRed>
 			}
 		</DropDownMenu>
 	)
