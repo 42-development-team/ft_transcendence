@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import ThemeContext from '../theme/themeContext';
 import LoadingContext from '@/app/context/LoadingContext';
-import CustomBtn from '../CustomBtn';
 
 const Play = ({...props}) => {
 
@@ -89,6 +88,7 @@ const Play = ({...props}) => {
 					<CustomBtnPlay
 					disable={disable}
 					onClick={matchmaking}
+					fontFam='Cy'
 					changeMode={changeMode}
 					mode={mode}
 					>
