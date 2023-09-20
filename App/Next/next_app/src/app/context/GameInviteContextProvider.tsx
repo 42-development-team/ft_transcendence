@@ -50,7 +50,7 @@ export default function GameInviteProvider({ children }: any) {
 		socket?.emit('respondToInvite', { invitorId, response });
 	}
 
-	const cancelInvite = (userId: string, socket:any) => {
+	const cancelInvite = async (invitorId: string) => {
 		console.log("cancelling invite");
 	}
 
