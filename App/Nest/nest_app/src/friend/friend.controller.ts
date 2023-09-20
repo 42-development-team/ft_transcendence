@@ -61,6 +61,15 @@ export class FriendController {
 		res.send("Friend removed successfully");
 	}
 
+	@Patch('cancelFriend/:canceledUserId')
+	async cancelFriend(@Param('canceledUserId') canceledUserId: string, @Request() req: any, @Res() res: Response) {
+		const userId = req.user.sub;
+		await this.friendService.removeFriendInvite(userId, Number(canceledUserId));
+		await this.friendService.removeFriendInvite(Number(canceledUserId), userId);
+		this.socketGateway.handleFriendUpdate(userId, Number(canceledUserId));
+		res.send("Friend request canceled successfully");
+	}
+
 	@Patch('acceptFriend/:acceptedUserId')
 	async acceptFriend(@Param('acceptedUserId') acceptedUserId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
@@ -81,6 +90,10 @@ export class FriendController {
 	async blockUser(@Param('blockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const user: FriendDto = await this.friendService.blockUser(Number(blockedId), userId);
+		// Check for pending friend invites and delete them
+		await this.friendService.removeFriendInvite(Number(blockedId), userId);
+		await this.friendService.removeFriendInvite(userId, Number(blockedId));
+		this.socketGateway.handleFriendUpdate(userId, Number(blockedId));
 		// Check for direct messages and delete them
 		const room = await this.friendService.removeDirectMessagesForBlockedUser(Number(blockedId), userId);
 		if (room) {
