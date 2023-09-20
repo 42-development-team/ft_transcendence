@@ -28,7 +28,7 @@ const CustomBtn = (
 			width?: number,
         }
     ) => {
-    const [modeActivated, setModeActivated] = useState<string>("");
+    const [modeActivated, setModeActivated] = useState<string>(mode ? "h1" : "");
     const onChangeMode = () => {
         if (mode === false) {
             setModeActivated("h1");
@@ -70,7 +70,7 @@ const CustomBtn = (
                 <br />
                 </label>
             </div>
-                <div className={`flex flex-wrap cyber text-yellow ` + modeActivated} style={{fontSize: 25, }}>
+                <div className={`flex flex-wrap text-yellow font-extrabold ` + modeActivated} style={{fontSize: 25, fontFamily: "Roobert"}}>
                 MODE
                 </div>
             </div>
