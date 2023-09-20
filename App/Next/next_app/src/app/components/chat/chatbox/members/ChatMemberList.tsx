@@ -9,7 +9,6 @@ import { useUserRole } from "../members/UserRoleProvider"
 import { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
-import { request } from 'http';
 
 interface ChatMemberListProps {
     channel: ChannelModel
@@ -309,7 +308,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 	}
 
     return (
-        <div className='w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <BackToChatButton onClick={() => updateChatBarState(ChatBarState.ChatOpen)} />
             </ChatHeader>

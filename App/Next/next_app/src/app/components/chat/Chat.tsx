@@ -6,7 +6,6 @@ import { ChatBarState, useChatBarContext } from '@/app/context/ChatBarContextPro
 import ChatSideBar from './ChatSideBar';
 import ChatMessagesBox from './chatbox/ChatMessageBox';
 import FriendList from '../friends/FriendList';
-import useFriends from '@/app/hooks/useFriends';
 import ChatMemberList from './chatbox/members/ChatMemberList';
 import JoinChannel from './channel/JoinChannel';
 import CreateChannel from './channel/CreateChannel';
@@ -69,8 +68,7 @@ const Chat = ({
     return (
         <div className=' flex h-[calc(100vh-48px)]'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
-                <ChatSideBar channels={joinedChannels} />
-                {/* Main Panel */}
+                <ChatSideBar channels={joinedChannels} friendRequestCount={requestedFriends.length} />
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
                     <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers}/>
                 }

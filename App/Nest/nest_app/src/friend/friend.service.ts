@@ -232,7 +232,7 @@ export class FriendService {
 		}
 	}
 
-	async removeFriendInviteForBlockedUser(blockedId: number, userId: number): Promise<any> {
+	async removeFriendInvite(blockedId: number, userId: number): Promise<any> {
 		try {
 			const request = await this.prisma.user.update({
 				where: { id: blockedId },

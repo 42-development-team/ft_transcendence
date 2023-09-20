@@ -37,7 +37,7 @@
 }
 
 .tooltip {
-	@apply bg-crust z-20 p-3;
+	@apply bg-crust z-20 p-3 border-2 border-text;
 	font-size: 1rem;
 }
 
