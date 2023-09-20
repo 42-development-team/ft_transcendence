@@ -13,8 +13,6 @@ export default function useGame() {
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [mode, setMode] = useState<boolean>(false);
 	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
-	const { gameLoading, setGameLoading } = useContext(LoadingContext);
-	const { inGameContext, setInGameContext } = useContext(IsInGameContext);
 
 	useEffect(() => {
 		socket?.emit('isInGame', userId)

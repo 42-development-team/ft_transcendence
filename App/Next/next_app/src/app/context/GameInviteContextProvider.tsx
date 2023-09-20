@@ -40,17 +40,17 @@ export default function GameInviteProvider({ children }: any) {
 		}
 	}, [socket]);
 
-	const inviteToPlay = (invitedId: string, modeEnabled: boolean) => {
+	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			console.log("invite sent with: " + invitedId + " " + modeEnabled);
-			socket?.emit('invite', {invitedId, modeEnabled});
+			socket?.emit('invite', invitedId, modeEnabled);
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
 		}
 	}
 
-	const respondToInvite = (userId: string, response: boolean) => {
+	const respondToInvite = async (userId: string, response: boolean) => {
 		socket?.emit('respondToInvite', { userId, response });
 	}
 

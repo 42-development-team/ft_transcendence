@@ -8,7 +8,7 @@ const SidePanelGameInvite = () => {
     return (
         <div>
             {invitedBy !== "" &&
-            <button onClick={() => respondToInvite(invitedBy, true)}>
+            <button onClick={async () => respondToInvite(invitedBy, true)}>
                 ACCEPT
             </button>
         }
