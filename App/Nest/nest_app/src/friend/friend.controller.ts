@@ -81,6 +81,10 @@ export class FriendController {
 	async blockUser(@Param('blockedId') blockedId: string, @Request() req: any, @Res() res: Response) {
 		const userId = req.user.sub;
 		const user: FriendDto = await this.friendService.blockUser(Number(blockedId), userId);
+		// Check for pending friend invites and delete them
+		await this.friendService.removeFriendInviteForBlockedUser(Number(blockedId), userId);
+		await this.friendService.removeFriendInviteForBlockedUser(userId, Number(blockedId));
+		this.socketGateway.handleFriendUpdate(userId, Number(blockedId));
 		// Check for direct messages and delete them
 		const room = await this.friendService.removeDirectMessagesForBlockedUser(Number(blockedId), userId);
 		if (room) {

@@ -232,6 +232,32 @@ export class FriendService {
 		}
 	}
 
+	async removeFriendInviteForBlockedUser(blockedId: number, userId: number): Promise<any> {
+		try {
+			const request = await this.prisma.user.update({
+				where: { id: blockedId },
+				data: {
+					sentFriendRequest: {
+						set: (await this.prisma.user.findUnique({
+							where: { id: blockedId },
+							select: { sentFriendRequest: true },
+						})).sentFriendRequest.filter((id) => id !== userId),
+					},
+					receivedFriendRequest: {
+						set: (await this.prisma.user.findUnique({
+							where: { id: blockedId },
+							select: { receivedFriendRequest: true },
+						})).receivedFriendRequest.filter((id) => id !== userId),
+					},
+				},
+			});
+			return request;
+		}
+		catch (error) {
+			return undefined;
+		}
+	}
+
 	async removeDirectMessagesForBlockedUser(blockedId: number, userId: number): Promise<any> {
 		try {
 			const chatroom = await this.chatroomService.checkForExistingDirectMessageChannel(blockedId, userId);
