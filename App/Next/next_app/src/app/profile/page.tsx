@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export default function Profile() {
 	const { login, userId } = useAuthContext();
-	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser, inviteToPlay } = useFriends();
+	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
 
 	useEffect(() => {
 		login();
@@ -21,7 +21,7 @@ export default function Profile() {
             <div className="flex h-[calc(100%-48px)] w-full">
                 <div className="mx-[3vw] sm:mx-[7vw] my-[4vw] flex flex-col flex-grow">
                     <StatsWindow userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
-				        addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} inviteToPlay={inviteToPlay}/>
+				        addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser}/>
                     <UnderlineTabs userId={userId} />
                 </div>
             </div>

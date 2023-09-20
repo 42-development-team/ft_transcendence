@@ -17,10 +17,9 @@ type StatsWindowProps = {
     blockedUsers: UserModel[];
     blockUser: (userId: string) => void;
     unblockUser: (userId: string) => void;
-	inviteToPlay: (userId: string) => void;
 }
 const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFriend,
-	blockedUsers, blockUser, unblockUser, inviteToPlay }: StatsWindowProps) => {
+	blockedUsers, blockUser, unblockUser }: StatsWindowProps) => {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [statsData, setStatsData] = useState<any>("null");
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -77,7 +76,7 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 				isOnProfilePage={true} >
 					<ProfileActions userId={userId} currentId={statsData.userId} friends={friends} invitedFriends={invitedFriends}
 						requestedFriends={requestedFriends} addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser}
-						unblockUser={unblockUser} inviteToPlay={inviteToPlay}/>
+						unblockUser={unblockUser} />
 			</Avatar>
 			<div className=" w-full sm:ml-[2vw] font-semibold text-gray-400 text-center hover:duration-[550ms] rounded-lg
                 bg-surface0 bg-opacity-90 hover:shadow-[0_35px_55px_-20px_rgba(0,0,0,0.15)]">

@@ -49,6 +49,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         
         if (invitorId !== invitedId)
             this.gameService.handleInvite(invitorId, invitedId, mode);
+        const invitedSocket: any = this.userService.getUserSocketFromId(invitedId);
+        invitedSocket?.emit('receiveInvite', invitorId, mode);
+        invitorSocket?.emit('inviteSent');
     } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
 
     @SubscribeMessage('respondToInvite')

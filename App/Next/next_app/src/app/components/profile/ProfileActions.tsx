@@ -2,7 +2,8 @@
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "../dropdown/DropDownItem";
 import { UserModel } from "@/app/utils/models";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import GameInviteContext from "@/app/context/GameInviteContext";
 
 type ProfileActionsProps = {
 	userId: string;
@@ -14,11 +15,11 @@ type ProfileActionsProps = {
 	blockedUsers: UserModel[];
 	blockUser: (userId: string) => void;
 	unblockUser: (userId: string) => void;
-	inviteToPlay: (userId: string) => void;
 }
 
 const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedFriends,
-	addFriend, blockedUsers, blockUser, unblockUser, inviteToPlay}: ProfileActionsProps) => {
+	addFriend, blockedUsers, blockUser, unblockUser }: ProfileActionsProps) => {
+	const { inviteToPlay } = useContext(GameInviteContext);
 	const [isFriend, setIsFriend] = useState<boolean>(false);
 	const [isInvitedFriend, setIsInvitedFriend] = useState<boolean>(false);
 	const [isBlocked, setIsBlocked] = useState<boolean>(false);
@@ -56,7 +57,7 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 						<DropDownAction onClick={() => handleAction(() => addFriend(currentId))}>Add Friend</DropDownAction>
 					}
 					{!isBlocked &&
-						<DropDownAction onClick={() => handleAction(() => console.log("test"))}>Invite to play</DropDownAction>
+						<DropDownAction onClick={() => handleAction(() => inviteToPlay)}>Invite to play</DropDownAction>
 					}
 					{!isBlocked && !isFriend &&
 						<DropDownActionRed onClick={() => handleAction(() => blockUser(currentId))}>Block</DropDownActionRed>

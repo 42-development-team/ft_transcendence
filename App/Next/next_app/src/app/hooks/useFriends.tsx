@@ -99,15 +99,6 @@ export default function useFriends() {
 		}
 	}
 
-	const inviteToPlay = async (invitedId: string) => {
-		try {
-			socket?.emit('invite', invitedId);
-		}
-		catch (error) {
-			console.log("Invite to play:" + error);
-		}
-	}
-
 	return {
 		friends,
 		invitedFriends,
@@ -116,6 +107,5 @@ export default function useFriends() {
 		blockedUsers,
 		blockUser,
 		unblockUser,
-		inviteToPlay,
 	}
 }
