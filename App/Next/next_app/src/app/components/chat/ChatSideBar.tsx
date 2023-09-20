@@ -36,7 +36,7 @@ const ChatSideBar = ({ channels, friendRequestCount }: ChatSideBarProps) => {
 	}, [channels]);
 
 	return (
-		<div className="bg-opacity-60 backdrop-blur-lg w-16 min-w-[4rem] bg-base h-full flex flex-col justify-start items-center">
+		<div className="bg-opacity-90 backdrop-blur-lg w-16 min-w-[4rem] bg-base h-full flex flex-col justify-start items-center">
 			<ul className="flex flex-col gap-2 p-1 absolute h-[calc(100vh-48px)] items-center">
 				<ShowFriends friendRequestCount={friendRequestCount}/>
 				<JoinChannelButton />
