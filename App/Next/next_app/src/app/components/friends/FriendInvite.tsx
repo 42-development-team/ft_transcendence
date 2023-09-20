@@ -51,12 +51,12 @@ const FriendInvite = ({ user, hideActions }: FriendProps) => {
 			{!hideActions &&
 				<div className="flex gap-4">
 					<button
-						onClick={() => handleAction(() => acceptFriendRequest)}
+						onClick={() => handleAction(acceptFriendRequest)}
 						className="bg-green rounded text-base py-1 px-2 hover:bg-teal">
 						Accept
 					</button>
 					<button
-						onClick={() => handleAction(() => refuseFriendRequest)}
+						onClick={() => handleAction(refuseFriendRequest)}
 						className="bg-surface2 rounded py-1 px-2 hover:bg-base">
 						Ignore
 					</button>

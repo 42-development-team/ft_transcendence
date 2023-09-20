@@ -201,11 +201,13 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
     }
 
     const isFriend = (memberId: string) =>  {
-        return friends.find(user => user.id == memberId) != undefined 
-            || requestedFriends.find(user => user.id == memberId) != undefined 
-            || invitedFriends.find(user => user.id == memberId) != undefined;
+        return friends.find(user => user.id == memberId) != undefined;
     }
 
+    const isInvitedFriend = (memberId: string) =>  {
+        return requestedFriends.find(user => user.id == memberId) != undefined 
+            || invitedFriends.find(user => user.id == memberId) != undefined;
+    }
     // Chat member list
     // Todo: sort by ASCII
 
@@ -218,7 +220,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={isFriend(member.id)}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -227,7 +229,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={isFriend(member.id)}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const AdminList = channel.members
@@ -237,7 +239,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={isFriend(member.id)}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const BannedList = channel.members
@@ -247,7 +249,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={isFriend(member.id)}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         )
     )
 

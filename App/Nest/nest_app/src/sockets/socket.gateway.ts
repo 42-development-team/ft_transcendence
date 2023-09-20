@@ -173,7 +173,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userSocket = this.clients.find(c => c.id === userSocketId);
 		if (userSocket) {
 			userSocket.emit('blockUpdate', { userId });
-			console.log("Block update sent to:" + userId);
 		}
 	}
 }
