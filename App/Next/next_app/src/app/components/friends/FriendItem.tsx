@@ -17,7 +17,6 @@ const FriendActions = ({user}: FriendProps) => {
 
 	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 	const onProfileClick = () => {
-			console.log("userId = ", user.id);
 			sessionStorage.setItem("userId", user.id);
 			if (sessionStorage.getItem("userId") !== undefined)
 				window.location.href = "/profile";
