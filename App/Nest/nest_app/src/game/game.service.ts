@@ -188,9 +188,8 @@ export class GameService {
         this.gameRooms[idx].data.end = true;
     }
     
-    async handleJoinQueue(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
+    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
         try {
-            const userId: number = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
@@ -199,51 +198,40 @@ export class GameService {
                 if (mode) {
                     this.modeQueue.push(userId);
                     if (this.modeQueue.length >= 2)
-                        return this.handleJoinGame(player, mode);
+                        return this.handleJoinGame(mode);
                 }
                 else {
                     this.queue.push(userId);
                     if (this.queue.length >= 2)
-                        return this.handleJoinGame(player, mode);
+                        return this.handleJoinGame(mode);
                 }
             }
             else {
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
+                const player1SocketId: string = undefined;
                 const player2SocketId: string = undefined;
-                player?.join(this.gameRooms[idx].roomName);
-                return ({ newGameRoom, player2SocketId });
+                return ({ newGameRoom, player1SocketId, player2SocketId });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
-            player2Id = this.modeQueue[0];
-            player1Id = this.modeQueue[1];
+            player2Id = this.modeQueue.shift();
+            player1Id = this.modeQueue.shift();
         }
         else {
-            player2Id = this.queue[0];
-            player1Id = this.queue[1];
+            player2Id = this.queue.shift();
+            player1Id = this.queue.shift();
         }
 
         // create room data
-        const id: number = this.gameRooms.length;
-        const roomName: string = player1Id + "_" + player2Id;
-        const newGameRoom: GameRoomDto = {
-            id: id,
-            roomName: roomName,
-            playerOneId: player1Id,
-            playerTwoId: player2Id,
-            readyPlayerOne: false,
-            readyPlayerTwo: false,
-            reconnect: false,
-            data: this.setGameData(id, roomName, player1Id, player2Id, mode)
-        }
-
+        const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
+        const player1SocketId: string = await this.userService.getUserSocketFromId(player1Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
@@ -251,12 +239,13 @@ export class GameService {
         this.handleLeaveQueue(player2Id);
 
         // Create room instance and join room
-        await player?.join(roomName);
+        // await player?.join(newGameRoom.roomName);
 
         const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-        return ({ newGameRoom, player2SocketId });
+        return ({ newGameRoom, player1SocketId, player2SocketId });
     }
 
+    
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
@@ -298,7 +287,7 @@ export class GameService {
                 this.setVelocity(0.01, this.gameRooms[idx].data.player1);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player1);
+                this.setVelocitx(-0.01, this.gameRooms[idx].data.player1);
                 else if (event === "ArrowRight")
                     this.setVelocitx(0.01, this.gameRooms[idx].data.player1);
             }
@@ -349,26 +338,26 @@ export class GameService {
     async removeRoom(gameId: number) {
         const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
         if (idx === -1)
-            return;
-        this.gameRooms.splice(idx, 1);
-    }
+        return;
+    this.gameRooms.splice(idx, 1);
+}
 
-    async getDataFromRoomId(id: number): Promise<GameDto> {
-        return this.gameRooms.find(game => game.id === id).data;
-    }
+async getDataFromRoomId(id: number): Promise<GameDto> {
+    return this.gameRooms.find(game => game.id === id).data;
+}
 
-    async getDataFromUserId(userId: number): Promise<GameDto> {
-        return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)?.data;
-    }
+async getDataFromUserId(userId: number): Promise<GameDto> {
+    return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)?.data;
+}
 
-    async sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    //=================================================//
-    //================== GAME PLAY ====================//
-    //=================================================//
-    /* GamePlay Player */
-    async incrPoints(idx: number, player: number) {
+async sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+//=================================================//
+//================== GAME PLAY ====================//
+//=================================================//
+/* GamePlay Player */
+async incrPoints(idx: number, player: number) {
         if (player === 1)
             this.gameRooms[idx].data.player1.points++;
         else
@@ -538,14 +527,29 @@ export class GameService {
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 1 || this.gameRooms[idx].data.player2.points > 1)
-            this.gameRooms[idx].data.end = true;
+        this.gameRooms[idx].data.end = true;
+    
+    return { ...this.gameRooms[idx].data };
+}
 
-        return { ...this.gameRooms[idx].data };
+//=================================================//
+//================== INIT GAME ==================//
+//=================================================//
+    async setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
+        const id: number = this.gameRooms.length;
+        const roomName: string = player1Id + "_" + player2Id;
+        const newGameRoom: GameRoomDto = {
+            id: id,
+            roomName: roomName,
+            playerOneId: player1Id,
+            playerTwoId: player2Id,
+            readyPlayerOne: false,
+            readyPlayerTwo: false,
+            reconnect: false,
+            data: this.setGameData(id, roomName, player1Id, player2Id, mode)
+        }
+        return newGameRoom;
     }
-
-    //=================================================//
-    //================== UPDATE GAME ==================//
-    //=================================================//
 
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number, mode: boolean): GameDto {
         let player1: PlayerDto = {

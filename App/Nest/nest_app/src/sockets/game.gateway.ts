@@ -41,21 +41,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // =========================================================================== //
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket, mode: boolean) {
-        const result = await this.gameService.handleJoinQueue(player, mode);
+        const userId: number = await this.userService.getUserIdFromSocket(player);
+        const result = await this.gameService.handleJoinQueue(userId, mode);
 
+        // queue not full
         if (!result)
             return ;
         
-        const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId ) {
-            const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
-            await player2Socket?.join(newGameRoom.roomName);
-            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
-            this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+        // queue is full => game is created
+        const {newGameRoom, player1SocketId, player2SocketId} = result;
+        if (player1SocketId && player2SocketId ) {
+            //game is created from scratch
+            this.joinGameRoom(player1SocketId, player2SocketId, newGameRoom);
         }
         else {
+            // game already exist and player have to join it
+            player?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
+    }
+
+    async joinGameRoom(player1SocketId: string, player2SocketId: string, room: GameRoomDto) {
+        const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
+        const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
+        await player1Socket?.join(room.roomName);
+        await player2Socket?.join(room.roomName);
+        this.server.to(room.roomName).emit('redirect', 'redirectToHomeForGame');
+        this.server.to(room.roomName).emit('matchIsReady', room.data);
     }
 
     @SubscribeMessage('isInGame')
