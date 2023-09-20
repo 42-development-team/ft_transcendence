@@ -11,7 +11,6 @@ type FriendProps = {
 }
 
 const FriendActions = ({user}: FriendProps) => {
-	const [ openAlert, setOpenAlert ] = useState(false);
 	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [ isOpen, setIsOpen ] = useState(false);
