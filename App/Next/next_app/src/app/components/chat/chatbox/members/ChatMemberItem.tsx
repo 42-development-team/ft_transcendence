@@ -121,12 +121,11 @@ const ChatMemberItem = ({
 
     const getColor = () => {
         if (user.isOwner) {
-            return 'text-red';
-            // return '#fab387';
+            return 'text-[red]';
         } else if (user.isAdmin) {
-            return 'text-orange';
+            return 'text-[orange]';
         } else if (user.isBanned) {
-            return 'text-gray';
+            return 'text-[gray]';
         }
         return 'text-text';
     }
@@ -145,7 +144,7 @@ const ChatMemberItem = ({
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{user.username}</h1>
+                <p className={`${getColor()} pl[0.15rem] font-semibold text-md`}>{user.username}</p>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
