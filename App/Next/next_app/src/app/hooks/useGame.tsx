@@ -73,8 +73,8 @@ export default function useGame() {
 	}, [socket]);
 
 
-	const changeMode = () => {
-		leaveQueue();
+	const changeMode = async () => {
+		await leaveQueue();
 		if (mode === true)
 			setMode(false);
 		else

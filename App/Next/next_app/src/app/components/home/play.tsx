@@ -83,7 +83,7 @@ const Play = ({...props}) => {
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>
 						</div>
-							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Calling racket master...</div>
+							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Queue up...</div>
 					</div>
 				) : (
 					<CustomBtnPlay

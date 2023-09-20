@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 const CustomBtn = (
         {
             children,
@@ -26,13 +28,22 @@ const CustomBtn = (
 			width?: number,
         }
     ) => {
+    const [modeActivated, setModeActivated] = useState<string>(mode ? "h1 " : "");
+    const onChangeMode = () => {
+        if (mode === false) {
+            setModeActivated("h1");
+        } else {
+            setModeActivated("");
+        }
+    }
+
     return (
         <div className="flex flex-col " style={{userSelect:"none"}}>
         <button
             type="button"
             id={id}
             disabled={disable}
-            style={{opacity: disable? 0.5 : 1, fontSize: 32, fontFamily: "Cy", textShadow:' 0 0 15px ',   background: 'linear-gradient(to right, #e7a446 0%, #e7a446 35%, #fab387 100%)'}}
+            style={{opacity: disable? 0.5 : 1, fontSize: 28, fontFamily: "Cy", textShadow:' 0 0 15px ',   background: 'linear-gradient(to right, #e7a446 0%, #e7a446 35%, #fab387 100%)'}}
             className={` ${anim && ' text-lg focus:ring-4 shadow-lg transform active:scale-75 transition-transform'}
 			h-[${height}px] w-[${width}px] font-bold text-2xl rounded-lg text-mantle ${color} 
             disabled:pointer-events-none disabled:bg-transparent hover:brightness-110
@@ -49,6 +60,7 @@ const CustomBtn = (
                     type="checkbox"
                     className="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-overlay0 transition-colors duration-300 checked:bg-pink-500 peer-checked:border-pink-500 peer-checked:before:bg-pink-500"
                     onClick={changeMode}
+                    onChange={onChangeMode}
                     defaultChecked={mode}
                     />
                 <label
@@ -58,8 +70,8 @@ const CustomBtn = (
                 <br />
                 </label>
             </div>
-                <div className="flex flex-wrap cyber text-yellow" style={{fontSize: 25}}>
-                Custom MODE
+                <div className={`flex flex-wrap text-yellow font-extrabold ` + modeActivated} style={{fontSize: 25, fontFamily: "Roobert"}}>
+                MODE
                 </div>
             </div>
         }
