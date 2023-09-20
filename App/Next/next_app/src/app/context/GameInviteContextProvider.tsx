@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import InGameContext from './inGameContext';
 import GameInviteContext from './GameInviteContext';
 import { useAuthContext } from './AuthContext';
-import { Body } from '../components/theme/Body';
 
 export default function GameInviteProvider({ children }: any) {
 	const [invitedBy, setInvitedBy] = useState("");
@@ -20,16 +19,12 @@ export default function GameInviteProvider({ children }: any) {
 			setInviteSent(false);
 		});
 		socket?.on('receiveInvite', (body: any) => {
-			/* create a timer on invitedBy attribute */
-
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
 			const timeoutId = setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
 			  }, 5000);
-		  
-			  // Cleanup the timeout when the component unmounts or when the event is triggered again
 			  return () => clearTimeout(timeoutId);
 		});
 
@@ -43,15 +38,16 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			console.log("invite sent with: " + invitedId + " " + modeEnabled);
-			socket?.emit('invite', invitedId, modeEnabled);
+			socket?.emit("invite", {invitedId, modeEnabled});
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
 		}
 	}
 
-	const respondToInvite = async (userId: string, response: boolean) => {
-		socket?.emit('respondToInvite', { userId, response });
+	const respondToInvite = async (invitorId: string, response: boolean) => {
+		console.log("responding to invite: " + invitorId + " " + response);
+		socket?.emit('respondToInvite', { invitorId, response });
 	}
 
 	const cancelInvite = (userId: string, socket:any) => {
