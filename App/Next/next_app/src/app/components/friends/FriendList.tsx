@@ -36,7 +36,7 @@ const FriendList = ({friends, requestedFriends, invitedFriends, blockedUsers, un
     })
 
     return (
-        <div className='w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title="Friend List" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
             <div className='overflow-auto h-[86vh]'>
                 <ChatMemberHeader>📥 Pending Requests</ChatMemberHeader>
