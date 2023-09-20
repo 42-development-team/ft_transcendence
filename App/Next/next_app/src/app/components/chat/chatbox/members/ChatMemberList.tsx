@@ -9,7 +9,6 @@ import { useUserRole } from "../members/UserRoleProvider"
 import { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
-import { request } from 'http';
 
 interface ChatMemberListProps {
     channel: ChannelModel

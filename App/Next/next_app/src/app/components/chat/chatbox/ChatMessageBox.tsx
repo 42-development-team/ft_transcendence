@@ -34,7 +34,6 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
         const user = channel.members?.find(member => member.username == message.senderUsername);
         if (user?.isOwner) {
             return 'red';
-            // return '#fab387';
         } else if (user?.isAdmin) {
             return 'orange';
         } else if (user?.isBanned) {
