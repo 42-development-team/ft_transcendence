@@ -53,7 +53,7 @@ export default function Home() {
         setPSpace(-35);
       }
     }
-  }, [window]);
+  }, []);
 
   useEffect(() => {
     login();
