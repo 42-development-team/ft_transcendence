@@ -22,12 +22,13 @@ type ChatMemberProps = {
     blockUser: (blockedId: string) => void
     isBlocked: boolean
 	isFriend: boolean
+    isInvitedFriend: boolean
 }
 const ChatMemberItem = ({
 	user,
     isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage, blockUser,
-    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend
+    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend, isInvitedFriend
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthContext();
@@ -150,7 +151,7 @@ const ChatMemberItem = ({
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked}
-				isFriend={isFriend} addAsFriend={addAsFriend} />
+				isFriend={isFriend} isInvitedFriend={isInvitedFriend} addAsFriend={addAsFriend} />
         </div>
     )
 }

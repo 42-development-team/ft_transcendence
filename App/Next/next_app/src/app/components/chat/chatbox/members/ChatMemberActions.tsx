@@ -23,6 +23,7 @@ type ChatMemberActionsProps = {
 	block: () => void
 	isBlocked: boolean
 	isFriend: boolean
+	isInvitedFriend: boolean
 	addAsFriend: () => void
 }
 
@@ -31,7 +32,7 @@ const ChatMemberActions = (
 		isCurrentUser, user,
 		kickUser, banUser, unbanUser,
 		leaveChannel, sendDirectMessage, muteUser,
-		setAdmin, unsetAdmin, block, isBlocked, isFriend, addAsFriend
+		setAdmin, unsetAdmin, block, isBlocked, isFriend, isInvitedFriend, addAsFriend
 	}: ChatMemberActionsProps) => {
 
 	const onProfileClick = () => {
@@ -142,7 +143,7 @@ const ChatMemberActions = (
 					{isCurrentUser &&
 						<DropDownActionRed onClick={() => handleAction(leaveChannel)}>Leave</DropDownActionRed>
 					}
-					{!isCurrentUser && !isFriend && !isBlocked &&
+					{!isCurrentUser && !isFriend && !isBlocked && !isInvitedFriend &&
 						<DropDownActionRed onClick={() => handleAction(addAsFriend)}>Add friend</DropDownActionRed>
 					}
 				</div>
