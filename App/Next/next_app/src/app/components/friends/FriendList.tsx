@@ -48,7 +48,6 @@ const FriendList = ({friends, requestedFriends, invitedFriends, blockedUsers, un
                 <ChatMemberHeader>🚫 Blocked</ChatMemberHeader>
                 {blockedList}
             </div>
-            <button onClick={() => console.log(JSON.stringify(blockedUsers))} className="bg-crust text-text rounded-lg px-2 py-1">Log block</button>
         </div>
     )
 }
