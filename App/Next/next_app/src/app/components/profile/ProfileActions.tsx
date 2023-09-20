@@ -14,10 +14,11 @@ type ProfileActionsProps = {
 	blockedUsers: UserModel[];
 	blockUser: (userId: string) => void;
 	unblockUser: (userId: string) => void;
+	inviteToPlay: (userId: string) => void;
 }
 
 const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedFriends,
-	addFriend, blockedUsers, blockUser, unblockUser }: ProfileActionsProps) => {
+	addFriend, blockedUsers, blockUser, unblockUser, inviteToPlay}: ProfileActionsProps) => {
 	const [isFriend, setIsFriend] = useState<boolean>(false);
 	const [isInvitedFriend, setIsInvitedFriend] = useState<boolean>(false);
 	const [isBlocked, setIsBlocked] = useState<boolean>(false);
