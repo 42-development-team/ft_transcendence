@@ -19,6 +19,7 @@ type ProfileActionsProps = {
 const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedFriends,
 	addFriend, blockedUsers, blockUser, unblockUser }: ProfileActionsProps) => {
 	const [isFriend, setIsFriend] = useState<boolean>(false);
+	const [isFriendOrInvited, setIsFriendOrInvited] = useState<boolean>(false);
 	const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
 	// Prevent spam clicking
@@ -30,9 +31,18 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 		setTimeout(() => setLockSubmit(false), 1500);
 	}
 
+	const removeFriend = async () => {
+		console.log("removing friend");
+		await fetch(`${process.env.BACK_URL}/friend/removeFriend/${currentId}`, {
+			credentials: "include",
+			method: "PATCH"
+		});
+	}
+
 	useEffect(() => {
 		if (userId == null || currentId == null) return;
-		setIsFriend(friends.find(user => user.id == currentId) != undefined 
+		setIsFriend(friends.find(user => user.id == currentId) != undefined);
+		setIsFriendOrInvited(friends.find(user => user.id == currentId) != undefined 
 			|| requestedFriends.find(user => user.id == currentId) != undefined 
 			|| invitedFriends.find(user => user.id == currentId) != undefined);
 		setIsBlocked(blockedUsers.find(user => user.id == currentId) != undefined);
@@ -40,7 +50,7 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 
 	return (
 		<DropDownMenu>
-			{!isFriend && !isBlocked &&
+			{!isFriendOrInvited && !isBlocked &&
 				<>
 					<DropDownAction onClick={() => handleAction(() => addFriend(currentId))}>Add Friend</DropDownAction>
 					<DropDownActionRed onClick={() => handleAction(() => blockUser(currentId))}>Block</DropDownActionRed>
@@ -51,6 +61,9 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 			}
 			{isBlocked &&
 				<DropDownActionRed onClick={() => handleAction(() => unblockUser(currentId))}>Unblock</DropDownActionRed>
+			}
+			{isFriend &&
+				<DropDownActionRed onClick={() => handleAction(removeFriend)}>Remove Friend</DropDownActionRed>
 			}
 		</DropDownMenu>
 	)

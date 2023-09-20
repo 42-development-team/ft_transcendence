@@ -10,24 +10,23 @@ type FriendProps = {
 	user: UserModel
 }
 
-const FriendActions = ({user}: FriendProps) => {
-	const [ lockSubmit, setLockSubmit ] = useState<boolean>(false);
+const FriendActions = ({ user }: FriendProps) => {
+	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-	const [ isOpen, setIsOpen ] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 	const onProfileClick = () => {
-			sessionStorage.setItem("userId", user.id);
-			if (sessionStorage.getItem("userId") !== undefined)
-				window.location.href = "/profile";
-		}
+		sessionStorage.setItem("userId", user.id);
+		if (sessionStorage.getItem("userId") !== undefined)
+			window.location.href = "/profile";
+	}
 
-		const removeFriend = async () => {
-		const response = await fetch(`${process.env.BACK_URL}/friend/removeFriend/${user.id}`, {
+	const removeFriend = async () => {
+		await fetch(`${process.env.BACK_URL}/friend/removeFriend/${user.id}`, {
 			credentials: "include",
 			method: "PATCH"
 		});
-		// const data = await response.json();
 	}
 
 	const handleAction = (action: () => void) => {
@@ -41,42 +40,42 @@ const FriendActions = ({user}: FriendProps) => {
 	// todo callback func to invite to play
 	return (
 		<div aria-orientation="vertical" >
-            <DropDownAction onClick={() => handleAction(() =>console.log('Play'))}>
+			<DropDownAction onClick={() => handleAction(() => console.log('Play'))}>
 				Invite to play
 			</DropDownAction>
-            <DropDownAction onClick={() => handleAction(onProfileClick)}>
+			<DropDownAction onClick={() => handleAction(onProfileClick)}>
 				View profile
 			</DropDownAction>
-            <DropDownActionRed onClick={() => handleAction(removeFriend)}>
-                Remove Friend
-            </DropDownActionRed>
-        </div>
-    )
+			<DropDownActionRed onClick={() => handleAction(removeFriend)}>
+				Remove Friend
+			</DropDownActionRed>
+		</div>
+	)
 }
 
 
 const FriendItem = ({ user }: FriendProps) => {
-    return (
-        <div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
-            <div className="flex items-center">
-                <div className="relative mr-2 rounded-full w-10 h-10 object-cover">
-                    {user.avatar.startsWith("https://")
-                        ? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
-                            className="w-[inherit] rounded-[inherit]" />
-                        : <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
-                            className="w-[inherit] rounded-[inherit]" />
-                    }
-                    <div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
-                        <div className={`w-3 h-3 rounded-full ${getStatusColor(user.currentStatus)}`}></div>
-                    </div>
-                </div>
-                <h1 className="font-medium text-sm">{user.username}</h1>
-            </div>
+	return (
+		<div className="flex flex-grow relative items-center justify-between mt-2 mb-2 hover:bg-surface1 rounded py-1 px-2 mr-2">
+			<div className="flex items-center">
+				<div className="relative mr-2 rounded-full w-10 h-10 object-cover">
+					{user.avatar.startsWith("https://")
+						? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
+							className="w-[inherit] rounded-[inherit]" />
+						: <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
+							className="w-[inherit] rounded-[inherit]" />
+					}
+					<div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
+						<div className={`w-3 h-3 rounded-full ${getStatusColor(user.currentStatus)}`}></div>
+					</div>
+				</div>
+				<h1 className="font-medium text-sm">{user.username}</h1>
+			</div>
 			<DropDownMenu>
-				 <FriendActions user={user}/>
+				<FriendActions user={user} />
 			</DropDownMenu>
-        </div>
-    )
+		</div>
+	)
 }
 
 export default FriendItem;

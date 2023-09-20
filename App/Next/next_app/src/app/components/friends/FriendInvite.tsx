@@ -19,7 +19,6 @@ const FriendInvite = ({ user, hideActions }: FriendProps) => {
     }
 
 	const acceptFriendRequest = async () => {
-		console.log("accepting friend request");
 		await fetch(`${process.env.BACK_URL}/friend/acceptFriend/${user.id}`, {
 			credentials: "include",
 			method: "PATCH"
