@@ -62,7 +62,15 @@ export class FriendService {
 		});
 		const friends = user.receivedFriendRequest;
 		const friendDtos: FriendDto[] = [];
+
+		// get blocked users
+		const blockedUsers = await this.getBlockedUsers(userId);
+		const blockedUsersIds = blockedUsers.map((user) => Number(user.id));
+
 		for (let id of friends) {
+			if (blockedUsersIds.includes(id)) {
+				continue;
+			}
 			const friend = this.userService.getUserFromId(id);
 			const friendDto: FriendDto = {
 				id: id.toString(),
