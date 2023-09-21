@@ -40,6 +40,7 @@ export class AuthService {
                     .redirect(`${frontUrl}/auth/2fa`);
             }
             else {
+                // Todo: remove rt
                 jwt = await this.getTokens(userDB, true);
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
