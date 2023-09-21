@@ -97,7 +97,7 @@ const ChannelSettings = ({ channel }: ChannelSettingsProps) => {
     }, [newChannelType, password]);
 
     return (
-        <div className='bg-opacity-90 backdrop-blur-lg w-full min-w-[400px] max-w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={`${channel.name} Settings`} onCollapse={() => updateChatBarState(ChatBarState.ChatOpen)} />
             <div className="p-4 mb-4 flex-col">
                 <ChangeChannelTypeButtons newChannelType={newChannelType} setChannelType={setNewChannelType} />

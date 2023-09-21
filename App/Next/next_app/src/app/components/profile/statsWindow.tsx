@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Avatar from "../../components/profile/Avatar";
 import Stats from "./Stats";
 import sessionStorageUser from "./sessionStorage";
-import { useAuthContext } from "@/app/context/AuthContext";
 import getAvatarById from "../utils/getAvatarById";
 import { UserModel } from "@/app/utils/models";
 import ProfileActions from "./ProfileActions";
@@ -23,11 +22,6 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [statsData, setStatsData] = useState<any>("null");
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
-	const { login } = useAuthContext();
-
-	useEffect(() => {
-		login();
-	}, []);
 
 	useEffect(() => {
 		let sessionUserId = null;

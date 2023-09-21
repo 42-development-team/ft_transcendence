@@ -55,8 +55,6 @@ export function UnderlineTabs({ userId }: { userId: string }) {
         setHeaderTextColor(theme === "latte" ? "red" : "peach");
     }, [theme]);
 
-
-
     const data = [
         {
             label: "Leaderboard",
