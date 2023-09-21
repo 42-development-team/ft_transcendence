@@ -8,6 +8,8 @@ import ThemeProvider from './components/theme/themeProvider';
 import { BackgroundBall } from './components/theme/BackGround';
 import LoadingProvider from './context/LoadingContextProvider';
 import InGameProvider from './context/inGameContextProvider';
+import GameInviteProvider from './context/GameInviteContextProvider';
+import SidePanelGameInvite from './components/game/sidePanelGameInvite';
 export const metadata = {
 	title: 'Pongolin',
 	description: 'Awesome pong game',
@@ -23,13 +25,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						<ChatBarContextProvider>
 							<LoadingProvider>
 								<InGameProvider>
-								<Navbar />
-								{/* <div className='flex flex-col flex-auto items-stretch'> */}
-								<BackgroundBall />
-								<div className=' flex-auto grid place-items-center h-full'>
-									{children}
-								</div>
-								{/* <p>{jwt?.value}</p> */}
+									<GameInviteProvider>
+										<Navbar />
+										{/* <div className='flex flex-col flex-auto items-stretch'> */}
+										<BackgroundBall />
+										<SidePanelGameInvite/>
+										<div className=' flex-auto grid place-items-center h-full'>
+											{children}
+										</div>
+										{/* <p>{jwt?.value}</p> */}
+									</GameInviteProvider>
 								</InGameProvider>
 							</LoadingProvider>
 						</ChatBarContextProvider>

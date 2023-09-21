@@ -41,23 +41,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
     @SubscribeMessage('invite')
-    async handleInvite(invitorSocket: Socket, @MessageBody() body: any) {
+    async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
-
+        if (invitorId === undefined)
+            return ;
         // body awaits for the invited id (type number) and the mode game (boolean)
-        const {invitedId, mode} = body;
-        
+        const { invitedId, modeEnabled } = body;
+
         if (invitorId !== invitedId)
-            this.gameService.handleInvite(invitorId, invitedId, mode);
-    }
+            this.gameService.handleInvite(invitorId, invitedId, modeEnabled);
+        console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
+        const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+        invitedSocket?.emit('receiveInvite', {invitorId, modeEnabled});
+        invitorSocket?.emit('inviteSent');
+    } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
 
     @SubscribeMessage('respondToInvite')
-    async handleRespondToInvite(invitedSocket: Socket, @MessageBody() body: any) {
+    async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
-
         // body awaits for the invitor id (type number) and accept (boolean)
-        const { invitorId, accept } = body;
-        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorId, invitedId, accept);
+        const { invitorId, response } = body;
+        console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
+        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorId, invitedId, response);
+        console.log("inviteInfos: ", inviteInfos);
         if (inviteInfos !== undefined)  {
             const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
             const invitorSocketId: string = await this.userService.getUserSocketFromId(invitorId);
@@ -158,7 +165,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
 
     @SubscribeMessage('surrender')
-    async handleSurrender(socket: Socket, @MessageBody() body: any) {
+    async handleSurrender(@MessageBody() body: any) {
         const [id, userId] = body;
         this.gameService.surrender(id, userId);
     }
