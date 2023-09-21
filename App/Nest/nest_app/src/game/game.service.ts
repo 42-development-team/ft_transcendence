@@ -184,6 +184,13 @@ export class GameService {
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
     }
 
+    async handleCancelInvite(invitorId: number, invitedId: number) {
+        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        if (idx === -1)
+            return ;
+        this.inviteQueue.splice(idx, 1);
+    }
+    
     async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
