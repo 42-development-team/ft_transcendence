@@ -21,6 +21,7 @@ export default function useFriends() {
 		});
 		socket?.on('blockUpdate', (body: any) => {
 			fetchBlockedUsers();
+			fetchFriendsRequest();
 		});
 
 		return () => {
