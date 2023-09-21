@@ -5,6 +5,8 @@ import GameInviteContext from "@/app/context/GameInviteContext";
 import { use, useContext, useEffect, useState } from "react"
 import ThemeContext from "../theme/themeContext";
 import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
+import { type } from "os";
+import sessionStorageUser from "../profile/sessionStorage";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
@@ -18,7 +20,8 @@ const SidePanelGameInvite = () => {
     const [borderColor, setBorderColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-[#8839ef]" : "bg-[#f5c2e7]");
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
-    const [disable, setDisable] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
+    const [disable, setDisable] = useState(true);
 
 
     const sidePanelStyle: React.CSSProperties = {
@@ -59,7 +62,7 @@ const SidePanelGameInvite = () => {
         setSlide("translateX(100%)");
         setSentVisible(false);
         setInviteSent(false);
-        cancelInvite(userId)
+        cancelInvite(currentUserId as string)
     }
 
     useEffect(() => {
@@ -94,6 +97,14 @@ const SidePanelGameInvite = () => {
             setReceiveVisible(false);
         }
     }, [invitedBy, inviteSent])
+
+    useEffect(() => {
+        const currUser = sessionStorageUser();
+        if (currUser) {
+            setCurrentUserId(currUser);
+            setDisable(false);
+        }
+    }, [userId])
 
     return (
         <div >
