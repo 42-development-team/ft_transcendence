@@ -5,6 +5,7 @@ import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
 import { useAuthContext } from "@/app/context/AuthContext";
+import { delay } from "@/app/utils/delay";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -34,42 +35,44 @@ const ChatMemberItem = ({
 	const { socket } = useAuthContext();
 	const [ statusChange, setStatusChange ] = useState(false);
 
+    const fetchedUserStatus = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await response.json();
+            setUserStatus(data);
+        } catch (error) {
+            console.error('Error fetching user current status');
+        }
+    };
+
 	useEffect(() => {
-		const fetchedUserStatus = async () => {
-			try {
-				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				});
-				const data = await response.json();
-				setUserStatus(data);
-			} catch (error) {
-				console.error('Error fetching user current status');
-			}
-		};
 		fetchedUserStatus();
 	}, [user.id, statusChange]);
 
-	useEffect(() => {
-		const statusChangeMonitor = async (userId: string) => {
-			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
-			url.searchParams.append('userId', userId);
-			url.searchParams.append('channelId', channelId);
-			const response = await fetch(url.toString(), {
-				credentials: "include",
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-			});
-			const data = await response.json();
-			if (data) {
-				setStatusChange(usePrevious => !usePrevious);
-			}
-		};
+    const statusChangeMonitor = async (userId: string) => {
+        await delay(1000);
+        const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
+        url.searchParams.append('userId', userId);
+        url.searchParams.append('channelId', channelId);
+        const response = await fetch(url.toString(), {
+            credentials: "include",
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        const data = await response.json();
+        if (data) {
+            setStatusChange(usePrevious => !usePrevious);
+        }
+    };
 
+	useEffect(() => {
 		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
 		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
 
@@ -77,7 +80,7 @@ const ChatMemberItem = ({
 			socket?.off("userLoggedIn", statusChangeMonitor);
   			socket?.off("userLoggedOut", statusChangeMonitor);
 		}
-	}, [socket])
+	}, [socket, statusChange])
 
     const kickUser = () => {
         if (kick == undefined) return;
