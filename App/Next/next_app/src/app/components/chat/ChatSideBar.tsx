@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import style from './Chat.module.css';
 import { ChannelModel, ChannelType } from '@/app/utils/models';
 import Channel from '@/components/chat/channel/Channel';
 import ShowFriends from '../friends/ShowFriendsButton';
@@ -8,7 +7,12 @@ import JoinChannelButton from './channel/JoinChannelButton';
 import CreateChannelButton from './channel/CreateChannelButton';
 import DirectMessageChannel from './channel/DirectMessageChannel';
 
-const ChatSideBar = ({ channels }: { channels: ChannelModel[] }) => {
+type ChatSideBarProps = {
+	channels: ChannelModel[];
+	friendRequestCount: number;
+};
+
+const ChatSideBar = ({ channels, friendRequestCount }: ChatSideBarProps) => {
 	const [channelsList, setChannelsList] = useState<any[]>([]);
 	const [directMessageList, setDirectMessageList] = useState<any[]>([]);
 
@@ -32,9 +36,9 @@ const ChatSideBar = ({ channels }: { channels: ChannelModel[] }) => {
 	}, [channels]);
 
 	return (
-		<div className="bg-opacity-60 backdrop-blur-lg w-16 min-w-[4rem] bg-base h-full flex flex-col justify-start items-center">
+		<div className="bg-opacity-90 backdrop-blur-lg w-16 min-w-[4rem] bg-base h-full flex flex-col justify-start items-center">
 			<ul className="flex flex-col gap-2 p-1 absolute h-[calc(100vh-48px)] items-center">
-				<ShowFriends />
+				<ShowFriends friendRequestCount={friendRequestCount}/>
 				<JoinChannelButton />
 				<CreateChannelButton />
 				<Separator />

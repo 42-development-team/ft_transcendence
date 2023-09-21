@@ -17,10 +17,14 @@ interface ChatMemberListProps {
     blockUser: (blockedId: string) => void
     blockedUsers: UserModel[]
 	friends: UserModel[]
+    requestedFriends: UserModel[];
+    invitedFriends: UserModel[];
+    addFriend: (friendAddingId: string) => void;
 }
 
 // Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, friends }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, 
+        friends, requestedFriends, invitedFriends, addFriend }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -184,26 +188,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         }
     }
 
-	const addFriend = async (friendAddingId: string) => {
-		// Todo: alerts
-		try {
-			const response = await fetch(`${process.env.BACK_URL}/friend/addFriend/${friendAddingId}`, {
-				credentials: "include",
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-			});
-			// console.log(response);
-			if (!response.ok) {
-				console.log("Error adding user as a friend: " + response.status);
-			}
-		}
-		catch (error) {
-			console.log("Error adding user as a friend: " + error);
-		}
-	}
-
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
         return <></>
@@ -215,6 +199,14 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         return <></>
     }
 
+    const isFriend = (memberId: string) =>  {
+        return friends.find(user => user.id == memberId) != undefined;
+    }
+
+    const isInvitedFriend = (memberId: string) =>  {
+        return requestedFriends.find(user => user.id == memberId) != undefined 
+            || invitedFriends.find(user => user.id == memberId) != undefined;
+    }
     // Chat member list
     // Todo: sort by ASCII
 
@@ -227,7 +219,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -236,7 +228,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const AdminList = channel.members
@@ -246,7 +238,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const BannedList = channel.members
@@ -256,7 +248,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
                 setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
-				isFriend={friends.find(user => user.id == member.id) != undefined}/>
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         )
     )
 
@@ -316,7 +308,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 	}
 
     return (
-        <div className='w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <BackToChatButton onClick={() => updateChatBarState(ChatBarState.ChatOpen)} />
             </ChatHeader>

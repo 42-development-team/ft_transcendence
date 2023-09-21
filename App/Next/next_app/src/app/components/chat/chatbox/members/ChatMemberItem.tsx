@@ -22,17 +22,17 @@ type ChatMemberProps = {
     blockUser: (blockedId: string) => void
     isBlocked: boolean
 	isFriend: boolean
+    isInvitedFriend: boolean
 }
 const ChatMemberItem = ({
 	user,
     isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage, blockUser,
-    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend
+    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend, isInvitedFriend
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
 	const { socket } = useAuthContext();
 	const [ statusChange, setStatusChange ] = useState(false);
-	const [ isFriendAdded, setIsFriendAdded ] = useState(false);
 
 	useEffect(() => {
 		const fetchedUserStatus = async () => {
@@ -117,17 +117,15 @@ const ChatMemberItem = ({
 
     const addAsFriend = () => {
         addFriend(user.id);
-		setIsFriendAdded(true);
     }
 
     const getColor = () => {
         if (user.isOwner) {
-            return 'text-red';
-            // return '#fab387';
+            return 'text-[red]';
         } else if (user.isAdmin) {
-            return 'text-orange';
+            return 'text-[orange]';
         } else if (user.isBanned) {
-            return 'text-gray';
+            return 'text-[gray]';
         }
         return 'text-text';
     }
@@ -146,13 +144,13 @@ const ChatMemberItem = ({
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{user.username}</h1>
+                <p className={`${getColor()} pl[0.15rem] font-semibold text-md`}>{user.username}</p>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
                 setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked}
-				isFriend={isFriend} addAsFriend={addAsFriend} isFriendAdded={isFriendAdded}/>
+				isFriend={isFriend} isInvitedFriend={isInvitedFriend} addAsFriend={addAsFriend} />
         </div>
     )
 }

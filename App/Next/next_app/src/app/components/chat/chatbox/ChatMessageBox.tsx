@@ -34,7 +34,6 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
         const user = channel.members?.find(member => member.username == message.senderUsername);
         if (user?.isOwner) {
             return 'red';
-            // return '#fab387';
         } else if (user?.isAdmin) {
             return 'orange';
         } else if (user?.isBanned) {
@@ -62,7 +61,7 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
     }, [channel]);
 
     return (
-        <div className='flex flex-col w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg flex flex-col w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channelTitle} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 {channel.type == ChannelType.DirectMessage ?
                     <div></div>

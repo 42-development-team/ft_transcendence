@@ -10,7 +10,7 @@ const Play = ({...props}) => {
 
 	const [buttonText, setButtonText] = useState('Play')
 	const [loading, setLoading] = useState(false)
-	const [disable, setDisable] = useState(false)
+	const [disable, setDisable] = useState(true)
 	const {leaveQueue, joinQueue, isUserQueued, userId, socket, changeMode, mode} = props;
 	const {theme} = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
@@ -36,6 +36,7 @@ const Play = ({...props}) => {
 		if (typeof window === "undefined") {
 			return;
 		}
+		setDisable(false);
 		isUserQueued(parseInt(userId));
 	}, [socket]);
 
@@ -82,7 +83,7 @@ const Play = ({...props}) => {
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>
 						</div>
-							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Calling racket master...</div>
+							<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Queue up...</div>
 					</div>
 				) : (
 					<CustomBtnPlay

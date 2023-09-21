@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
+import { InviteDto } from 'src/game/dto/invite-game.dto';
 
 @Injectable()
 @WebSocketGateway({cors:{
@@ -33,30 +34,75 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
     async handleDisconnect(client: Socket){
-		console.log('Client disconnected from game: ' + client.id);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
+    @SubscribeMessage('invite')
+    async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
+        const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
+        if (invitorId === undefined)
+            return ;
+        // body awaits for the invited id (type number) and the mode game (boolean)
+        const { invitedId, modeEnabled } = body;
+
+        if (invitorId !== invitedId)
+            this.gameService.handleInvite(invitorId, invitedId, modeEnabled);
+        console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
+        const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+        invitedSocket?.emit('receiveInvite', {invitorId, modeEnabled});
+        invitorSocket?.emit('inviteSent');
+    } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
+
+    @SubscribeMessage('respondToInvite')
+    async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
+        const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
+        // body awaits for the invitor id (type number) and accept (boolean)
+        const { invitorId, response } = body;
+        console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
+        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorId, invitedId, response);
+        console.log("inviteInfos: ", inviteInfos);
+        if (inviteInfos !== undefined)  {
+            const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+            const invitorSocketId: string = await this.userService.getUserSocketFromId(invitorId);
+            const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+            this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+        }
+    }
+
+    
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket, mode: boolean) {
-        const result = await this.gameService.handleJoinQueue(player, mode);
+        const userId: number = await this.userService.getUserIdFromSocket(player);
+        const result = await this.gameService.handleJoinQueue(userId, mode);
 
+        // queue not full
         if (!result)
             return ;
         
-        const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId ) {
-            const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
-            await player2Socket?.join(newGameRoom.roomName);
-            this.server.to(newGameRoom.roomName).emit('redirect', 'redirectToHomeForGame');
-            this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+        // queue is full => game is created
+        const {newGameRoom, player1SocketId, player2SocketId} = result;
+        if (player1SocketId && player2SocketId ) {
+            //game is created from scratch
+            this.joinGameRoom(player1SocketId, player2SocketId, newGameRoom);
         }
         else {
+            // game already exist and player have to join it
+            player?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
+    }
+
+    async joinGameRoom(player1SocketId: string, player2SocketId: string, room: GameRoomDto) {
+        const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
+        const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
+        await player1Socket?.join(room.roomName);
+        await player2Socket?.join(room.roomName);
+        this.server.to(room.roomName).emit('redirect', 'redirectToHomeForGame');
+        this.server.to(room.roomName).emit('matchIsReady', room.data);
     }
 
     @SubscribeMessage('isInGame')
@@ -112,15 +158,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('retrieveData')
     async handleRetrieveData(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
+        if (data === undefined || !data)
+            console.log("Error retrieving Game Data: data is null");
         socket?.emit('sendDataToUser', data);
         socket?.join(data.roomName);
     }
 
     @SubscribeMessage('surrender')
-    async handleSurrender(socket: Socket, @MessageBody() body: any) {
+    async handleSurrender(@MessageBody() body: any) {
         const [id, userId] = body;
         this.gameService.surrender(id, userId);
     }
+
+    // ============================== //
+    // ========= GAME LOGIC =========//
 
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000 / 60);
@@ -133,11 +184,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async gameLogic(data: GameDto) {
         while (data.end === false) {
             await this.sleepAndCalculate(data);
-            this.sendDataToRoom(data);
+            await this.sendDataToRoom(data);
         }
         const results = await this.gameService.createGame(data);
+        console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', {winnerId: results.gameWonId, loserId: results.gameLosedId});
-        this.gameService.removeRoom(data.id);
+        await this.gameService.removeRoom(data.id);
     }
 
     async sendDataToRoom(data: GameDto) {

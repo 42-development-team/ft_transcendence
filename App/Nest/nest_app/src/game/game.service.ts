@@ -5,10 +5,10 @@ import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
-//===========
-import { Socket } from 'socket.io';
 import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
+import { UserStatsService } from "src/userstats/userstats.service";
+import { InviteDto } from "./dto/invite-game.dto";
 
 
 @Injectable()
@@ -16,16 +16,18 @@ export class GameService {
     constructor(
         private prisma: PrismaService,
         private userService: UsersService,
+        private userStatsService: UserStatsService,
     ) { }
 
     gameRooms: GameRoomDto[] = [];
     queue: number[] = [];
     modeQueue: number[] = [];
+    inviteQueue: InviteDto[] = [];
 
     /* C(reate) */
     async createGame(data: GameDto) {
-
-        const [winner, loser] = this.getGameWinnerLoser(data);
+        try {
+            const [winner, loser] = this.getGameWinnerLoser(data);
 
         const createGameDto = {
             winnerScore: winner.points,
@@ -33,22 +35,27 @@ export class GameService {
             winnerId: winner.id,
             loserId: loser.id,
         }
-
-        const newGame = await this.prisma.game.create({
-            data: {
-                users: {
-                    connect: [
-                        { id: createGameDto.winnerId },
-                        { id: createGameDto.loserId }
-                    ],
+            const newGame = await this.prisma.game.create({
+                data: {
+                    users: {
+                        connect: [
+                            { id: createGameDto.winnerId },
+                            { id: createGameDto.loserId }
+                        ],
+                    },
+                    winner: { connect: { id: createGameDto.winnerId } },
+                    loser: { connect: { id: createGameDto.loserId } },
+                    winnerScore: createGameDto.winnerScore,
+                    loserScore: createGameDto.loserScore,
                 },
-                winner: { connect: { id: createGameDto.winnerId } },
-                loser: { connect: { id: createGameDto.loserId } },
-                winnerScore: createGameDto.winnerScore,
-                loserScore: createGameDto.loserScore,
-            },
-        });
-        return newGame;
+            });
+            
+            await this.userStatsService.eloComputing(createGameDto.winnerId, createGameDto.loserId);
+            return newGame;
+        }  catch (error) {
+            console.log(error);
+            return ;
+        }
     }
 
     /* R(ead) */
@@ -63,6 +70,37 @@ export class GameService {
     async getGames(userId: number): Promise<GetGameDto[]> {
         const games = await this.prisma.game.findMany({
             orderBy: { createdAt: 'desc' },
+            include: { loser: true, winner: true },
+            where: { users: { some: { id: userId } } },
+        });
+
+        const gameDtos: GetGameDto[] = games.map((game) => {
+            const winnerDto: GameUserDto = {
+                id: game.winner.id,
+                username: game.winner.username,
+            };
+
+            const loserDto: GameUserDto = {
+                id: game.loser.id,
+                username: game.loser.username,
+            };
+
+            return {
+                id: game.id,
+                createdAt: game.createdAt,
+                gameDuration: game.gameDuration,
+                winnerScore: game.winnerScore,
+                loserScore: game.loserScore,
+                winner: winnerDto,
+                loser: loserDto,
+            };
+        });
+        return gameDtos;
+    }
+
+    async getGamesAsc(userId: number): Promise<GetGameDto[]> {
+        const games = await this.prisma.game.findMany({
+            orderBy: { createdAt: 'asc' },
             include: { loser: true, winner: true },
             where: { users: { some: { id: userId } } },
         });
@@ -139,19 +177,37 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async surrender(id: number, forfeiterId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1 ) {
-            console.log("Could not find game with id:", id);
+    async handleInvite(invitorId: number, invitedId: number, mode: boolean) {
+        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        if (idx !== -1)
+            return ;
+        this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
+    }
+
+    async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        console.log("1");
+        if (idx === -1)
+            return ;
+        console.log("2");
+        if (!accept) {
+            this.inviteQueue.splice(idx, 1);
             return ;
         }
-        this.gameRooms[idx].data.forfeiterId = forfeiterId;
-        this.gameRooms[idx].data.end = true;
+        console.log("3");
+        if (this.isInGame(invitorId))
+            return ;
+        console.log("4");
+        if (this.isInGame(invitedId))
+            return ;
+        console.log("5");
+        this.handleLeaveQueue(invitorId);
+        this.handleLeaveQueue(invitedId);
+        return (this.inviteQueue[idx]);
     }
-    
-    async handleJoinQueue(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
+
+    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
         try {
-            const userId: number = await this.userService.getUserIdFromSocket(player);
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
                 if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
@@ -160,64 +216,52 @@ export class GameService {
                 if (mode) {
                     this.modeQueue.push(userId);
                     if (this.modeQueue.length >= 2)
-                        return this.handleJoinGame(player, mode);
+                        return this.handleJoinGame(mode);
                 }
                 else {
                     this.queue.push(userId);
                     if (this.queue.length >= 2)
-                        return this.handleJoinGame(player, mode);
+                        return this.handleJoinGame(mode);
                 }
             }
             else {
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
+                const player1SocketId: string = undefined;
                 const player2SocketId: string = undefined;
-                player?.join(this.gameRooms[idx].roomName);
-                return ({ newGameRoom, player2SocketId });
+                return ({ newGameRoom, player1SocketId, player2SocketId });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(player: Socket, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player2SocketId: string }> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
-            player2Id = this.modeQueue[0];
-            player1Id = this.modeQueue[1];
+            player2Id = this.modeQueue.shift();
+            player1Id = this.modeQueue.shift();
         }
         else {
-            player2Id = this.queue[0];
-            player1Id = this.queue[1];
+            player2Id = this.queue.shift();
+            player1Id = this.queue.shift();
         }
 
         // create room data
-        const id: number = this.gameRooms.length;
-        const roomName: string = player1Id + "_" + player2Id;
-        const newGameRoom: GameRoomDto = {
-            id: id,
-            roomName: roomName,
-            playerOneId: player1Id,
-            playerTwoId: player2Id,
-            readyPlayerOne: false,
-            readyPlayerTwo: false,
-            reconnect: false,
-            data: this.setGameData(id, roomName, player1Id, player2Id, mode)
-        }
-
+        const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
+        // get sokcetId to join game
+        const player1SocketId: string = await this.userService.getUserSocketFromId(player1Id);
+        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
 
-        // Create room instance and join room
-        await player?.join(roomName);
-
-        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
-        return ({ newGameRoom, player2SocketId });
+        return ({ newGameRoom, player1SocketId, player2SocketId });
     }
 
+    
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
@@ -231,15 +275,14 @@ export class GameService {
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
             return this.gameRooms[idx];
     }
-
+    
     handleLeaveQueue(userId: number) {
         const modeidx = this.modeQueue.findIndex(user => user === userId);
-
+        
         if (modeidx !== -1)
             this.modeQueue.splice(modeidx, 1);
         else {
             const idx = this.queue.findIndex(user => user === userId);
-
             if (idx === -1)
                 return
             this.queue.splice(idx, 1);
@@ -304,7 +347,7 @@ export class GameService {
             if (event === "ArrowUp")
                 this.killVelocity(this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player2);
+            this.killVelocity(this.gameRooms[idx].data.player2);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
                     this.killVelocitx(this.gameRooms[idx].data.player2);
@@ -323,6 +366,13 @@ export class GameService {
         return this.gameRooms.find(game => game.id === id).data;
     }
 
+    async isInGame(userId: number): Promise<boolean> {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)) {
+            return true;
+        }
+        return false;
+    }
+
     async getDataFromUserId(userId: number): Promise<GameDto> {
         return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)?.data;
     }
@@ -330,6 +380,17 @@ export class GameService {
     async sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    async surrender(id: number, forfeiterId: number) {
+        const idx: number = this.gameRooms.findIndex(game => game.id === id);
+        if (idx === -1 ) {
+            console.log("Could not find game with id:", id);
+            return ;
+        }
+        this.gameRooms[idx].data.forfeiterId = forfeiterId;
+        this.gameRooms[idx].data.end = true;
+    }
+
     //=================================================//
     //================== GAME PLAY ====================//
     //=================================================//
@@ -503,14 +564,29 @@ export class GameService {
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
-            this.gameRooms[idx].data.end = true;
+        this.gameRooms[idx].data.end = true;
+    
+    return { ...this.gameRooms[idx].data };
+}
 
-        return { ...this.gameRooms[idx].data };
+//=================================================//
+//================== INIT GAME ==================//
+//=================================================//
+    async setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
+        const id: number = this.gameRooms.length;
+        const roomName: string = player1Id + "_" + player2Id;
+        const newGameRoom: GameRoomDto = {
+            id: id,
+            roomName: roomName,
+            playerOneId: player1Id,
+            playerTwoId: player2Id,
+            readyPlayerOne: false,
+            readyPlayerTwo: false,
+            reconnect: false,
+            data: this.setGameData(id, roomName, player1Id, player2Id, mode)
+        }
+        return newGameRoom;
     }
-
-    //=================================================//
-    //================== UPDATE GAME ==================//
-    //=================================================//
 
     setGameData(id: number, roomName: string, playerOneId: number, playerTwoId: number, mode: boolean): GameDto {
         let player1: PlayerDto = {

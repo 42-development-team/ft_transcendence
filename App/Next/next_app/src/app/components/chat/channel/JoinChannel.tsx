@@ -44,7 +44,7 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
     }, [channels])
     
     return (
-        <div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title="Join a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
             <div className='overflow-auto h-[92vh]'>
                 <div className='flex items-center justify-around py-2 my-2 '>
