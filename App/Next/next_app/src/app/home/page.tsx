@@ -107,6 +107,7 @@ export default function Home() {
 						result={result}
 						setResult={setResult}
 						setInGameContext={setInGameContext}
+						mode={mode}
 					/>
 				</div>
 			)}

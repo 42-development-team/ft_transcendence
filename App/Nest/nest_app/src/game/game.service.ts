@@ -306,7 +306,7 @@ export class GameService {
             
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                    this.setVelocitx(-0.005, player1);
+                    this.setVelocitx(-0.01, player1);
                 else if (event === "ArrowRight")
                     this.setVelocitx(0.005, player1);
             }
@@ -321,7 +321,7 @@ export class GameService {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player2);
                 else if (event === "ArrowRight")
-                    this.setVelocitx(0.005, player2);
+                    this.setVelocitx(0.01, player2);
             }
         }
 
@@ -480,10 +480,27 @@ export class GameService {
             this.playerCollision(ball, player2);
     }
 
+    checkCollision(ball: BallDto, player: PlayerDto): boolean {
+        const dy: number = Math.abs(ball.y - player.y);
+        
+        console.log("===============BEFORE========================");
+        console.log("p.y + p.h / 2:", (player.y + player.h / 2));
+        if (dy <= player.h / 2)
+            return true;
+        else if ((player.y + player.h / 2) > 1){
+            if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
+                return true;
+        }
+        else if (player.y - player.h / 2 < 0) {
+            if (ball.y + ball.r >= ((player.h / 2) - (player.y)))
+                return true;
+        }
+        return false;
+    }
+    
     async playerCollision(ball: BallDto, player: PlayerDto) {
 
         let dx: number;
-        const dy: number = Math.abs(ball.y - player.y);
         // if ( o | )
         if (ball.x < player.x)
             dx = Math.abs(player.x - player.w - ball.x + ball.r);
@@ -491,7 +508,7 @@ export class GameService {
         else
             dx = Math.abs(ball.x - ball.r - player.x + player.w);
 
-        if (dx <= (ball.r + player.w) && dy <= (ball.r + player.h / 2)) {
+        if (dx <= (ball.r + player.w) && this.checkCollision(ball, player) === true) {
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
             
@@ -523,16 +540,18 @@ export class GameService {
     //========== RESET BALL =============//
     async reset(idx: number) {
         this.gameRooms[idx].data.ball.x = 0.5;
-        this.gameRooms[idx].data.ball.y = 0.5;
+        // this.gameRooms[idx].data.ball.y = 0.5;
+        this.gameRooms[idx].data.ball.y = 0.95;
         let sign = 1;
 
-        if (Math.random() < 0.5)
+        // if (Math.random() < 0.5)
             sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
-        if (Math.random() < 0.5)
-            sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        // if (Math.random() < 0.5)
+        //     sign *= -1;
+        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        this.gameRooms[idx].data.ball.speed[1] = 0;
     }
 
     //========== MOVEMENT =============//
@@ -618,10 +637,12 @@ export class GameService {
         let ball: BallDto = {
             color: '#cba6f7',
             x: 0.5,
-            y: 0.5,
+            // y: 0.5,
+            y: 0.95,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
+            speed: [-0.3, 0],
+            // speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
             incr: 0,
         }
 
