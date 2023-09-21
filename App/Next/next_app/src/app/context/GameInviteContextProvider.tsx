@@ -18,7 +18,7 @@ export default function GameInviteProvider({ children }: any) {
 			setInviteSent(true);
 			const id = setTimeout(() => {
 				setInviteSent(false);
-			}, 10000);
+			}, 20000);
 			setTimeoutId(id);
 		});
 
@@ -45,10 +45,8 @@ export default function GameInviteProvider({ children }: any) {
 			const timeoutId = setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
-			}, 10000);
+			}, 20000);
 			setTimeoutId(timeoutId);
-			if (timeoutId)
-				clearTimeout(timeoutId);
 		});
 
 		return () => {

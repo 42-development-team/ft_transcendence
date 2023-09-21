@@ -21,6 +21,7 @@ const SidePanelGameInvite = () => {
     const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-[#8839ef]" : "bg-[#f5c2e7]");
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
     const [currentUserId, setCurrentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
+    const [timer, setTimer] = useState(20);
     const [disable, setDisable] = useState(true);
 
 
@@ -32,7 +33,7 @@ const SidePanelGameInvite = () => {
         borderTopLeftRadius: '10px',
         borderBottomLeftRadius: '10px',
         borderRight: 'none',
-        top: 70,
+        top: 150,
         right: 0,
         width: '301px',
         height: '85px',
@@ -44,8 +45,17 @@ const SidePanelGameInvite = () => {
         color: textColor,
         opacity: 1,
         zIndex: 1000
-      };
+    };
 
+
+    useEffect(() => {
+        const countdown = setInterval(() => {
+            setTimer((prevTimer) => prevTimer - 1);
+        }, 1000);
+        return () => {
+            clearInterval(countdown);
+        };
+    }, [timer]);
 
     const onChange = (accept: boolean) => {
         setSlide("translateX(100%)");
@@ -56,13 +66,6 @@ const SidePanelGameInvite = () => {
                 respondToInvite(invitedBy, false);
             }
         }, 700);
-    }
-
-    const cancel = () => {
-        setSlide("translateX(100%)");
-        setSentVisible(false);
-        setInviteSent(false);
-        cancelInvite(currentUserId as string)
     }
 
     useEffect(() => {
@@ -90,6 +93,7 @@ const SidePanelGameInvite = () => {
                 setReceiveVisible(false);
                 setSentVisible(true);
             }
+            setTimer(20);
             setSlide("translateX(0%)");
         } else {
             setSlide("translateX(100%)");
@@ -99,6 +103,23 @@ const SidePanelGameInvite = () => {
     }, [invitedBy, inviteSent])
 
     useEffect(() => {
+        if (invitedBy || inviteSent) {
+            if (invitedBy) {
+                setReceiveVisible(true);
+                setSentVisible(false);
+            } else {
+                setReceiveVisible(false);
+                setSentVisible(true);
+            }
+            setSlide("translateX(0%)");
+        } else {
+            setSlide("translateX(100%)");
+            setSentVisible(false);
+            setReceiveVisible(false);
+        }
+    }, [])
+
+    useEffect(() => {
         const currUser = sessionStorageUser();
         if (currUser) {
             setCurrentUserId(currUser);
@@ -106,29 +127,36 @@ const SidePanelGameInvite = () => {
         }
     }, [userId])
 
+    const cancel = () => {
+        setSlide("translateX(100%)");
+        setSentVisible(false);
+        setInviteSent(false);
+        cancelInvite(currentUserId as string)
+    }
+    
     return (
         <div >
-                <div
-                    style={sidePanelStyle}>
-                    {receiveVisible &&
-                        < div className="flex flex-col">
-                            <div className="flex  justify-center my-1">
-                                {invitedBy} want to play {/* TODO: here put username */}
-                            </div>
-                            <div className="flex justify-evenly w-full flex-row">
-                                <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
-                                <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
-                            </div>
+            <div
+                style={sidePanelStyle}>
+                {receiveVisible &&
+                    < div className="flex flex-col">
+                        <div className="flex  justify-center my-1">
+                            {invitedBy} want to play ({timer}){/* TODO: here put username */}
                         </div>
-                    }
-                    {sentVisible &&
-                        <div className="flex flex-col items-center justify-center my-1">
-                                    Waiting for user...
-                            {/* TODO: here put username */}
+                        <div className="flex justify-evenly w-full flex-row">
+                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                        </div>
+                    </div>
+                }
+                {sentVisible &&
+                    <div className="flex flex-col items-center justify-center my-1">
+                        Waiting for user...
+                        {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
-                        </div>
-                    }
-                </div>
+                    </div>
+                }
+            </div>
         </div>
     )
 }
