@@ -82,8 +82,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
         if (isButtonClicked) return;
         setIsButtonClicked(true);
         setInGameContext(false);
-        if (sessionStorage.getItem("userId"))
-            sessionStorage.removeItem("userId");
+        sessionStorage.setItem("userId", userId.toString());
         router.push('/profile');
     }
 
