@@ -23,10 +23,15 @@ export default function useFriends() {
 			fetchBlockedUsers();
 			fetchFriendsRequest();
 		});
+		socket?.on('userStatusUpdate', (body: any) => {
+			fetchFriends();
+			fetchBlockedUsers();
+		});
 
 		return () => {
 			socket?.off('friendUpdate');
 			socket?.off('blockUpdate');
+			socket?.off('userStatusUpdate');
 		}
 	}, [socket, friends]);
 
