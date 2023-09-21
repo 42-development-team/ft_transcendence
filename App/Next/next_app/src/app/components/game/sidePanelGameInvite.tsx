@@ -8,7 +8,7 @@ import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
-    const { mode, invitedBy, respondToInvite, inviteSent, cancelInvite } = useContext(GameInviteContext);
+    const { mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite } = useContext(GameInviteContext);
     const [receiveVisible, setReceiveVisible] = useState(false);
     const [sentVisible, setSentVisible] = useState(false);
     const [slide, setSlide] = useState("translateX(100%)");
@@ -34,6 +34,7 @@ const SidePanelGameInvite = () => {
     const cancel = () => {
         setSlide("translateX(100%)");
         setSentVisible(false);
+        setInviteSent(false);
         cancelInvite(userId)
     }
 
