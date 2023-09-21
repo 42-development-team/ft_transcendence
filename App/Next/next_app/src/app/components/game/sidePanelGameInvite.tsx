@@ -35,9 +35,9 @@ const SidePanelGameInvite = () => {
 
     useEffect(() => {
         if (theme === "latte") {
-            setBackgroundColor("#bcc0cc");
-            setTextColor("#df8e1d");
-            setBorderColor("white");
+            setBackgroundColor("#6c6f85");
+            setTextColor("#eff1f5");
+            setBorderColor("#eff1f5");
             setButtonColor("bg-[#8839ef]");
             setHoverColor("hover:bg-[#ea76cb]");
         } else {
