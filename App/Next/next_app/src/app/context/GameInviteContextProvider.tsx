@@ -9,23 +9,37 @@ export default function GameInviteProvider({ children }: any) {
 	const [invitedBy, setInvitedBy] = useState("");
 	const [inviteSent, setInviteSent] = useState(false);
 	const [mode, setMode] = useState(false);
-	const {socket} = useAuthContext();
+	const { socket } = useAuthContext();
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
 			setInviteSent(true);
+			const timeoutId = setTimeout(() => {
+				setInviteSent(false);
+			}, 10000);
 		});
 		socket?.on('inviteCancelled', (body: any) => {
+			//TODO: set a message to notify that invitor has cancelled the invite
 			setInviteSent(false);
 		});
+
+		socket?.on('inviteAccepted', (body: any) => {
+			//TODO: set a message to notify that invitee has accepted the invite
+		});
+
+		socket?.on('inviteDeclined', (body: any) => {
+			//TODO: set a message to notify that invitee has declined the invite
+			setInviteSent(false);
+		});
+
 		socket?.on('receiveInvite', (body: any) => {
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
 			const timeoutId = setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
-			  }, 5000);
-			  return () => clearTimeout(timeoutId);
+			}, 10000);
+			return () => clearTimeout(timeoutId);
 		});
 
 		return () => {
@@ -38,7 +52,7 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			console.log("invite sent with: " + invitedId + " " + modeEnabled);
-			socket?.emit("invite", {invitedId, modeEnabled});
+			socket?.emit("invite", { invitedId, modeEnabled });
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
