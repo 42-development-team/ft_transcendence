@@ -47,17 +47,34 @@ function renderBall(context: CanvasRenderingContext2D, ball: BallInterface, widt
 	context.closePath();
 };
 
-function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, width: number, height: number) {
+function renderPlayer(context: CanvasRenderingContext2D, p: PlayerInterface, width: number, height: number, mode: boolean) {
+	const x = p.x * width - p.w * width / 2;
+	const y = p.y * height - p.h * height / 2;
+	const w = p.w * width;
+	const h = p.h * height;
+
 	context.fillStyle = p.color;
+	if (mode) {
+		if (y + h > height) {
+			context.beginPath();
+				context.fillRect(x, y - height, w, h);
+			context.closePath();
+		}
+		if (y < 0) {
+			context.beginPath();
+				context.fillRect(x, height + y, w, h);
+			context.closePath();
+		}
+	}
 	context.beginPath();
-	context.fillRect(p.x * width - p.w * width / 2, p.y * height - p.h * height / 2, p.w * width, p.h * height);
+		context.fillRect(x, y, w, h);
 	context.closePath();
 }
 
-function renderGame(context: CanvasRenderingContext2D, data: GameInterface, width: number, height: number) {
+function renderGame(context: CanvasRenderingContext2D, data: GameInterface, width: number, height: number, mode: boolean) {
 	renderBall(context, data.ball, width, height);
-	renderPlayer(context, data.player1, width, height);
-	renderPlayer(context, data.player2, width, height);
+	renderPlayer(context, data.player1, width, height, mode);
+	renderPlayer(context, data.player2, width, height, mode);
 	printScore(context, data.player1, data.player2, width, height);
 };
 
@@ -65,7 +82,7 @@ const Canvas = ({ ...props }) => {
 	if (typeof window === 'undefined')
 		return;
 
-	const { move, stopMove, launchGame, data, userId } = props;
+	const { move, stopMove, launchGame, data, mode, userId } = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth);
 	let height: number;
@@ -96,7 +113,7 @@ const Canvas = ({ ...props }) => {
 
 		blurEffect(context, width, height);
 		printMidLine(context, width, height);
-		renderGame(context, data, width, height);
+		renderGame(context, data, width, height, mode);
 
 		document.addEventListener("keydown", handleKeyDown);
 		document.addEventListener("keyup", handleKeyUp);

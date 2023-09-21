@@ -295,28 +295,33 @@ export class GameService {
             console.log("game.service-handleMove: !MoveGameRoom")
             return;
         }
-        if (this.gameRooms[idx].data.player1.id === userId) {
+        const player1 = this.gameRooms[idx].data.player1;
+        const player2 = this.gameRooms[idx].data.player2;
+        
+        if (player1.id === userId) {
             if (event === "ArrowUp")
-                this.setVelocity(-0.01, this.gameRooms[idx].data.player1);
+                this.setVelocity(-0.01, player1);
             else if (event === "ArrowDown")
-                this.setVelocity(0.01, this.gameRooms[idx].data.player1);
+                this.setVelocity(0.01, player1);
+            
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                this.setVelocitx(-0.01, this.gameRooms[idx].data.player1);
+                    this.setVelocitx(-0.01, player1);
                 else if (event === "ArrowRight")
-                    this.setVelocitx(0.01, this.gameRooms[idx].data.player1);
+                    this.setVelocitx(0.005, player1);
             }
         }
-        else if (this.gameRooms[idx].data.player2.id === userId) {
+        else if (player2.id === userId) {
             if (event === "ArrowUp")
-                this.setVelocity(-0.01, this.gameRooms[idx].data.player2);
+                this.setVelocity(-0.01, player2);
             else if (event === "ArrowDown")
-                this.setVelocity(0.01, this.gameRooms[idx].data.player2);
+                this.setVelocity(0.01, player2);
+            
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
-                    this.setVelocitx(-0.01, this.gameRooms[idx].data.player2);
+                    this.setVelocitx(-0.005, player2);
                 else if (event === "ArrowRight")
-                    this.setVelocitx(0.01, this.gameRooms[idx].data.player2);
+                    this.setVelocitx(0.01, player2);
             }
         }
 
@@ -417,18 +422,17 @@ export class GameService {
         const valy: number = player.y + player.velocity;
         const valx: number = player.x + player.velocitx;
 
-        if (valy >= 1) {
+        if (valy >= 1)
             player.y = valy - 1;
-        }
-        else if (valy <= 0) {
+        else if (valy <= 0)
             player.y = 1 + valy;
-        }
         else
             player.y = valy;
 
-        if (valx < 0.48 && valx > 0.02) {
+        if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
             player.x = valx;
-        }
+        else
+            this.killVelocitx(player);
     }
 
     async movePlayer(player: PlayerDto) {
@@ -439,7 +443,7 @@ export class GameService {
         }
         else {
             if (val - player.h / 2 > 0.01)
-            player.y = val;
+                player.y = val;
         }
     }
 
@@ -456,54 +460,68 @@ export class GameService {
 
     /* GamePlay Ball */
     //========== BOUNCES =============//
-    async bounce(idx: number) {
-        this.borderBounce(idx);
-        this.paddleBounce(idx);
+    async bounce(idx: number, ball: BallDto) {
+        const player1 = this.gameRooms[idx].data.player1;
+        const player2 = this.gameRooms[idx].data.player2;
+        this.borderBounce(ball);
+        this.paddleBounce(ball, player1, player2);
         this.score(idx);
     };
 
     //>>BORDER<<//
-    async borderBounce(idx: number) {
-        if (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.ball.r <= 0 || this.gameRooms[idx].data.ball.y + this.gameRooms[idx].data.ball.r >= 1)
-            this.gameRooms[idx].data.ball.speed[1] *= -1;
+    async borderBounce(ball: BallDto) {
+        if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
+            ball.speed[1] *= -1;
     }
 
     //>>PADDLE<//
-    async paddleBounce(idx: number) {
-        if (this.gameRooms[idx].data.ball.speed[0] < 0)
-            this.paddleLeftBounce(idx);
-        else
-            this.paddleRightBounce(idx);
+    async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
+            this.playerCollision(ball, player1);
+            this.playerCollision(ball, player2);
     }
 
-    async paddleLeftBounce(idx: number) {
-        let dx = Math.abs(this.gameRooms[idx].data.ball.x + this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player1.x);
-        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
-
-        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.w)) {
-            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player1.h / 2)) {
-                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player1.y);
-                const radian = (coef * this.gameRooms[idx].data.player1.angle) * (Math.PI / 180);
-                this.gameRooms[idx].data.ball.speed[0] *= -1;
-                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
-            }
+    checkCollision(ball: BallDto, player: PlayerDto): boolean {
+        const dy: number = Math.abs(ball.y - player.y);
+        
+        if (dy <= player.h / 2)
+        return true;
+        else if ((player.y + player.h / 2) > 1){
+            if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
+            return true;
         }
-    };
-
-    async paddleRightBounce(idx: number) {
-
-        let dx = Math.abs(this.gameRooms[idx].data.ball.x - this.gameRooms[idx].data.ball.r - this.gameRooms[idx].data.player2.x);
-        let dy = Math.abs(this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
-
-        if (dx <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.w)) {
-            if (dy <= (this.gameRooms[idx].data.ball.r + this.gameRooms[idx].data.player2.h / 2)) {
-                const coef = 10 * (this.gameRooms[idx].data.ball.y - this.gameRooms[idx].data.player2.y);
-                const radian = (coef * this.gameRooms[idx].data.player2.angle) * (Math.PI / 180);
-                this.gameRooms[idx].data.ball.speed[0] *= -1;
-                this.gameRooms[idx].data.ball.speed[1] = Math.sin(radian);
-            }
+        else if (player.y - player.h / 2 < 0) {
+            if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y)))
+                return true;
         }
-    };
+        return false;
+    }
+    
+    async playerCollision(ball: BallDto, player: PlayerDto) {
+
+        let dx: number;
+        // if ( o | )
+        if (ball.x < player.x)
+            dx = Math.abs(player.x - player.w - ball.x + ball.r);
+        // else ( | o )
+        else
+            dx = Math.abs(ball.x - ball.r - player.x + player.w);
+
+        if (dx <= (ball.r + player.w) && this.checkCollision(ball, player) === true) {
+            const coef = 10 * (ball.y - player.y);
+            const radian = (coef * player.angle) * (Math.PI / 180);
+            
+            if (ball.x < player.x)
+                ball.speed[0] = -Math.abs(ball.speed[0]);
+            else
+                ball.speed[0] = Math.abs(ball.speed[0]);
+
+            if (player.velocitx > 0)
+                ball.speed[0] += 0.03;
+            else if (player.velocitx < 0)
+                ball.speed[0] -= 0.03;
+            ball.speed[1] = Math.sin(radian);
+        }
+    }
 
     //========== SCORE =============//
     async score(idx: number) {
@@ -529,37 +547,38 @@ export class GameService {
 
         if (Math.random() < 0.5)
             sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.5) + 0.5 * sign;
+        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
     //>>ACCELERATION<<//
-    async incrementSpeed(idx: number) {
-        this.gameRooms[idx].data.ball.incr++;
-        if (this.gameRooms[idx].data.ball.incr === 10) {
-            this.gameRooms[idx].data.ball.speed[0] += 0.01 * this.gameRooms[idx].data.ball.speed[0];
-            this.gameRooms[idx].data.ball.incr = 0;
+    async incrementSpeed(ball: BallDto) {
+        ball.incr++;
+        if (ball.incr === 10) {
+            ball.speed[0] += 0.01 * ball.speed[0];
+            ball.incr = 0;
         }
     }
 
     //>>UPDATE POSITION<<//
-    async updateBall(idx: number) {
-        this.gameRooms[idx].data.ball.x += this.gameRooms[idx].data.ball.speed[0] / 100;
-        this.gameRooms[idx].data.ball.y += this.gameRooms[idx].data.ball.speed[1] / 100;
+    async updateBall(ball: BallDto) {
+        ball.x += ball.speed[0] / 100;
+        ball.y += ball.speed[1] / 100;
     };
 
     //>>CALCUL POSITION<<//
     async calculateBall(idx: number) {
-        this.bounce(idx);
-        this.updateBall(idx);
-        this.incrementSpeed(idx);
+        const ball = this.gameRooms[idx].data.ball;
+        this.bounce(idx, ball);
+        this.updateBall(ball);
+        this.incrementSpeed(ball);
     };
 
     async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
 
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 1 || this.gameRooms[idx].data.player2.points > 1)
+        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
         this.gameRooms[idx].data.end = true;
     
     return { ...this.gameRooms[idx].data };
@@ -617,7 +636,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.3, Math.random() * (0.8 - 0.5) + 0.5],
+            speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
             incr: 0,
         }
 
@@ -632,6 +651,7 @@ export class GameService {
             ball: ball,
         }
 
+    
         return data;
     }
 
