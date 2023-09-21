@@ -1,43 +1,14 @@
+@keyframes slideIn {
+  0% { transform: translateX(-100%); }
+  20% { transform: translateX(-80%); }
+  40% { transform: translateX(-40%); }
+  60% { transform: translateX(-20%); }
+  80% { transform: translateX(-10%); }
+  85% { transform: translateX(-5%); }
+  90% { transform: translateX(10%); }
+  100% { transform: translateX(0); }
+}
 
-.sidepanel {
-    height: 250px;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    padding-top: 60px;
-    transition: 0.5s;
-  }
-  
-  .sidepanel a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-  }
-  
-  .sidepanel .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-  }
-  
-  .openbtn {
-    font-size: 20px;
-    cursor: pointer;
-    background-color: #111;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-  }
-  
-  .openbtn:hover {
-    background-color: #444;
-  }
+.animation {
+  animation: slideIn 1s ease-in-out;
+}

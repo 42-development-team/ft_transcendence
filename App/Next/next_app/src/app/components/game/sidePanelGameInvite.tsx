@@ -13,14 +13,17 @@ const SidePanelGameInvite = () => {
     const {theme} = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "black" : "white");
     const [textColor, setTextColor] = useState(theme === "latte" ? "white" : "black");
+    const [borderColor, setBorderColor] = useState(theme === "latte" ? "white" : "black");
 
     const onChange = (accept: boolean) => {
         setSlide("translateX(100%)");
-        if (accept) {
-            respondToInvite(invitedBy, true);
-        } else {
-            respondToInvite(invitedBy, false);
-        }
+        setTimeout(() => {
+            if (accept) {
+                respondToInvite(invitedBy, true);
+            } else {
+                respondToInvite(invitedBy, false);
+            }
+        }, 700);
     }
 
     const cancel = () => {
@@ -32,9 +35,11 @@ const SidePanelGameInvite = () => {
         if (theme === "latte") {
             setBackgroundColor("black");
             setTextColor("white");
+            setBorderColor("white");
         } else {
             setBackgroundColor("white");
             setTextColor("black");
+            setBorderColor("black");
         }
     }, [theme])
     
@@ -44,8 +49,9 @@ const SidePanelGameInvite = () => {
             <div
             style={{
                 position: 'fixed',
-                borderColor: 'blue',
-                border: '4px',
+                border: `4px solid ${borderColor}`,
+                borderRadius: '10px 0px 0px 10px',
+                borderRight: 'none',
                 top: 70,
                 right: 0,
                 width: '301px',
@@ -54,7 +60,7 @@ const SidePanelGameInvite = () => {
                 padding: '2px',
                 boxSizing: 'border-box',
                 transform: slide,
-                transition: 'transform 0.3s ease-out',
+                transition: 'transform 0.7s ease-out',
                 color: textColor,
             }}>
                 < div className="flex flex-col">
