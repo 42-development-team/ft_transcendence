@@ -23,11 +23,7 @@ export default function useFriends() {
 			fetchBlockedUsers();
 			fetchFriendsRequest();
 		});
-		socket?.on('userLoggedOut', (body: any) => {
-			fetchFriends();
-			fetchBlockedUsers();
-		});
-		socket?.on('userLoggedIn', (body: any) => {
+		socket?.on('userStatusUpdate', (body: any) => {
 			fetchFriends();
 			fetchBlockedUsers();
 		});
@@ -35,8 +31,7 @@ export default function useFriends() {
 		return () => {
 			socket?.off('friendUpdate');
 			socket?.off('blockUpdate');
-			socket?.off('userLoggedOut');
-			socket?.off('userLoggedIn');
+			socket?.off('userStatusUpdate');
 		}
 	}, [socket, friends]);
 

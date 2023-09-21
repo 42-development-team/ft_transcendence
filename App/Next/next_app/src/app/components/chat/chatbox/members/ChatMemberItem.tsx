@@ -73,12 +73,10 @@ const ChatMemberItem = ({
     };
 
 	useEffect(() => {
-		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
-		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
+		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
-			socket?.off("userLoggedIn", statusChangeMonitor);
-  			socket?.off("userLoggedOut", statusChangeMonitor);
+			socket?.off("userStatusUpdate", statusChangeMonitor);
 		}
 	}, [socket, statusChange])
 
