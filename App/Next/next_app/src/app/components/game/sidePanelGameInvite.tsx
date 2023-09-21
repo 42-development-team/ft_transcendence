@@ -9,6 +9,8 @@ import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
     const { mode, invitedBy, respondToInvite, inviteSent, cancelInvite } = useContext(GameInviteContext);
+    const [receiveVisible, setReceiveVisible] = useState(false);
+    const [sentVisible, setSentVisible] = useState(false);
     const [slide, setSlide] = useState("translateX(100%)");
     const { theme } = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
@@ -31,6 +33,7 @@ const SidePanelGameInvite = () => {
 
     const cancel = () => {
         setSlide("translateX(100%)");
+        setSentVisible(false);
         cancelInvite(userId)
     }
 
@@ -52,9 +55,18 @@ const SidePanelGameInvite = () => {
 
     useEffect(() => {
         if (invitedBy || inviteSent) {
+            if (invitedBy) {
+                setReceiveVisible(true);
+                setSentVisible(false);
+            } else {
+                setReceiveVisible(false);
+                setSentVisible(true);
+            }
             setSlide("translateX(0%)");
         } else {
             setSlide("translateX(100%)");
+            setSentVisible(false);
+            setReceiveVisible(false);
         }
         console.log("invitedBy: " + invitedBy + " inviteSent: " + inviteSent)
     }, [invitedBy, inviteSent])
