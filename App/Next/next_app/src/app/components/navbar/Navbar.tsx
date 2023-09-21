@@ -13,7 +13,7 @@ import InGameContext from "@/app/context/inGameContext";
 const Navbar = () => {
     const { isLoggedIn, logout } = useAuthContext();
     return (
-        <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl">
+        <div className="h-[48px] flex items-center justify-between bg-base p-1 drop-shadow-xl z-50">
             <Logo isLoggedIn={isLoggedIn} />
             <NavLinks logout={logout} isLoggedIn={isLoggedIn} />
         </div>
