@@ -40,6 +40,7 @@ const SidePanelGameInvite = () => {
         transition: 'transform 0.6s ease-out',
         color: textColor,
         opacity: 1,
+        zIndex: 1000
       };
 
 
@@ -98,7 +99,7 @@ const SidePanelGameInvite = () => {
         <div >
                 <div
                     style={sidePanelStyle}>
-                    {!inviteSent && receiveVisible &&
+                    {receiveVisible &&
                         < div className="flex flex-col">
                             <div className="flex  justify-center my-1">
                                 {invitedBy} want to play {/* TODO: here put username */}
@@ -109,7 +110,7 @@ const SidePanelGameInvite = () => {
                             </div>
                         </div>
                     }
-                    {!invitedBy &&
+                    {sentVisible &&
                         <div className="flex flex-col items-center justify-center my-1">
                                     Waiting for user...
                             {/* TODO: here put username */}
