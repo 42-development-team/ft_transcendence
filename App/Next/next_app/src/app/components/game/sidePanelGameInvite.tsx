@@ -37,9 +37,9 @@ const SidePanelGameInvite = () => {
             setTextColor("white");
             setBorderColor("white");
         } else {
-            setBackgroundColor("white");
+            setBackgroundColor("#fab387");
             setTextColor("black");
-            setBorderColor("black");
+            setBorderColor("#eba0ac");
         }
     }, [theme])
     
@@ -64,16 +64,16 @@ const SidePanelGameInvite = () => {
                 color: textColor,
             }}>
                 < div className="flex flex-col">
-                    <div className="flex mb-2">
-                        Invited by {invitedBy}
+                    <div className="flex  justify-center mb-2">
+                        {invitedBy} want to play
                     </div>
-                    <div className="flex flex-row">
-                <div className="m-2">
+                    <div className="flex justify-evenly w-full flex-row">
+                <div className="flex m-2">
                     <button onClick={() => onChange(true)} >
                         ACCEPT
                     </button>
                 </div>
-                <div className="m-2">
+                <div className="flex m-2">
                     <button onClick={() => onChange(false)}>
                         DECLINE
                     </button>
