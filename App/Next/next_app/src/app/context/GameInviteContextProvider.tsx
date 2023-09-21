@@ -39,7 +39,7 @@ export default function GameInviteProvider({ children }: any) {
 				setInvitedBy("");
 				setMode(false);
 			}, 10000);
-			return () => clearTimeout(timeoutId);
+			return () => clearTimeout(timeoutId); //TODO: put timeout attribute in context
 		});
 
 		return () => {
@@ -51,7 +51,7 @@ export default function GameInviteProvider({ children }: any) {
 
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
-			console.log("invite sent with: " + invitedId + " " + modeEnabled);
+			console.log("invite sent with: " + invitedId + " " + modeEnabled, "socket:", socket?.id);
 			socket?.emit("invite", { invitedId, modeEnabled });
 		}
 		catch (error) {

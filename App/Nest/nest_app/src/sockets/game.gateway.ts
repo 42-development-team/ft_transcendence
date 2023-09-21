@@ -46,7 +46,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (invitorId === undefined)
             return ;
         // body awaits for the invited id (type number) and the mode game (boolean)
-        const { invitedId, modeEnabled } = body;
+        const { invitedId, modeEnabled } : {invitedId: number, modeEnabled: boolean} = body;
 
         if (invitorId !== invitedId)
             this.gameService.handleInvite(invitorId, invitedId, modeEnabled);
