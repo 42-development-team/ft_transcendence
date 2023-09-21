@@ -43,8 +43,8 @@ export class AuthService {
                 jwt = await this.getTokens(userDB, true);
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
-                    .cookie("rt", jwt.refresh_token, cookieOptions)
                     .redirect(`${frontUrl}/home/`);
+                    // .cookie("rt", jwt.refresh_token, cookieOptions)
             }
         } catch (error) {
             throw new Error('Redirect error');

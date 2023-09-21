@@ -144,7 +144,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
-
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
         this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
@@ -153,6 +152,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
                 this.gameLogic(room.data);
             }
         }
+        await this.userService.updateStatus(userId, "in a game");
+        this.server.emit("userStatusUpdate", { userId });
     }
 
     @SubscribeMessage('retrieveData')
@@ -168,6 +169,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleSurrender(@MessageBody() body: any) {
         const [id, userId] = body;
         this.gameService.surrender(id, userId);
+        await this.userService.updateStatus(userId, "online");
+        this.server.emit("userStatusUpdate", { userId });
     }
 
     // ============================== //
@@ -190,6 +193,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', {winnerId: results.gameWonId, loserId: results.gameLosedId});
         await this.gameService.removeRoom(data.id);
+        await this.userService.updateStatus(results.gameLosedId, "online");
+        await this.userService.updateStatus(results.gameWonId, "online");
+        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
+        this.server.emit("userStatusUpdate", { userId: results.gameWonId});
     }
 
     async sendDataToRoom(data: GameDto) {
