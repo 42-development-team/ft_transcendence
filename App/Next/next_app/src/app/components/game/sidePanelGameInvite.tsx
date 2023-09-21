@@ -9,7 +9,7 @@ import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
     const { mode, invitedBy, respondToInvite, inviteSent, cancelInvite } = useContext(GameInviteContext);
-    const [slide, setSlide] = useState("translateX(0%)"); //TODO : set to 100%
+    const [slide, setSlide] = useState("translateX(100%)");
     const { theme } = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
     const [textColor, setTextColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
@@ -50,9 +50,17 @@ const SidePanelGameInvite = () => {
         }
     }, [theme])
 
+    useEffect(() => {
+        if (invitedBy || inviteSent) {
+            setSlide("translateX(0%)");
+        } else {
+            setSlide("translateX(100%)");
+        }
+        console.log("invitedBy: " + invitedBy + " inviteSent: " + inviteSent)
+    }, [invitedBy, inviteSent])
+
     return (
         <div >
-            {(inviteSent || invitedBy) &&
                 <div
                     style={{
                         position: 'fixed',
@@ -70,14 +78,14 @@ const SidePanelGameInvite = () => {
                         padding: '2px',
                         boxSizing: 'border-box',
                         transform: slide,
-                        transition: 'transform 0.7s ease-out',
+                        transition: 'transform 0.6s ease-out',
                         color: textColor,
-                        opacity: 0.9,
+                        opacity: 1,
                     }}>
                     {!inviteSent &&
                         < div className="flex flex-col">
                             <div className="flex  justify-center my-1">
-                                {invitedBy} want to play
+                                {invitedBy} want to play {/* TODO: here put username */}
                             </div>
                             <div className="flex justify-evenly w-full flex-row">
                                 <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
@@ -85,14 +93,13 @@ const SidePanelGameInvite = () => {
                             </div>
                         </div>
                     }
-                    {inviteSent &&
+                    {!invitedBy &&
                         <div className="flex flex-col items-center justify-center my-1">
-                            Waiting for user... {/* here put username */}
+                            Waiting for user... {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
                     }
                 </div>
-            }
         </div>
     )
 }
