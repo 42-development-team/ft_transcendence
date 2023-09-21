@@ -4,6 +4,7 @@ import { useAuthContext } from "@/app/context/AuthContext";
 import GameInviteContext from "@/app/context/GameInviteContext";
 import { use, useContext, useEffect, useState } from "react"
 import ThemeContext from "../theme/themeContext";
+import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
@@ -64,7 +65,7 @@ const SidePanelGameInvite = () => {
                     top: 70,
                     right: 0,
                     width: '301px',
-                    height: '80px',
+                    height: '85px',
                     backgroundColor: backgroundColor,
                     padding: '2px',
                     boxSizing: 'border-box',
@@ -74,45 +75,18 @@ const SidePanelGameInvite = () => {
                     opacity: 0.9,
                 }}>
                 < div className="flex flex-col">
-                    <div className="flex  justify-center mb-2">
+                    <div className="flex  justify-center my-1">
                         {invitedBy} want to play
                     </div>
                     <div className="flex justify-evenly w-full flex-row">
-                        <div className="flex m-2">
-                            <button
-                                type="button"
-                                disabled={disable}
-                                style={{ opacity: disable ? 0.5 : 1 }}
-                                className={`focus:ring-4 transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
-                                onClick={() => onChange(true)}>
-                                ACCEPT
-                            </button>
-                        </div>
-                        <div className="flex m-2">
-                            <button
-                                type="button"
-                                disabled={disable}
-                                style={{ opacity: disable ? 0.5 : 1 }}
-                                className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
-                                onClick={() => onChange(false)}>
-                                DECLINE
-                            </button>
-                        </div>
+                        <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                        <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
                     </div>
                 </div>
 
                 {/* } */}
                 {inviteSent &&
-                    <div className="m-2">
-                        <button
-                            type="button"
-                            disabled={disable}
-                            style={{ opacity: disable ? 0.5 : 1 }}
-                            className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
-                            onClick={cancel}>
-                            CANCEL
-                        </button>
-                    </div>
+                    <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                 }
             </div>
         </div>
