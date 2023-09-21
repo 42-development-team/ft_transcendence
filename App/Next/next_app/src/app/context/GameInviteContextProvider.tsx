@@ -4,23 +4,29 @@ import { useEffect, useState } from 'react';
 import InGameContext from './inGameContext';
 import GameInviteContext from './GameInviteContext';
 import { useAuthContext } from './AuthContext';
+import { time } from 'console';
 
 export default function GameInviteProvider({ children }: any) {
 	const [invitedBy, setInvitedBy] = useState("");
 	const [inviteSent, setInviteSent] = useState(false);
+	const [timeoutId, setTimeoutId] = useState<any>(null);
 	const [mode, setMode] = useState(false);
 	const { socket } = useAuthContext();
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
 			setInviteSent(true);
-			const timeoutId = setTimeout(() => {
+			const id = setTimeout(() => {
 				setInviteSent(false);
 			}, 10000);
+			setTimeoutId(id);
 		});
+
 		socket?.on('inviteCancelled', (body: any) => {
 			//TODO: set a message to notify that invitor has cancelled the invite
 			setInviteSent(false);
+			if (timeoutId)
+				clearTimeout(timeoutId);
 		});
 
 		socket?.on('inviteAccepted', (body: any) => {
@@ -39,7 +45,9 @@ export default function GameInviteProvider({ children }: any) {
 				setInvitedBy("");
 				setMode(false);
 			}, 10000);
-			return () => clearTimeout(timeoutId); //TODO: put timeout attribute in context
+			setTimeoutId(timeoutId);
+			if (timeoutId)
+				clearTimeout(timeoutId);
 		});
 
 		return () => {
@@ -62,14 +70,18 @@ export default function GameInviteProvider({ children }: any) {
 	const respondToInvite = async (invitorId: string, response: boolean) => {
 		console.log("responding to invite: " + invitorId + " " + response);
 		socket?.emit('respondToInvite', { invitorId, response });
+		if (timeoutId)
+			clearTimeout(timeoutId);
 	}
 
 	const cancelInvite = async (invitorId: string) => {
+		if (timeoutId)
+			clearTimeout(timeoutId);
 		console.log("cancelling invite");
 	}
 
 	return (
-		<GameInviteContext.Provider value={{ invitedBy, setInvitedBy, inviteToPlay, respondToInvite, cancelInvite, inviteSent, setInviteSent, mode, setMode }}>
+		<GameInviteContext.Provider value={{ invitedBy, setInvitedBy, inviteToPlay, respondToInvite, cancelInvite, inviteSent, setInviteSent, mode, setMode, timeoutId, setTimeoutId }}>
 			{children}
 		</GameInviteContext.Provider>
 	)

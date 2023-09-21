@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
 const GameInviteContext = createContext({
     invitedBy: "",
@@ -10,6 +10,8 @@ const GameInviteContext = createContext({
     setInviteSent: (inviteSent: boolean) => {},
     mode: false,
     setMode: (mode: boolean) => {},
+    timeoutId: null,
+    setTimeoutId: (timeoutId: NodeJS.Timeout | null) => {}
 });
 
 export default GameInviteContext;
