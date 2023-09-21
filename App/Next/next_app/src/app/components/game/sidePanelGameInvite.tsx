@@ -20,6 +20,29 @@ const SidePanelGameInvite = () => {
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
     const [disable, setDisable] = useState(false);
 
+
+    const sidePanelStyle: React.CSSProperties = {
+        position: 'fixed',
+        borderLeft: `1px solid ${borderColor}`,
+        borderTop: `1px solid ${borderColor}`,
+        borderBottom: `1px solid ${borderColor}`,
+        borderTopLeftRadius: '10px',
+        borderBottomLeftRadius: '10px',
+        borderRight: 'none',
+        top: 70,
+        right: 0,
+        width: '301px',
+        height: '85px',
+        backgroundColor: backgroundColor,
+        padding: '2px',
+        boxSizing: 'border-box',
+        transform: slide,
+        transition: 'transform 0.6s ease-out',
+        color: textColor,
+        opacity: 1,
+      };
+
+
     const onChange = (accept: boolean) => {
         setSlide("translateX(100%)");
         setTimeout(() => {
@@ -74,27 +97,8 @@ const SidePanelGameInvite = () => {
     return (
         <div >
                 <div
-                    style={{
-                        position: 'fixed',
-                        borderLeft: `1px solid ${borderColor}`,
-                        borderTop: `1px solid ${borderColor}`,
-                        borderBottom: `1px solid ${borderColor}`,
-                        borderTopLeftRadius: '10px',
-                        borderBottomLeftRadius: '10px',
-                        borderRight: 'none',
-                        top: 70,
-                        right: 0,
-                        width: '301px',
-                        height: '85px',
-                        backgroundColor: backgroundColor,
-                        padding: '2px',
-                        boxSizing: 'border-box',
-                        transform: slide,
-                        transition: 'transform 0.6s ease-out',
-                        color: textColor,
-                        opacity: 1,
-                    }}>
-                    {!inviteSent &&
+                    style={sidePanelStyle}>
+                    {!inviteSent && receiveVisible &&
                         < div className="flex flex-col">
                             <div className="flex  justify-center my-1">
                                 {invitedBy} want to play {/* TODO: here put username */}
@@ -107,7 +111,8 @@ const SidePanelGameInvite = () => {
                     }
                     {!invitedBy &&
                         <div className="flex flex-col items-center justify-center my-1">
-                            Waiting for user... {/* TODO: here put username */}
+                                    Waiting for user...
+                            {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
                     }
