@@ -69,7 +69,6 @@ const SidePanelGameInvite = () => {
             setSentVisible(false);
             setReceiveVisible(false);
         }
-        console.log("invitedBy: " + invitedBy + " inviteSent: " + inviteSent)
     }, [invitedBy, inviteSent])
 
     return (
