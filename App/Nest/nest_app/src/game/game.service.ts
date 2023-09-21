@@ -483,16 +483,14 @@ export class GameService {
     checkCollision(ball: BallDto, player: PlayerDto): boolean {
         const dy: number = Math.abs(ball.y - player.y);
         
-        console.log("===============BEFORE========================");
-        console.log("p.y + p.h / 2:", (player.y + player.h / 2));
         if (dy <= player.h / 2)
-            return true;
+        return true;
         else if ((player.y + player.h / 2) > 1){
             if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
-                return true;
+            return true;
         }
         else if (player.y - player.h / 2 < 0) {
-            if (ball.y + ball.r >= ((player.h / 2) - (player.y)))
+            if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y)))
                 return true;
         }
         return false;
@@ -541,7 +539,7 @@ export class GameService {
     async reset(idx: number) {
         this.gameRooms[idx].data.ball.x = 0.5;
         // this.gameRooms[idx].data.ball.y = 0.5;
-        this.gameRooms[idx].data.ball.y = 0.95;
+        this.gameRooms[idx].data.ball.y = 0.94;
         let sign = 1;
 
         // if (Math.random() < 0.5)
@@ -638,7 +636,7 @@ export class GameService {
             color: '#cba6f7',
             x: 0.5,
             // y: 0.5,
-            y: 0.95,
+            y: 0.94,
             r: 0.01,
             pi2: Math.PI * 2,
             speed: [-0.3, 0],
