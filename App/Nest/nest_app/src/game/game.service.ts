@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Injectable, Redirect } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -382,7 +382,7 @@ export class GameService {
         }
         else {
             if (val - player.h / 2 > 0.01)
-            player.y = val;
+                player.y = val;
         }
     }
 
