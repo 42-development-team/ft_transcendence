@@ -1,4 +1,5 @@
 "use client"
+
 import Chat from "@/components/chat/Chat";
 import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
@@ -18,6 +19,7 @@ export default function Home() {
 	let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
 	const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
 	const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
+	const [loading, setLoading] = useState<boolean>(true);
 	const [pSpace, setPSpace] = useState<number>(-15);
 
 	if (typeof window !== "undefined") {
@@ -53,7 +55,7 @@ export default function Home() {
         setPSpace(-35);
       }
     }
-  }, []);
+  }, [window]);
 
 	useEffect(() => {
 		login();

@@ -186,16 +186,21 @@ export class GameService {
 
     async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        console.log("1");
         if (idx === -1)
             return ;
+        console.log("2");
         if (!accept) {
             this.inviteQueue.splice(idx, 1);
             return ;
         }
+        console.log("3");
         if (this.isInGame(invitorId))
             return ;
+        console.log("4");
         if (this.isInGame(invitedId))
             return ;
+        console.log("5");
         this.handleLeaveQueue(invitorId);
         this.handleLeaveQueue(invitedId);
         return (this.inviteQueue[idx]);
