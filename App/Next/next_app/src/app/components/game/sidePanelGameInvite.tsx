@@ -13,6 +13,8 @@ const SidePanelGameInvite = () => {
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "black" : "white");
     const [textColor, setTextColor] = useState(theme === "latte" ? "white" : "black");
     const [borderColor, setBorderColor] = useState(theme === "latte" ? "white" : "black");
+    const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-mauve" : "bg-pink");
+    const [hoverColor, setHoverColor] = useState(theme === "latte" ? "bg-pink" : "bg-mauve");
     const [disable, setDisable] = useState(false);
 
     const onChange = (accept: boolean) => {
@@ -36,10 +38,14 @@ const SidePanelGameInvite = () => {
             setBackgroundColor("#bcc0cc");
             setTextColor("#df8e1d");
             setBorderColor("white");
+            setButtonColor("bg-[#8839ef]");
+            setHoverColor("hover:bg-[#ea76cb]");
         } else {
             setBackgroundColor("#313244");
             setTextColor("#f9e2af");
             setBorderColor("#f9e2af");
+            setButtonColor("bg-[#f5c2e7]");
+            setHoverColor("hover:bg-[#cba6f7]");
         }
     }, [theme])
 
@@ -77,7 +83,7 @@ const SidePanelGameInvite = () => {
                                 type="button"
                                 disabled={disable}
                                 style={{ opacity: disable ? 0.5 : 1 }}
-                                className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none hover:bg-pink drop-shadow-xl m-4 p-3`}
+                                className={`focus:ring-4 transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
                                 onClick={() => onChange(true)}>
                                 ACCEPT
                             </button>
@@ -87,7 +93,7 @@ const SidePanelGameInvite = () => {
                                 type="button"
                                 disabled={disable}
                                 style={{ opacity: disable ? 0.5 : 1 }}
-                                className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none hover:bg-pink drop-shadow-xl m-4 p-3`}
+                                className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
                                 onClick={() => onChange(false)}>
                                 DECLINE
                             </button>
@@ -102,7 +108,7 @@ const SidePanelGameInvite = () => {
                             type="button"
                             disabled={disable}
                             style={{ opacity: disable ? 0.5 : 1 }}
-                            className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none hover:bg-pink drop-shadow-xl m-4 p-3`}
+                            className={`focus:ring-4 shadow-lg transform active:scale-75 transition-transform'} font-bold text-sm rounded-lg text-base ${buttonColor} disabled:pointer-events-none ${hoverColor} drop-shadow-xl m-4 p-3`}
                             onClick={cancel}>
                             CANCEL
                         </button>
