@@ -1,27 +1,19 @@
 "use client";
 
-import { useAuthContext } from "@/app/context/AuthContext";
 import GameInviteContext from "@/app/context/GameInviteContext";
-import { use, useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import ThemeContext from "../theme/themeContext";
 import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
-import { type } from "os";
-import sessionStorageUser from "../profile/sessionStorage";
-import getUserNameById from "../utils/getUserNameById";
-import { time } from "console";
 
 const SidePanelGameInvite = () => {
-    const { userId } = useAuthContext();
     const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer, invitorUsername, invitedUsername } = useContext(GameInviteContext);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
     const { theme } = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
     const [textColor, setTextColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [borderColor, setBorderColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-[#8839ef]" : "bg-[#f5c2e7]");
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
-    const [currentUserId, setCurrentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
-    const [currentUserName, setCurrentUserName] = useState("");
+    const [currentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
     const [lockSubmit, setLockSubmit] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState(false);
     const [disable, setDisable] = useState(true);
@@ -77,18 +69,6 @@ const SidePanelGameInvite = () => {
             setHoverColor("hover:bg-[#cba6f7]");
         }
     }, [theme])
-
-    useEffect(() => {
-        const currUser = sessionStorageUser();
-        const getCurrentInfo = async () => {
-            if (currUser) {
-                setCurrentUserId(currUser);
-                setCurrentUserName(await getUserNameById(currUser));
-                setDisable(false);
-            }
-        }
-        getCurrentInfo();
-    }, [userId])
 
     /* ACTIONS */
     const cancel = () => {
