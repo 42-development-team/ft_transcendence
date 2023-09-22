@@ -187,8 +187,13 @@ export class GameService {
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
         if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInQueue !== -1) {
             console.log("isAlreadyInGame: ", invitedUsername)
-            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInQueue !== -1)
+            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInQueue !== -1) {
+                console.log(invitedUsername + " is already in queue with an other player")
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+            }
+            else if (playersAreAlreadyInQueue !== -1) {
+                console.log(invitedUsername + " is already in queue with you")
+            }
             return false;
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
