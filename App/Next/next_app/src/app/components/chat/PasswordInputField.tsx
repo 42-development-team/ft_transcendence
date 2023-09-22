@@ -12,7 +12,7 @@ const PasswordInputField = ({value, setValue} : {value: string, setValue: Dispat
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
 				autoComplete="on"
-				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
+				className="w-full p-2 rounded bg-mantle border-2 border-text text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
 		</div >
 	)

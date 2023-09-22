@@ -123,7 +123,7 @@ const ChannelNameInput = ({value, setValue, disabled} :
 				disabled={disabled}
 				maxLength={24}
 				onChange={(e) => setValue(e.target.value)}
-				className="w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
+				className="w-full p-2 rounded bg-mantle border-2 border-base text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			/>
 		</div>
 	)	
@@ -143,7 +143,7 @@ const ChannelTypeInput = ({value, onChange, disabled} :
 				value={value}
 				onChange={onChange}
 				disabled={disabled}
-				className=" w-full p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
+				className=" w-full p-2 rounded bg-mantle border-2 border-base text-sm focus:outline-none focus:ring-1 focus:ring-mauve leading-tight"
 			>
 				<option value="public">Public</option>
 				<option value="private">Private</option>
