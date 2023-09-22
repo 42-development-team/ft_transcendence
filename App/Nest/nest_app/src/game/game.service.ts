@@ -178,10 +178,13 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(invitorId: number, invitedId: number, mode: boolean) {
+    async handleInvite(invitorId: number, invitedId: number, invitorSocket: Socket, mode: boolean) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx !== -1)
+        const inventedIsIngGame: boolean = await this.isInGame(invitedId);
+        if (inventedIsIngGame || idx !== -1) {
+            invitorSocket?.emit('alreadyInGame');
             return ;
+        }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
     }
 
@@ -378,7 +381,7 @@ export class GameService {
     }
 
     async isInGame(userId: number): Promise<boolean> {
-        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)) {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined) {
             return true;
         }
         return false;

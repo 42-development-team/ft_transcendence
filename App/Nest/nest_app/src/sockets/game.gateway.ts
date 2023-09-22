@@ -8,32 +8,34 @@ import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { InviteDto } from 'src/game/dto/invite-game.dto';
 
 @Injectable()
-@WebSocketGateway({cors:{
-    credentials: true,
-}})
+@WebSocketGateway({
+    cors: {
+        credentials: true,
+    }
+})
 
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(
         private gameService: GameService,
         private userService: UsersService,
-    ) {}
+    ) { }
 
     @WebSocketServer()
     server: Server;
 
     clients: Socket[] = [];
 
-	async handleConnection(client: Socket) {
-		const userId = await this.userService.getUserIdFromSocket(client);
-		if (userId) {
-			this.clients.push(client);
-		} else {
-			console.log('User not authenticated');
-			client.disconnect();
-		}
-	}
+    async handleConnection(client: Socket) {
+        const userId = await this.userService.getUserIdFromSocket(client);
+        if (userId) {
+            this.clients.push(client);
+        } else {
+            console.log('User not authenticated');
+            client.disconnect();
+        }
+    }
 
-    async handleDisconnect(client: Socket){
+    async handleDisconnect(client: Socket) {
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
@@ -44,17 +46,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
         if (invitorId === undefined)
-            return ;
+            return;
         // body awaits for the invited id (type number) and the mode game (boolean)
-        const { invitedId, modeEnabled } : {invitedId: number, modeEnabled: boolean} = body;
+        const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = body;
         const invitedIdNumber = Number(invitedId);
-        if (invitorId !== invitedId)
-            this.gameService.handleInvite(invitorId, invitedId, modeEnabled);
-        console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-        invitedSocket?.emit('receiveInvite', {invitorId, modeEnabled});
-        invitorSocket?.emit('inviteSent');
+        if (invitorId !== invitedId) {
+            this.gameService.handleInvite(invitorId, invitedId, invitorSocket, modeEnabled);
+            console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
+            invitedSocket?.emit('receiveInvite', { invitorId, modeEnabled });
+            invitorSocket?.emit('inviteSent');
+        }
+
     } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
 
     @SubscribeMessage('respondToInvite')
@@ -67,26 +71,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
         const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorId, invitedId, response);
         console.log("inviteInfos: ", inviteInfos);
-        if (inviteInfos !== undefined)  {
+        if (inviteInfos !== undefined) {
             const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
             const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-            this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+            await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
         }
     }
 
     @SubscribeMessage('cancelInvite')
     async handleCancelInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
-        
+
         // body awaits for the invited id (type number) and the mode game (boolean)
-        const { invitedId } : {invitedId: number} = body;
+        const { invitedId }: { invitedId: number } = body;
         console.log("in CANCEL: invitedId: ", invitedId, "invitorId: ", invitorId)
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
             this.gameService.handleCancelInvite(invitorId, invitedId);
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-        invitedSocket?.emit('inviteCanceled', {invitorId});
+        invitedSocket?.emit('inviteCanceled', { invitorId });
     }
 
 
@@ -97,11 +101,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
         // queue not full
         if (!result)
-            return ;
-        
+            return;
+
         // queue is full => game is created
-        const {newGameRoom, player1SocketId, player2SocketId} = result;
-        if (player1SocketId && player2SocketId ) {
+        const { newGameRoom, player1SocketId, player2SocketId } = result;
+        if (player1SocketId && player2SocketId) {
             //game is created from scratch
             this.joinGameRoom(player1SocketId, player2SocketId, newGameRoom);
         }
@@ -128,7 +132,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         if (isAlreadyInGame) {
             socket.emit('isAlreadyInGame', data);
         }
-        return ;
+        return;
     }
 
     @SubscribeMessage('leaveQueue')
@@ -195,7 +199,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000 / 60);
         const promiseCalculate = this.gameService.calculateGame(data.id, data.mode);
-    
+
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;
     }
@@ -207,12 +211,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
         }
         const results = await this.gameService.createGame(data);
         console.log('results: ', results);
-        this.server.to(data.roomName).emit('endOfGame', {winnerId: results.gameWonId, loserId: results.gameLosedId});
+        this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
         await this.gameService.removeRoom(data.id);
         await this.userService.updateStatus(results.gameLosedId, "online");
         await this.userService.updateStatus(results.gameWonId, "online");
         this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
-        this.server.emit("userStatusUpdate", { userId: results.gameWonId});
+        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
     }
 
     async sendDataToRoom(data: GameDto) {
