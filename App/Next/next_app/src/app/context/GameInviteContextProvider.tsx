@@ -15,7 +15,7 @@ export default function GameInviteProvider({ children }: any) {
 	const [receiveVisible, setReceiveVisible] = useState(false);
 	const [sentVisible, setSentVisible] = useState(false);
 	const [slide, setSlide] = useState("translateX(100%)");
-	const [timer, setTimer] = useState<any>(0);
+	const [timer, setTimer] = useState<any>(20);
 	const { socket } = useAuthContext();
 
 	/* SOCKET LISTENERS */
@@ -25,7 +25,7 @@ export default function GameInviteProvider({ children }: any) {
 			closePanel();
 			openSent();
 			setTimeoutId(setTimeout(() => {
-				setInviteSent(false);
+				closePanel();
 			}, 20000));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -73,8 +73,7 @@ export default function GameInviteProvider({ children }: any) {
 			setMode(body.mode);
 			openInvite();
 			setTimeoutId(setTimeout(() => {
-				setInvitedBy("");
-				setMode(false);
+				closePanel();
 			}, 20000));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
