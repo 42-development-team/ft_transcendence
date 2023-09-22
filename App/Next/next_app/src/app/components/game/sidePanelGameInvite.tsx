@@ -12,7 +12,7 @@ import { time } from "console";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
-    const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer } = useContext(GameInviteContext);
+    const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer, invitorUsername, invitedUsername } = useContext(GameInviteContext);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const { theme } = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
@@ -115,7 +115,7 @@ const SidePanelGameInvite = () => {
                 {receiveVisible &&
                     < div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message !== ""? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
+                            {message !== ""? <span>{message}</span> : <span>{invitorUsername} want to play ({timer})</span>}{/* TODO: here put username */}
                         </div>
                         {message === "" &&
                             <div className="flex justify-evenly w-full flex-row">
@@ -128,7 +128,7 @@ const SidePanelGameInvite = () => {
                 {sentVisible &&
                     <div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message !== "" ? <span>{message}</span> : <span>Waiting for {currentUserName}...</span>}
+                            {message !== "" ? <span>{message}</span> : <span>Waiting for {invitedUsername}...</span>}
                         </div>
                         {message === "" &&
                             <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />

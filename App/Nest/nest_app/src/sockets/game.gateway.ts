@@ -71,7 +71,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if (invitorId === undefined)
                 return;
             // body awaits for the invited id (type number) and the mode game (boolean)
-            const { invitedId, modeEnabled }: { invitedId: number, invitedUserName: string, modeEnabled: boolean } = body;
+            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = body;
+            const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
+            const invitorUsername: string = invitorUser.username;
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
             const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
@@ -82,8 +84,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 if (!inviteCanBeDone)
                     return;
                 console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
-                invitedSocket?.emit('receiveInvite', { invitorId, modeEnabled });
-                invitorSocket?.emit('inviteSent');
+                invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
+                invitorSocket?.emit('inviteSent', {invitedUserName});
             }
         } catch (error) {
             console.log("error: ", error);

@@ -23,6 +23,10 @@ const GameInviteContext = createContext({
     setSlide: (slide: string) => {},
     timer: 0,
     setTimer: (timer: any) => {},
+    invitorUsername: "",
+    setInvitorUsername: (invitorUsername: string) => {},
+    invitedUsername: "",
+    setInvitedUsername: (invitedUsername: string) => {},
 
 });
 
