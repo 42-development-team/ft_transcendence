@@ -182,18 +182,24 @@ export class GameService {
 
     async handleInvite(invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
         const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        const invitedIsAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
+        const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
+        const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
+        const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
         console.log("idx in handleInvite: ", playersAreAlreadyInQueue)
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
-        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInQueue !== -1) {
-            console.log("invitedIsIngGame: ", inventedIsIngGame, "playersAreAlreadyInQueue: ", playersAreAlreadyInQueue, "invitedIsAlreadyInQueue: ", invitedIsAlreadyInQueue)
-            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInQueue !== -1) {
+        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1 || invitorIsAlreadyInvited !== -1) {
+            console.log("invitedIsIngGame: ", inventedIsIngGame, "playersAreAlreadyInQueue: ", playersAreAlreadyInQueue, "invitedIsAlreadyInvitor: ", invitedIsAlreadyInvitor, "invitedIsAlreadyInvited: ", invitedIsAlreadyInvited)
+            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
                 console.log(invitedUsername + " is already in queue with an other player")
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             }
             else if (playersAreAlreadyInQueue !== -1) {
                 console.log(invitedUsername + " is already in queue with you")
             }
+            else if (invitorIsAlreadyInvited !== -1) {
+                console.log("invitor is already invited")
+            }
+
             return false;
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
