@@ -1,7 +1,7 @@
 import { ChatBarState, useChatBarContext } from "@/app/context/ChatBarContextProvider"
 import { ChannelType } from "@/app/utils/models"
 import { Tooltip } from "@material-tailwind/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useUserRole } from "./members/UserRoleProvider"
 
 type SendMessageFormProps = {
@@ -16,6 +16,12 @@ const ChatMessageBoxFooter = ({ onSend, channelType, cannotSendMessage }: SendMe
     const [message, setMessage] = useState("");
 
     const { isCurrentUserOwner } = useUserRole();
+
+    useEffect(() => {
+        const message = document.getElementById('message');
+        if (message)
+            message.focus();
+    }, [onSend]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -32,9 +38,10 @@ const ChatMessageBoxFooter = ({ onSend, channelType, cannotSendMessage }: SendMe
         <form className="mt-4 flex flex-col w-full justify-between" onSubmit={handleSubmit}>
             <input
                 type="text" value={message}
+                id="message"
                 disabled={cannotSendMessage}
                 maxLength={MAX_MESSAGE_LENGTH}
-                className=" p-2 rounded bg-crust text-sm focus:outline-none focus:ring-1 focus:ring-mauve"
+                className=" p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-mauve bg-mantle border-2 border-text"
                 onChange={(e) => {
                     setMessage(e.target.value);
                 }}
