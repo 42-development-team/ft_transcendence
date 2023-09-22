@@ -85,7 +85,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
                 if (!inviteCanBeDone)
                     return;
-                console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
                 invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
                 invitorSocket?.emit('inviteSent', {invitedUserName});
             }
@@ -103,11 +102,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitorIdNumber = Number(invitorId);
         const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
         const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-        console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
         const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
-        console.log("inviteInfos: ", inviteInfos);
         if (inviteInfos !== undefined) {
-            console.log("inviteInfos is defined, gameRoom created")
+            console.log("inviteInfos is defined, gameRoom created (its broken)")
             //TODO: check why game is BROKEn !!!!!!
             // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
             // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
@@ -122,7 +119,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         // body awaits for the invited id (type number) and the mode game (boolean)
         const { invitedId }: { invitedId: number } = body;
-        console.log("in CANCEL: invitedId: ", invitedId, "invitorId: ", invitorId)
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
             this.gameService.handleRemoveQueue(invitorId, invitedIdNumber);

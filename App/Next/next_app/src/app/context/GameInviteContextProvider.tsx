@@ -174,7 +174,6 @@ export default function GameInviteProvider({ children }: any) {
 	/* SIDEPANEL ACTIONS */
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
-			console.log("invite sent with: " + invitedId + " " + modeEnabled, "socket:", socket?.id);
 			setInvitedId(invitedId);
 			socket?.emit("invite", { invitedId,  modeEnabled });
 		}
@@ -184,7 +183,6 @@ export default function GameInviteProvider({ children }: any) {
 	}
 
 	const respondToInvite = async (invitorId: string, response: boolean) => {
-		console.log("responding to invite: " + invitorId + " " + response);
 		clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 		if (response)
 			setMessage("Accepted");

@@ -185,24 +185,18 @@ export class GameService {
         const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
         const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-        console.log("invitorId:", invitorId, "invitedId:", invitedId )
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
         if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
-            console.log("invitedIsIngGame: ", inventedIsIngGame, "playersAreAlreadyInQueue: ", playersAreAlreadyInQueue, "invitedIsAlreadyInvitor: ", invitedIsAlreadyInvitor, "invitedIsAlreadyInvited: ", invitedIsAlreadyInvited)
             if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
-                console.log(invitedUsername + " is already in queue with an other player")
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             }
             else if (playersAreAlreadyInQueue !== -1) {
-                console.log(invitedUsername + " is already in queue with you")
             }
 
             return false;
         }
         else if (invitorIsAlreadyInvited !== -1) { //here invitor is not the invitor notify below..
             const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-            console.log("idx in handleInvite-2: ", idx)
-            console.log("inviteQueue: ", this.inviteQueue[idx])
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
             const invitorIdSocketToNotify = await this.userService.getUserSocketIdFromId(invitorIdToNotify);
             const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
@@ -231,7 +225,6 @@ export class GameService {
             return ;
         console.log("2");
         if (!accept) {
-            console.log("idx in handleToresponde-2: ", idx)
             this.inviteQueue.splice(idx, 1);
             console.log("declined by ", invitorSocket.id)
             invitorSocket?.emit('inviteDeclined');
