@@ -81,6 +81,12 @@ export default function GameInviteProvider({ children }: any) {
 
 	const respondToInvite = async (invitorId: string, response: boolean) => {
 		console.log("responding to invite: " + invitorId + " " + response);
+		clearTimeout(timeoutId);
+		setMessage("Cancelled");
+		setTimeoutId(setTimeout(() => {
+			setInvitedBy("");
+			setMessage("");
+		}, 2000));
 		socket?.emit('respondToInvite', { invitorId, response });
 		if (timeoutId)
 			clearTimeout(timeoutId);

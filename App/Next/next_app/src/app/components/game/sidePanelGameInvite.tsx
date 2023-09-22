@@ -144,10 +144,11 @@ const SidePanelGameInvite = () => {
         setSlide("translateX(100%)");
         console.log("accept", accept);
         setDisable(true);
+        respondToInvite(invitedBy, accept);
         setTimeout(() => {
             setDisable(false);
-            respondToInvite(invitedBy, accept);
         }, 700);
+
     }
 
     return (
@@ -173,7 +174,9 @@ const SidePanelGameInvite = () => {
                             {message ? <span>{message}</span> : <span>Waiting for user...</span>}
                         </div>
                         {/* TODO: here put username */}
-                        <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
+                        {!message &&
+                            <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
+                        }
                     </div>
                 }
             </div>
