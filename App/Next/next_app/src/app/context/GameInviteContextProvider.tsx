@@ -7,7 +7,6 @@ import getUserNameById from '../components/utils/getUserNameById';
 
 export default function GameInviteProvider({ children }: any) {
 	const timeoutRefId = useRef<NodeJS.Timeout | null>(null);
-    const [ invitedUserName , setInvitedUserName ] = useState<string>("");
 	const [invitedBy, setInvitedBy] = useState("");
 	const [inviteSent, setInviteSent] = useState(false);
 	const [timeoutId, setTimeoutId] = useState<any>();
@@ -164,10 +163,8 @@ export default function GameInviteProvider({ children }: any) {
 	/* SIDEPANEL ACTIONS */
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
-			setInvitedUserName(await getUserNameById(invitedId));
-			console.log("invitedUsername", invitedUserName);
 			console.log("invite sent with: " + invitedId + " " + modeEnabled, "socket:", socket?.id);
-			socket?.emit("invite", { invitedId, invitedUserName, modeEnabled });
+			socket?.emit("invite", { invitedId, modeEnabled });
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
