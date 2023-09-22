@@ -2,7 +2,7 @@
 
 import { useAuthContext } from "@/app/context/AuthContext";
 import GameInviteContext from "@/app/context/GameInviteContext";
-import { use, useContext, useEffect, useState } from "react"
+import { use, useContext, useEffect, useRef, useState } from "react"
 import ThemeContext from "../theme/themeContext";
 import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 import { type } from "os";
@@ -12,10 +12,8 @@ import { time } from "console";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
-    const { timeoutId, mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite, message } = useContext(GameInviteContext);
-    const [receiveVisible, setReceiveVisible] = useState(false);
-    const [sentVisible, setSentVisible] = useState(false);
-    const [slide, setSlide] = useState("translateX(100%)");
+    const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer } = useContext(GameInviteContext);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
     const { theme } = useContext(ThemeContext);
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
     const [textColor, setTextColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
@@ -26,7 +24,6 @@ const SidePanelGameInvite = () => {
     const [currentUserName, setCurrentUserName] = useState("");
     const [lockSubmit, setLockSubmit] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [timer, setTimer] = useState(20);
     const [disable, setDisable] = useState(true);
 
 
@@ -55,13 +52,15 @@ const SidePanelGameInvite = () => {
 
 
     useEffect(() => {
-        const countdown = setInterval(() => {
-            setTimer((prevTimer) => prevTimer - 1);
+        const timerRef = setInterval(() => {
+            setTimer((prevTimer: number) => prevTimer - 1);
         }, 1000);
+
         return () => {
-            clearInterval(countdown);
+            clearInterval(timerRef);
         };
     }, [timer]);
+
 
     useEffect(() => {
         if (theme === "latte") {
@@ -80,41 +79,6 @@ const SidePanelGameInvite = () => {
     }, [theme])
 
     useEffect(() => {
-        if (invitedBy || inviteSent) {
-            if (invitedBy) {
-                setReceiveVisible(true);
-                setSentVisible(false);
-            } else {
-                setReceiveVisible(false);
-                setSentVisible(true);
-            }
-            setTimer(20);
-            setSlide("translateX(0%)");
-        } else {
-            setSlide("translateX(100%)");
-            setSentVisible(false);
-            setReceiveVisible(false);
-        }
-    }, [invitedBy, inviteSent])
-
-    useEffect(() => {
-        if (invitedBy || inviteSent) {
-            if (invitedBy) {
-                setReceiveVisible(true);
-                setSentVisible(false);
-            } else {
-                setReceiveVisible(false);
-                setSentVisible(true);
-            }
-            setSlide("translateX(0%)");
-        } else {
-            setSlide("translateX(100%)");
-            setSentVisible(false);
-            setReceiveVisible(false);
-        }
-    }, [])
-
-    useEffect(() => {
         const currUser = sessionStorageUser();
         const getCurrentInfo = async () => {
             if (currUser) {
@@ -127,9 +91,6 @@ const SidePanelGameInvite = () => {
     }, [userId])
 
     const cancel = () => {
-        setSlide("translateX(100%)");
-        setSentVisible(false);
-        setInviteSent(false);
         cancelInvite(currentUserId as string)
     }
 
@@ -143,12 +104,7 @@ const SidePanelGameInvite = () => {
 
     const onChange = (accept: boolean) => {
         console.log("accept", accept);
-        setDisable(true);
         respondToInvite(invitedBy, accept);
-        setTimeout(() => {
-            setDisable(false);
-            setSlide("translateX(100%)");
-        }, 1000);
     }
 
     return (

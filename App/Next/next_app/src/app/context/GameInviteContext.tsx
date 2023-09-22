@@ -14,7 +14,16 @@ const GameInviteContext = createContext({
     timeoutId: null,
     setTimeoutId: (timeoutId: MutableRefObject<NodeJS.Timeout | null>) => {},
     message: "",
-    setMessage: (message: string) => {}
+    setMessage: (message: string) => {},
+    receiveVisible: false,
+    setReceiveVisible: (receiveVisible: boolean) => {},
+    sentVisible: false,
+    setSentVisible: (sentVisible: boolean) => {},
+    slide: "translateX(100%)",
+    setSlide: (slide: string) => {},
+    timer: 0,
+    setTimer: (timer: any) => {},
+
 });
 
 export default GameInviteContext;
