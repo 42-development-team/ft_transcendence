@@ -9,6 +9,7 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
+import { Socket } from "socket.io";
 
 
 @Injectable()
@@ -190,8 +191,8 @@ export class GameService {
             return ;
         this.inviteQueue.splice(idx, 1);
     }
-    
-    async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+
+    async handleRespondToInvite(invitedSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
         if (idx === -1)
@@ -199,6 +200,7 @@ export class GameService {
         console.log("2");
         if (!accept) {
             this.inviteQueue.splice(idx, 1);
+            invitedSocket.emit('inviteDeclined');
             return ;
         }
         console.log("3");

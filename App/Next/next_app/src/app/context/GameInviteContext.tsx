@@ -11,7 +11,9 @@ const GameInviteContext = createContext({
     mode: false,
     setMode: (mode: boolean) => {},
     timeoutId: null,
-    setTimeoutId: (timeoutId: NodeJS.Timeout | null) => {}
+    setTimeoutId: (timeoutId: NodeJS.Timeout | null) => {},
+    message: "",
+    setMessage: (message: string) => {}
 });
 
 export default GameInviteContext;

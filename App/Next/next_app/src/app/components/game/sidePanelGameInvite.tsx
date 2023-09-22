@@ -7,10 +7,11 @@ import ThemeContext from "../theme/themeContext";
 import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 import { type } from "os";
 import sessionStorageUser from "../profile/sessionStorage";
+import getUserNameById from "../utils/getUserNameById";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
-    const { mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite } = useContext(GameInviteContext);
+    const { mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite, message } = useContext(GameInviteContext);
     const [receiveVisible, setReceiveVisible] = useState(false);
     const [sentVisible, setSentVisible] = useState(false);
     const [slide, setSlide] = useState("translateX(100%)");
@@ -21,6 +22,9 @@ const SidePanelGameInvite = () => {
     const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-[#8839ef]" : "bg-[#f5c2e7]");
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
     const [currentUserId, setCurrentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
+    const [currentUserName, setCurrentUserName] = useState("");
+    const [lockSubmit, setLockSubmit] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [timer, setTimer] = useState(20);
     const [disable, setDisable] = useState(true);
 
@@ -121,10 +125,14 @@ const SidePanelGameInvite = () => {
 
     useEffect(() => {
         const currUser = sessionStorageUser();
-        if (currUser) {
-            setCurrentUserId(currUser);
-            setDisable(false);
+        const getCurrentInfo = async () => {
+            if (currUser) {
+                setCurrentUserId(currUser);
+                setCurrentUserName(await getUserNameById(currUser));
+                setDisable(false);
+            }
         }
+        getCurrentInfo();
     }, [userId])
 
     const cancel = () => {
@@ -133,7 +141,15 @@ const SidePanelGameInvite = () => {
         setInviteSent(false);
         cancelInvite(currentUserId as string)
     }
-    
+
+    const handleAction = (action: () => void) => {
+        if (lockSubmit) return;
+        setLockSubmit(true);
+        action();
+        setIsOpen(false);
+        setTimeout(() => setLockSubmit(false), 1500);
+    }
+
     return (
         <div >
             <div
@@ -141,7 +157,7 @@ const SidePanelGameInvite = () => {
                 {receiveVisible &&
                     < div className="flex flex-col">
                         <div className="flex  justify-center my-1">
-                            {invitedBy} want to play ({timer}){/* TODO: here put username */}
+                            {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
                         </div>
                         <div className="flex justify-evenly w-full flex-row">
                             <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
@@ -151,7 +167,7 @@ const SidePanelGameInvite = () => {
                 }
                 {sentVisible &&
                     <div className="flex flex-col items-center justify-center my-1">
-                        Waiting for user...
+                        {message ? <span>{message}</span> : <span>Waiting for user...</span>}
                         {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                     </div>
