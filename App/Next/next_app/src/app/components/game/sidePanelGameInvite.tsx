@@ -37,18 +37,19 @@ const SidePanelGameInvite = () => {
         borderTopLeftRadius: '10px',
         borderBottomLeftRadius: '10px',
         borderRight: 'none',
-        top: 150,
+        top: 50,
         right: 0,
         width: '301px',
-        height: '85px',
+        height: '90px',
         backgroundColor: backgroundColor,
         padding: '2px',
         boxSizing: 'border-box',
         transform: slide,
-        transition: 'transform 0.6s ease-out',
+        transition: 'transform 0.4s ease-out',
         color: textColor,
-        opacity: 1,
-        zIndex: 1000
+        opacity: 0.9,
+        zIndex: 1000,
+        backdropFilter: 'blur(10px)',
     };
 
 
@@ -154,10 +155,8 @@ const SidePanelGameInvite = () => {
             <div
                 style={sidePanelStyle}>
                 {receiveVisible &&
-                    < div className="flex flex-col">
-                        <div className="flex  justify-center my-1">
+                    < div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                             {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
-                        </div>
                         { !message &&
                         <div className="flex justify-evenly w-full flex-row">
                             <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
@@ -167,8 +166,8 @@ const SidePanelGameInvite = () => {
                     </div>
                 }
                 {sentVisible &&
-                    <div className="flex flex-col items-center justify-center my-1">
-                        {message ? <span>{message}</span> : <span>Waiting for user...</span>}
+                    <div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
+                        {message ? <span>{message}</span> : <span className="mb-2">Waiting for user...</span>}
                         {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                     </div>

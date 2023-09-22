@@ -192,7 +192,7 @@ export class GameService {
         this.inviteQueue.splice(idx, 1);
     }
 
-    async handleRespondToInvite(invitedSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+    async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
         if (idx === -1)
@@ -200,7 +200,8 @@ export class GameService {
         console.log("2");
         if (!accept) {
             this.inviteQueue.splice(idx, 1);
-            invitedSocket.emit('inviteDeclined');
+            console.log("declined by ", invitorSocket.id)
+            invitorSocket?.emit('inviteDeclined');
             return ;
         }
         console.log("3");
