@@ -22,7 +22,6 @@ interface ChatMemberListProps {
     addFriend: (friendAddingId: string) => void;
 }
 
-// Todo: extract functions to another file
 const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, 
         friends, requestedFriends, invitedFriends, addFriend }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
@@ -199,10 +198,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         return requestedFriends.find(user => user.id == memberId) != undefined 
             || invitedFriends.find(user => user.id == memberId) != undefined;
     }
+    
     // Chat member list
-
-    // Todo: filter props : ex (admin need remove Admin)
-    // ban need remove unban
     const OwnerList = channel.members
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
