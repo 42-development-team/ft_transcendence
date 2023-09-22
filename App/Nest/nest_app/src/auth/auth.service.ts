@@ -71,7 +71,7 @@ export class AuthService {
 
     async logout(res: Response): Promise<void> {
         await res.clearCookie('jwt');
-        await res.clearCookie('rt');
+        // await res.clearCookie('rt');
         return;
     }
 
