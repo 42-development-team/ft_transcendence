@@ -22,6 +22,7 @@ export default function GameInviteProvider({ children }: any) {
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
+			closePanel();
 			openSent();
 			setTimeoutId(setTimeout(() => {
 				setInviteSent(false);
@@ -46,11 +47,8 @@ export default function GameInviteProvider({ children }: any) {
 
 		socket?.on('inviteAccepted', (body: any) => {
 			setMessage("Invite accepted");
-			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				setInviteSent(false);
-				setMessage("");
-				setMode(false);
+				closePanel();
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -61,12 +59,9 @@ export default function GameInviteProvider({ children }: any) {
 		socket?.on('inviteDeclined', (body: any) => {
 			//TODO: set a message to notify that invitee has declined the invite
 			setMessage("Invite declined");
-			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				setInviteSent(false);
-				setMode(false);
+				closePanel();
 			}, 1500));
-			setMessage("");
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			}
@@ -97,6 +92,7 @@ export default function GameInviteProvider({ children }: any) {
 	}, [socket]);
 
 	/* END SOCKET LISTENERS */
+
 	/* sidePanelActions */
 
 	const closePanel = () => {
@@ -127,26 +123,6 @@ export default function GameInviteProvider({ children }: any) {
 	}
 
 	/* USE EFFECTS SIDE PANEL*/
-	// useEffect(() => {
-	// 	if (invitedBy || inviteSent) {
-	// 		if (invitedBy) {
-	// 			setReceiveVisible(true);
-	// 			setSentVisible(false);
-	// 		} else {
-	// 			setReceiveVisible(false);
-	// 			setSentVisible(true);
-	// 		}
-	// 		clearInterval(timerRef.current as NodeJS.Timeout);
-	// 		setTimer(20);
-	// 		setSlide("translateX(0%)");
-	// 	} else {
-	// 		clearInterval(timerRef.current as NodeJS.Timeout);
-	// 		setTimer(0);
-	// 		setSlide("translateX(100%)");
-	// 		setSentVisible(false);
-	// 		setReceiveVisible(false);
-	// 	}
-	// }, [invitedBy, inviteSent]);
 
 	useEffect(() => {
 		if (invitedBy || inviteSent) {
@@ -169,6 +145,7 @@ export default function GameInviteProvider({ children }: any) {
 		if (timeoutId)
 			timeoutRefId.current = timeoutId;
 	}, [timeoutId]);
+
 	/* END USE EFFECTS SIDE PANEL*/
 
 	/* SIDEPANEL ACTIONS */
