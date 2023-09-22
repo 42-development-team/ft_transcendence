@@ -26,7 +26,7 @@ const SidePanelGameInvite = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [disable, setDisable] = useState(true);
 
-
+    /* PANEL STYLE */
     const sidePanelStyle: React.CSSProperties = {
         position: 'fixed',
         borderLeft: `1px solid ${borderColor}`,
@@ -50,7 +50,7 @@ const SidePanelGameInvite = () => {
         backdropFilter: 'blur(10px)',
     };
 
-
+    /* USE EFFECTS */
     useEffect(() => {
         const timerRef = setInterval(() => {
             setTimer((prevTimer: number) => prevTimer - 1);
@@ -90,6 +90,7 @@ const SidePanelGameInvite = () => {
         getCurrentInfo();
     }, [userId])
 
+    /* ACTIONS */
     const cancel = () => {
         cancelInvite(currentUserId as string)
     }
@@ -127,9 +128,8 @@ const SidePanelGameInvite = () => {
                 {sentVisible &&
                     <div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message ? <span>{message}</span> : <span>Waiting for user...</span>}
+                            {message ? <span>{message}</span> : <span>Waiting for {currentUserName}...</span>}
                         </div>
-                        {/* TODO: here put username */}
                         {message === "" &&
                             <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                         }

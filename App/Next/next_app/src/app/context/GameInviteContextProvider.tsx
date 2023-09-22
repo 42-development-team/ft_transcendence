@@ -33,7 +33,6 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('inviteCanceled', (body: any) => {
-			//TODO: set a message to notify that invitor has cancelled the invite
 			console.log("invite cancelled from", body.invitorId);
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -53,11 +52,9 @@ export default function GameInviteProvider({ children }: any) {
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			}
-			//TODO: set a message to notify that invitee has accepted the invite
 		});
 
 		socket?.on('inviteDeclined', (body: any) => {
-			//TODO: set a message to notify that invitee has declined the invite
 			setMessage("Invite declined");
 			setTimeoutId(setTimeout(() => {
 				closePanel();
@@ -166,9 +163,7 @@ export default function GameInviteProvider({ children }: any) {
 		else
 			setMessage("Cancelled");
 		setTimeoutId(setTimeout(() => {
-            setSlide("translateX(100%)");
-			setInvitedBy("");
-			setMessage("");
+            closePanel();
 		}, 1500));
 		socket?.emit('respondToInvite', { invitorId, response });
 		return () => {
