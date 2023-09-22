@@ -3,8 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { Socket } from "socket.io";
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { UsersService } from "../users/users.service";
 import { ChatroomInfoDto } from './dto/chatroom-info.dto';
 import { ChatroomContentDto } from './dto/chatroom-content.dto';
@@ -338,7 +336,6 @@ export class ChatroomService {
 		const isAdmin = await this.isUserAdmin(userId, id);
 		const isOwner = chatRoom.owner.id === userId;
 		const isTargetOwner = chatRoom.owner.id === bannedId;
-		// const isTargetAdmin = this.isUserAdmin(bannedId, id);	// Todo: can admins kick each other?
 		if (!isAdmin && !isOwner) {
 			throw new Error('User is not an admin of this channel');
 		}
@@ -470,22 +467,6 @@ export class ChatroomService {
 
 	// #endregion
 	// #region Retrieve
-
-	// async getUserIdFromSocket(socket: Socket){
-	// 	if (socket){
-	// 		const authToken = socket.handshake.headers.cookie.split(";");
-	// 		const jwtToken = authToken[0].split("=")[1];
-	// 		const secret = this.configService.get<string>('jwtSecret');
-	// 		const payload = this.jwtService.verify(jwtToken, { secret: secret });
-	// 		const userId = payload.sub;
-	// 		if(userId) {
-	// 			return userId;
-	// 		}
-	// 		// Todo: if userId is undefined or null?
-	// 		return null;
-	// 	}
-	// 	return null;
-	// }
 
     async getUserFromSocket(socket: Socket) {
 		const userId = await this.userService.getUserIdFromSocket(socket);

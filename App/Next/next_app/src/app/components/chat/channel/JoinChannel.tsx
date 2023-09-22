@@ -13,19 +13,11 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
 
     const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
-    const [privateChannels, setPrivateChannels] = useState<any[]>([]);
     const [protectedChannels, setProtectedChannels] = useState<any[]>([]);
-
-    // Todo: add a way to join a secret channel
 
     const displayChannels = async () => {
         const publicChannelsComp = channels
             .filter((channel: any) => channel.type === ChannelType.Public)
-            .map((channel: any) => (
-                <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
-            ));
-        const privateChannelsComp = channels
-            .filter((channel: any) => channel.type === ChannelType.Private)
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
@@ -35,7 +27,6 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         setPublicChannels(publicChannelsComp);
-        setPrivateChannels(privateChannelsComp);
         setProtectedChannels(protectedChannelsComp);
     }
 
