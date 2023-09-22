@@ -154,12 +154,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// Friend related events
 	async handleFriendUpdate(userId: number, friendId: number) {
-		const userSocketId = await this.userService.getUserSocketFromId(userId);
+		const userSocketId = await this.userService.getUserSocketIdFromId(userId);
 		const userSocket = this.clients.find(c => c.id === userSocketId);
 		if (userSocket) {
 			userSocket.emit('friendUpdate', { friendId });
 		}
-		const friendSocketId = await this.userService.getUserSocketFromId(friendId);
+		const friendSocketId = await this.userService.getUserSocketIdFromId(friendId);
 		const friendSocket = this.clients.find(c => c.id === friendSocketId);
 		if (friendSocket) {
 			friendSocket.emit('friendUpdate', { userId });
@@ -167,7 +167,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 	
 	async handleBlockUpdate(userId: number) {
-		const userSocketId = await this.userService.getUserSocketFromId(userId);
+		const userSocketId = await this.userService.getUserSocketIdFromId(userId);
 		const userSocket = this.clients.find(c => c.id === userSocketId);
 		if (userSocket) {
 			userSocket.emit('blockUpdate', { userId });

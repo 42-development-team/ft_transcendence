@@ -4,7 +4,8 @@ import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownAction, DropDownActionRed } from "@/app/components/dropdown/DropDownItem";
 import { getStatusColor } from "@/app/utils/getStatusColor";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
+import GameInviteContext from "@/app/context/GameInviteContext";
 
 type FriendProps = {
 	user: UserModel
@@ -14,6 +15,7 @@ const FriendActions = ({ user }: FriendProps) => {
 	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(false);
+	const { inviteToPlay } = useContext(GameInviteContext);
 
 	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 	const onProfileClick = () => {
@@ -37,10 +39,9 @@ const FriendActions = ({ user }: FriendProps) => {
 		setTimeout(() => setLockSubmit(false), 1500);
 	}
 
-	// todo callback func to invite to play
 	return (
 		<div aria-orientation="vertical" >
-			<DropDownAction onClick={() => handleAction(() => console.log('Play'))}>
+			<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>
 				Invite to play
 			</DropDownAction>
 			<DropDownAction onClick={() => handleAction(onProfileClick)}>

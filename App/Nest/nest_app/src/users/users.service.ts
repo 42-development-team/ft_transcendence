@@ -48,7 +48,7 @@ export class UsersService {
         return userDto;
     }
 
-    async getUserSocketFromId(id: number): Promise<string> {
+    async getUserSocketIdFromId(id: number): Promise<string> {
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
