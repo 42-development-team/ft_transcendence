@@ -7,7 +7,6 @@ import { Socket } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-
 @Injectable()
 export class UsersService {
     constructor(
@@ -66,8 +65,6 @@ export class UsersService {
 			if(userId) {
 				return userId;
 			}
-			// Todo: if userId is undefined or null?
-			return null;
 		}
 		return null;
 	}
@@ -89,8 +86,6 @@ export class UsersService {
 		const user = await this.prisma.user.findFirst({
 			where: { login: login },
 		});
-		// console.log("user in getIdFromLogin", user);
-
 		if(user) {
 			return user.id;
 		}
@@ -119,13 +114,7 @@ export class UsersService {
     }
 
     async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
-        console.log("blockedId: ", blockedId);
         try {
-            // Check if user is blocked by the blockedId user
-            // await this.prisma.user.findUniqueOrThrow({
-            //     where: { blockedBy: { some: { id: userId } }, id: blockedId },
-            // });
-            // return true;
 			const user = await this.prisma.user.findFirst({
 				where: {
 					id: blockedId,
@@ -210,7 +199,6 @@ export class UsersService {
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {
-			// console.log("current user != online for user: ", user.username);
             user.currentStatus = "online";
 			await this.prisma.user.update({
                 where: { login: user.login},

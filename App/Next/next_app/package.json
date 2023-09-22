@@ -1,6 +1,6 @@
 {
   "name": "next_app",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,6 @@
     "eslint-config-next": "13.4.7",
     "file-type": "^18.5.0",
     "next": "^13.4.12",
-    "next-unused": "^0.0.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "^6.16.0",
@@ -41,7 +40,6 @@
     "image-type": "^5.2.0",
     "jose": "^4.14.6",
     "next": "^13.5.2",
-    "next-unused": "^0.0.6",
     "react-router-dom": "^6.16.0",
     "react-transition-group": "^4.4.5",
     "socket.io-client": "^4.7.2",
