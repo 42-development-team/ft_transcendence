@@ -27,6 +27,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clients: Socket[] = [];
 
     async handleConnection(client: Socket) {
+        await this.cleanQueues(client);
         const userId = await this.userService.getUserIdFromSocket(client);
         if (userId) {
             this.clients.push(client);
@@ -37,6 +38,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async handleDisconnect(client: Socket) {
+        await this.cleanQueues(client);
+        this.clients = this.clients.filter(c => c.id !== client.id);
+    }
+
+    async cleanQueues(client: Socket) {
         const userId = await this.userService.getUserIdFromSocket(client);
         const inviteQueue = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
         if (inviteQueue) {
@@ -53,9 +59,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
             await this.gameService.handleRemoveQueue(invitorId, invitedId);
         }
-        this.clients = this.clients.filter(c => c.id !== client.id);
     }
-
+        
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
@@ -73,7 +78,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
             if (invitorId !== invitedId) {
-                const inviteCanBeDone = await this.gameService.handleInvite(invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+                const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
                 if (!inviteCanBeDone)
                     return;
                 console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)

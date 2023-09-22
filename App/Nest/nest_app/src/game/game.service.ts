@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -180,14 +180,14 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+    async handleInvite(clients: readonly Socket [], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
         const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
         const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-        console.log("idx in handleInvite: ", playersAreAlreadyInQueue)
+        console.log("invitorId:", invitorId, "invitedId:", invitedId )
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
-        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1 || invitorIsAlreadyInvited !== -1) {
+        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
             console.log("invitedIsIngGame: ", inventedIsIngGame, "playersAreAlreadyInQueue: ", playersAreAlreadyInQueue, "invitedIsAlreadyInvitor: ", invitedIsAlreadyInvitor, "invitedIsAlreadyInvited: ", invitedIsAlreadyInvited)
             if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
                 console.log(invitedUsername + " is already in queue with an other player")
@@ -196,11 +196,18 @@ export class GameService {
             else if (playersAreAlreadyInQueue !== -1) {
                 console.log(invitedUsername + " is already in queue with you")
             }
-            else if (invitorIsAlreadyInvited !== -1) {
-                console.log("invitor is already invited")
-            }
 
             return false;
+        }
+        else if (invitorIsAlreadyInvited !== -1) { //here invitor is not the invitor notify below..
+            const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+            console.log("idx in handleInvite-2: ", idx)
+            console.log("inviteQueue: ", this.inviteQueue[idx])
+            const invitorIdToNotify = this.inviteQueue[idx].invitorId;
+            const invitorIdSocketToNotify = await this.userService.getUserSocketFromId(invitorIdToNotify);
+            const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
+            invitorSocketToNotify?.emit('inviteDeclined');
+            this.inviteQueue.splice(idx, 1);
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
         return true;
