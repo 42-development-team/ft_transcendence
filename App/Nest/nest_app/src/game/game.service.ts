@@ -182,11 +182,11 @@ export class GameService {
 
     async handleInvite(invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
         const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        const invitedIsAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+        const invitedIsAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         console.log("idx in handleInvite: ", playersAreAlreadyInQueue)
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
         if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInQueue !== -1) {
-            console.log("isAlreadyInGame: ", invitedUsername)
+            console.log("invitedIsIngGame: ", inventedIsIngGame, "playersAreAlreadyInQueue: ", playersAreAlreadyInQueue, "invitedIsAlreadyInQueue: ", invitedIsAlreadyInQueue)
             if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInQueue !== -1) {
                 console.log(invitedUsername + " is already in queue with an other player")
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
