@@ -204,7 +204,7 @@ export class GameService {
             console.log("idx in handleInvite-2: ", idx)
             console.log("inviteQueue: ", this.inviteQueue[idx])
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
-            const invitorIdSocketToNotify = await this.userService.getUserSocketFromId(invitorIdToNotify);
+            const invitorIdSocketToNotify = await this.userService.getUserSocketIdFromId(invitorIdToNotify);
             const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
             invitorSocketToNotify?.emit('inviteDeclined');
             this.inviteQueue.splice(idx, 1);
@@ -292,8 +292,8 @@ export class GameService {
         // create room data
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
         // get sokcetId to join game
-        const player1SocketId: string = await this.userService.getUserSocketFromId(player1Id);
-        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+        const player1SocketId: string = await this.userService.getUserSocketIdFromId(player1Id);
+        const player2SocketId: string = await this.userService.getUserSocketIdFromId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list

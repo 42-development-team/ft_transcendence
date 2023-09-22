@@ -27,9 +27,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clients: Socket[] = [];
 
     async handleConnection(client: Socket) {
-        await this.cleanQueues(client);
+        await this.cleanQueues(client); //TODO: clean game room ? or add socket array
         const userId = await this.userService.getUserIdFromSocket(client);
         if (userId) {
+            console.log("GameSocket Connected: ", client.id);
             this.clients.push(client);
         } else {
             console.log('User not authenticated');
@@ -39,6 +40,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async handleDisconnect(client: Socket) {
         await this.cleanQueues(client);
+        console.log("GameSocket Disconnected: ", client.id);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
@@ -48,12 +50,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (inviteQueue) {
             const { invitorId, invitedId } = inviteQueue;
             if (invitorId === userId) {
-                const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+                const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedId);
                 const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
                 invitedSocket?.emit('inviteCanceled', { invitorId });
             }
             else if (invitedId === userId) {
-                const invitorSocketId: string = await this.userService.getUserSocketFromId(invitorId);
+                const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
                 const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
                 invitorSocket?.emit('inviteCanceled', { invitorId });
             }
@@ -77,7 +79,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
             const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
-            const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
+            const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
             if (invitorId !== invitedId) {
                 const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
@@ -99,7 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
-        const invitorSocketId: string = await this.userService.getUserSocketFromId(invitorId);
+        const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
         const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
         console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
         const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
@@ -124,7 +126,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
             this.gameService.handleRemoveQueue(invitorId, invitedIdNumber);
-        const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
+        const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
         invitedSocket?.emit('inviteCanceled', { invitorId });
     }
