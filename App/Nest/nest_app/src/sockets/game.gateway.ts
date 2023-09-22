@@ -48,12 +48,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (invitorId === undefined)
             return;
         // body awaits for the invited id (type number) and the mode game (boolean)
-        const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = body;
+        const { invitedId, invitedUserName, modeEnabled }: { invitedId: number, invitedUserName: string, modeEnabled: boolean } = body;
+        console.log("invitedUserName: ", invitedUserName)
         const invitedIdNumber = Number(invitedId);
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
         if (invitorId !== invitedId) {
-            this.gameService.handleInvite(invitorId, invitedId, invitorSocket, modeEnabled);
+            this.gameService.handleInvite(invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
             console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
             invitedSocket?.emit('receiveInvite', { invitorId, modeEnabled });
             invitorSocket?.emit('inviteSent');
@@ -66,16 +67,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
+        const invitorIdNumber = Number(invitorId);
         const invitorSocketId: string = await this.userService.getUserSocketFromId(invitorId);
         const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
         console.log("invitedId: ", invitedId, "response: ", response, "invitorId: ", invitorId);
-        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorId, invitedId, response);
+        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
         console.log("inviteInfos: ", inviteInfos);
         if (inviteInfos !== undefined) {
             console.log("inviteInfos is defined, gameRoom created")
-            const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-            const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-            await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+            // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+            // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+            // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+            await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
         }
     }
 
@@ -88,7 +91,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("in CANCEL: invitedId: ", invitedId, "invitorId: ", invitorId)
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
-            this.gameService.handleCancelInvite(invitorId , invitedIdNumber);
+            this.gameService.handleRemoveQueue(invitorId , invitedIdNumber);
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
         invitedSocket?.emit('inviteCanceled', { invitorId });
@@ -98,7 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         const { invitorId }: { invitorId: number } = body;
-        this.gameService.handleCancelInvite(invitorId, invitedId);
+        this.gameService.handleRemoveQueue(invitorId, invitedId);
     }
 
 

@@ -95,10 +95,10 @@ const SidePanelGameInvite = () => {
         cancelInvite(currentUserId as string)
     }
 
-    const handleAction = (action: () => any) => {
+    const handleAction = (action: ( ) => any) => {
         if (lockSubmit) return;
         setLockSubmit(true);
-        action();
+        action( );
         setIsOpen(false);
         setTimeout(() => setLockSubmit(false), 1600);
     }

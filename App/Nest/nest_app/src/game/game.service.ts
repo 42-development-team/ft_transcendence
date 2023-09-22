@@ -180,18 +180,19 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(invitorId: number, invitedId: number, invitorSocket: Socket, mode: boolean) {
+    async handleInvite(invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("idx in handleInvite: ", idx)
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
         if (inventedIsIngGame || idx !== -1) {
-            invitorSocket?.emit('isAlreadyInGame');
+            console.log("isAlreadyInGame: ", invitedUsername)
+            invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             return ;
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
     }
 
-    async handleCancelInvite(invitorId: number, invitedId: number) {
+    async handleRemoveQueue(invitorId: number, invitedId: number) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         if (idx === -1)
         {
@@ -216,14 +217,12 @@ export class GameService {
             return ;
         }
         console.log("3");
-        if (this.isInGame(invitorId))
+        if (await this.isInGame(invitorId))
             return ;
         console.log("4");
-        if (this.isInGame(invitedId))
+        if (await this.isInGame(invitedId))
             return ;
         console.log("5");
-        this.handleLeaveQueue(invitorId);
-        this.handleLeaveQueue(invitedId);
         invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }

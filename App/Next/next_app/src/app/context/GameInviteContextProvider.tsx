@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import GameInviteContext from './GameInviteContext';
 import { useAuthContext } from './AuthContext';
+import getUserNameById from '../components/utils/getUserNameById';
 
 export default function GameInviteProvider({ children }: any) {
 	const timeoutRefId = useRef<NodeJS.Timeout | null>(null);
+    const [ userName , setUserName ] = useState<string>("");
 	const [invitedBy, setInvitedBy] = useState("");
 	const [inviteSent, setInviteSent] = useState(false);
 	const [timeoutId, setTimeoutId] = useState<any>();
@@ -79,9 +81,10 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('isAlreadyInGame', (body: any) => {
+			const { invitedUsername } = body;
 			closePanel();
 			openSent();
-			setMessage("Already in game");
+			setMessage( invitedUsername + " is already in game");
 			setTimeoutId(setTimeout(() => {
 				closePanel();
 			}, 1500));
@@ -161,8 +164,10 @@ export default function GameInviteProvider({ children }: any) {
 	/* SIDEPANEL ACTIONS */
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
+			const invitedUsername = await getUserNameById(invitedId);
+			console.log("invitedUsername", invitedUsername);
 			console.log("invite sent with: " + invitedId + " " + modeEnabled, "socket:", socket?.id);
-			socket?.emit("invite", { invitedId, modeEnabled });
+			socket?.emit("invite", { invitedId, invitedUsername, modeEnabled });
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
