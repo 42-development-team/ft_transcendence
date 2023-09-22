@@ -18,7 +18,9 @@ export class GameService {
         private prisma: PrismaService,
         private userService: UsersService,
         private userStatsService: UserStatsService,
-    ) { }
+    ) {
+    }
+    
 
     gameRooms: GameRoomDto[] = [];
     queue: number[] = [];
@@ -153,7 +155,7 @@ export class GameService {
             },
         });
         return game;
-    }
+    }        // console.log(this)
 
     //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
@@ -207,6 +209,7 @@ export class GameService {
             return ;
         console.log("2");
         if (!accept) {
+            console.log("idx in handleToresponde-2: ", idx)
             this.inviteQueue.splice(idx, 1);
             console.log("declined by ", invitorSocket.id)
             invitorSocket?.emit('inviteDeclined');
