@@ -54,7 +54,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
         if (invitorId !== invitedId) {
-            this.gameService.handleInvite(invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+            const inviteCanBeDone = await this.gameService.handleInvite(invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+            if (!inviteCanBeDone)
+                return;
             console.log("invitedId: ", invitedId, "mode: ", modeEnabled, "invitorId: ", invitorId)
             invitedSocket?.emit('receiveInvite', { invitorId, modeEnabled });
             invitorSocket?.emit('inviteSent');

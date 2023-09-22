@@ -187,9 +187,10 @@ export class GameService {
         if (inventedIsIngGame || idx !== -1) {
             console.log("isAlreadyInGame: ", invitedUsername)
             invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
-            return ;
+            return false;
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
+        return true;
     }
 
     async handleRemoveQueue(invitorId: number, invitedId: number) {
