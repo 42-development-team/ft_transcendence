@@ -40,7 +40,7 @@ const SidePanelGameInvite = () => {
         top: 50,
         right: 0,
         width: '301px',
-        height: '90px',
+        height: '95px',
         backgroundColor: backgroundColor,
         padding: '2px',
         boxSizing: 'border-box',
@@ -135,7 +135,7 @@ const SidePanelGameInvite = () => {
     const handleAction = (action: () => any) => {
         if (lockSubmit) return;
         setLockSubmit(true);
-        action(  );
+        action();
         setIsOpen(false);
         setTimeout(() => setLockSubmit(false), 1500);
     }
@@ -156,18 +156,22 @@ const SidePanelGameInvite = () => {
                 style={sidePanelStyle}>
                 {receiveVisible &&
                     < div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
+                        <div className="mb-2">
                             {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
-                        { !message &&
-                        <div className="flex justify-evenly w-full flex-row">
-                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
-                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
+                        {!message &&
+                            <div className="flex justify-evenly w-full flex-row">
+                                <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                                <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            </div>
                         }
                     </div>
                 }
                 {sentVisible &&
                     <div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
-                        {message ? <span>{message}</span> : <span className="mb-2">Waiting for user...</span>}
+                        <div className="mb-2">
+                            {message ? <span>{message}</span> : <span>Waiting for user...</span>}
+                        </div>
                         {/* TODO: here put username */}
                         <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                     </div>
