@@ -1,40 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import GameInviteContext from './GameInviteContext';
 import { useAuthContext } from './AuthContext';
+import { clear } from 'console';
 
 export default function GameInviteProvider({ children }: any) {
+	const timeoutRefId = useRef<NodeJS.Timeout | null>(null);
 	const [invitedBy, setInvitedBy] = useState("");
 	const [inviteSent, setInviteSent] = useState(false);
-	const [timeoutId, setTimeoutId] = useState<any>(null);
+	const [timeoutId, setTimeoutId] = useState<any>();
 	const [mode, setMode] = useState(false);
 	const [message, setMessage] = useState("");
 	const { socket } = useAuthContext();
 
 	useEffect(() => {
+		if (timeoutId)
+			timeoutRefId.current = timeoutId;
+	}, [timeoutId]);
+
+	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
 			setInviteSent(true);
-			const id = setTimeout(() => {
+			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			setTimeoutId(setTimeout(() => {
 				setInviteSent(false);
-			}, 20000);
-			setTimeoutId(id);
+			}, 20000));
+			return () => {
+				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			}
 		});
 
 		socket?.on('inviteCanceled', (body: any) => {
 			//TODO: set a message to notify that invitor has cancelled the invite
 			console.log("invite cancelled from", body.invitorId);
 			setMessage("Invite cancelled");
-			clearTimeout(timeoutId);
-			setTimeoutId(setTimeout(() => {
-				setInvitedBy("");
-				setMessage("");
-				setMode(false);
-			}, 2000));
-			clearTimeout(timeoutId);
+			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			setInvitedBy("");
+			setMessage("");
+			setMode(false);
+			return () => {
+				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			}
 		});
 
 		socket?.on('inviteAccepted', (body: any) => {
+			setMessage("Invite accepted");
+			clearTimeout(timeoutId);
+			setTimeoutId(setTimeout(() => {
+				setInviteSent(false);
+				setMessage("");
+				setMode(false);
+			}, 700));
+			return () => {
+				clearTimeout(timeoutId);
+			}
 			//TODO: set a message to notify that invitee has accepted the invite
 		});
 
@@ -44,10 +64,12 @@ export default function GameInviteProvider({ children }: any) {
 			clearTimeout(timeoutId);
 			setTimeoutId(setTimeout(() => {
 				setInviteSent(false);
-				setMessage("");
 				setMode(false);
 			}, 2000));
-			clearTimeout(timeoutId);
+			setMessage("");
+			return () => {
+				clearTimeout(timeoutId);
+			}
 		});
 
 		socket?.on('receiveInvite', (body: any) => {
@@ -57,6 +79,9 @@ export default function GameInviteProvider({ children }: any) {
 				setInvitedBy("");
 				setMode(false);
 			}, 20000));
+			return () => {
+				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			}
 		});
 
 		return () => {
@@ -82,7 +107,10 @@ export default function GameInviteProvider({ children }: any) {
 	const respondToInvite = async (invitorId: string, response: boolean) => {
 		console.log("responding to invite: " + invitorId + " " + response);
 		clearTimeout(timeoutId);
-		setMessage("Cancelled");
+		if (response)
+			setMessage("Accepted");
+		else
+			setMessage("Cancelled");
 		setTimeoutId(setTimeout(() => {
 			setInvitedBy("");
 			setMessage("");

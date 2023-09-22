@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+
+import { MutableRefObject, createContext, useRef } from "react";
 
 const GameInviteContext = createContext({
     invitedBy: "",
@@ -11,7 +12,7 @@ const GameInviteContext = createContext({
     mode: false,
     setMode: (mode: boolean) => {},
     timeoutId: null,
-    setTimeoutId: (timeoutId: NodeJS.Timeout | null) => {},
+    setTimeoutId: (timeoutId: MutableRefObject<NodeJS.Timeout | null>) => {},
     message: "",
     setMessage: (message: string) => {}
 });

@@ -8,10 +8,11 @@ import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 import { type } from "os";
 import sessionStorageUser from "../profile/sessionStorage";
 import getUserNameById from "../utils/getUserNameById";
+import { time } from "console";
 
 const SidePanelGameInvite = () => {
     const { userId } = useAuthContext();
-    const { mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite, message } = useContext(GameInviteContext);
+    const { timeoutId, mode, invitedBy, respondToInvite, inviteSent, setInviteSent, cancelInvite, message } = useContext(GameInviteContext);
     const [receiveVisible, setReceiveVisible] = useState(false);
     const [sentVisible, setSentVisible] = useState(false);
     const [slide, setSlide] = useState("translateX(100%)");
@@ -137,18 +138,17 @@ const SidePanelGameInvite = () => {
         setLockSubmit(true);
         action();
         setIsOpen(false);
-        setTimeout(() => setLockSubmit(false), 1500);
+        setTimeout(() => setLockSubmit(false), 2000);
     }
 
     const onChange = (accept: boolean) => {
-        setSlide("translateX(100%)");
         console.log("accept", accept);
         setDisable(true);
         respondToInvite(invitedBy, accept);
         setTimeout(() => {
             setDisable(false);
-        }, 700);
-
+            setSlide("translateX(100%)");
+        }, 1000);
     }
 
     return (
@@ -174,7 +174,7 @@ const SidePanelGameInvite = () => {
                             {message ? <span>{message}</span> : <span>Waiting for user...</span>}
                         </div>
                         {/* TODO: here put username */}
-                        {!message &&
+                        {message === "" &&
                             <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                         }
                     </div>

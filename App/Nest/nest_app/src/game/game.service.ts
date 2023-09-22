@@ -213,6 +213,7 @@ export class GameService {
         console.log("5");
         this.handleLeaveQueue(invitorId);
         this.handleLeaveQueue(invitedId);
+        invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }
 
