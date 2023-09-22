@@ -72,7 +72,7 @@ export default function GameInviteProvider({ children }: any) {
 			openInvite();
 			setTimeoutId(setTimeout(() => {
 				closePanel();
-				socket?.emit('removeInviteQueue', { invitedId: body.invitorId });
+				socket?.emit('removeInviteQueue', { invitorId: body.invitorId });
 			}, 20000));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);

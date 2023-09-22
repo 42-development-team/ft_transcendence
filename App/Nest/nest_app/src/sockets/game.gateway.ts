@@ -126,7 +126,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         const { invitorId }: { invitorId: number } = body;
-        this.gameService.handleRemoveQueue(invitorId, invitedId);
+        await this.gameService.handleRemoveQueue(invitorId, invitedId);
     }
 
 
