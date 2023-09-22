@@ -25,10 +25,10 @@ const nextConfig = {
 		buildActivityPosition: 'bottom-right',
 	},
 	webpack: (config) => {
-		Object.assign(config.externals, {
+		config.externals = {
 		  bufferutil: 'bufferutil',
 		  'utf-8-validate': 'utf-8-validate',
-		});
+		};
 		return config;
 	}
 };
