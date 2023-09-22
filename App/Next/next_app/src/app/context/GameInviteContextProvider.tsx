@@ -28,6 +28,7 @@ export default function GameInviteProvider({ children }: any) {
 			clearTimeout(timeoutId);
 			setTimeoutId(setTimeout(() => {
 				setInvitedBy("");
+				setMessage("");
 				setMode(false);
 			}, 2000));
 			clearTimeout(timeoutId);

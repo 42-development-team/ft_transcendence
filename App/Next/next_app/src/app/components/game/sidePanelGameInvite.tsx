@@ -155,10 +155,12 @@ const SidePanelGameInvite = () => {
                         <div className="flex  justify-center my-1">
                             {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
                         </div>
+                        { !message &&
                         <div className="flex justify-evenly w-full flex-row">
                             <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
                             <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
+                        }
                     </div>
                 }
                 {sentVisible &&
