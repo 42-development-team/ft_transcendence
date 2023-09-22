@@ -29,7 +29,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
-        <li><a href="#.env">.env</a></li>
+        <li><a href="#env">env</a></li>
       </ul>
     </li>
     <li><a href="#contact">Contact</a></li>
@@ -48,6 +48,7 @@
 * [![Nest][Nest.js]][Nest-url]
 * [![Postgresql][Postgresql]][Postgresql-url]
 * [![Prisma][Prisma]][Prisma-url]
+* [![Socket.io][Socket.io]][Socket.io-url]
 * [![Tailwindcss][Tailwindcss]][Tailwindcss-url]
 * [![Docker][Docker]][Docker-url]
 
@@ -69,14 +70,14 @@
    ```sh
    git clone https://github.com/42-development-team/ft_transcendence.git
    ```
-3. Configure `.env`
+3. Configure `.env` at the project root
 4. Run the Makefile
 	```sh
 	make
 	```
 
 
-### .env
+### env
 ```sh
 ## PORTS
 FRONT_PORT=3000
@@ -144,3 +145,5 @@ CLOUDINARY_API_SECRET=""
 [Docker-url]: https://www.docker.com/
 [Tailwindcss]: https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white
 [Tailwindcss-url]: https://tailwindcss.com/
+[Socket.io]: https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101
+[Socket.io-url]: https://socket.io/
