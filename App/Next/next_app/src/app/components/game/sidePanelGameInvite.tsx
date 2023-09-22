@@ -61,17 +61,6 @@ const SidePanelGameInvite = () => {
         };
     }, [timer]);
 
-    const onChange = (accept: boolean) => {
-        setSlide("translateX(100%)");
-        setTimeout(() => {
-            if (accept) {
-                respondToInvite(invitedBy, true);
-            } else {
-                respondToInvite(invitedBy, false);
-            }
-        }, 700);
-    }
-
     useEffect(() => {
         if (theme === "latte") {
             setBackgroundColor("#6c6f85");
@@ -150,6 +139,13 @@ const SidePanelGameInvite = () => {
         setTimeout(() => setLockSubmit(false), 1500);
     }
 
+    const onChange = (accept: boolean) => {
+        setSlide("translateX(100%)");
+        setTimeout(() => {
+            respondToInvite(invitedBy, accept);
+        }, 700);
+    }
+
     return (
         <div >
             <div
@@ -160,8 +156,8 @@ const SidePanelGameInvite = () => {
                             {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
                         </div>
                         <div className="flex justify-evenly w-full flex-row">
-                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
-                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
                     </div>
                 }

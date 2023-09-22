@@ -85,7 +85,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
             this.gameService.handleCancelInvite(invitorId, invitedId);
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-        invitedSocket?.emit('inviteCanceled');
+        invitedSocket?.emit('inviteCanceled', {invitorId});
     }
 
 

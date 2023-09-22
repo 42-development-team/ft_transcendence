@@ -23,14 +23,14 @@ export default function GameInviteProvider({ children }: any) {
 
 		socket?.on('inviteCanceled', (body: any) => {
 			//TODO: set a message to notify that invitor has cancelled the invite
-			console.log("invite cancelled");
+			console.log("invite cancelled from", body.invitorId);
 			setMessage("Invite cancelled");
-			const timeoutId = setTimeout(() => {
+			clearTimeout(timeoutId);
+			setTimeoutId(setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
-			}, 2000);
-			if (timeoutId)
-				clearTimeout(timeoutId);
+			}, 2000));
+			clearTimeout(timeoutId);
 		});
 
 		socket?.on('inviteAccepted', (body: any) => {
@@ -50,11 +50,10 @@ export default function GameInviteProvider({ children }: any) {
 		socket?.on('receiveInvite', (body: any) => {
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
-			const timeoutId = setTimeout(() => {
+			setTimeoutId(setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
-			}, 20000);
-			setTimeoutId(timeoutId);
+			}, 20000));
 		});
 
 		return () => {
