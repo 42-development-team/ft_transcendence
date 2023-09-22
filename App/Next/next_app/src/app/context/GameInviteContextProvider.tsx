@@ -41,11 +41,13 @@ export default function GameInviteProvider({ children }: any) {
 		socket?.on('inviteDeclined', (body: any) => {
 			//TODO: set a message to notify that invitee has declined the invite
 			setMessage("Invite declined");
-			const timeoutId = setTimeout(() => {
+			clearTimeout(timeoutId);
+			setTimeoutId(setTimeout(() => {
 				setInviteSent(false);
 				setMessage("");
-			}, 2000);
-			setTimeoutId(timeoutId);
+				setMode(false);
+			}, 2000));
+			clearTimeout(timeoutId);
 		});
 
 		socket?.on('receiveInvite', (body: any) => {

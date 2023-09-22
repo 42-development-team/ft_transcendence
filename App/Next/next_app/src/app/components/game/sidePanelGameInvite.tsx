@@ -131,17 +131,20 @@ const SidePanelGameInvite = () => {
         cancelInvite(currentUserId as string)
     }
 
-    const handleAction = (action: () => void) => {
+    const handleAction = (action: () => any) => {
         if (lockSubmit) return;
         setLockSubmit(true);
-        action();
+        action(  );
         setIsOpen(false);
         setTimeout(() => setLockSubmit(false), 1500);
     }
 
     const onChange = (accept: boolean) => {
         setSlide("translateX(100%)");
+        console.log("accept", accept);
+        setDisable(true);
         setTimeout(() => {
+            setDisable(false);
             respondToInvite(invitedBy, accept);
         }, 700);
     }
@@ -157,8 +160,8 @@ const SidePanelGameInvite = () => {
                         </div>
                         { !message &&
                         <div className="flex justify-evenly w-full flex-row">
-                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
-                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} onChange={() => handleAction(() => onChange)} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
+                            <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
                         </div>
                         }
                     </div>
@@ -167,7 +170,7 @@ const SidePanelGameInvite = () => {
                     <div className="flex flex-col items-center justify-center my-1">
                         {message ? <span>{message}</span> : <span>Waiting for user...</span>}
                         {/* TODO: here put username */}
-                        <CustomBtnGameInvite text="CANCEL" response={false} disable={false} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
+                        <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />
                     </div>
                 }
             </div>
