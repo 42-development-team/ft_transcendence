@@ -93,6 +93,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("inviteInfos: ", inviteInfos);
         if (inviteInfos !== undefined) {
             console.log("inviteInfos is defined, gameRoom created")
+            //TODO: check why game is BROKEn !!!!!!
             // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
             // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
             // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
