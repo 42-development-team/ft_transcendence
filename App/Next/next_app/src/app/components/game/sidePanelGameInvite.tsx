@@ -6,8 +6,9 @@ import ThemeContext from "../theme/themeContext";
 import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 
 const SidePanelGameInvite = () => {
-    const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer, invitorUsername, invitedUsername } = useContext(GameInviteContext);
+    const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer, invitorUsername, invitedUsername, invitedId } = useContext(GameInviteContext);
     const { theme } = useContext(ThemeContext);
+    const [currentUserName, setCurrentUserName] = useState("");
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
     const [textColor, setTextColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [borderColor, setBorderColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
@@ -16,7 +17,7 @@ const SidePanelGameInvite = () => {
     const [currentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
     const [lockSubmit, setLockSubmit] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [disable, setDisable] = useState(true);
+    const [disable, setDisable] = useState(false);
 
     /* PANEL STYLE */
     const sidePanelStyle: React.CSSProperties = {
@@ -72,7 +73,7 @@ const SidePanelGameInvite = () => {
 
     /* ACTIONS */
     const cancel = () => {
-        cancelInvite(currentUserId as string)
+        cancelInvite(invitedId);
     }
 
     const handleAction = (action: ( ) => any) => {

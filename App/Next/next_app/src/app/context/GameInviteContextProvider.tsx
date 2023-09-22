@@ -6,6 +6,7 @@ import { useAuthContext } from './AuthContext';
 
 export default function GameInviteProvider({ children }: any) {
 	const timeoutRefId = useRef<NodeJS.Timeout | null>(null);
+	const [invitedId, setInvitedId] = useState("");
 	const [invitorUsername, setInvitorUsername] = useState("");
 	const [invitedUsername, setInvitedUsername] = useState("");
 	const [invitedBy, setInvitedBy] = useState("");
@@ -24,11 +25,11 @@ export default function GameInviteProvider({ children }: any) {
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
-			closePanel();
+			closePanel(true);
 			openSent();
 			setInvitedUsername(body.invitedUserName);
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 			}, 20000));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -39,8 +40,9 @@ export default function GameInviteProvider({ children }: any) {
 			console.log("invite cancelled from", body.invitorId);
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			clearInterval(timerRef.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -49,8 +51,10 @@ export default function GameInviteProvider({ children }: any) {
 
 		socket?.on('inviteAccepted', (body: any) => {
 			setMessage("Invite accepted");
+			clearInterval(timerRef.current as NodeJS.Timeout);
+			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -59,8 +63,10 @@ export default function GameInviteProvider({ children }: any) {
 
 		socket?.on('inviteDeclined', (body: any) => {
 			setMessage("Invite declined");
+			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			clearInterval(timerRef.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -68,13 +74,13 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('receiveInvite', (body: any) => {
-			closePanel();
+			closePanel(true);
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
 			setInvitorUsername(body.invitorUsername);
 			openInvite();
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 				socket?.emit('removeInviteQueue', { invitorId: body.invitorId });
 			}, 20000));
 			return () => {
@@ -84,11 +90,11 @@ export default function GameInviteProvider({ children }: any) {
 
 		socket?.on('isAlreadyInGame', (body: any) => {
 			const { invitedUsername } = body;
-			closePanel();
+			closePanel(true);
 			openSent();
 			setMessage( invitedUsername + " is already in game");
 			setTimeoutId(setTimeout(() => {
-				closePanel();
+				closePanel(true);
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -110,9 +116,11 @@ export default function GameInviteProvider({ children }: any) {
 
 	/* sidePanelActions */
 
-	const closePanel = () => {
-		clearTimeout(timeoutRefId.current as NodeJS.Timeout);
-		clearInterval(timerRef.current as NodeJS.Timeout);
+	const closePanel = ( clear: boolean ) => {
+		if ( true ) {
+			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			clearInterval(timerRef.current as NodeJS.Timeout);
+		}
 		setSlide("translateX(100%)");
 		setInvitedBy("");
 		setMessage("");
@@ -167,6 +175,7 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			console.log("invite sent with: " + invitedId + " " + modeEnabled, "socket:", socket?.id);
+			setInvitedId(invitedId);
 			socket?.emit("invite", { invitedId,  modeEnabled });
 		}
 		catch (error) {
@@ -182,7 +191,7 @@ export default function GameInviteProvider({ children }: any) {
 		else
 			setMessage("Cancelled");
 		setTimeoutId(setTimeout(() => {
-            closePanel();
+            closePanel(true);
 		}, 1500));
 		socket?.emit('respondToInvite', { invitorId, response });
 		return () => {
@@ -191,7 +200,7 @@ export default function GameInviteProvider({ children }: any) {
 	}
 
 	const cancelInvite = async (invitedId: string) => {
-		closePanel();
+		closePanel(true);
 		socket?.emit('cancelInvite', { invitedId });
 		console.log("cancelling invite");
 		return () => {
@@ -227,7 +236,9 @@ export default function GameInviteProvider({ children }: any) {
 			invitorUsername,
 			setInvitorUsername,
 			invitedUsername,
-			setInvitedUsername}}>
+			setInvitedUsername,
+			invitedId,
+			setInvitedId}}>
 			{children}
 		</GameInviteContext.Provider>
 	)
