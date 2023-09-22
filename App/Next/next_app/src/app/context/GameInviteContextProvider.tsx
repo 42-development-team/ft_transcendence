@@ -22,8 +22,7 @@ export default function GameInviteProvider({ children }: any) {
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
-			setInviteSent(true);
-			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			openSent();
 			setTimeoutId(setTimeout(() => {
 				setInviteSent(false);
 			}, 20000));
@@ -38,9 +37,7 @@ export default function GameInviteProvider({ children }: any) {
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			setTimeoutId(setTimeout(() => {
-				setInvitedBy("");
-				setMessage("");
-				setMode(false);
+				closePanel();
 			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -76,11 +73,10 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('receiveInvite', (body: any) => {
-			setInvitedBy("");
-			setMessage("");
-			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			closePanel();
 			setInvitedBy(body.invitorId);
 			setMode(body.mode);
+			openInvite();
 			setTimeoutId(setTimeout(() => {
 				setInvitedBy("");
 				setMode(false);
@@ -101,28 +97,56 @@ export default function GameInviteProvider({ children }: any) {
 	}, [socket]);
 
 	/* END SOCKET LISTENERS */
+	/* sidePanelActions */
+
+	const closePanel = () => {
+		clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+		clearInterval(timerRef.current as NodeJS.Timeout);
+		setSlide("translateX(100%)");
+		setInvitedBy("");
+		setMessage("");
+		setTimer(0);
+		setMode(false);
+		setInviteSent(false);
+		setReceiveVisible(false);
+		setSentVisible(false);
+	}
+
+	const openInvite = () => {
+		setSlide("translateX(0%)");
+		setTimer(20);
+		setReceiveVisible(true);
+		setSentVisible(false);
+	}
+
+	const openSent = () => {
+		setSlide("translateX(0%)");
+		setTimer(20);
+		setReceiveVisible(false);
+		setSentVisible(true);
+	}
 
 	/* USE EFFECTS SIDE PANEL*/
-	useEffect(() => {
-		if (invitedBy || inviteSent) {
-			if (invitedBy) {
-				setReceiveVisible(true);
-				setSentVisible(false);
-			} else {
-				setReceiveVisible(false);
-				setSentVisible(true);
-			}
-			clearInterval(timerRef.current as NodeJS.Timeout);
-			setTimer(20);
-			setSlide("translateX(0%)");
-		} else {
-			clearInterval(timerRef.current as NodeJS.Timeout);
-			setTimer(0);
-			setSlide("translateX(100%)");
-			setSentVisible(false);
-			setReceiveVisible(false);
-		}
-	}, [invitedBy, inviteSent]);
+	// useEffect(() => {
+	// 	if (invitedBy || inviteSent) {
+	// 		if (invitedBy) {
+	// 			setReceiveVisible(true);
+	// 			setSentVisible(false);
+	// 		} else {
+	// 			setReceiveVisible(false);
+	// 			setSentVisible(true);
+	// 		}
+	// 		clearInterval(timerRef.current as NodeJS.Timeout);
+	// 		setTimer(20);
+	// 		setSlide("translateX(0%)");
+	// 	} else {
+	// 		clearInterval(timerRef.current as NodeJS.Timeout);
+	// 		setTimer(0);
+	// 		setSlide("translateX(100%)");
+	// 		setSentVisible(false);
+	// 		setReceiveVisible(false);
+	// 	}
+	// }, [invitedBy, inviteSent]);
 
 	useEffect(() => {
 		if (invitedBy || inviteSent) {
@@ -177,9 +201,7 @@ export default function GameInviteProvider({ children }: any) {
 	}
 
 	const cancelInvite = async (invitedId: string) => {
-		setSlide("translateX(100%)");
-        setSentVisible(false);
-        setInviteSent(false);
+		closePanel();
 		socket?.emit('cancelInvite', { invitedId });
 		console.log("cancelling invite");
 		return () => {
