@@ -30,10 +30,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log('Client connected: ' + client.id);
 			await this.userService.updateSocketId(userId, client.id);
 			this.clients.push(client);
-			const userStatus = await this.userService.getCurrentStatusFromId(userId);
+			await this.userService.getCurrentStatusFromId(userId);
 			this.server.emit("userStatusUpdate", { userId });
-			// todo: Check for verifiedJWT in socket and disconnect if not OK
-			// and retrieve all the channels the user is a member of
 		} else {
 			console.log('User not authenticated');
 			client.disconnect();
@@ -45,7 +43,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		await this.userService.updateSocketId(userId, null);
 		this.clients = this.clients.filter(c => c.id !== client.id);
-		const userStatus = await this.userService.getCurrentStatusFromId(userId);
+		await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userStatusUpdate", { userId });
 	}
 
@@ -68,7 +66,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.leave(room);
 		client.emit('leftRoom', { room });
 		console.log(`Client ${userId} (${client.id}) left room ${room}`);
-		this.server.to(room).emit('newDisconnecgit checkout -b FT-361-fix-joining-game-with-only-one-usertionOnChannel', { room, userId });
+		this.server.to(room).emit('newDisconnectionOnChannel', { room, userId });
 	}
 
 	@SubscribeMessage('message')

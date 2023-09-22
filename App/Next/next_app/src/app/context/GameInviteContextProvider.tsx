@@ -1,7 +1,5 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import InGameContext from './inGameContext';
 import GameInviteContext from './GameInviteContext';
 import { useAuthContext } from './AuthContext';
 
