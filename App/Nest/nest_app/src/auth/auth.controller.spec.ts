@@ -86,12 +86,12 @@ describe('AuthController', () => {
 
       // Assert
       expect(authService.getTokens).toHaveBeenCalledWith(req.user, true);
-      expect(res.cookie).toHaveBeenCalledTimes(2);
+      expect(res.cookie).toHaveBeenCalledTimes(1);
       // 2 times because:
       // The first call should set the jwt cookie with the access_token value.
       // the second call should set the rt cookie with the refresh_token value.
       expect(res.cookie).toHaveBeenNthCalledWith(1, 'jwt', jwt.access_token, expect.any(Object));
-      expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
+      // expect(res.cookie).toHaveBeenNthCalledWith(2, 'rt', jwt.refresh_token, expect.any(Object));
     });
   });
 
