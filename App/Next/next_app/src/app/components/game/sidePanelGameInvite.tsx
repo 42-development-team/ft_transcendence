@@ -100,7 +100,7 @@ const SidePanelGameInvite = () => {
         setLockSubmit(true);
         action();
         setIsOpen(false);
-        setTimeout(() => setLockSubmit(false), 2000);
+        setTimeout(() => setLockSubmit(false), 1600);
     }
 
     const onChange = (accept: boolean) => {
@@ -115,9 +115,9 @@ const SidePanelGameInvite = () => {
                 {receiveVisible &&
                     < div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message ? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
+                            {message !== ""? <span>{message}</span> : <span>{currentUserName} want to play ({timer})</span>}{/* TODO: here put username */}
                         </div>
-                        {!message &&
+                        {message === "" &&
                             <div className="flex justify-evenly w-full flex-row">
                                 <CustomBtnGameInvite text="ACCEPT" response={true} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
                                 <CustomBtnGameInvite text="DECLINE" response={false} disable={disable} handleAction={handleAction} onChange={onChange} buttonColor={buttonColor} hoverColor={hoverColor} />
@@ -128,7 +128,7 @@ const SidePanelGameInvite = () => {
                 {sentVisible &&
                     <div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message ? <span>{message}</span> : <span>Waiting for {currentUserName}...</span>}
+                            {message !== "" ? <span>{message}</span> : <span>Waiting for {currentUserName}...</span>}
                         </div>
                         {message === "" &&
                             <CustomBtnGameInvite text="CANCEL" response={false} disable={false} handleAction={handleAction} onChange={cancel} buttonColor={buttonColor} hoverColor={hoverColor} />

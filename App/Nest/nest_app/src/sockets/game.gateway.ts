@@ -72,6 +72,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorId, invitedId, response);
         console.log("inviteInfos: ", inviteInfos);
         if (inviteInfos !== undefined) {
+            console.log("inviteInfos is defined, gameRoom created")
             const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
             const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
             await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
@@ -87,11 +88,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("in CANCEL: invitedId: ", invitedId, "invitorId: ", invitorId)
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
-            this.gameService.handleCancelInvite(invitorId, invitedId);
+            this.gameService.handleCancelInvite(invitedIdNumber, invitedId);
         const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedIdNumber);
         const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
         invitedSocket?.emit('inviteCanceled', { invitorId });
     }
+
+    @SubscribeMessage('removeInviteQueue')
+    async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
+        const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
+        const { invitorId }: { invitorId: number } = body;
+        this.gameService.handleCancelInvite(invitorId, invitedId);
+    }
+
 
 
     @SubscribeMessage('joinQueue')

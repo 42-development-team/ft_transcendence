@@ -71,7 +71,20 @@ export default function GameInviteProvider({ children }: any) {
 			openInvite();
 			setTimeoutId(setTimeout(() => {
 				closePanel();
+				socket?.emit('removeInviteQueue', { invitedId: body.invitorId });
 			}, 20000));
+			return () => {
+				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+			}
+		});
+
+		socket?.on('isAlreadyInGame', (body: any) => {
+			closePanel();
+			openSent();
+			setMessage("Already in game");
+			setTimeoutId(setTimeout(() => {
+				closePanel();
+			}, 1500));
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			}
@@ -83,6 +96,7 @@ export default function GameInviteProvider({ children }: any) {
 			socket?.off('receiveInvite');
 			socket?.off('inviteAccepted');
 			socket?.off('inviteDeclined');
+			socket?.off('isAlreadyInGame');
 
 		}
 	}, [socket]);

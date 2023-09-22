@@ -180,9 +180,10 @@ export class GameService {
 
     async handleInvite(invitorId: number, invitedId: number, invitorSocket: Socket, mode: boolean) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        console.log("idx in handleInvite: ", idx)
         const inventedIsIngGame: boolean = await this.isInGame(invitedId);
         if (inventedIsIngGame || idx !== -1) {
-            invitorSocket?.emit('alreadyInGame');
+            invitorSocket?.emit('isAlreadyInGame');
             return ;
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
@@ -191,7 +192,11 @@ export class GameService {
     async handleCancelInvite(invitorId: number, invitedId: number) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         if (idx === -1)
+        {
+            console.log("handleCancelInvite did not find a queue to cancel")
             return ;
+        }
+        console.log("handleCancelInvite found a queue to cancel")
         this.inviteQueue.splice(idx, 1);
     }
 
