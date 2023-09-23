@@ -48,11 +48,11 @@ export class UsersService {
         return userDto;
     }
 
-    async getUserSocketIdFromId(id: number): Promise<string> {
+    async getSocketIdsFromUserId(id: number): Promise<string[]> {
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
-        return user.socketId;
+        return user.socketIds;
     }
 
     async getUserIdFromSocket(socket: Socket){
@@ -149,12 +149,34 @@ export class UsersService {
         return updatedUser;
     }
 
-    async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { id: id },
-            data: { socketId: updatedSocketId },
-        });
-        return updatedUser;
+    async addSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
+        try {
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { push: updatedSocketId } },
+            });
+            return updatedUser;
+        } catch (error) {
+            console.log("Add socket: " + error.message);
+        }
+    }
+    
+    async removeSocketId(id: number, removedSocketId: string): Promise<CreateUserDto> {
+        // Remove socketId from user
+        try {
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            const newSocketIds = user.socketIds.filter(socketId => socketId !== removedSocketId);
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { set: newSocketIds } },
+            });
+            return updatedUser;
+        }
+        catch (error) {
+            console.log("Remove socket: " + error.message);
+        }
     }
 
     async updateStatus(id: number, newStatus: string) {
@@ -195,6 +217,7 @@ export class UsersService {
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
+                socketIds: [],
             };
             user = await this.createUser(createUserDto) as CreateUserDto;
         }

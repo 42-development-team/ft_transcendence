@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, IsBoolean, IsIn } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsBoolean, IsIn, IsArray } from 'class-validator';
 
  export class CreateUserDto {
    @IsNotEmpty()
@@ -27,4 +27,7 @@ import { IsNotEmpty, IsString, MaxLength, IsBoolean, IsIn } from 'class-validato
    @IsString()
    @IsIn(['online', 'offline', 'in a game'], { message: 'Invalid user status' })
    currentStatus: string;
+
+   @IsArray()
+   socketIds: string[];
  }

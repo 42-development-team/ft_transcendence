@@ -191,16 +191,19 @@ export class GameService {
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             }
             else if (playersAreAlreadyInQueue !== -1) {
+                // Todo: what is this shitty condition?
             }
 
             return false;
         }
-        else if (invitorIsAlreadyInvited !== -1) { //here invitor is not the invitor notify below..
+        else if (invitorIsAlreadyInvited !== -1) {
             const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
-            const invitorIdSocketToNotify = await this.userService.getUserSocketIdFromId(invitorIdToNotify);
-            const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
-            invitorSocketToNotify?.emit('inviteDeclined');
+            const invitorSocketIdsToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            invitorSocketIdsToNotify.forEach(invitorSocketIdToNotify => {
+                const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
+                invitorSocketToNotify?.emit('inviteDeclined');
+            });
             this.inviteQueue.splice(idx, 1);
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
@@ -209,8 +212,7 @@ export class GameService {
 
     async handleRemoveQueue(invitorId: number, invitedId: number) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx === -1)
-        {
+        if (idx === -1) {
             console.log("handleCancelInvite did not find a queue to cancel")
             return ;
         }
@@ -241,7 +243,7 @@ export class GameService {
         return (this.inviteQueue[idx]);
     }
 
-    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         try {
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
@@ -261,16 +263,16 @@ export class GameService {
             }
             else {
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
-                const player1SocketId: string = undefined;
-                const player2SocketId: string = undefined;
-                return ({ newGameRoom, player1SocketId, player2SocketId });
+                const player1SocketIds: string[] = [];
+                const player2SocketIds: string[] = [];
+                return ({ newGameRoom, player1SocketIds, player2SocketIds });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[]}> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
@@ -284,16 +286,15 @@ export class GameService {
 
         // create room data
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
-        // get sokcetId to join game
-        const player1SocketId: string = await this.userService.getUserSocketIdFromId(player1Id);
-        const player2SocketId: string = await this.userService.getUserSocketIdFromId(player2Id);
+        const player1SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player1Id);
+        const player2SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
 
-        return ({ newGameRoom, player1SocketId, player2SocketId });
+        return ({ newGameRoom, player1SocketIds, player2SocketIds });
     }
 
     

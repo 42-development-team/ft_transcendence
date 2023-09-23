@@ -97,17 +97,21 @@ export class FriendController {
 		// Check for direct messages and delete them
 		const room = await this.friendService.removeDirectMessagesForBlockedUser(Number(blockedId), userId);
 		if (room) {
-			const userSocketId = await this.userService.getUserSocketIdFromId(userId);
-			if (userSocketId) {
-				const userSocket = this.socketGateway.clients.find(c => c.id === userSocketId);
-				userSocket.leave(room.name);
-				userSocket.emit('leftRoom', { room: room.name });
+			const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+			if (userSocketIds) {
+				userSocketIds.forEach(userSocketId => {
+					const userSocket = this.socketGateway.clients.find(c => c.id === userSocketId);
+					userSocket.leave(room.name);
+					userSocket.emit('leftRoom', { room: room.name });
+				});
 			}
-			const blockedUserSocketId = await this.userService.getUserSocketIdFromId(Number(blockedId));
-			if (blockedUserSocketId) {
-				const blockedUserSocket = this.socketGateway.clients.find(c => c.id === blockedUserSocketId);
-				blockedUserSocket.leave(room.name);
-				blockedUserSocket.emit('leftRoom', {room: room.name});
+			const blockedUserSocketIds = await this.userService.getSocketIdsFromUserId(Number(blockedId));
+			if (blockedUserSocketIds) {
+				blockedUserSocketIds.forEach(blockedUserSocketId => {
+					const blockedUserSocket = this.socketGateway.clients.find(c => c.id === blockedUserSocketId);
+					blockedUserSocket.leave(room.name);
+					blockedUserSocket.emit('leftRoom', { room: room.name });
+				});
 			}
 		}
 		this.socketGateway.handleBlockUpdate(userId);
