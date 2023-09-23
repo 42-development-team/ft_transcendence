@@ -49,13 +49,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const inviteQueue = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
         if (inviteQueue) {
             const { invitorId, invitedId } = inviteQueue;
+            const invitorIdNumber = Number(invitorId);
+            const invitedIdNumber = Number(invitedId);
             if (invitorId === userId) {
-                const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedId);
+                const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
                 const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
                 invitedSocket?.emit('inviteCanceled', { invitorId });
             }
             else if (invitedId === userId) {
-                const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
+                const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorIdNumber);
                 const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
                 invitorSocket?.emit('inviteCanceled', { invitorId });
             }
@@ -76,9 +78,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = body;
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
             const invitorUsername: string = invitorUser.username;
-            const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
-            const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
+            const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
+            const invitedUserName: string = invitedUser.username;
             const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
             if (invitorId !== invitedId) {

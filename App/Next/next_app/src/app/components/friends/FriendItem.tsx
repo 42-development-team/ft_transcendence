@@ -41,7 +41,7 @@ const FriendActions = ({ user }: FriendProps) => {
 
 	return (
 		<div aria-orientation="vertical" >
-			<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>
+			<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}> {/*TODO: add mode button*/}
 				Invite to play
 			</DropDownAction>
 			<DropDownAction onClick={() => handleAction(onProfileClick)}>
