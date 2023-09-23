@@ -195,14 +195,15 @@ export class GameService {
 
             return false;
         }
-        else if (invitorIsAlreadyInvited !== -1) { //here invitor is not the invitor notify below..
+        else if (invitorIsAlreadyInvited !== -1) {
             const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
-            const invitorIdSocketToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
-            // Todo: FIX
-            // const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
-            // invitorSocketToNotify?.emit('inviteDeclined');
-            // this.inviteQueue.splice(idx, 1);
+            const invitorSocketIdsToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            invitorSocketIdsToNotify.forEach(invitorSocketIdToNotify => {
+                const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
+                invitorSocketToNotify?.emit('inviteDeclined');
+            });
+            this.inviteQueue.splice(idx, 1);
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
         return true;
