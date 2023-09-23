@@ -203,12 +203,13 @@ export class ChatroomController {
 	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const kickedId: number = body.kickedId;
-		const kickedUserSocket = await this.userService.getSocketIdsFromUserId(kickedId);
+		const kickedUserSocketIds = await this.userService.getSocketIdsFromUserId(kickedId);
 		await this.chatroomService.kick(+id, userId, kickedId)
 			.then(() => {
-				// Todo: FIX
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
-				// this.socketGateway.handleLeaveRoom(clientSocket, id);
+				kickedUserSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleLeaveRoom(clientSocket, id);
+				});
 				response.send();
 			})
 			.catch(error => {
