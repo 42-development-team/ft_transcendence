@@ -298,12 +298,13 @@ export class ChatroomController {
 		const invitedLogin = body.invitedLogin;
 		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
 		if (invitedId){
-			const invitedUserSocket = await this.userService.getSocketIdsFromUserId(+invitedId);
+			const invitedUserSocketIds = await this.userService.getSocketIdsFromUserId(+invitedId);
 			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
 			if (newMembership) {
-        // Todo: FIX
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
-				// await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				invitedUserSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleInvite(clientSocket, invitedId, id);
+				});
 				response.status(HttpStatus.OK).send("ok");
 			}
 		} else {
