@@ -105,18 +105,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
-            // Todo: FIX
-        // const invitorSocketId: string = await this.userService.getSocketIdsFromUserId(invitorId);
-        // const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-        // const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
-        // if (inviteInfos !== undefined) {
-        //     console.log("inviteInfos is defined, gameRoom created (its broken)")
-        //     //TODO: check why game is BROKEn !!!!!!
-        //     // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-        //     // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-        //     // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
-        //     await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
-        // }
+        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
+        invitorSocketIds.forEach(async invitorSocketId => {
+            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+            const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
+            if (inviteInfos !== undefined) {
+                console.log("inviteInfos is defined, gameRoom created (its broken)")
+                //TODO: check why game is BROKEn !!!!!!
+                // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+                // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+                // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+                await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
+            }
+        });
     }
 
     @SubscribeMessage('cancelInvite')
