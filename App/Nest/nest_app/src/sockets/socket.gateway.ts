@@ -28,8 +28,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
 			console.log('Client connected: ' + client.id);
-			await this.userService.updateSocketId(userId, client.id);
+			await this.userService.addSocketId(userId, client.id);
 			this.clients.push(client);
+			// Todo: check if user was already online
 			await this.userService.getCurrentStatusFromId(userId);
 			this.server.emit("userStatusUpdate", { userId });
 		} else {
@@ -41,8 +42,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleDisconnect(client: Socket) {
 		console.log('Client disconnected: ' + client.id);
 		const userId = await this.userService.getUserIdFromSocket(client);
-		await this.userService.updateSocketId(userId, null);
+		await this.userService.removeSocketId(userId, client.id);
 		this.clients = this.clients.filter(c => c.id !== client.id);
+		// Todo: if user has no more socketId, set status to offline
 		await this.userService.getCurrentStatusFromId(userId);
 		this.server.emit("userStatusUpdate", { userId });
 	}
@@ -154,23 +156,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// Friend related events
 	async handleFriendUpdate(userId: number, friendId: number) {
-		const userSocketId = await this.userService.getUserSocketIdFromId(userId);
-		const userSocket = this.clients.find(c => c.id === userSocketId);
-		if (userSocket) {
-			userSocket.emit('friendUpdate', { friendId });
-		}
-		const friendSocketId = await this.userService.getUserSocketIdFromId(friendId);
-		const friendSocket = this.clients.find(c => c.id === friendSocketId);
-		if (friendSocket) {
-			friendSocket.emit('friendUpdate', { userId });
-		}
+		const userSocketId = await this.userService.getSocketIdsFromUserId(userId);
+		// Todo: FIX
+		// const userSocket = this.clients.find(c => c.id === userSocketId);
+		// if (userSocket) {
+		// 	userSocket.emit('friendUpdate', { friendId });
+		// }
+		// const friendSocketId = await this.userService.getSocketIdsFromUserId(friendId);
+		// const friendSocket = this.clients.find(c => c.id === friendSocketId);
+		// if (friendSocket) {
+		// 	friendSocket.emit('friendUpdate', { userId });
+		// }
 	}
 	
 	async handleBlockUpdate(userId: number) {
-		const userSocketId = await this.userService.getUserSocketIdFromId(userId);
-		const userSocket = this.clients.find(c => c.id === userSocketId);
-		if (userSocket) {
-			userSocket.emit('blockUpdate', { userId });
-		}
+		const userSocketId = await this.userService.getSocketIdsFromUserId(userId);
+		// Todo: FIX
+		// const userSocket = this.clients.find(c => c.id === userSocketId);
+		// if (userSocket) {
+		// 	userSocket.emit('blockUpdate', { userId });
+		// }
 	}
 }

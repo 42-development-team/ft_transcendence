@@ -49,17 +49,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const inviteQueue = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
         if (inviteQueue) {
             const { invitorId, invitedId } = inviteQueue;
-            if (invitorId === userId) {
-                const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedId);
-                const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-                invitedSocket?.emit('inviteCanceled', { invitorId });
-            }
-            else if (invitedId === userId) {
-                const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
-                const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-                invitorSocket?.emit('inviteCanceled', { invitorId });
-            }
-            await this.gameService.handleRemoveQueue(invitorId, invitedId);
+            // Todo: FIX
+            // if (invitorId === userId) {
+            //     const invitedSocketId: string = await this.userService.getSocketIdsFromUserId(invitedId);
+            //     const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+            //     invitedSocket?.emit('inviteCanceled', { invitorId });
+            // }
+            // else if (invitedId === userId) {
+            //     const invitorSocketId: string = await this.userService.getSocketIdsFromUserId(invitorId);
+            //     const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+            //     invitorSocket?.emit('inviteCanceled', { invitorId });
+            // }
+            // await this.gameService.handleRemoveQueue(invitorId, invitedId);
         }
     }
         
@@ -79,15 +80,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
             const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
-            const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
-            const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-            if (invitorId !== invitedId) {
-                const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
-                if (!inviteCanBeDone)
-                    return;
-                invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
-                invitorSocket?.emit('inviteSent', {invitedUserName});
-            }
+            // Todo: FIX
+            // const invitedSocketId: string = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+            // const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+            // if (invitorId !== invitedId) {
+            //     const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+            //     if (!inviteCanBeDone)
+            //         return;
+            //     invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
+            //     invitorSocket?.emit('inviteSent', {invitedUserName});
+            // }
         } catch (error) {
             console.log("error: ", error);
         }
@@ -100,17 +102,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
-        const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
-        const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
-        if (inviteInfos !== undefined) {
-            console.log("inviteInfos is defined, gameRoom created (its broken)")
-            //TODO: check why game is BROKEn !!!!!!
-            // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-            // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-            // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
-            await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
-        }
+            // Todo: FIX
+        // const invitorSocketId: string = await this.userService.getSocketIdsFromUserId(invitorId);
+        // const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+        // const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
+        // if (inviteInfos !== undefined) {
+        //     console.log("inviteInfos is defined, gameRoom created (its broken)")
+        //     //TODO: check why game is BROKEn !!!!!!
+        //     // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+        //     // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+        //     // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+        //     await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
+        // }
     }
 
     @SubscribeMessage('cancelInvite')
@@ -122,9 +125,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
             this.gameService.handleRemoveQueue(invitorId, invitedIdNumber);
-        const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
-        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-        invitedSocket?.emit('inviteCanceled', { invitorId });
+        // Todo: FIX
+        // const invitedSocketId: string = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+        // const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+        // invitedSocket?.emit('inviteCanceled', { invitorId });
     }
 
     @SubscribeMessage('removeInviteQueue')

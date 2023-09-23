@@ -55,8 +55,9 @@ export class ChatroomController {
 				const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
 				await this.chatroomService.connectUserToChatroom(Number(createChatroomDto.receiverId), newChatRoom.id);
 				this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
-				const receiverSocketId = await this.userService.getUserSocketIdFromId(Number(createChatroomDto.receiverId));
-				this.socketGateway.clients.find(c => c.id == receiverSocketId)?.emit("directMessage", newChatRoom);
+				const receiverSocketId = await this.userService.getSocketIdsFromUserId(Number(createChatroomDto.receiverId));
+				// Todo: FIX
+				// this.socketGateway.clients.find(c => c.id == receiverSocketId)?.emit("directMessage", newChatRoom);
 				response.status(HttpStatus.CREATED).send(newChatRoom);
 			}
 		}
@@ -159,7 +160,7 @@ export class ChatroomController {
 		const bannedId: number = body.bannedId;
 		let bannedUserSocket = undefined;
 		try {
-			bannedUserSocket = await this.userService.getUserSocketIdFromId(bannedId);
+			bannedUserSocket = await this.userService.getSocketIdsFromUserId(bannedId);
 		}
 		catch (error) {
 			console.log("banned user not connected");
@@ -181,7 +182,7 @@ export class ChatroomController {
 		const unbannedId: number = body.unbannedId;
 		let unbannedUserSocket = undefined;
 		try {
-			unbannedUserSocket = await this.userService.getUserSocketIdFromId(unbannedId);
+			unbannedUserSocket = await this.userService.getSocketIdsFromUserId(unbannedId);
 		}
 		catch (error) {
 			console.log("unbanned user not connected");
@@ -201,11 +202,12 @@ export class ChatroomController {
 	async kick(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const kickedId: number = body.kickedId;
-		const kickedUserSocket = await this.userService.getUserSocketIdFromId(kickedId);
+		const kickedUserSocket = await this.userService.getSocketIdsFromUserId(kickedId);
 		await this.chatroomService.kick(+id, userId, kickedId)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, id);
+				// Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === kickedUserSocket);
+				// this.socketGateway.handleLeaveRoom(clientSocket, id);
 				response.send();
 			})
 			.catch(error => {
@@ -216,14 +218,15 @@ export class ChatroomController {
 	@Patch(':id/leave')
 	async leave(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const userSocket = await this.userService.getUserSocketIdFromId(userId);
+		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.leave(+id, userId)
 			.then((newOwnerId) => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleLeaveRoom(clientSocket, id);
-				if (newOwnerId) {
-					this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
-				}
+				// Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				// this.socketGateway.handleLeaveRoom(clientSocket, id);
+				// if (newOwnerId) {
+				// 	this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
+				// }
 				response.send();
 			})
 			.catch(error => {
@@ -235,11 +238,12 @@ export class ChatroomController {
 	async setAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const newAdminId: number = body.newAdminId;
-		const userSocket = await this.userService.getUserSocketIdFromId(userId);
+		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.setAdmin(+id, userId, newAdminId)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleAdminUpdate(clientSocket, newAdminId, id);
+        // Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				// this.socketGateway.handleAdminUpdate(clientSocket, newAdminId, id);
 				response.send();
 			})
 			.catch(error => {
@@ -251,11 +255,12 @@ export class ChatroomController {
 	async removeAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const removedAdminId: number = body.removedAdminId;
-		const userSocket = await this.userService.getUserSocketIdFromId(userId);
+		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.removeAdmin(+id, userId, removedAdminId)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleAdminUpdate(clientSocket, removedAdminId, id);
+        // Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				// this.socketGateway.handleAdminUpdate(clientSocket, removedAdminId, id);
 				response.send();
 			})
 			.catch(error => {
@@ -268,11 +273,12 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const mutedId: number = body.mutedId;
 		const muteDuration: number = body.muteDuration;
-		const userSocket = await this.userService.getUserSocketIdFromId(userId);
+		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				this.socketGateway.handleMute(clientSocket, mutedId, id);
+        // Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
+				// this.socketGateway.handleMute(clientSocket, mutedId, id);
 				response.send();
 			})
 			.catch(error => {
@@ -286,11 +292,12 @@ export class ChatroomController {
 		const invitedLogin = body.invitedLogin;
 		const invitedId = await this.userService.getIdFromLogin(invitedLogin);
 		if (invitedId){
-			const invitedUserSocket = await this.userService.getUserSocketIdFromId(+invitedId);
+			const invitedUserSocket = await this.userService.getSocketIdsFromUserId(+invitedId);
 			const newMembership = await this.chatroomService.invite(+id, userId, +invitedId);
 			if (newMembership) {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
-				await this.socketGateway.handleInvite(clientSocket, invitedId, id);
+        // Todo: FIX
+				// const clientSocket = this.socketGateway.clients.find(c => c.id === invitedUserSocket);
+				// await this.socketGateway.handleInvite(clientSocket, invitedId, id);
 				response.status(HttpStatus.OK).send("ok");
 			}
 		} else {

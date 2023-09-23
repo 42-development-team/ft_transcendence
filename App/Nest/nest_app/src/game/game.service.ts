@@ -198,10 +198,11 @@ export class GameService {
         else if (invitorIsAlreadyInvited !== -1) { //here invitor is not the invitor notify below..
             const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
-            const invitorIdSocketToNotify = await this.userService.getUserSocketIdFromId(invitorIdToNotify);
-            const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
-            invitorSocketToNotify?.emit('inviteDeclined');
-            this.inviteQueue.splice(idx, 1);
+            const invitorIdSocketToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            // Todo: FIX
+            // const invitorSocketToNotify = clients.find(c => c.id === invitorIdSocketToNotify);
+            // invitorSocketToNotify?.emit('inviteDeclined');
+            // this.inviteQueue.splice(idx, 1);
         }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
         return true;
@@ -285,14 +286,17 @@ export class GameService {
         // create room data
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
         // get sokcetId to join game
-        const player1SocketId: string = await this.userService.getUserSocketIdFromId(player1Id);
-        const player2SocketId: string = await this.userService.getUserSocketIdFromId(player2Id);
+        // Todo: FIX
+        // const player1SocketId: string = await this.userService.getSocketIdsFromUserId(player1Id);
+        // const player2SocketId: string = await this.userService.getSocketIdsFromUserId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
 
+        const player1SocketId: string = undefined;
+        const player2SocketId: string = undefined;
         return ({ newGameRoom, player1SocketId, player2SocketId });
     }
 

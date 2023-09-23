@@ -48,11 +48,11 @@ export class UsersService {
         return userDto;
     }
 
-    async getUserSocketIdFromId(id: number): Promise<string> {
+    async getSocketIdsFromUserId(id: number): Promise<string[]> {
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
-        return user.socketId;
+        return user.socketIds;
     }
 
     async getUserIdFromSocket(socket: Socket){
@@ -149,12 +149,30 @@ export class UsersService {
         return updatedUser;
     }
 
-    async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
+    async addSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
         const updatedUser = await this.prisma.user.update({
             where: { id: id },
-            data: { socketId: updatedSocketId },
+            data: { socketIds: { push: updatedSocketId } },
         });
         return updatedUser;
+    }
+    
+    async removeSocketId(id: number, removedSocketId: string): Promise<CreateUserDto> {
+        // Remove socketId from user
+        try {
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            const newSocketIds = user.socketIds.filter(socketId => socketId !== removedSocketId);
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { set: newSocketIds } },
+            });
+            return updatedUser;
+        }
+        catch (error) {
+            console.log("Remove socket: " + error.message);
+        }
     }
 
     async updateStatus(id: number, newStatus: string) {
