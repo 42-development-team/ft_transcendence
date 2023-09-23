@@ -89,7 +89,6 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			}
 
 			setMessage("Avatar/username successfully updated");
-			console.log("Before fetching quth/jwt");
 			const jwtUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
 
 			redirectToHome();
