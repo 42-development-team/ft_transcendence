@@ -220,15 +220,16 @@ export class ChatroomController {
 	@Patch(':id/leave')
 	async leave(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
-		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.leave(+id, userId)
 			.then((newOwnerId) => {
-				// Todo: FIX
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				// this.socketGateway.handleLeaveRoom(clientSocket, id);
-				// if (newOwnerId) {
-				// 	this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
-				// }
+				userSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleLeaveRoom(clientSocket, id);
+					if (newOwnerId) {
+						this.socketGateway.handleAdminUpdate(clientSocket, newOwnerId, id);
+					}
+				});
 				response.send();
 			})
 			.catch(error => {
