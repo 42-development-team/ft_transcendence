@@ -213,6 +213,7 @@ export class UsersService {
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
+                socketIds: [],
             };
             user = await this.createUser(createUserDto) as CreateUserDto;
         }

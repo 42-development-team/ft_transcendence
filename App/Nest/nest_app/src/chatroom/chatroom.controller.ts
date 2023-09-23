@@ -55,9 +55,10 @@ export class ChatroomController {
 				const newChatRoom = await this.chatroomService.createChatRoom(createChatroomDto, userId);
 				await this.chatroomService.connectUserToChatroom(Number(createChatroomDto.receiverId), newChatRoom.id);
 				this.socketGateway.server.emit("NewChatRoom", newChatRoom.name);
-				const receiverSocketId = await this.userService.getSocketIdsFromUserId(Number(createChatroomDto.receiverId));
-				// Todo: FIX
-				// this.socketGateway.clients.find(c => c.id == receiverSocketId)?.emit("directMessage", newChatRoom);
+				const receiverSocketIds = await this.userService.getSocketIdsFromUserId(Number(createChatroomDto.receiverId));
+				receiverSocketIds.forEach(sock => {
+					this.socketGateway.clients.find(c => c.id == sock)?.emit("directMessage", newChatRoom);
+				});
 				response.status(HttpStatus.CREATED).send(newChatRoom);
 			}
 		}

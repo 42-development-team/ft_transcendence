@@ -45,7 +45,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		const updateUser = await this.userService.removeSocketId(userId, client.id);
 		this.clients = this.clients.filter(c => c.id !== client.id);
-		console.log("Update user:", updateUser);
 		if (updateUser && updateUser.socketIds.length === 0) {
 			await this.userService.getCurrentStatusFromId(userId);
 			this.server.emit("userStatusUpdate", { userId });
