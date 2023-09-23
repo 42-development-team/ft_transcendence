@@ -158,17 +158,21 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// Friend related events
 	async handleFriendUpdate(userId: number, friendId: number) {
-		const userSocketId = await this.userService.getSocketIdsFromUserId(userId);
-		// Todo: FIX
-		// const userSocket = this.clients.find(c => c.id === userSocketId);
-		// if (userSocket) {
-		// 	userSocket.emit('friendUpdate', { friendId });
-		// }
-		// const friendSocketId = await this.userService.getSocketIdsFromUserId(friendId);
-		// const friendSocket = this.clients.find(c => c.id === friendSocketId);
-		// if (friendSocket) {
-		// 	friendSocket.emit('friendUpdate', { userId });
-		// }
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+		userSocketIds.forEach(userSocketId => {
+			const userSocket = this.clients.find(c => c.id === userSocketId);
+			if (userSocket) {
+				userSocket.emit('friendUpdate', { friendId });
+			}
+		});
+
+		const friendSocketIds = await this.userService.getSocketIdsFromUserId(friendId);
+		friendSocketIds.forEach(friendSocketId => {
+			const friendSocket = this.clients.find(c => c.id === friendSocketId);
+			if (friendSocket) {
+				friendSocket.emit('friendUpdate', { userId });
+			}
+		});
 	}
 	
 	async handleBlockUpdate(userId: number) {
