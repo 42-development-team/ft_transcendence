@@ -150,16 +150,15 @@ export class UsersService {
     }
 
     async addSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { id: id },
-            data: { socketIds: { push: updatedSocketId } },
-        });
-        const test = await this.prisma.user.update({
-            where: { id: id },
-            data: { isFirstLogin: false },
-        });
-
-        return updatedUser;
+        try {
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { push: updatedSocketId } },
+            });
+            return updatedUser;
+        } catch (error) {
+            console.log("Add socket: " + error.message);
+        }
     }
     
     async removeSocketId(id: number, removedSocketId: string): Promise<CreateUserDto> {
