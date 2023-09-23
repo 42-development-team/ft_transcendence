@@ -465,7 +465,8 @@ export class GameService {
         const player1 = this.gameRooms[idx].data.player1;
         const player2 = this.gameRooms[idx].data.player2;
         this.borderBounce(ball);
-        this.paddleBounce(ball, player1, player2);
+        this.playerCollision(ball, player1, ball.r);
+        this.playerCollision(ball, player2, -ball.r);
         this.score(idx);
     };
 
@@ -476,48 +477,68 @@ export class GameService {
     }
 
     //>>PADDLE<//
-    async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-            this.playerCollision(ball, player1);
-            this.playerCollision(ball, player2);
-    }
+    // async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
+    //         this.playerCollision(ball, player1);
+    //         this.playerCollision(ball, player2);
+    // }
 
     lerp (A: number, B: number, t: number): number {
         return (A + (B - A) * t);
     }
 
-    segmentColliding(ball: Segment, player: Segment, r: number): {x: number, y: number} {
-        const top = (player.x1 - player.x) * (ball.y - player.y) - (player.y1 - player.y) * (ball.x - player.x );
-        const bottom = (player.y1 - player.y) * (ball.x1 - ball.x) - (player.x1 - player.x) * (ball.y1 - ball.y);
+    async segmentColliding(ball: BallDto, player: PlayerDto, r: number): Promise<boolean> {
+        // const b: Segment = {
+        //     x: ball.x,
+        //     y: ball.y,
+        //     x1: ball.x + ball.speed[0] / 100,
+        //     y1: ball.y + ball.speed[1] / 100,
+        // }
+        const A = {x: ball.x, y: ball.y};
+        const B = {x: ball.x + ball.speed[0] / 100, y: ball.y + ball.speed[1] / 100};
+        const C = {x: player.x, y: player.y - player.h / 2}
+        const D = {x: player.x, y: player.y + player.h / 2}
+        // const p: Segment = {
+        //     x: player.x,
+        //     y: player.y - player.h / 2,
+        //     x1: player.x,
+        //     y1: player.y + player.h / 2,
+        // }
+
+        const top = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
+        const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
         const t: number = top / bottom;
-        const x: number = this.lerp(ball.x, ball.x1, t);
-        const y: number = this.lerp(ball.y, ball.y1, t);
+        const x: number = this.lerp(A.x, B.x, t);
+        const y: number = this.lerp(A.y, B.y, t);
 
         if (bottom !== 0) {
-            if (t >=0 && t <= 1) {
-                console.log("INTERSECTION");
-                return { x:x + r, y:y} ;
+            if (t >= 0 && t <= 1) {
+                ball.x = x + 0.7 * r;
+                ball.y = y;
+                return true ;
             }
         }
-        return { x: ball.x1, y: ball.y1 };
+        return false;
     }
 
-    checkCollision(ball: BallDto, player: PlayerDto): boolean {
+    async checkCollision(ball: BallDto, player: PlayerDto, r: number, dx: number): Promise<boolean> {
         const dy: number = Math.abs(ball.y - player.y);
         
-        if (dy <= player.h / 2)
-        return true;
-        else if ((player.y + player.h / 2) > 1){
-            if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
-            return true;
-        }
-        else if (player.y - player.h / 2 < 0) {
-            if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y)))
+        if (dx <= (ball.r + player.w) || this.segmentColliding(ball, player, r)) {
+            if (dy <= player.h / 2)
                 return true;
+            else if ((player.y + player.h / 2) > 1){
+                if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
+                return true;
+            }
+            else if (player.y - player.h / 2 < 0) {
+                if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y)))
+                    return true;
+            }
         }
         return false;
     }
     
-    async playerCollision(ball: BallDto, player: PlayerDto) {
+    async playerCollision(ball: BallDto, player: PlayerDto, r: number) {
 
         let dx: number;
         // if ( o | )
@@ -527,7 +548,7 @@ export class GameService {
         else
             dx = Math.abs(ball.x - ball.r - player.x + player.w);
 
-        if (dx <= (ball.r + player.w) && this.checkCollision(ball, player) === true) {
+        if (await this.checkCollision(ball, player, r, dx) === true) {
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
             
@@ -542,6 +563,7 @@ export class GameService {
                 ball.speed[0] -= 0.03;
             ball.speed[1] = Math.sin(radian);
         }
+        this.updateBall(ball);
     }
 
     //========== SCORE =============//
@@ -583,38 +605,15 @@ export class GameService {
     }
 
     //>>UPDATE POSITION<<//
-    async updateBall(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-        const ballSeg: Segment = {
-            x: ball.x,
-            y: ball.y,
-            x1: ball.x + ball.speed[0] / 100,
-            y1: ball.y + ball.speed[1] / 100,
-        }
-        const p1Seg: Segment = {
-            x: player1.x,
-            y: player1.y - player1.h / 2,
-            x1: player1.x,
-            y1: player1.y + player1.h / 2,
-        }
-        const p2Seg: Segment = {
-            x: player2.x,
-            y: player2.y - player2.h / 2,
-            x1: player2.x,
-            y1: player2.y + player2.h / 2,
-        }
-        let result = this.segmentColliding(ballSeg, p1Seg, ball.r);
-        if (result.x === ballSeg.x1 && result.y === ballSeg.y1) 
-            result = this.segmentColliding(ballSeg, p1Seg, ball.r);
-        ball.x = result.x;
-        ball.y = result.y;
+    async updateBall(ball: BallDto) {
+        ball.x += ball.speed[0] / 100 ;
+        ball.y += ball.speed[1] / 100;
     };
 
     //>>CALCUL POSITION<<//
     async calculateBall(idx: number) {
         const ball = this.gameRooms[idx].data.ball;
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
-        this.updateBall(ball, player1, player2);
+        // this.updateBall(ball);
         this.bounce(idx, ball);
         this.incrementSpeed(ball);
     };
