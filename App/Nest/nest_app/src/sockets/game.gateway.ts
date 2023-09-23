@@ -49,18 +49,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const inviteQueue = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
         if (inviteQueue) {
             const { invitorId, invitedId } = inviteQueue;
-            // Todo: FIX
-            // if (invitorId === userId) {
-            //     const invitedSocketId: string = await this.userService.getSocketIdsFromUserId(invitedId);
-            //     const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-            //     invitedSocket?.emit('inviteCanceled', { invitorId });
-            // }
-            // else if (invitedId === userId) {
-            //     const invitorSocketId: string = await this.userService.getSocketIdsFromUserId(invitorId);
-            //     const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-            //     invitorSocket?.emit('inviteCanceled', { invitorId });
-            // }
-            // await this.gameService.handleRemoveQueue(invitorId, invitedId);
+            if (invitorId === userId) {
+                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
+                invitedSocketIds.forEach(async invitedSocketId => {
+                    const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                    invitedSocket?.emit('inviteCanceled', { invitorId });
+                });
+            }
+            else if (invitedId === userId) {
+                const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
+                invitorSocketIds.forEach(async invitorSocketId => {
+                    const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+                    invitorSocket?.emit('inviteCanceled', { invitorId });
+                });
+            }
+            await this.gameService.handleRemoveQueue(invitorId, invitedId);
         }
     }
         
