@@ -32,7 +32,7 @@ export class AuthService {
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
                     .redirect(`${frontUrl}/firstLogin/`);
-                this.changeLoginBooleanStatus(userDB);
+                // this.changeLoginBooleanStatus(userDB);
             }
             else if (userDB.isTwoFAEnabled) {
                 res.status(200)
@@ -75,10 +75,12 @@ export class AuthService {
         return;
     }
 
-    async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
+    async getTokens(req: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
-            const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
-            return tokens;
+			const userDB = await this.usersService.getUserFromLogin(req.user.login);
+            const tokens: Tokens = await this.signTokens(req.user.id || req.user.sub, req.user.login || req.user.username, twoFactorAuthenticated);
+            this.changeLoginBooleanStatus(userDB);
+			return tokens;
         }
         catch (error) {
             console.log("Error:" + error.message);

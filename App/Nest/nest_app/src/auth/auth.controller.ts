@@ -39,8 +39,8 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
-            const jwt = await this.authService.getTokens(req.user, true);
-            res.cookie("jwt", jwt.access_token, cookieOptions)
+            const jwt = await this.authService.getTokens(req, true);
+            res.cookie("jwt", jwt.access_token, cookieOptions);
             // .cookie("rt", jwt.refresh_token, cookieOptions);
         }
         catch (error) {
