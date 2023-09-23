@@ -259,12 +259,13 @@ export class ChatroomController {
 	async removeAdmin(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const removedAdminId: number = body.removedAdminId;
-		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.removeAdmin(+id, userId, removedAdminId)
 			.then(() => {
-        // Todo: FIX
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				// this.socketGateway.handleAdminUpdate(clientSocket, removedAdminId, id);
+				userSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleAdminUpdate(clientSocket, removedAdminId, id);
+				});
 				response.send();
 			})
 			.catch(error => {
