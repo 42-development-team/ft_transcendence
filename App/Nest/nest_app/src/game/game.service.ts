@@ -9,6 +9,7 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
+import { Segment } from "./interface/game.interfaces";
 
 
 @Injectable()
@@ -480,6 +481,26 @@ export class GameService {
             this.playerCollision(ball, player2);
     }
 
+    lerp (A: number, B: number, t: number): number {
+        return (A + (B - A) * t);
+    }
+
+    segmentColliding(ball: Segment, player: Segment, r: number): {x: number, y: number} {
+        const top = (player.x1 - player.x) * (ball.y - player.y) - (player.y1 - player.y) * (ball.x - player.x );
+        const bottom = (player.y1 - player.y) * (ball.x1 - ball.x) - (player.x1 - player.x) * (ball.y1 - ball.y);
+        const t: number = top / bottom;
+        const x: number = this.lerp(ball.x, ball.x1, t);
+        const y: number = this.lerp(ball.y, ball.y1, t);
+
+        if (bottom !== 0) {
+            if (t >=0 && t <= 1) {
+                console.log("INTERSECTION");
+                return { x:x + r, y:y} ;
+            }
+        }
+        return { x: ball.x1, y: ball.y1 };
+    }
+
     checkCollision(ball: BallDto, player: PlayerDto): boolean {
         const dy: number = Math.abs(ball.y - player.y);
         
@@ -541,13 +562,14 @@ export class GameService {
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
 
-        if (Math.random() < 0.5)
+        // if (Math.random() < 0.5)
             sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
-        if (Math.random() < 0.5)
-            sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        // if (Math.random() < 0.5)
+            // sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = 0; // to rm
+        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -561,16 +583,39 @@ export class GameService {
     }
 
     //>>UPDATE POSITION<<//
-    async updateBall(ball: BallDto) {
-        ball.x += ball.speed[0] / 100;
-        ball.y += ball.speed[1] / 100;
+    async updateBall(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
+        const ballSeg: Segment = {
+            x: ball.x,
+            y: ball.y,
+            x1: ball.x + ball.speed[0] / 100,
+            y1: ball.y + ball.speed[1] / 100,
+        }
+        const p1Seg: Segment = {
+            x: player1.x,
+            y: player1.y - player1.h / 2,
+            x1: player1.x,
+            y1: player1.y + player1.h / 2,
+        }
+        const p2Seg: Segment = {
+            x: player2.x,
+            y: player2.y - player2.h / 2,
+            x1: player2.x,
+            y1: player2.y + player2.h / 2,
+        }
+        let result = this.segmentColliding(ballSeg, p1Seg, ball.r);
+        if (result.x === ballSeg.x1 && result.y === ballSeg.y1) 
+            result = this.segmentColliding(ballSeg, p1Seg, ball.r);
+        ball.x = result.x;
+        ball.y = result.y;
     };
 
     //>>CALCUL POSITION<<//
     async calculateBall(idx: number) {
         const ball = this.gameRooms[idx].data.ball;
+        const player1 = this.gameRooms[idx].data.player1;
+        const player2 = this.gameRooms[idx].data.player2;
+        this.updateBall(ball, player1, player2);
         this.bounce(idx, ball);
-        this.updateBall(ball);
         this.incrementSpeed(ball);
     };
 
