@@ -278,12 +278,13 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const mutedId: number = body.mutedId;
 		const muteDuration: number = body.muteDuration;
-		const userSocket = await this.userService.getSocketIdsFromUserId(userId);
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
 		await this.chatroomService.mute(+id, userId, mutedId, muteDuration)
 			.then(() => {
-        // Todo: FIX
-				// const clientSocket = this.socketGateway.clients.find(c => c.id === userSocket);
-				// this.socketGateway.handleMute(clientSocket, mutedId, id);
+				userSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleMute(clientSocket, mutedId, id);
+				});
 				response.send();
 			})
 			.catch(error => {
