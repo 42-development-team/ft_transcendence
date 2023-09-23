@@ -50,14 +50,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (inviteQueue) {
             const { invitorId, invitedId } = inviteQueue;
             if (invitorId === userId) {
-                const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedId);
-                const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-                invitedSocket?.emit('inviteCanceled', { invitorId });
+                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
+                invitedSocketIds.forEach(async invitedSocketId => {
+                    const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                    invitedSocket?.emit('inviteCanceled', { invitorId });
+                });
             }
             else if (invitedId === userId) {
-                const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
-                const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-                invitorSocket?.emit('inviteCanceled', { invitorId });
+                const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
+                invitorSocketIds.forEach(async invitorSocketId => {
+                    const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+                    invitorSocket?.emit('inviteCanceled', { invitorId });
+                });
             }
             await this.gameService.handleRemoveQueue(invitorId, invitedId);
         }
@@ -79,19 +83,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
             const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
-            const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
-            const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-            if (invitorId !== invitedId) {
-                const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
-                if (!inviteCanBeDone)
-                    return;
-                invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
-                invitorSocket?.emit('inviteSent', {invitedUserName});
-            }
+            const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+            invitedSocketIds.forEach(async invitedSocketId => {
+                const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                if (invitorId !== invitedId) {
+                    const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+                    if (!inviteCanBeDone)
+                        return;
+                    invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    invitorSocket?.emit('inviteSent', { invitedUserName });
+                }
+            });
         } catch (error) {
             console.log("error: ", error);
         }
-
     } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
 
     @SubscribeMessage('respondToInvite')
@@ -100,31 +105,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
-        const invitorSocketId: string = await this.userService.getUserSocketIdFromId(invitorId);
-        const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-        const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
-        if (inviteInfos !== undefined) {
-            console.log("inviteInfos is defined, gameRoom created (its broken)")
-            //TODO: check why game is BROKEn !!!!!!
-            // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-            // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-            // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
-            await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
-        }
+        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
+        invitorSocketIds.forEach(async invitorSocketId => {
+            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+            const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
+            if (inviteInfos !== undefined) {
+                console.log("inviteInfos is defined, gameRoom created (its broken)")
+                //TODO: check why game is BROKEn !!!!!!
+                // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+                // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
+                // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
+                await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
+            }
+        });
     }
 
     @SubscribeMessage('cancelInvite')
     async handleCancelInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
-
         // body awaits for the invited id (type number) and the mode game (boolean)
         const { invitedId }: { invitedId: number } = body;
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedId)
             this.gameService.handleRemoveQueue(invitorId, invitedIdNumber);
-        const invitedSocketId: string = await this.userService.getUserSocketIdFromId(invitedIdNumber);
-        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-        invitedSocket?.emit('inviteCanceled', { invitorId });
+        const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+        invitedSocketIds.forEach(async invitedSocketId => {
+            const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+            invitedSocket?.emit('inviteCanceled', { invitorId });
+        });
     }
 
     @SubscribeMessage('removeInviteQueue')
@@ -146,10 +154,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return;
 
         // queue is full => game is created
-        const { newGameRoom, player1SocketId, player2SocketId } = result;
-        if (player1SocketId && player2SocketId) {
+        const { newGameRoom, player1SocketIds, player2SocketIds } = result;
+        if (player1SocketIds && player2SocketIds && player1SocketIds.length > 0 && player2SocketIds.length > 0) {
             //game is created from scratch
-            this.joinGameRoom(player1SocketId, player2SocketId, newGameRoom);
+            this.joinGameRoom(player1SocketIds, player2SocketIds, newGameRoom);
         }
         else {
             // game already exist and player have to join it
@@ -158,11 +166,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
-    async joinGameRoom(player1SocketId: string, player2SocketId: string, room: GameRoomDto) {
-        const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
-        const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
-        await player1Socket?.join(room.roomName);
-        await player2Socket?.join(room.roomName);
+    async joinGameRoom(player1SocketIds: string[], player2SocketIds: string[], room: GameRoomDto) {
+        player1SocketIds.forEach(async player1SocketId => {
+            const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
+            await player1Socket?.join(room.roomName);
+        });
+        player2SocketIds.forEach(async player2SocketId => {
+            const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
+            await player2Socket?.join(room.roomName);
+        });
         this.server.to(room.roomName).emit('redirect', 'redirectToHomeForGame');
         this.server.to(room.roomName).emit('matchIsReady', room.data);
     }

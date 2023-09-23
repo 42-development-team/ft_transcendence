@@ -41,9 +41,6 @@ export class AuthController {
             }
             const jwt = await this.authService.getTokens(req.user, true);
             res.cookie("jwt", jwt.access_token, cookieOptions);
-			const user = await this.userService.getUserFromLogin(req.user.login);
-			console.log(`changing login boolean status for ${user.login} with status = ${user.isFirstLogin}`);
-			this.authService.changeLoginBooleanStatus(user);
         }
         catch (error) {
             console.log("Error: " + error.message);
@@ -56,7 +53,6 @@ export class AuthController {
         try {
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
-			await this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }
