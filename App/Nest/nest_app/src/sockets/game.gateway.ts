@@ -80,20 +80,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedId);
             const invitedUserName: string = invitedUser.username;
             const invitedIdNumber = Number(invitedId);
-            // Todo: FIX
-            // const invitedSocketId: string = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
-            // const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-            // if (invitorId !== invitedId) {
-            //     const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
-            //     if (!inviteCanBeDone)
-            //         return;
-            //     invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername,  modeEnabled });
-            //     invitorSocket?.emit('inviteSent', {invitedUserName});
-            // }
+            const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+            invitedSocketIds.forEach(async invitedSocketId => {
+                const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                if (invitorId !== invitedId) {
+                    const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+                    if (!inviteCanBeDone)
+                        return;
+                    invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    invitorSocket?.emit('inviteSent', { invitedUserName });
+                }
+            });
         } catch (error) {
             console.log("error: ", error);
         }
-
     } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
 
     @SubscribeMessage('respondToInvite')

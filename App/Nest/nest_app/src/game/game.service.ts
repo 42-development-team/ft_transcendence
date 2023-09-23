@@ -191,6 +191,7 @@ export class GameService {
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             }
             else if (playersAreAlreadyInQueue !== -1) {
+                // Todo: what is this shitty condition?
             }
 
             return false;
