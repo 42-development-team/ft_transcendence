@@ -176,11 +176,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 	
 	async handleBlockUpdate(userId: number) {
-		const userSocketId = await this.userService.getSocketIdsFromUserId(userId);
-		// Todo: FIX
-		// const userSocket = this.clients.find(c => c.id === userSocketId);
-		// if (userSocket) {
-		// 	userSocket.emit('blockUpdate', { userId });
-		// }
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+		userSocketIds.forEach(userSocketId => {
+			const userSocket = this.clients.find(c => c.id === userSocketId);
+			if (userSocket) {
+				userSocket.emit('blockUpdate', { userId });
+			}
+		});
 	}
 }
