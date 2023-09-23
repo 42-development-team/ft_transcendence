@@ -30,10 +30,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log('Client connected: ' + client.id);
 			const updatedUser = await this.userService.addSocketId(userId, client.id);
 			this.clients.push(client);
-			if (updatedUser && updatedUser.currentStatus !== "online") {
-				await this.userService.getCurrentStatusFromId(userId);
-				this.server.emit("userStatusUpdate", { userId });
+			if (updatedUser && updatedUser.socketIds.length === 1) {
+				await this.userService.updateStatus(userId, "online");
 			}
+			this.server.emit("userStatusUpdate", { userId });
 		} else {
 			console.log('User not authenticated');
 			client.disconnect();
@@ -46,9 +46,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const updateUser = await this.userService.removeSocketId(userId, client.id);
 		this.clients = this.clients.filter(c => c.id !== client.id);
 		if (updateUser && updateUser.socketIds.length === 0) {
-			await this.userService.getCurrentStatusFromId(userId);
-			this.server.emit("userStatusUpdate", { userId });
+			await this.userService.updateStatus(userId, "offline");
 		}
+		this.server.emit("userStatusUpdate", { userId });
 	}
 
 	@SubscribeMessage('joinRoom')

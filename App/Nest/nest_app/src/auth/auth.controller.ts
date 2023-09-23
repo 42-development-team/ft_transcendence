@@ -54,7 +54,6 @@ export class AuthController {
         try {
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
-			await this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }

@@ -36,6 +36,7 @@ const ChatMemberItem = ({
 	const [ statusChange, setStatusChange ] = useState(false);
 
     const fetchedUserStatus = async () => {
+        console.log('fetching user current status');
         try {
             const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
                 method: 'GET',
@@ -73,7 +74,7 @@ const ChatMemberItem = ({
     };
 
 	useEffect(() => {
-		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId) });
+		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId); console.log("Update event"); });
 
 		return () => {
 			socket?.off("userStatusUpdate", statusChangeMonitor);
