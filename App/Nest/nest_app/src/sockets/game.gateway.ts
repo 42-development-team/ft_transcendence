@@ -150,10 +150,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return;
 
         // queue is full => game is created
-        const { newGameRoom, player1SocketId, player2SocketId } = result;
-        if (player1SocketId && player2SocketId) {
+        const { newGameRoom, player1SocketIds, player2SocketIds } = result;
+        if (player1SocketIds && player2SocketIds && player1SocketIds.length > 0 && player2SocketIds.length > 0) {
             //game is created from scratch
-            this.joinGameRoom(player1SocketId, player2SocketId, newGameRoom);
+            this.joinGameRoom(player1SocketIds, player2SocketIds, newGameRoom);
         }
         else {
             // game already exist and player have to join it
@@ -162,11 +162,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
-    async joinGameRoom(player1SocketId: string, player2SocketId: string, room: GameRoomDto) {
-        const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
-        const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
-        await player1Socket?.join(room.roomName);
-        await player2Socket?.join(room.roomName);
+    async joinGameRoom(player1SocketIds: string[], player2SocketIds: string[], room: GameRoomDto) {
+        player1SocketIds.forEach(async player1SocketId => {
+            const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
+            await player1Socket?.join(room.roomName);
+        });
+        player2SocketIds.forEach(async player2SocketId => {
+            const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
+            await player2Socket?.join(room.roomName);
+        });
         this.server.to(room.roomName).emit('redirect', 'redirectToHomeForGame');
         this.server.to(room.roomName).emit('matchIsReady', room.data);
     }
