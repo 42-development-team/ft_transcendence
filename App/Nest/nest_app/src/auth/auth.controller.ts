@@ -41,9 +41,6 @@ export class AuthController {
             }
             const jwt = await this.authService.getTokens(req.user, true);
             res.cookie("jwt", jwt.access_token, cookieOptions);
-			const user = await this.userService.getUserFromLogin(req.user.login);
-			console.log(`changing login boolean status for ${user.login} with status = ${user.isFirstLogin}`);
-			this.authService.changeLoginBooleanStatus(user);
         }
         catch (error) {
             console.log("Error: " + error.message);

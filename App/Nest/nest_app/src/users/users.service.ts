@@ -154,6 +154,11 @@ export class UsersService {
             where: { id: id },
             data: { socketIds: { push: updatedSocketId } },
         });
+        const test = await this.prisma.user.update({
+            where: { id: id },
+            data: { isFirstLogin: false },
+        });
+
         return updatedUser;
     }
     

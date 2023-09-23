@@ -31,7 +31,8 @@ describe('UsersController', () => {
         twoFAsecret: 'secret',
         isTwoFAEnabled: false,
         isFirstLogin: true,
-		currentStatus: "online",
+		    currentStatus: "online",
+        socketIds: [],
       };
 
       jest.spyOn(service, 'createUser').mockResolvedValue(createUserDto as any);
@@ -57,7 +58,8 @@ describe('UsersController', () => {
         twoFAsecret: 'secret',
         isTwoFAEnabled: false,
         isFirstLogin: true,
-		currentStatus: "online",
+		  currentStatus: "online",
+      socketIds: [],
       };
 
       jest.spyOn(service, 'updateUsername').mockResolvedValue(updatedUserDto as any);
@@ -85,6 +87,7 @@ describe('UsersController', () => {
         isTwoFAEnabled: false,
         isFirstLogin: true,
 		currentStatus: "online",
+    socketIds: [],
       };
 
       const userDto2: CreateUserDto = {
@@ -95,6 +98,7 @@ describe('UsersController', () => {
         isTwoFAEnabled: false,
         isFirstLogin: true,
 		currentStatus: "online",
+    socketIds: [],
       };
 
       const userDtos: CreateUserDto[] = [userDto1, userDto2];
