@@ -28,11 +28,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
 			console.log('Client connected: ' + client.id);
-			await this.userService.addSocketId(userId, client.id);
+			const updatedUser = await this.userService.addSocketId(userId, client.id);
 			this.clients.push(client);
-			// Todo: check if user was already online
-			await this.userService.getCurrentStatusFromId(userId);
-			this.server.emit("userStatusUpdate", { userId });
+			if (updatedUser && updatedUser.currentStatus !== "online") {
+				await this.userService.getCurrentStatusFromId(userId);
+				this.server.emit("userStatusUpdate", { userId });
+			}
 		} else {
 			console.log('User not authenticated');
 			client.disconnect();
@@ -42,11 +43,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleDisconnect(client: Socket) {
 		console.log('Client disconnected: ' + client.id);
 		const userId = await this.userService.getUserIdFromSocket(client);
-		await this.userService.removeSocketId(userId, client.id);
+		const updateUser = await this.userService.removeSocketId(userId, client.id);
 		this.clients = this.clients.filter(c => c.id !== client.id);
-		// Todo: if user has no more socketId, set status to offline
-		await this.userService.getCurrentStatusFromId(userId);
-		this.server.emit("userStatusUpdate", { userId });
+		console.log("Update user:", updateUser);
+		if (updateUser && updateUser.socketIds.length === 0) {
+			await this.userService.getCurrentStatusFromId(userId);
+			this.server.emit("userStatusUpdate", { userId });
+		}
 	}
 
 	@SubscribeMessage('joinRoom')
