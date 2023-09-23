@@ -305,12 +305,12 @@ export class ChatroomController {
 					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
 					this.socketGateway.handleInvite(clientSocket, invitedId, id);
 				});
-				response.status(HttpStatus.OK).send("ok");
+				response.send(JSON.stringify("ok"));
 			}
 		} else {
 			const notInDatabaseMessage = "User invited not found"
 			console.log(notInDatabaseMessage);
-			response.status(HttpStatus.NOT_FOUND).send({ message: notInDatabaseMessage});
+			response.send(JSON.stringify("notInDatabaseMessage"));
 		}
 	}
 

@@ -254,15 +254,15 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 				})
 			});
 			const responseData = await response.json();
-			if (response.status == 200){
+			if (responseData === "ok"){
 				setOpenAlert(true);
 				setAlertMessage("The user has been successfully invited and joined the channel")
 				await delay(2000);
 				setOpenAlert(false);
 			}
-            else if (response.status == 404) {
+            else if (responseData == "notInDatabaseMessage") {
 				setOpenAlert(true);
-				setAlertMessage(responseData.message)
+				setAlertMessage("User invited not found")
 				await delay(2000);
 				setOpenAlert(false);
             }
