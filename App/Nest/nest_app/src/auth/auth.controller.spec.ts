@@ -69,7 +69,7 @@ describe('AuthController', () => {
   describe('getJwt', () => {
     it('should call authService.getTokens and set cookies with the correct parameters', async () => {
       // Arrange
-      const req: any = { user: {} };
+      const req: any = { user: { sub:1} };
       const res: any = { cookie: jest.fn().mockReturnThis() };
       const jwt = { access_token: 'mockAccessToken', refresh_token: 'mockRefreshToken' };
       jest.spyOn(authService, 'getTokens').mockResolvedValue(jwt);
