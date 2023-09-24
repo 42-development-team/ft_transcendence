@@ -2,9 +2,10 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
-import Surrender from "./Surrender";
 import Logo from "../home/Logo";
 import getUserNameById from "../utils/getUserNameById";
+import DropDownMenu from "../dropdown/DropDownMenu";
+import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 
 const Game = ({ ...props }) => {
 
@@ -36,14 +37,21 @@ const Game = ({ ...props }) => {
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center">
-						<Surrender
+						{/* <Surrender
 							surrender={surrender}
 							socket={socket}
 							data={data}
-						/>
+						/> */}
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
 							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
-							<div className="flex text-[2.2vw] text-mauve">{userName}</div>
+							<div className="flex flex-row text-[2.2vw] text-mauve">
+								{userName}
+								<DropDownMenu width="w-4" height="h-4">
+									<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
+										Surrender
+									</DropDownActionSurrender>	
+								</DropDownMenu>	
+							</div>
 						</div>
 						<Canvas
 							move={move}

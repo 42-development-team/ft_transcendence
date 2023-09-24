@@ -3,7 +3,7 @@
 import CustomBtn from "../CustomBtn";
 import { useAuthContext } from "@/app/context/AuthContext";
 
-const Surrender = ( {...props} ) => {
+const urrender = ( {...props} ) => {
     const {userId} = useAuthContext();
     const {data, surrender} = props;
 
