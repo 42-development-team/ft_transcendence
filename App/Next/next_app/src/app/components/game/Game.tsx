@@ -13,20 +13,22 @@ const Game = ({ ...props }) => {
 	const [userName, setUserName] = useState<string>("");
 
 	useEffect(() => {
-		if (!data)
+		if (!props.data || !props.data.player1) {
 			socket?.emit("retrieveData", props.userId);
+			return ;
+		}
 		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
 			setUserName(userName);
 		});
-		if ( data.player1.id === parseInt(props.userId))
-			getUserNameById(data.player2.id).then((userName: SetStateAction<string>) => {
+		if ( props.data.player1.id === parseInt(props.userId))
+			getUserNameById(props.data.player2.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
 		else
-			getUserNameById(data.player1.id).then((userName: SetStateAction<string>) => {
+			getUserNameById(props.data.player1.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
-	}, []);
+	}, [props.data ? props.data.player1 : props.data]);
 
 	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
