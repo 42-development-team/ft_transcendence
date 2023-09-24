@@ -209,6 +209,7 @@ export class GameService {
             });
             this.inviteQueue.splice(idx, 1);
         }
+        console.log("handleInvite found a queue to add")
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
         return true;
     }
@@ -216,10 +217,10 @@ export class GameService {
     async handleRemoveQueue(invitorId: number, invitedId: number) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         if (idx === -1) {
-            console.log("handleCancelInvite did not find a queue to cancel")
+            console.log("handleCancelInvite did not find a queue to remove")
             return;
         }
-        console.log("handleCancelInvite found a queue to cancel")
+        console.log("handleCancelInvite found a queue to remove")
         this.inviteQueue.splice(idx, 1);
     }
 
