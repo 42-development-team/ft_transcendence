@@ -140,7 +140,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { invitedId }: { invitedId: number } = body;
         const invitedIdNumber = Number(invitedId);
         if (invitorId !== invitedIdNumber)
-            this.gameService.handleRemoveQueue(invitorId, invitedIdNumber);
+            await this.gameService.handleRemoveQueue(invitorId, invitedId);
         const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
         invitedSocketIds.forEach(async invitedSocketId => {
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
