@@ -89,8 +89,10 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('isAlreadyInGame', (body: any) => {
-			const { invitedUsername } = body;
+			const { invitedUsername, sidePanelPopUp } = body;
 			closePanel(true);
+			if (!sidePanelPopUp)
+				return ;
 			openSent();
 			setMessage( invitedUsername + " is already in game");
 			setTimeoutId(setTimeout(() => {
