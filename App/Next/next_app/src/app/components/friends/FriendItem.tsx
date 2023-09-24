@@ -42,13 +42,13 @@ const FriendActions = ({ user }: FriendProps) => {
 
 	return (
 		<div aria-orientation="vertical" >
+			<DropDownAction onClick={() => handleAction(onProfileClick)}>
+				View profile
+			</DropDownAction>
 			<DropDownActionGame>
 				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>CLASSIC</DropDownAction>
 				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, true))}>MODE</DropDownAction>
 			</DropDownActionGame>
-			<DropDownAction onClick={() => handleAction(onProfileClick)}>
-				View profile
-			</DropDownAction>
 			<DropDownActionRed onClick={() => handleAction(removeFriend)}>
 				Remove Friend
 			</DropDownActionRed>
