@@ -9,6 +9,7 @@ import { AlertErrorIcon } from "@/app/components/alert/AlertErrorIcon";
 import { Alert } from "@material-tailwind/react";
 import { ChannelMember } from "@/app/utils/models";
 import GameInviteContext from "@/app/context/GameInviteContext";
+import DropDownActionGame from "@/app/components/dropdown/DropDownActionGame";
 
 type ChatMemberActionsProps = {
 	isCurrentUser: boolean
@@ -115,7 +116,10 @@ const ChatMemberActions = (
 					</Alert>
 					{!isCurrentUser &&
 						<>
-							<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>Invite to play</DropDownAction>
+							<DropDownActionGame>
+								<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>CLASSIC</DropDownAction>
+								<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, true))}>MODE</DropDownAction>
+							</DropDownActionGame>
 							{!isBlocked &&
 								<>
 									<DropDownAction onClick={() => handleAction(sendDirectMessage)}>Direct message</DropDownAction>

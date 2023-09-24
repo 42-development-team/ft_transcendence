@@ -13,7 +13,7 @@ const DropDownActionGame = ({children}: any) => {
                     Invite to play	
             </button>
             {isOpen && (
-                <div className="absolute z-10 mt-2 w-40 left-40 bottom-[0.3rem] rounded-md bg-crust border-l-[0.1rem] border-base">
+                <div className="absolute z-10 mt-2 w-30 right-40 bottom-[0.3rem] rounded-md bg-crust border-r-[0.1rem] border-base">
                     {children}
                 </div>
             )}
