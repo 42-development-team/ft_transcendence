@@ -36,7 +36,6 @@ const ChatMemberItem = ({
 	const [ statusChange, setStatusChange ] = useState(false);
 
     const fetchedUserStatus = async () => {
-        console.log('fetching user current status');
         try {
             const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
                 method: 'GET',

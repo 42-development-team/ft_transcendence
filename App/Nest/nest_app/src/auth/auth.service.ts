@@ -50,12 +50,10 @@ export class AuthService {
     }
 
     async changeLoginBooleanStatus(user: any) {
-        if (user.isFirstLogin) {
 			await this.prisma.user.updateMany({
 				where: { username: user.username },
                 data: { isFirstLogin: false },
             });
-        }
     }
 
     async updateCurrentStatus(user: any, userId: number, status: string) {

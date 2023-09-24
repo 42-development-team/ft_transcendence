@@ -19,6 +19,7 @@ export default function useChannels(userId: string) {
     let alreadyJoined = false;
 
     useEffect(() => {
+        if (userId == "") return;
         fetchChannelsInfo();
         fetchChannelsContent();
     }, [userId]);
