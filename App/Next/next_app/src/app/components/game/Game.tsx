@@ -12,8 +12,6 @@ const Game = ({ ...props }) => {
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [userName, setUserName] = useState<string>("");
 
-	console.log("userId: ", props.userId);
-	console.log("userName: ", userName);
 	useEffect(() => {
 		if (!data)
 			socket?.emit("retrieveData", props.userId);
@@ -37,11 +35,6 @@ const Game = ({ ...props }) => {
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center">
-						{/* <Surrender
-							surrender={surrender}
-							socket={socket}
-							data={data}
-						/> */}
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
 							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
 							<div className="flex flex-row text-[2.2vw] text-mauve">
