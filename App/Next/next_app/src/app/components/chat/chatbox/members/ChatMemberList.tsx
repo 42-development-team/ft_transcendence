@@ -22,7 +22,6 @@ interface ChatMemberListProps {
     addFriend: (friendAddingId: string) => void;
 }
 
-// Todo: extract functions to another file
 const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, 
         friends, requestedFriends, invitedFriends, addFriend }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
@@ -45,13 +44,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error kicking user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error kicking user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -67,13 +64,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error banning user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error banning user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -89,13 +84,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error unbanning user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error unbanning user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -129,7 +122,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
     }
 
     const setAsAdmin = async (newAdminId: string) => {
-        // Todo: alerts
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/setAdmin`, {
                 credentials: "include",
@@ -181,7 +173,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             if (!response.ok) {
 				console.log("Error muting: " + response.status);
             }
-            // Todo: manage response
         }
         catch (error) {
 			console.log("Error muting: " + error);
@@ -207,11 +198,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         return requestedFriends.find(user => user.id == memberId) != undefined 
             || invitedFriends.find(user => user.id == memberId) != undefined;
     }
+    
     // Chat member list
-    // Todo: sort by ASCII
-
-    // Todo: filter props : ex (admin need remove Admin)
-    // ban need remove unban
     const OwnerList = channel.members
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
@@ -321,7 +309,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 {MemberList}
                 <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
                 {BannedList}
-				{/* todo: add icon Font Awsome */}
 				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&
                 <ChatMemberHeader>👪 Invite to your channel</ChatMemberHeader> }
 				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&

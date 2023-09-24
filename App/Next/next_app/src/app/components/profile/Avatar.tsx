@@ -123,31 +123,8 @@ const Avatar = (
 			<div className={` flex fex-row items-center justify-center font-bold text-center text-2xl mb-2 ` + textUsername}>
 				<div>{userName}</div>
 				{isOnProfilePage && currId !== id &&
-					<div className="ml-2">
+					<div className="ml-2 text-text">
 						{children}
-						{/* <DropDownMenu>
-							{!isFriend && !isBlocked &&
-							<>
-								<DropDownAction onClick={() => handleAction(() => {
-									if (id != null)
-										addFriend(id)
-								})}>Add Friend</DropDownAction>
-								<DropDownActionRed onClick={() => handleAction(() => {
-									if (id != null)
-										blockUser(id)
-								})}>Block</DropDownActionRed>
-							</>
-							}
-							{!isBlocked && 
-								<DropDownAction onClick={() => handleAction(() => console.log("test"))}>Invite to play</DropDownAction>
-							}
-							{isBlocked &&
-								<DropDownActionRed onClick={() => handleAction(() => {
-									if (id != null)
-										unblockUser(id)
-								})}>Unblock</DropDownActionRed>
-							}
-						</DropDownMenu> */}
 					</div>
 				}
 			</div>

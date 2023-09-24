@@ -65,22 +65,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 	}, [isLoggedIn, userId]);
 
-	const handleTabClosing = () => {
-		if (!isLoggedIn || userId == "") return ;
-		fetch(`${process.env.BACK_URL}/users/set_offline/${userId}`, {
-			method: 'PUT',
-		});
-	}
-
-	useEffect(() => {
-		if (isLoggedIn && userId != "") {
-			window.addEventListener('beforeunload', handleTabClosing);
-		}
-		return () => {
-			window.removeEventListener('beforeunload', handleTabClosing);
-		};
-	}, [isLoggedIn, userId]);
-
 	const fetchProfile = async () => {
 		try {
 			const response = await fetch(`${process.env.BACK_URL}/auth/profile`, { credentials: "include" });
@@ -128,7 +112,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		});
 		socket?.on('disconnect', (reason) => {
 			console.log('Disconnected from socket.io server', reason);
-			setSocketReady(false);
 		});
 		socket?.on('connect', () => {
 			console.log('Connected to socket.io server');
@@ -145,21 +128,6 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const initializeSocket = async (userId: string) => {
 		const socket = connect();
 		setSocket(socket);
-		socket.on('connect', () => {
-			// fetch to verify userStatus is online. If not update it to online
-			if (userId) {
-				fetch(`${process.env.BACK_URL}/users/update_status/${userId}`, {
-					credentials: "include",
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						currentStatus: "online",
-					}),
-				});
-			}
-		})
 		return () => {
 			socket.close();
 		}

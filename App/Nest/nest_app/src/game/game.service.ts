@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -10,6 +10,7 @@ import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
 import { Segment } from "./interface/game.interfaces";
+import { Socket } from "socket.io";
 
 
 @Injectable()
@@ -18,7 +19,9 @@ export class GameService {
         private prisma: PrismaService,
         private userService: UsersService,
         private userStatsService: UserStatsService,
-    ) { }
+    ) {
+    }
+    
 
     gameRooms: GameRoomDto[] = [];
     queue: number[] = [];
@@ -153,7 +156,7 @@ export class GameService {
             },
         });
         return game;
-    }
+    }        // console.log(this)
 
     //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
@@ -178,14 +181,47 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(invitorId: number, invitedId: number, mode: boolean) {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx !== -1)
-            return ;
+    async handleInvite(clients: readonly Socket [], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+        const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
+        const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
+        const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+        const inventedIsIngGame: boolean = await this.isInGame(invitedId);
+        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
+            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
+                invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+            }
+            else if (playersAreAlreadyInQueue !== -1) {
+                // Todo: what is this shitty condition?
+            }
+
+            return false;
+        }
+        else if (invitorIsAlreadyInvited !== -1) {
+            const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+            const invitorIdToNotify = this.inviteQueue[idx].invitorId;
+            const invitorSocketIdsToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            invitorSocketIdsToNotify.forEach(invitorSocketIdToNotify => {
+                const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
+                invitorSocketToNotify?.emit('inviteDeclined');
+            });
+            this.inviteQueue.splice(idx, 1);
+        }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
+        return true;
     }
 
-    async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+    async handleRemoveQueue(invitorId: number, invitedId: number) {
+        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        if (idx === -1) {
+            console.log("handleCancelInvite did not find a queue to cancel")
+            return ;
+        }
+        console.log("handleCancelInvite found a queue to cancel")
+        this.inviteQueue.splice(idx, 1);
+    }
+
+    async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
         if (idx === -1)
@@ -193,21 +229,22 @@ export class GameService {
         console.log("2");
         if (!accept) {
             this.inviteQueue.splice(idx, 1);
+            console.log("declined by ", invitorSocket.id)
+            invitorSocket?.emit('inviteDeclined');
             return ;
         }
         console.log("3");
-        if (this.isInGame(invitorId))
+        if (await this.isInGame(invitorId))
             return ;
         console.log("4");
-        if (this.isInGame(invitedId))
+        if (await this.isInGame(invitedId))
             return ;
         console.log("5");
-        this.handleLeaveQueue(invitorId);
-        this.handleLeaveQueue(invitedId);
+        invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }
 
-    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         try {
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
@@ -227,16 +264,16 @@ export class GameService {
             }
             else {
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
-                const player1SocketId: string = undefined;
-                const player2SocketId: string = undefined;
-                return ({ newGameRoom, player1SocketId, player2SocketId });
+                const player1SocketIds: string[] = [];
+                const player2SocketIds: string[] = [];
+                return ({ newGameRoom, player1SocketIds, player2SocketIds });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[]}> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
@@ -250,16 +287,15 @@ export class GameService {
 
         // create room data
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
-        // get sokcetId to join game
-        const player1SocketId: string = await this.userService.getUserSocketFromId(player1Id);
-        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+        const player1SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player1Id);
+        const player2SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
 
-        return ({ newGameRoom, player1SocketId, player2SocketId });
+        return ({ newGameRoom, player1SocketIds, player2SocketIds });
     }
 
     
@@ -368,7 +404,7 @@ export class GameService {
     }
 
     async isInGame(userId: number): Promise<boolean> {
-        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)) {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined) {
             return true;
         }
         return false;
@@ -523,7 +559,8 @@ export class GameService {
     async checkCollision(ball: BallDto, player: PlayerDto, r: number, dx: number): Promise<boolean> {
         const dy: number = Math.abs(ball.y - player.y);
         
-        if (dx <= (ball.r + player.w) || this.segmentColliding(ball, player, r)) {
+        if (dx <= (ball.r + player.w) && this.segmentColliding(ball, player, r)) {
+            console.log("TRUE ?");
             if (dy <= player.h / 2)
                 return true;
             else if ((player.y + player.h / 2) > 1){

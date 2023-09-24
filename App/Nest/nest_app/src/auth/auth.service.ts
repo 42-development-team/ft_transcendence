@@ -32,7 +32,6 @@ export class AuthService {
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
                     .redirect(`${frontUrl}/firstLogin/`);
-                this.changeLoginBooleanStatus(userDB);
             }
             else if (userDB.isTwoFAEnabled) {
                 res.status(200)
@@ -44,7 +43,6 @@ export class AuthService {
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
                     .redirect(`${frontUrl}/home/`);
-                    // .cookie("rt", jwt.refresh_token, cookieOptions)
             }
         } catch (error) {
             throw new Error('Redirect error');
@@ -53,16 +51,14 @@ export class AuthService {
 
     async changeLoginBooleanStatus(user: any) {
         if (user.isFirstLogin) {
-            await this.prisma.user.updateMany({
-                where: { username: user.username },
+			await this.prisma.user.updateMany({
+				where: { username: user.username },
                 data: { isFirstLogin: false },
             });
         }
     }
 
     async updateCurrentStatus(user: any, userId: number, status: string) {
-		// user.currentStatus = status;
-		// console.log("user id in updateCurrentStatus in service: ", userId);
             await this.prisma.user.update({
                 where: { id: userId},
                 data: { currentStatus: status },
@@ -71,14 +67,13 @@ export class AuthService {
 
     async logout(res: Response): Promise<void> {
         await res.clearCookie('jwt');
-        await res.clearCookie('rt');
         return;
     }
 
     async getTokens(user: any, twoFactorAuthenticated: boolean): Promise<Tokens> {
         try {
             const tokens: Tokens = await this.signTokens(user.id || user.sub, user.login || user.username, twoFactorAuthenticated);
-            return tokens;
+			return tokens;
         }
         catch (error) {
             console.log("Error:" + error.message);

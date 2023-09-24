@@ -28,12 +28,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		if (userId) {
 			console.log('Client connected: ' + client.id);
-			await this.userService.updateSocketId(userId, client.id);
+			const updatedUser = await this.userService.addSocketId(userId, client.id);
 			this.clients.push(client);
-			const userStatus = await this.userService.getCurrentStatusFromId(userId);
+			if (updatedUser && updatedUser.socketIds.length === 1) {
+				await this.userService.updateStatus(userId, "online");
+			}
 			this.server.emit("userStatusUpdate", { userId });
-			// todo: Check for verifiedJWT in socket and disconnect if not OK
-			// and retrieve all the channels the user is a member of
 		} else {
 			console.log('User not authenticated');
 			client.disconnect();
@@ -43,9 +43,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleDisconnect(client: Socket) {
 		console.log('Client disconnected: ' + client.id);
 		const userId = await this.userService.getUserIdFromSocket(client);
-		await this.userService.updateSocketId(userId, null);
+		const updateUser = await this.userService.removeSocketId(userId, client.id);
 		this.clients = this.clients.filter(c => c.id !== client.id);
-		const userStatus = await this.userService.getCurrentStatusFromId(userId);
+		if (updateUser && updateUser.socketIds.length === 0) {
+			await this.userService.updateStatus(userId, "offline");
+		}
 		this.server.emit("userStatusUpdate", { userId });
 	}
 
@@ -68,7 +70,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.leave(room);
 		client.emit('leftRoom', { room });
 		console.log(`Client ${userId} (${client.id}) left room ${room}`);
-		this.server.to(room).emit('newDisconnecgit checkout -b FT-361-fix-joining-game-with-only-one-usertionOnChannel', { room, userId });
+		this.server.to(room).emit('newDisconnectionOnChannel', { room, userId });
 	}
 
 	@SubscribeMessage('message')
@@ -156,23 +158,30 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// Friend related events
 	async handleFriendUpdate(userId: number, friendId: number) {
-		const userSocketId = await this.userService.getUserSocketFromId(userId);
-		const userSocket = this.clients.find(c => c.id === userSocketId);
-		if (userSocket) {
-			userSocket.emit('friendUpdate', { friendId });
-		}
-		const friendSocketId = await this.userService.getUserSocketFromId(friendId);
-		const friendSocket = this.clients.find(c => c.id === friendSocketId);
-		if (friendSocket) {
-			friendSocket.emit('friendUpdate', { userId });
-		}
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+		userSocketIds.forEach(userSocketId => {
+			const userSocket = this.clients.find(c => c.id === userSocketId);
+			if (userSocket) {
+				userSocket.emit('friendUpdate', { friendId });
+			}
+		});
+
+		const friendSocketIds = await this.userService.getSocketIdsFromUserId(friendId);
+		friendSocketIds.forEach(friendSocketId => {
+			const friendSocket = this.clients.find(c => c.id === friendSocketId);
+			if (friendSocket) {
+				friendSocket.emit('friendUpdate', { userId });
+			}
+		});
 	}
 	
 	async handleBlockUpdate(userId: number) {
-		const userSocketId = await this.userService.getUserSocketFromId(userId);
-		const userSocket = this.clients.find(c => c.id === userSocketId);
-		if (userSocket) {
-			userSocket.emit('blockUpdate', { userId });
-		}
+		const userSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+		userSocketIds.forEach(userSocketId => {
+			const userSocket = this.clients.find(c => c.id === userSocketId);
+			if (userSocket) {
+				userSocket.emit('blockUpdate', { userId });
+			}
+		});
 	}
 }
