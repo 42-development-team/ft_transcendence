@@ -41,7 +41,7 @@ const Game = ({ ...props }) => {
 							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
 							<div className="flex flex-row text-[2.2vw] text-mauve">
 								{userName}
-								<DropDownMenu width="w-4" height="h-4">
+								<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
 									<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
 										Surrender
 									</DropDownActionSurrender>	
