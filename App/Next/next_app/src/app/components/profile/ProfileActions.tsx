@@ -57,7 +57,13 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 						<DropDownAction onClick={() => handleAction(() => addFriend(currentId))}>Add Friend</DropDownAction>
 					}
 					{!isBlocked &&
-						<DropDownAction onClick={() => handleAction(() => inviteToPlay(currentId, false))}>Invite to play</DropDownAction>
+					<DropDownAction onClick={() => handleAction}>
+						Invite to play		
+						<DropDownMenu width="w-3" height="h-3">
+							<DropDownAction onClick={() => handleAction(() => inviteToPlay(currentId, false))}>CLASSIC</DropDownAction>
+							<DropDownAction onClick={() => handleAction(() => inviteToPlay(currentId, true))}>MODE</DropDownAction>
+						</DropDownMenu>
+						</DropDownAction>
 					}
 					{!isBlocked && !isFriend &&
 						<DropDownActionRed onClick={() => handleAction(() => blockUser(currentId))}>Block</DropDownActionRed>
