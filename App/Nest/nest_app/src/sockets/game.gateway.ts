@@ -80,6 +80,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('invite')
     async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         try {
+            console.log("MODE: ", body.modeEnabled)
             const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
             if (invitorId === undefined)
                 return;

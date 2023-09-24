@@ -8,12 +8,12 @@ const DropDownActionGame = ({children}: any) => {
     return (
         <div>
             <button type="button"
-                className="text-left text-text w-full block px-4 py-2 text-sm hover:bg-surface1 rounded-md"
+                className={`text-left text-text w-full block px-4 py-2 text-sm hover:bg-surface1 ` + (isOpen ? "rounded-r-md bg-surface1" : "rounded-md")}
                 onClick={() => setIsOpen(!isOpen)}>
-                    Invite to play	
+                    Invite to play
             </button>
             {isOpen && (
-                <div className="absolute z-10 mt-2 w-30 right-40 bottom-[0.3rem] rounded-md bg-crust border-r-[0.1rem] border-base">
+                <div className="absolute z-10 mt-2 w-30 right-40 top-[-8.8px] rounded-md rounded-tr-none bg-crust border-[0.15rem] border-surface1">
                     {children}
                 </div>
             )}
