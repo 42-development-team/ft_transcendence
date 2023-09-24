@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const DropDownGameInvite = ({children}: any) => {
+const DropDownActionGame = ({children}: any) => {
     const [isOpen, setIsOpen] = useState(false);
     
     return (
@@ -13,7 +13,7 @@ const DropDownGameInvite = ({children}: any) => {
                     Invite to play	
             </button>
             {isOpen && (
-                <div className="absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
+                <div className="absolute z-10 mt-2 w-40 left-40 bottom-[0.3rem] rounded-md bg-crust border-l-[0.1rem] border-base">
                     {children}
                 </div>
             )}
@@ -21,4 +21,4 @@ const DropDownGameInvite = ({children}: any) => {
     )
 }
 
-export default DropDownGameInvite;
+export default DropDownActionGame;

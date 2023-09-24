@@ -4,7 +4,7 @@ import { DropDownAction, DropDownActionRed } from "../dropdown/DropDownItem";
 import { UserModel } from "@/app/utils/models";
 import { useContext, useEffect, useState } from "react";
 import GameInviteContext from "@/app/context/GameInviteContext";
-import DropDownGameInvite from "../dropdown/DropDownGameInvite";
+import DropDownGameInvite from "../dropdown/DropDownActionGame";
 
 type ProfileActionsProps = {
 	userId: string;
