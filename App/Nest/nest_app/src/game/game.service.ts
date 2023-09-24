@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -9,7 +9,6 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
-import { Segment } from "./interface/game.interfaces";
 import { Socket } from "socket.io";
 
 
@@ -523,31 +522,19 @@ export class GameService {
     }
 
     async segmentColliding(ball: BallDto, player: PlayerDto, r: number): Promise<boolean> {
-        // const b: Segment = {
-        //     x: ball.x,
-        //     y: ball.y,
-        //     x1: ball.x + ball.speed[0] / 100,
-        //     y1: ball.y + ball.speed[1] / 100,
-        // }
         const A = {x: ball.x, y: ball.y};
         const B = {x: ball.x + ball.speed[0] / 100, y: ball.y + ball.speed[1] / 100};
         const C = {x: player.x, y: player.y - player.h / 2}
         const D = {x: player.x, y: player.y + player.h / 2}
-        // const p: Segment = {
-        //     x: player.x,
-        //     y: player.y - player.h / 2,
-        //     x1: player.x,
-        //     y1: player.y + player.h / 2,
-        // }
 
         const top = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
         const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
         const t: number = top / bottom;
-        const x: number = this.lerp(A.x, B.x, t);
-        const y: number = this.lerp(A.y, B.y, t);
 
         if (bottom !== 0) {
             if (t >= 0 && t <= 1) {
+                const x: number = this.lerp(A.x, B.x, t);
+                const y: number = this.lerp(A.y, B.y, t);
                 ball.x = x + 0.7 * r;
                 ball.y = y;
                 return true ;
@@ -559,8 +546,7 @@ export class GameService {
     async checkCollision(ball: BallDto, player: PlayerDto, r: number, dx: number): Promise<boolean> {
         const dy: number = Math.abs(ball.y - player.y);
         
-        if (dx <= (ball.r + player.w) && this.segmentColliding(ball, player, r)) {
-            console.log("TRUE ?");
+        if (dx <= (ball.r + player.w) || await this.segmentColliding(ball, player, r) === true) {
             if (dy <= player.h / 2)
                 return true;
             else if ((player.y + player.h / 2) > 1){
