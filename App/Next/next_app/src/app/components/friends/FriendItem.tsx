@@ -6,6 +6,7 @@ import { getStatusColor } from "@/app/utils/getStatusColor";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
 import { useContext, useRef, useState } from "react";
 import GameInviteContext from "@/app/context/GameInviteContext";
+import DropDownActionGame from "../dropdown/DropDownActionGame";
 
 type FriendProps = {
 	user: UserModel
@@ -41,12 +42,13 @@ const FriendActions = ({ user }: FriendProps) => {
 
 	return (
 		<div aria-orientation="vertical" >
-			<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}> {/*TODO: add mode button*/}
-				Invite to play
-			</DropDownAction>
 			<DropDownAction onClick={() => handleAction(onProfileClick)}>
 				View profile
 			</DropDownAction>
+			<DropDownActionGame>
+				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>CLASSIC</DropDownAction>
+				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, true))}>MODE</DropDownAction>
+			</DropDownActionGame>
 			<DropDownActionRed onClick={() => handleAction(removeFriend)}>
 				Remove Friend
 			</DropDownActionRed>
