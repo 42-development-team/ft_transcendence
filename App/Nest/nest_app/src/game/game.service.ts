@@ -181,6 +181,7 @@ export class GameService {
     //=================================================//
 
     async handleInvite(clients: readonly Socket[], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+        console.log("invitorId:", invitorId, "invitedId:", invitedId, "invitedUsername:", invitedUsername)
         const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
@@ -229,8 +230,7 @@ export class GameService {
         console.log("1");
         if (!accept) {
             console.log("declined by :", invitorSocket.id)
-            if (idx !== -1)
-                await this.handleRemoveQueue(invitorId, invitedId);
+            await this.handleRemoveQueue(invitorId, invitedId);
             invitorSocket?.emit('inviteDeclined');
             return;
         }
