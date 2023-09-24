@@ -41,7 +41,7 @@ const Game = ({ ...props }) => {
 							socket={socket}
 							data={data}
 						/>
-						<div className="flex flex-row justify-evenly mb-2 mx-[18vw]">
+						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
 							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
 							<div className="flex text-[2.2vw] text-mauve">{userName}</div>
 						</div>
