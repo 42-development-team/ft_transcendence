@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
 import Surrender from "./Surrender";
+import Logo from "../home/Logo";
 
 const Game = ({ ...props }) => {
 	useEffect(() => {
@@ -10,34 +11,39 @@ const Game = ({ ...props }) => {
 			socket?.emit("retrieveData", props.userId);
 	}, []);
 
-	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, userId, result, setResult, setInGameContext } = props;
+	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
 	return (
-		<div>
-			{ data && (
+		<div className="flex">
+			{data && (
 				(result === undefined || result === null) ? (
-				<div className="">
-					<Surrender
-						surrender={surrender}
-						socket={socket}
-						data={data}
+					<div className="flex flex-col flex-grow justify-center">
+						<Surrender
+							surrender={surrender}
+							socket={socket}
+							data={data}
 						/>
-					<Canvas
-						move={move}
-						stopMove={stopMove}
-						launchGame={launchGame}
-						data={data}
-						userId={userId}
+						<Canvas
+							move={move}
+							stopMove={stopMove}
+							launchGame={launchGame}
+							data={data}
+							userId={userId}
+							mode={mode}
 						/>
-				</div>
-			) : (
-				<Result
-					result={result}
-					setResult={setResult}
-					joinQueue={joinQueue}
-					setInGameContext={setInGameContext}
-				/>
-			))
+					</div>
+				) : (
+					<div className="flex flex-col items-center justify-evenly">
+						<Logo />
+						<Result
+							result={result}
+							setResult={setResult}
+							joinQueue={joinQueue}
+							setInGameContext={setInGameContext}
+						/>
+						<div className="basis-1/9"></div>
+					</div>
+				))
 			}
 		</div>
 	);

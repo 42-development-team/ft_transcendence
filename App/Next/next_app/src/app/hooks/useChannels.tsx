@@ -19,6 +19,7 @@ export default function useChannels(userId: string) {
     let alreadyJoined = false;
 
     useEffect(() => {
+        if (userId == "") return;
         fetchChannelsInfo();
         fetchChannelsContent();
     }, [userId]);
@@ -168,15 +169,15 @@ export default function useChannels(userId: string) {
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
             socket?.off('new-message');
-            socket?.off('newConnection');
-            socket?.off('newDisconnection');
+            socket?.off('newConnectionOnChannel');
+            socket?.off('newDisconnectionOnChannel');
             socket?.off('leftRoom');
             socket?.off('NewChatRoom');
             socket?.off('directMessage');
             socket?.off('chatroomUpdate');
         }
     }, [socket, joinedChannels, channels]);
-    // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
+    // useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
         const targetChannel = joinedChannels.find(c =>

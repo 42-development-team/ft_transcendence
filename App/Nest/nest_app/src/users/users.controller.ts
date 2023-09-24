@@ -74,33 +74,6 @@ export class UsersController {
         return updatedObject;
     }
 
-	@Put('/update_status/:id')
-    async updateStatus(@Request() req: any, @Res() response: Response) {
-		try {
-			const userId = req.user.sub;
-			const currentStatus = req.body.currentStatus;
-			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
-				// this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
-				await this.userService.updateStatus(userId, currentStatus);
-			}
-			response.status(HttpStatus.OK);
-		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-		}
-    }
-
-    @Public()
-    @Put('/set_offline/:id')
-    async setOffline(@Param('id', ParseIntPipe) id: number, @Request() req: any, @Res() response: Response) {
-        try {
-            await this.userService.updateStatus(id, "offline");
-            response.status(HttpStatus.OK)
-        }
-        catch (error) {
-            response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-        }
-    }
-
     /* D(elete) */
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {

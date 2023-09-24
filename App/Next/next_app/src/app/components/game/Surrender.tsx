@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
 import CustomBtn from "../CustomBtn";
 import { useAuthContext } from "@/app/context/AuthContext";
 
 const Surrender = ( {...props} ) => {
     const {userId} = useAuthContext();
-    const {socket, data, surrender} = props;
+    const {data, surrender} = props;
 
     return (
         <div className="flex justify-center">

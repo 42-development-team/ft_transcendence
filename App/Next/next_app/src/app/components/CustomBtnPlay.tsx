@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const CustomBtn = (
         {
@@ -49,8 +49,7 @@ const CustomBtn = (
             className={` ${anim && ' text-lg focus:ring-4 shadow-lg transform active:scale-75 transition-transform'}
 			h-[${height}px] w-[${width}px] font-bold text-2xl rounded-lg text-mantle ${color} 
             disabled:pointer-events-none disabled:bg-transparent hover:brightness-110
-			hover:bg-pink
-            l m-4 p-3 text-purple `}
+            m-4 p-3 `}
             onClick={onClick}>
             {children}
         </button>
