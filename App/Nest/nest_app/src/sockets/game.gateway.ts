@@ -199,9 +199,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('isInGame')
     async isAlreadyInGame(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
+        const socketOwnerId = await this.userService.getUserIdFromSocket(socket);
+        const sidePanelPopUp = socketOwnerId !== userId ? true : false;
         const isAlreadyInGame = data ? true : false;
         if (isAlreadyInGame) {
-            socket.emit('isAlreadyInGame', data);
+            socket.emit('isAlreadyInGame', {data, sidePanelPopUp});
         }
         return;
     }
