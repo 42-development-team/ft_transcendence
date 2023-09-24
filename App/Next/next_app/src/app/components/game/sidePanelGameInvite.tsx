@@ -8,15 +8,12 @@ import { CustomBtnGameInvite } from "../CustomBtnGameInvite";
 const SidePanelGameInvite = () => {
     const { invitedBy, respondToInvite, cancelInvite, message, slide, receiveVisible, sentVisible, timer, setTimer, invitorUsername, invitedUsername, invitedId } = useContext(GameInviteContext);
     const { theme } = useContext(ThemeContext);
-    const [currentUserName, setCurrentUserName] = useState("");
     const [backgroundColor, setBackgroundColor] = useState(theme === "latte" ? "#6c6f85" : "#313244");
     const [textColor, setTextColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [borderColor, setBorderColor] = useState(theme === "latte" ? "#eff1f5" : "#f9e2af");
     const [buttonColor, setButtonColor] = useState(theme === "latte" ? "bg-[#8839ef]" : "bg-[#f5c2e7]");
     const [hoverColor, setHoverColor] = useState(theme === "latte" ? "hover:bg-[#ea76cb]" : "hover:bg-[#cba6f7]");
-    const [currentUserId] = useState(typeof window !== "undefined" ? localStorage.getItem("userId") : "");
     const [lockSubmit, setLockSubmit] = useState<boolean>(false);
-    const [isOpen, setIsOpen] = useState(false);
     const [disable, setDisable] = useState(false);
 
     /* PANEL STYLE */
@@ -80,7 +77,6 @@ const SidePanelGameInvite = () => {
         if (lockSubmit) return;
         setLockSubmit(true);
         action( );
-        setIsOpen(false);
         setTimeout(() => setLockSubmit(false), 1600);
     }
 
