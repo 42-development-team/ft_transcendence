@@ -84,8 +84,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
             if (invitorId === undefined)
                 return;
-            // body awaits for the invited id (type number) and the mode game (boolean)
-            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;
+            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;//TODO: this sequence is redundant, create a function
             const invitedIdNumber = Number(invitedId);
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
@@ -117,7 +116,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('respondToInvite')
     async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
-        // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
         const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
@@ -139,7 +137,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('cancelInvite')
     async handleCancelInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
-        // body awaits for the invited id (type number) and the mode game (boolean)
         const { invitedId }: { invitedId: number } = body;
         const invitedIdNumber = Number(invitedId);
         const invitorIdNumber = Number(invitorId);
