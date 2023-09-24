@@ -1,14 +1,24 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
 import Surrender from "./Surrender";
 import Logo from "../home/Logo";
+import getUserNameById from "../utils/getUserNameById";
 
 const Game = ({ ...props }) => {
+
+	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
+	const [userName, setUserName] = useState<string>("");
+
+	console.log("userId: ", props.userId);
+	console.log("userName: ", userName);
 	useEffect(() => {
 		if (!data)
 			socket?.emit("retrieveData", props.userId);
+		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
+			setUserName(userName);
+		});
 	}, []);
 
 	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
@@ -23,6 +33,10 @@ const Game = ({ ...props }) => {
 							socket={socket}
 							data={data}
 						/>
+						<div className="flex flex-row justify-evenly mb-2 mx-[20vw]">
+							<div className="flex">{opponnentUsername}</div>
+							<div className="flex">{userName}</div>
+						</div>
 						<Canvas
 							move={move}
 							stopMove={stopMove}
