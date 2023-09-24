@@ -10,7 +10,6 @@ export const BackgroundBall = () => {
 
 	const { theme } = useContext(themeContext);
 	const [entered, setEntered] = useState<boolean>(false);
-	let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
