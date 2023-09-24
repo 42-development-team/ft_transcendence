@@ -207,7 +207,7 @@ export class GameService {
                 const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
                 invitorSocketToNotify?.emit('inviteDeclined');
             });
-            this.inviteQueue.splice(idx, 1);
+            await this.handleRemoveQueue(invitorIdToNotify, invitorId);
         }
         console.log("handleInvite found a queue to add")
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
@@ -227,22 +227,22 @@ export class GameService {
     async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId: number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
-        if (idx === -1)
-            return;
-        console.log("2");
         if (!accept) {
-            this.inviteQueue.splice(idx, 1);
-            console.log("declined by ", invitorSocket.id)
+            console.log("declined by :", invitorSocket.id)
+            if (idx !== -1)
+                await this.handleRemoveQueue(invitorId, invitedId);
             invitorSocket?.emit('inviteDeclined');
             return;
         }
-        console.log("3");
+        else if (idx === -1)
+            return;
+        console.log("2");
         if (await this.isInGame(invitorId))
-            return;
-        console.log("4");
+        return;
+        console.log("3");
         if (await this.isInGame(invitedId))
-            return;
-        console.log("5");
+        return;
+        console.log("4");
         invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }
