@@ -24,7 +24,7 @@ const Game = ({ ...props }) => {
 	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
 	return (
-		<div className="flex">
+		<div className="flex flex-grow justify-center">
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center">
@@ -33,9 +33,9 @@ const Game = ({ ...props }) => {
 							socket={socket}
 							data={data}
 						/>
-						<div className="flex flex-row justify-evenly mb-2 mx-[20vw]">
-							<div className="flex">{opponnentUsername}</div>
-							<div className="flex">{userName}</div>
+						<div className="flex flex-row justify-evenly mb-2 mx-[18vw]">
+							<div className="flex ">{opponnentUsername}</div>
+							<div className="flex text-[2.2vw] text-mauve">{userName}</div>
 						</div>
 						<Canvas
 							move={move}
