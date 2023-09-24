@@ -9,6 +9,7 @@ import useGame from "../hooks/useGame";
 import InGameContext from "../context/inGameContext";
 import themeContext from "../components/theme/themeContext";
 import useFriends from "@/hooks/useFriends";
+import { delay } from "../utils/delay";
 
 export default function Home() {
 	const { login, userId } = useAuthContext();
@@ -20,18 +21,7 @@ export default function Home() {
 	const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
 	const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
 	// const [loading, setLoading] = useState<boolean>(true);
-	const [pSpace, setPSpace] = useState<number>(-15);
-
-	if (typeof window !== "undefined") {
-		window.addEventListener('resize', () => {
-			setFontSize(Math.max(window.innerWidth / 8.5, 80));
-			if (window.innerWidth < 1000)
-				setPSpace(-15);
-			else {
-				setPSpace(-35);
-			}
-		});
-	}
+	// const [pSpace, setPSpace] = useState<number>(-15);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -43,23 +33,19 @@ export default function Home() {
 		}
 	}, [theme]);
 
-	const handleResize = () => {
-		setFontSize(Math.max((window.innerWidth / 8.5), 80));
-		if (window.innerWidth < 1000)
-			setPSpace(-15);
-		else {
-			setPSpace(-35);
-		}
-	}
-
+	// const handleResize = async () => {
+	// 	if (window.innerWidth < 1000)
+	// 		setPSpace(-15);
+	// 	else {
+	// 		setPSpace(-35);
+	// 	}
+	// }
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
+		// handleResize();
 		login();
-		window.addEventListener('resize', handleResize);
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		}
+		// handleResize();
 	}, []);
 
 	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();
@@ -74,12 +60,12 @@ export default function Home() {
 					<div
 						className={`flex cyber pointer-events-none ` + colorText}
 						style={{
-							fontSize: fontSize + 'px',
+							fontSize: '13vw',
 							fontFamily: "Cy",
 							textShadow: `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}`,
 							userSelect: "none",
 						}}>
-						<span style={{ letterSpacing: pSpace + 'px' }}>P</span>ONG
+						<span style={{ letterSpacing: '-3vw' }}>P</span>ONG
 					</div>
 					<div className="basis-1/5" />
 					<div className="basis-3/6">

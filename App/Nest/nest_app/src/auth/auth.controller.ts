@@ -64,7 +64,7 @@ export class AuthController {
     }
 
     @Get('profile')
-    getProfile(@Req() req, @Res() res: Response) {
+    getProfile(@Req() req: any, @Res() res: Response) {
         if (this.authService.isTwoFactorAuthenticated(req)) {
             return res.send(req.user);
         }
