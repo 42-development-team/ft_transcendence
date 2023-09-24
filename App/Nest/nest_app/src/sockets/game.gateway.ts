@@ -91,11 +91,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorUsername: string = invitorUser.username;
             const invitedUserName: string = invitedUser.username;
             const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+        console.log("inviteQueue in invite", this.gameService.inviteQueue)
             invitedSocketIds.forEach(async invitedSocketId => {
                 const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
                 if (invitorId !== invitedId) {
                     console.log("handleInvite: invitedId !== invitorId")
-                    const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedId, invitedUserName, invitorSocket, modeEnabled);
+                    const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedIdNumber, invitedUserName, invitorSocket, modeEnabled);
                     if (!inviteCanBeDone) {
                         console.log("handleInvite: inviteCanBeDone is false")
                     }
@@ -118,7 +119,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invitor id (type number) and accept (boolean)
         const { invitorId, response } = body;
         const invitorIdNumber = Number(invitorId);
-        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
+        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
+        console.log("inviteQueue in respond", this.gameService.inviteQueue)
         invitorSocketIds.forEach(async invitorSocketId => {
             const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
             const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
@@ -139,8 +141,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // body awaits for the invited id (type number) and the mode game (boolean)
         const { invitedId }: { invitedId: number } = body;
         const invitedIdNumber = Number(invitedId);
+        const invitorIdNumber = Number(invitorId);
         if (invitorId !== invitedIdNumber)
-            await this.gameService.handleRemoveQueue(invitorId, invitedId);
+            await this.gameService.handleRemoveQueue(invitorIdNumber, invitedIdNumber);
         const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
         invitedSocketIds.forEach(async invitedSocketId => {
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
