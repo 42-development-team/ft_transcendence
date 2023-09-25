@@ -47,10 +47,15 @@ const Result = ({ ...props }) => {
 
     return (
         <div className="flex flex-col justify-evenly h-full w-full">
-            <div className="flex justify-center">
-                <Logo />
-
+            {result.won === true ? (
+            <div className="flex justify-center text-xl">
+                <Logo text="VICTORY" colorTextOverride="text-yellow"/>
             </div>
+            ) : (
+                <div className="flex justify-center text-xl">
+                    <Logo text="DEFEAT" colorTextOverride="text-maroon" />
+                </div>
+            )}
             <div className="flex flex-col ">
                 <DisplayResultData  user={user} opponent={opponent} />
                 <CustomBtn

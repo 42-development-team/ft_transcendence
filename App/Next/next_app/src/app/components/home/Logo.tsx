@@ -5,7 +5,7 @@ import themeContext from "../theme/themeContext";
 
 
 
-const Logo = ({ text = "Pong", shadowOverride = "" }: { text: string, shadowOverride?: string }) => {
+const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: string, shadowOverride?: string, colorTextOverride?: string }) => {
 
     const { theme } = useContext(themeContext);
     let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
@@ -24,14 +24,14 @@ const Logo = ({ text = "Pong", shadowOverride = "" }: { text: string, shadowOver
 
     return (
         <div
-            className={`flex cyber pointer-events-none ` + colorText}
+            className={`flex cyber pointer-events-none  ` + colorTextOverride !== "" ? colorTextOverride : colorText}
             style={{
                 fontSize: '13vw',
                 fontFamily: "Cy",
                 textShadow: shadowOverride === "" ? `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}` : shadowOverride,
                 userSelect: "none",
             }}>
-            {text ? (
+            {text === "" ? (
                 <div>
                     <span style={{ letterSpacing: '-3vw' }}>P</span>ONG
                 </div>
