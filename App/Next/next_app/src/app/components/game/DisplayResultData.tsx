@@ -5,7 +5,7 @@ import Avatar from "../profile/Avatar";
 
 export function DisplayResultData({ user, opponent }: { user: any, opponent: any }) {
     return (
-        <div className="flex flex-row justify-between items-center bg-base rounded-lg bg-opacity-80 backdrop-blur-sm text-xl sm:text-2xl md:text-3xl h-[30vw] sm:h-[27vw] md:h-[25vw] lg:h-[21vw] xl:h-[15vw] transition-all">
+        <div className="flex flex-row justify-between items-center bg-base rounded-lg bg-opacity-80 backdrop-blur-sm text-xl sm:text-2xl md:text-3xl h-[30vw] sm:h-[27vw] md:h-[25vw] lg:h-[21vw] xl:h-[15vw] mb-3 transition-all">
             <div className="flex">
                 {user ? (
                     <div className="flex flex-col text-center ml-[4vw] ">
