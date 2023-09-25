@@ -3,8 +3,10 @@ import React, {useState} from "react";
 import '../../globals.css'
 import isTwoFAValid from "./utils/isTwoFAValid";
 import Submit2FA from "./SubmitTwoFA";
+import {useRouter} from "next/navigation";
 
 const AuthTwoFA = ({userId}: {userId: string}) => {
+	const router = useRouter();
 	const [isActive, setIsActive] 		= useState<boolean>(false);
 	const [inputValue, setInputValue] 	= useState('');
 	const [isVisible, setIsVisible] 	= useState(false);
@@ -28,7 +30,7 @@ const AuthTwoFA = ({userId}: {userId: string}) => {
 		}
 		else {
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, {credentials: 'include'});
-			window.location.href = `${process.env.FRONT_URL}/home`;
+			router.push('/');
 			setIsActive(true);
 			setIsVisible(true);
 			setColorText('text-green-400');
