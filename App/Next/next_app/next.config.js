@@ -4,6 +4,7 @@ const nextConfig = {
 		FRONT_URL: process.env.NEXT_PUBLIC_URL_FRONT,
 		BACK_URL: process.env.NEXT_PUBLIC_URL_BACK,
 	},
+	reactStrictMode: false,
 	images: {
 		remotePatterns: [
 			{

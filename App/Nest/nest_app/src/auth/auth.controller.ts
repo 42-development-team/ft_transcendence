@@ -38,6 +38,7 @@ export class AuthController {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
                 httpOnly: true,
+                SameSite: 'None',
             }
             await this.authService.changeLoginBooleanStatus(req.user.sub);
             const jwt = await this.authService.getTokens(req.user, true);

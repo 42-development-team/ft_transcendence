@@ -31,7 +31,7 @@ export class UsersController {
 
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<CreateUserDto> {
-        this.logger.log(`gettin user with ID ${id}`);
+        // this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
 
