@@ -45,10 +45,10 @@ const Result = ({ ...props }) => {
         <div className="flex flex-col justify-evenly h-full w-full">
             <Logo />
             <div className="flex flex-col ">
-                <div className="flex flex-row justify-between bg-base rounded-lg opacity-90 backdrop-blur-sm">
+                <div className="flex flex-row justify-between bg-base rounded-lg bg-opacity-80 backdrop-blur-sm">
                     <div className="flex">
                         {user ? (
-                            <div className="flex flex-col text-center ml-[4vw]">
+                            <div className="flex flex-col text-center ml-[4vw] ">
                                 <Avatar
                                     width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
                                 />
