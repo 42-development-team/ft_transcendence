@@ -2,13 +2,14 @@
 
 import getUserNameById from "../utils/getUserNameById";
 import getAvatarById from "../utils/getAvatarById";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import CustomBtn from "../CustomBtn";
 import Logo from "../home/Logo";
 import { DisplayResultData } from "./DisplayResultData";
-import { useRouter } from "next/router";
+import {useRouter}  from "next/navigation";
 
 const Result = ({ ...props }) => {
+    const router = useRouter();
     const { result, setResult, joinQueue, setInGameContext, data } = props;
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
@@ -44,11 +45,10 @@ const Result = ({ ...props }) => {
     }
 
     const backHome = () => {
-        const Router = useRouter();
         setQueued(false);
         setResult(undefined);
         setInGameContext(false);
-        Router.push("/");
+        router.push("/");
     }
 
     return (
