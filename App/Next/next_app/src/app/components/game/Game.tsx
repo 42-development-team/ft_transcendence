@@ -9,6 +9,7 @@ import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 
 const Game = ({ ...props }) => {
 
+	const { socket, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [userName, setUserName] = useState<string>("");
 
@@ -29,8 +30,6 @@ const Game = ({ ...props }) => {
 				setOpponnentUsername(userName);
 			});
 	}, [props.data ? props.data.player1 : props.data]);
-
-	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
 	return (
 		<div className="flex flex-grow justify-center">
@@ -58,15 +57,15 @@ const Game = ({ ...props }) => {
 						/>
 					</div>
 				) : (
-					<div className="flex flex-col items-center justify-evenly">
-						<Logo />
+					<div className="flex flex-col justify-center w-[70%]">
 						<Result
 							result={result}
 							setResult={setResult}
 							joinQueue={joinQueue}
 							setInGameContext={setInGameContext}
+							data={data}
 						/>
-						<div className="basis-1/9"></div>
+						<div className="basis-2/11"></div>
 					</div>
 				))
 			}
