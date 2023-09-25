@@ -31,10 +31,14 @@ const TwoFA = ({ userId }: { userId: string }) => {
     const fetchData = async () => {
       const data = await isTwoFAActive(userId);
 
-      setActivTwoFA(data);
-      setDisableBtnActivated(data);
-      setEnableBtnActivated(!data);
+	  if (!displayBox) {
+
+		  setActivTwoFA(data);
+		  setDisableBtnActivated(data);
+		  setEnableBtnActivated(!data);
+	  }
     }
+	console.log("enableBtnActivated", enableBtnActivated);
     fetchData().catch(console.error);
   }, [userId, isVisible]);
 

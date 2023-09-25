@@ -6,7 +6,7 @@ const CustomBtn = (
             color="bg-mauve", 
             disable=false,
             anim=true,
-            width="w-full"
+            width=""
         } 
             : 
         {
