@@ -8,21 +8,9 @@ import CustomBtn from "../CustomBtn";
 
 
 const Result = ({...props}) => {
-    const { result, setResult, joinQueue, setInGameContext} = props;
+    const { result, setResult, joinQueue, setInGameContext, user} = props;
 
-    const [user, setUser] = useState<{id: string, userName: string, avatar: string}>();
     const [queued, setQueued] = useState<boolean>(false);
-
-    useEffect(() => {
-        const getUser = async (id: string) => {
-            const avatar = await getAvatarById(id);
-            const userName = await getUserNameById(id);
-
-            setUser({ id, userName, avatar });
-        };
-        
-        getUser(result.id);
-    }, [result.id]);
 
     const matchmaking = async () => {
 		setQueued(true);
