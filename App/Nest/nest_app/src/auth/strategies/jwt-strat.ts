@@ -5,6 +5,7 @@ import { Strategy } from 'passport-jwt';
 
 const cookieExtractor = (req: { cookies: { [x: string]: any; }; }) => {
     let jwt = null 
+
     if (req && req.cookies) {
         jwt = req.cookies['jwt'];
     }

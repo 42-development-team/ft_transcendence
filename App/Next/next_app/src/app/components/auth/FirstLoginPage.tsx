@@ -88,6 +88,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				});
 			}
 			setMessage("Avatar/username successfully updated");
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
 			redirectToHome();
 		} catch (error) {
 			console.log("Error during avatar upload or username update:", error);

@@ -26,7 +26,7 @@ export class AuthService {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
                 httpOnly: true,
-                SameSite: 'none',
+                SameSite: 'None',
             }
 
             if (userDB.isFirstLogin) {
