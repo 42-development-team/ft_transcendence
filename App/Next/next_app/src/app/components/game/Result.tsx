@@ -6,7 +6,7 @@ import { use, useEffect, useState } from "react";
 import CustomBtn from "../CustomBtn";
 import Logo from "../home/Logo";
 import { DisplayResultData } from "./DisplayResultData";
-import {useRouter}  from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Result = ({ ...props }) => {
     const router = useRouter();
@@ -54,35 +54,40 @@ const Result = ({ ...props }) => {
     return (
         <div className="flex flex-col justify-evenly h-full w-full">
             {result.won === true ? (
-            <div className="flex justify-center text-xl">
-                <Logo text="victory" colorTextOverride="text-peach"/>
-            </div>
+                <div className="flex justify-center text-xl">
+                    <Logo text="victory" colorTextOverride="text-peach" />
+                </div>
             ) : (
                 <div className="flex justify-center text-xl">
                     <Logo text="defeat" colorTextOverride="text-red" />
                 </div>
             )}
             <div className="flex flex-col ">
-                <DisplayResultData  user={user} opponent={opponent} />
-                <CustomBtn
-                    anim={true}
-                    color={'bg-mauve'}
-                    id="Play Again Button"
-                    onClick={matchmaking}
-                    disable={false}
-                >
-                    Play Again
-                </CustomBtn>
-                <CustomBtn
-                    anim={true}
-                    color={'bg-red'}
-                    id="Play Again Button"
-                    onClick={backHome}
-                    disable={false}
-                >
-                    Play Again
-                </CustomBtn>
+                <DisplayResultData user={user} opponent={opponent} />
+                <div className="flex flex-col items-center">
+                    <CustomBtn
+                        anim={true}
+                        color={'bg-mauve'}
+                        id="Play Again Button"
+                        onClick={matchmaking}
+                        disable={false}
+                        width="w-[60%]"
+                    >
+                        Play Again
+                    </CustomBtn>
+                    <CustomBtn
+                        anim={true}
+                        color={'bg-red'}
+                        id="Play Again Button"
+                        onClick={backHome}
+                        disable={false}
+                        width="w-[35%]"
+                    >
+                        Home
+                    </CustomBtn>
+                </div>
             </div>
+
         </div>
     )
 
