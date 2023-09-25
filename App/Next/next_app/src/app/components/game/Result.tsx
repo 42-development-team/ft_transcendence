@@ -13,7 +13,6 @@ const Result = ({ ...props }) => {
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);
-    const Router = useRouter();
 
     useEffect(() => {
         if (!data || !data.player1) {
@@ -45,6 +44,7 @@ const Result = ({ ...props }) => {
     }
 
     const backHome = () => {
+        const Router = useRouter();
         setQueued(false);
         setResult(undefined);
         setInGameContext(false);
