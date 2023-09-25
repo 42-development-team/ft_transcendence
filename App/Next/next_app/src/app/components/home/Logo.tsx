@@ -14,11 +14,19 @@ const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: s
 
     useEffect(() => {
         if (theme === "latte") {
-            setColorText("text-[#e7a446]");
-            setNeonColor("#ea76cb");
+            if (colorTextOverride)
+                setColorText(colorTextOverride);
+            else {
+                setColorText("text-[#e7a446]");
+                setNeonColor("#ea76cb");
+            }
         } else {
-            setColorText("text-[#e7a446]");
-            setNeonColor("#cba6f9");
+            if (colorTextOverride)
+                setColorText(colorTextOverride);
+            else {
+                setColorText("text-[#e7a446]");
+                setNeonColor("#cba6f9");
+            }
         }
     }, [theme]);
 

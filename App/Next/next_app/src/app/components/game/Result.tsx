@@ -49,11 +49,11 @@ const Result = ({ ...props }) => {
         <div className="flex flex-col justify-evenly h-full w-full">
             {result.won === true ? (
             <div className="flex justify-center text-xl">
-                <Logo text="VICTORY" colorTextOverride="text-yellow"/>
+                <Logo text="victory" colorTextOverride="text-peach"/>
             </div>
             ) : (
                 <div className="flex justify-center text-xl">
-                    <Logo text="DEFEAT" colorTextOverride="text-maroon" />
+                    <Logo text="defeat" colorTextOverride="text-red" />
                 </div>
             )}
             <div className="flex flex-col ">
