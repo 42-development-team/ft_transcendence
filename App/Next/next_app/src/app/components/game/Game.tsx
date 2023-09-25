@@ -6,13 +6,11 @@ import Logo from "../home/Logo";
 import getUserNameById from "../utils/getUserNameById";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownActionSurrender } from "../dropdown/DropDownItem";
-import getAvatarById from "../utils/getAvatarById";
 
 const Game = ({ ...props }) => {
 
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
-	const [userName, setUserName] = useState<string>("");	
-	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
+	const [userName, setUserName] = useState<string>("");
 
 	useEffect(() => {
 		if (!props.data || !props.data.player1) {
@@ -31,24 +29,8 @@ const Game = ({ ...props }) => {
 				setOpponnentUsername(userName);
 			});
 	}, [props.data ? props.data.player1 : props.data]);
-	
-	const [user, setUser] = useState<{id: string, userName: string, avatar: string}>();
-    const [queued, setQueued] = useState<boolean>(false);
 
-    useEffect(() => {
-		if (result === undefined || result === null)
-			return ;
-        const getUser = async (id: string) => {
-            const avatar = await getAvatarById(id);
-            const userName = await getUserNameById(id);
-
-            setUser({ id, userName, avatar });
-        };
-        
-        getUser(result.id);
-    }, [result]);
-
-
+	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
 
 	return (
 		<div className="flex flex-grow justify-center">
@@ -77,13 +59,12 @@ const Game = ({ ...props }) => {
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-evenly">
-						{/* <Logo /> */}
+						<Logo />
 						<Result
 							result={result}
 							setResult={setResult}
 							joinQueue={joinQueue}
 							setInGameContext={setInGameContext}
-							user={user}
 						/>
 						<div className="basis-1/9"></div>
 					</div>
