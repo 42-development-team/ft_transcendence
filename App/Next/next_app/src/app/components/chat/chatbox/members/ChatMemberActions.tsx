@@ -10,6 +10,7 @@ import { Alert } from "@material-tailwind/react";
 import { ChannelMember } from "@/app/utils/models";
 import GameInviteContext from "@/app/context/GameInviteContext";
 import DropDownActionGame from "@/app/components/dropdown/DropDownActionGame";
+import { useRouter } from "next/navigation";
 
 type ChatMemberActionsProps = {
 	isCurrentUser: boolean
@@ -36,14 +37,18 @@ const ChatMemberActions = (
 		leaveChannel, sendDirectMessage, muteUser,
 		setAdmin, unsetAdmin, block, isBlocked, isFriend, isInvitedFriend, addAsFriend
 	}: ChatMemberActionsProps) => {
-
+		const Router = useRouter();
 	const onProfileClick = () => {
 		console.log("onProfileClick");
 		sessionStorage.setItem("userId", user.id);
 		if (sessionStorage.getItem("userId") === undefined)
 			setOpenAlert(true);
-		else
-			window.location.href = "/profile";
+		else {
+			if (window.location.pathname === "/profile")
+				window.location.href = "/profile";
+			else
+				Router.push("/profile");
+		}
 	}
 	const { inviteToPlay } = useContext(GameInviteContext);
 	const { isCurrentUserAdmin, isCurrentUserOwner } = useUserRole();
