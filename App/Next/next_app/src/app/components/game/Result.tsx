@@ -1,20 +1,19 @@
 "use client";
 
-import Avatar from "../profile/Avatar";
 import getUserNameById from "../utils/getUserNameById";
 import getAvatarById from "../utils/getAvatarById";
 import { useEffect, useState } from "react";
 import CustomBtn from "../CustomBtn";
 import Logo from "../home/Logo";
 import { DisplayResultData } from "./DisplayResultData";
-
+import { useRouter } from "next/router";
 
 const Result = ({ ...props }) => {
     const { result, setResult, joinQueue, setInGameContext, data } = props;
-
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);
+    const Router = useRouter();
 
     useEffect(() => {
         if (!data || !data.player1) {
@@ -45,6 +44,13 @@ const Result = ({ ...props }) => {
         setInGameContext(false);
     }
 
+    const backHome = () => {
+        setQueued(false);
+        setResult(undefined);
+        setInGameContext(false);
+        Router.push("/");
+    }
+
     return (
         <div className="flex flex-col justify-evenly h-full w-full">
             {result.won === true ? (
@@ -63,6 +69,15 @@ const Result = ({ ...props }) => {
                     color={'bg-mauve'}
                     id="Play Again Button"
                     onClick={matchmaking}
+                    disable={false}
+                >
+                    Play Again
+                </CustomBtn>
+                <CustomBtn
+                    anim={true}
+                    color={'bg-red'}
+                    id="Play Again Button"
+                    onClick={backHome}
                     disable={false}
                 >
                     Play Again

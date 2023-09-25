@@ -18,15 +18,15 @@ const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: s
                 setColorText(colorTextOverride);
             else {
                 setColorText("text-[#e7a446]");
-                setNeonColor("#ea76cb");
             }
+            setNeonColor("#ea76cb");
         } else {
             if (colorTextOverride)
                 setColorText(colorTextOverride);
             else {
                 setColorText("text-[#e7a446]");
-                setNeonColor("#cba6f9");
             }
+            setNeonColor("#cba6f9");
         }
     }, [theme]);
 
