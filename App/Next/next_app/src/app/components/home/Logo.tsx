@@ -13,6 +13,7 @@ const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: s
     const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
 
     useEffect(() => {
+        console.log(colorTextOverride)
         if (theme === "latte") {
             setColorText("text-[#e7a446]");
             setNeonColor("#ea76cb");
@@ -24,14 +25,14 @@ const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: s
 
     return (
         <div
-            className={`flex cyber pointer-events-none  ` + colorTextOverride !== "" ? colorTextOverride : colorText}
+            className={`flex cyber pointer-events-none  ` + !colorTextOverride ? colorText : colorTextOverride}
             style={{
                 fontSize: '13vw',
                 fontFamily: "Cy",
-                textShadow: shadowOverride === "" ? `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}` : shadowOverride,
+                textShadow: !shadowOverride ? `0 0 35px black ,4px 4px 10px black, 0 0 15px ${neonColor}, 0 0 20px ${neonColor}, 0 0 25px ${neonColor}, 0 0 30px ${neonColor}` : shadowOverride,
                 userSelect: "none",
             }}>
-            {text === "" ? (
+            {!text ? (
                 <div>
                     <span style={{ letterSpacing: '-3vw' }}>P</span>ONG
                 </div>
