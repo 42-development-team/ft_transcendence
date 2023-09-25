@@ -17,8 +17,11 @@ const Result = ({ ...props }) => {
     const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
-        const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.score : data.player2.score;
-        const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.score : data.player1.score;
+        if (!data || !data.player1) {
+            return;
+        }
+        const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.points : data.player2.points;
+        const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.points : data.player1.points;
         const getUser = async (id: string) => {
             const avatar = await getAvatarById(id);
             const userName = await getUserNameById(id);
