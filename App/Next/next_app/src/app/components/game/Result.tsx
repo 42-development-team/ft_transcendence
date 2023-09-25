@@ -43,7 +43,10 @@ const Result = ({ ...props }) => {
 
     return (
         <div className="flex flex-col justify-evenly h-full w-full">
-            <Logo />
+            <div className="flex justify-center">
+                <Logo />
+
+            </div>
             <div className="flex flex-col ">
                 <div className="flex flex-row justify-between bg-base rounded-lg bg-opacity-80 backdrop-blur-sm">
                     <div className="flex">
@@ -59,7 +62,7 @@ const Result = ({ ...props }) => {
                         )
                         }
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex flex-row items-center">
                         {user ? user.score : "Loading..."} - {opponent ? opponent.score : "Loading.."}
                     </div>
                     <div className="flex flex-row">
