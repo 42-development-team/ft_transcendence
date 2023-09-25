@@ -11,20 +11,22 @@ import Logo from "../home/Logo";
 const Result = ({ ...props }) => {
     const { result, setResult, joinQueue, setInGameContext, data } = props;
 
-    const [user, setUser] = useState<{ id: string, userName: string, avatar: string }>();
-    const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string }>();
+    const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
+    const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
+        const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.score : data.player2.score;
+        const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.score : data.player1.score;
         const getUser = async (id: string) => {
             const avatar = await getAvatarById(id);
             const userName = await getUserNameById(id);
-            setUser({ id, userName, avatar });
+            setUser({ id, userName, avatar, score: currUserScore });
         };
         const getOpponent = async (id: string) => {
             const avatar = await getAvatarById(id);
             const userName = await getUserNameById(id);
-            setOpponent({ id, userName, avatar });
+            setOpponent({ id, userName, avatar, score: opponentScore });
         };
 
         getUser(result.id);
@@ -40,19 +42,10 @@ const Result = ({ ...props }) => {
     }
 
     return (
-        <div className="flex flex-col justify-evenly">
+        <div className="flex flex-col justify-evenly h-full">
             <Logo />
-            <div className="flex">
-                <CustomBtn
-                    anim={true}
-                    color={'bg-mauve'}
-                    id="Play Again Button"
-                    onClick={matchmaking}
-                    disable={false}
-                >
-                    Play Again
-                </CustomBtn>
-                <div className="flex flex-row flex-evenly bg-base rounded-lg ">
+            <div className="flex flex-col">
+                <div className="flex flex-row justify-evenly bg-base rounded-lg ">
                     <div className="flex">
                         {user ? (
                             <div className="flex flex-row">
@@ -76,14 +69,23 @@ const Result = ({ ...props }) => {
                                     width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} disableImageResize={true} currId={opponent.id} isOnProfilePage={false}
                                 />
                                 {opponent.userName}
-                                </div>
+                            </div>
                         ) : (
                             <div className="flex w-16 h-16 bg-crust rounded-full animate-pulse">Loading..</div>
                         )
                         }
                     </div>
-                </div>
             </div>
+            <CustomBtn
+                anim={true}
+                color={'bg-mauve'}
+                id="Play Again Button"
+                onClick={matchmaking}
+                disable={false}
+            >
+                Play Again
+            </CustomBtn>
+                </div>
         </div>
     )
 

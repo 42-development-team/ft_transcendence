@@ -57,7 +57,7 @@ const Game = ({ ...props }) => {
 						/>
 					</div>
 				) : (
-					<div className="flex flex-col items-center justify-evenly">
+					<div className="flex flex-col h-full justify-center">
 						{/* <Logo /> */}
 						<Result
 							result={result}
