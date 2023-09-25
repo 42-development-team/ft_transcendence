@@ -42,13 +42,13 @@ const Result = ({ ...props }) => {
     }
 
     return (
-        <div className="flex flex-col justify-evenly h-full">
+        <div className="flex flex-col justify-evenly h-full w-full">
             <Logo />
-            <div className="flex flex-col">
-                <div className="flex flex-row justify-evenly bg-base rounded-lg ">
+            <div className="flex flex-col ">
+                <div className="flex flex-row justify-between bg-base rounded-lg opacity-90 backdrop-blur-sm">
                     <div className="flex">
                         {user ? (
-                            <div className="flex flex-col text-center">
+                            <div className="flex flex-col text-center ml-[4vw]">
                                 <Avatar
                                     width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
                                 />
@@ -64,7 +64,7 @@ const Result = ({ ...props }) => {
                     </div>
                     <div className="flex flex-row">
                         {opponent ? (
-                            <div className="flex flex-col text-center">
+                            <div className="flex flex-col text-center mr-[4vw]">
                                 <Avatar
                                     width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} disableImageResize={true} currId={opponent.id} isOnProfilePage={false}
                                 />
