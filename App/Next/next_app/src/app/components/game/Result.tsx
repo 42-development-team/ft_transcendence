@@ -48,7 +48,7 @@ const Result = ({ ...props }) => {
                 <div className="flex flex-row justify-evenly bg-base rounded-lg ">
                     <div className="flex">
                         {user ? (
-                            <div className="flex flex-row">
+                            <div className="flex flex-col text-center">
                                 <Avatar
                                     width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
                                 />
@@ -59,12 +59,12 @@ const Result = ({ ...props }) => {
                         )
                         }
                     </div>
-                    <div className="flex">
-                        -
+                    <div className="flex items-center">
+                        {user ? user.score : "Loading..."} - {opponent ? opponent.score : "Loading.."}
                     </div>
                     <div className="flex flex-row">
                         {opponent ? (
-                            <div className="flex flex-row">
+                            <div className="flex flex-col text-center">
                                 <Avatar
                                     width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} disableImageResize={true} currId={opponent.id} isOnProfilePage={false}
                                 />
@@ -75,17 +75,17 @@ const Result = ({ ...props }) => {
                         )
                         }
                     </div>
-            </div>
-            <CustomBtn
-                anim={true}
-                color={'bg-mauve'}
-                id="Play Again Button"
-                onClick={matchmaking}
-                disable={false}
-            >
-                Play Again
-            </CustomBtn>
                 </div>
+                <CustomBtn
+                    anim={true}
+                    color={'bg-mauve'}
+                    id="Play Again Button"
+                    onClick={matchmaking}
+                    disable={false}
+                >
+                    Play Again
+                </CustomBtn>
+            </div>
         </div>
     )
 
