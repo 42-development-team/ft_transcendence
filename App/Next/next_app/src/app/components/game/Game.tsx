@@ -58,7 +58,6 @@ const Game = ({ ...props }) => {
 					</div>
 				) : (
 					<div className="flex flex-col justify-center w-[70%]">
-						{/* <Logo /> */}
 						<Result
 							result={result}
 							setResult={setResult}
@@ -66,7 +65,7 @@ const Game = ({ ...props }) => {
 							setInGameContext={setInGameContext}
 							data={data}
 						/>
-						<div className="basis-1/9"></div>
+						<div className="basis-2/11"></div>
 					</div>
 				))
 			}
