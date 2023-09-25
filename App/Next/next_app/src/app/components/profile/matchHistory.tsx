@@ -1,11 +1,8 @@
-"use client";
-
+'use client';
 import { useContext, useEffect, useState } from "react";
 import ThemeContext from "../theme/themeContext";
-import { useRouter } from "next/navigation";
 
 const matchHistory = ( props: { data: any, currentUserId: number } ) => {
-    const router = useRouter();
     const data = Array.isArray(props.data) ? props.data : [];
     const currentUserId = props.currentUserId;
     const [ openAlert, setOpenAlert ] = useState(false);
@@ -31,7 +28,7 @@ const matchHistory = ( props: { data: any, currentUserId: number } ) => {
         if (sessionStorage.getItem("userId") === undefined)
             setOpenAlert(true);
         else
-            router.refresh();
+            window.location.href = "/profile";
     }
 
     return (
