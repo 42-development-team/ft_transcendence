@@ -70,7 +70,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     invitorSocket?.emit('inviteCanceled', { invitorId });
                 });
             }
-            await this.gameService.handleRemoveQueue(invitorId, invitedId);
+           await this.gameService.handleRemoveQueue(invitorId, invitedId);
         }
     }
         

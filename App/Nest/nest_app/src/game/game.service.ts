@@ -1,7 +1,7 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateGameDto } from "./dto/update-game.dto";
 import { JoinGameDto } from "./dto/join-game.dto";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
 import { GetGameDto } from "./dto/get-game.dto";
@@ -9,6 +9,7 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
+import { SegInterface } from "./interface/game.interfaces";
 import { Socket } from "socket.io";
 
 
@@ -435,30 +436,30 @@ export class GameService {
     //================== GAME PLAY ====================//
     //=================================================//
     /* GamePlay Player */
-    async incrPoints(idx: number, player: number) {
+    incrPoints(idx: number, player: number) {
         if (player === 1)
             this.gameRooms[idx].data.player1.points++;
         else
             this.gameRooms[idx].data.player2.points++;
     }
 
-    async setVelocity(val: number, player: PlayerDto) {
+    setVelocity(val: number, player: PlayerDto) {
         player.velocity = val;
     }
 
-    async killVelocity(player: PlayerDto) {
+    killVelocity(player: PlayerDto) {
         player.velocity = 0;
     }
 
-    async setVelocitx(val: number, player: PlayerDto) {
+    setVelocitx(val: number, player: PlayerDto) {
         player.velocitx = val;
     }
 
-    async killVelocitx(player: PlayerDto) {
+    killVelocitx(player: PlayerDto) {
         player.velocitx = 0;
     }
 
-    async movePlayerMode(player: PlayerDto) {
+    movePlayerMode(ball: BallDto, player: PlayerDto) {
         const valy: number = player.y + player.velocity;
         const valx: number = player.x + player.velocitx;
 
@@ -475,7 +476,7 @@ export class GameService {
             this.killVelocitx(player);
     }
 
-    async movePlayer(player: PlayerDto) {
+    movePlayer(player: PlayerDto) {
         const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
             if (val + player.h / 2 < 0.99)
@@ -487,10 +488,11 @@ export class GameService {
         }
     }
 
-    async calculatePlayer(idx: number, mode: boolean) {
+    calculatePlayer(idx: number, mode: boolean) {
         if (mode) {
-            this.movePlayerMode(this.gameRooms[idx].data.player1);
-            this.movePlayerMode(this.gameRooms[idx].data.player2);
+            const ball = this.gameRooms[idx].data.ball;
+            this.movePlayerMode(ball, this.gameRooms[idx].data.player1);
+            this.movePlayerMode(ball, this.gameRooms[idx].data.player2);
         }
         else {
             this.movePlayer(this.gameRooms[idx].data.player1);
@@ -500,53 +502,73 @@ export class GameService {
 
     /* GamePlay Ball */
     //========== BOUNCES =============//
-    async bounce(idx: number, ball: BallDto) {
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
-        this.borderBounce(ball);
-        this.paddleBounce(ball, player1, player2);
-        this.score(idx);
-    };
-
-    //>>BORDER<<//
-    async borderBounce(ball: BallDto) {
+    // >>BORDER<< //
+    borderBounce(ball: BallDto) {
         if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
             ball.speed[1] *= -1;
     }
 
     //>>PADDLE<//
-    async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-        this.playerCollision(ball, player1);
-        this.playerCollision(ball, player2);
+    lerp (A: number, B: number, t: number): number {
+        return (A + (B - A) * t);
     }
 
-    checkCollision(ball: BallDto, player: PlayerDto): boolean {
-        const dy: number = Math.abs(ball.y - player.y);
+    segmentColliding(ball: BallDto, player: PlayerDto, r: number): boolean {
+        interface Point {
+            x: number,
+            y: number,
+        };
 
-        if (dy <= player.h / 2)
-            return true;
-        else if ((player.y + player.h / 2) > 1) {
-            if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
-                return true;
-        }
-        else if (player.y - player.h / 2 < 0) {
-            if (ball.y + ball.r >= (1 - (player.h / 2 - player.y)))
-                return true;
+        // ball is [AB]
+        // player is [CD]
+        const A: Point = {x: ball.x, y: ball.y};
+        const B: Point = {x: ball.x + ball.speed[0] / 100, y: ball.y + ball.speed[1] / 100};
+        const C: Point = {x: player.x, y: player.y - player.h / 2}
+        const D: Point = {x: player.x, y: player.y + player.h / 2}
+
+        const top = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
+        const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
+        
+        if (bottom !== 0) {
+            const t: number = top / bottom;
+            if (t >= 0 && t <= 1) {
+                const x: number = this.lerp(A.x, B.x, t);
+                const y: number = this.lerp(A.y, B.y, t);
+                ball.x = x + 0.7 * r;
+                ball.y = y;
+                return true ;
+            }
         }
         return false;
     }
 
-    async playerCollision(ball: BallDto, player: PlayerDto) {
+    checkCollision(ball: BallDto, player: PlayerDto, r: number): boolean {
+        const dy: number = Math.abs(ball.y - player.y);
+        const col: boolean = this.segmentColliding(ball, player, r);
 
-        let dx: number;
-        // if ( o | )
-        if (ball.x < player.x)
-            dx = Math.abs(player.x - player.w - ball.x + ball.r);
-        // else ( | o )
-        else
-            dx = Math.abs(ball.x - ball.r - player.x + player.w);
+        if (col === true) {
+            if (dy <= player.h / 2) {
+                return true;
+            }
+            else if ((player.y + player.h / 2) > 1){
+                if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y))) {
+                    return true;
+                }
+            }
+            else if (player.y - player.h / 2 < 0) {
+                if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y))) {
+                    return true;
+                }
+            }
+        }
 
-        if (dx <= (ball.r + player.w) && this.checkCollision(ball, player) === true) {
+        return false;
+    }
+    
+    playerCollision(ball: BallDto, player: PlayerDto, r: number) {
+
+        const checkCol: boolean = this.checkCollision(ball, player, r);
+        if (checkCol === true) {
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
 
@@ -564,7 +586,7 @@ export class GameService {
     }
 
     //========== SCORE =============//
-    async score(idx: number) {
+    score(idx: number) {
         if (this.gameRooms[idx].data.ball.x <= 0) {
             this.incrPoints(idx, 2);
             this.reset(idx);
@@ -576,7 +598,7 @@ export class GameService {
     }
 
     //========== RESET BALL =============//
-    async reset(idx: number) {
+    reset(idx: number) {
         this.gameRooms[idx].data.ball.x = 0.5;
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
@@ -592,7 +614,7 @@ export class GameService {
 
     //========== MOVEMENT =============//
     //>>ACCELERATION<<//
-    async incrementSpeed(ball: BallDto) {
+    incrementSpeed(ball: BallDto) {
         ball.incr++;
         if (ball.incr === 10) {
             ball.speed[0] += 0.01 * ball.speed[0];
@@ -601,16 +623,22 @@ export class GameService {
     }
 
     //>>UPDATE POSITION<<//
-    async updateBall(ball: BallDto) {
-        ball.x += ball.speed[0] / 100;
+    updateBall(ball: BallDto) {
+        ball.x += ball.speed[0] / 100 ;
         ball.y += ball.speed[1] / 100;
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(idx: number) {
+    calculateBall(idx: number) {
         const ball = this.gameRooms[idx].data.ball;
-        this.bounce(idx, ball);
+        const player1 = this.gameRooms[idx].data.player1;
+        const player2 = this.gameRooms[idx].data.player2;
+
+        this.borderBounce(ball);
+        this.playerCollision(ball, player1, ball.r);
+        this.playerCollision(ball, player2, -ball.r);
         this.updateBall(ball);
+        this.score(idx);
         this.incrementSpeed(ball);
     };
 
@@ -620,13 +648,13 @@ export class GameService {
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
             this.gameRooms[idx].data.end = true;
+    
+    return { ...this.gameRooms[idx].data };
+}
 
-        return { ...this.gameRooms[idx].data };
-    }
-
-    //=================================================//
-    //================== INIT GAME ==================//
-    //=================================================//
+//=================================================//
+//================== INIT GAME ====================//
+//=================================================//
     async setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
         const id: number = this.gameRooms.length;
         const roomName: string = player1Id + "_" + player2Id;
