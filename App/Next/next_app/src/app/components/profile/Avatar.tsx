@@ -128,14 +128,14 @@ const Avatar = (
 					</div>
 				}
 			</div>
-			<div className={`${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"}`}>
+			<div className={``}>
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
 					<div className="flex justify-center">
 						{/* Display uploaded avatar image temporary stored in URL*/}
 						<Image
 							src={imageUrlGetFromCloudinary as string || imageUrl as string}
 							alt="Selected Avatar"
-							className={` ${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"}   drop-shadow-xl rounded-full`} 
+							className={` ${!disableImageResize && "transition-all duration-900 w-auto h-auto"}   drop-shadow-xl rounded-full`} 
 							width={width}
 							height={height}
 							/>
@@ -146,7 +146,7 @@ const Avatar = (
 						<Image
 							src="https://img.freepik.com/free-icon/user_318-563642.jpg"
 							alt="Default Avatar"
-							className={`${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"} drop-shadow-xl rounded-full`} 
+							className={`${!disableImageResize && "transition-all duration-900 h-auto w-auto "} drop-shadow-xl rounded-full`} 
 							width={width}
 							height={height}
 							/>
