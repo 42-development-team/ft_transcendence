@@ -33,26 +33,41 @@ export class UsersService {
     /* R(ead) */
 
     async getAllUsers(): Promise<CreateUserDto[]> {
-        const users = await this.prisma.user.findMany({
-            orderBy: { id: 'asc' },
-        });
-        const userlistDto = users.map(user => plainToClass(CreateUserDto, user)); // transforming each user object into a DTO object
-        return userlistDto;
+        try {
+            const users = await this.prisma.user.findMany({
+                orderBy: { id: 'asc' },
+            });
+            const userlistDto = users.map(user => plainToClass(CreateUserDto, user)); // transforming each user object into a DTO object
+            return userlistDto;
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
 
     async getUserFromId(id: number): Promise<CreateUserDto> {
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where: { id: id },
-        });
-        const userDto = plainToClass(CreateUserDto, user);
-        return userDto;
+        try {
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            const userDto = plainToClass(CreateUserDto, user);
+            return userDto;
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
 
     async getSocketIdsFromUserId(id: number): Promise<string[]> {
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where: { id: id },
-        });
-        return user.socketIds;
+        try {
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            return user.socketIds;
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
 
     async getUserIdFromSocket(socket: Socket){
@@ -83,13 +98,18 @@ export class UsersService {
     }
 
 	async getIdFromLogin(login: string): Promise < number | null > {
-		const user = await this.prisma.user.findFirst({
-			where: { login: login },
-		});
-		if(user) {
-			return user.id;
-		}
-        return null;
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: { login: login },
+            });
+            if(user) {
+                return user.id;
+            }
+            return null;
+        }
+        catch (e) {
+            console.log(e);
+        }
 	}
 
     async getUserFromLogin(login: string): Promise<CreateUserDto> {
