@@ -38,6 +38,9 @@ const Result = ({ ...props }) => {
     }, [result.id, data.player1.id]);
 
     const matchmaking = async () => {
+        if (data) {
+            console.log(data);
+        }
         setQueued(true);
         await joinQueue();
         setResult(undefined);

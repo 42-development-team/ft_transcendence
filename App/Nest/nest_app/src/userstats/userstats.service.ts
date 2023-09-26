@@ -148,7 +148,7 @@ export class UserStatsService {
 						increment: isWinner ? 0 : 1,
 					},
 					totalScore: newElo,
-					ratio: Number(((user.userStats.win + win) / (user.userStats.played + 1)).toFixed(1)),
+					ratio: Number(((user.userStats.win + win) / (user.userStats.played + 1)).toFixed(2)),
 					played: {
 						increment: 1,
 					}
