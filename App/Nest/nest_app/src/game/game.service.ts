@@ -156,17 +156,15 @@ export class GameService {
 
     async queueAlreadyExists(invitorId: number, invitedId: number): Promise<boolean> {
         const idx: number = this.inviteQueue.findIndex(q => (q.invitorId === invitorId && q.invitedId === invitedId) || (q.invitorId === invitedId && q.invitedId === invitorId));
-
         if (idx === -1)
             return false;
         return true;
     }
 
-    async handleInvite(invitorId: number, invitedId: number, mode: boolean): Promise<number> {
+    async addInviteQueue(invitorId: number, invitedId: number, mode: boolean) {
         // const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         // const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId && q.invitedId === invitorId);
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
-        return 1;
     }
 
     async handleRemoveInviteQueue(invitorId: number, invitedId: number) {

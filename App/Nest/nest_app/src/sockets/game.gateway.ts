@@ -107,7 +107,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
                         return ;
                     }
-
                     if (await this.gameService.queueAlreadyExists(invitorId, invitedId) === true) { // this exact queue alrady exist
                         console.log("error: this exact queue already exist");
                         return ;
@@ -122,7 +121,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                             invitorSocketToNotify?.emit('inviteDeclined');
                         });
                     }
-                    await this.gameService.handleInvite(invitorId, invitedIdNumber, modeEnabled);
+                    await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
                     invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
                     invitorSocket?.emit('inviteSent', { invitedUsername });
                 }
