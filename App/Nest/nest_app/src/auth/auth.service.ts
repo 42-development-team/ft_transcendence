@@ -43,6 +43,7 @@ export class AuthService {
                 jwt = await this.getTokens(userDB, true);
                 res.status(200)
                     .cookie("jwt", jwt.access_token, cookieOptions)
+                    .cookie("rt", jwt.refresh_token, cookieOptions)
                     .redirect(`${frontUrl}/home/`);
             }
         } catch (error) {
@@ -65,6 +66,7 @@ export class AuthService {
     }
 
     async logout(res: Response): Promise<void> {
+        res.clearCookie('rt');
         res.clearCookie('jwt');
         return;
     }
@@ -106,22 +108,22 @@ export class AuthService {
         }
     }
 
-    // async verifyRefreshToken(req: any, res: Response): Promise<any> {
-    //     try {
-    //         // Get the refresh token
-    //         const token = this.extractCookieByName(req, 'rt');
-    //         if (!token) {
-    //             throw new UnauthorizedException('Refresh token not found');
-    //         }
+    async verifyRefreshToken(req: any, res: Response): Promise<any> {
+        try {
+            // Get the refresh token
+            const token = this.extractCookieByName(req, 'rt');
+            if (!token) {
+                throw new UnauthorizedException('Refresh token not found');
+            }
 
-    //         const secret = this.configService.get<string>('jwtRefreshSecret');
-    //         const payload = await this.jwtService.verifyAsync(token, { secret });
-    //         return payload; // Return the payload if the token is verified
-    //     } catch (error) {
-    //         console.log("Verify Refresh Token Error:", error.message);
-    //         throw new UnauthorizedException('Invalid refresh token');
-    //     }
-    // }
+            const secret = this.configService.get<string>('jwtRefreshSecret');
+            const payload = await this.jwtService.verifyAsync(token, { secret });
+            return payload; // Return the payload if the token is verified
+        } catch (error) {
+            console.log("Verify Refresh Token Error:", error.message);
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+    }
 
     extractCookieByName(req: any, cookieName: string): string {
         let value: string | null = null;
