@@ -5,6 +5,7 @@ import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
 import IsInGameContext from "../context/inGameContext";
+import { on } from "events";
 
 export default function useGame() {
 
@@ -18,7 +19,7 @@ export default function useGame() {
 
 	useEffect(() => {
 		socket?.emit('isInGame', userId)
-	}, [socket]);
+	}, [socket?.connected]);
 	
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
@@ -28,6 +29,7 @@ export default function useGame() {
 		socket?.on('matchIsReady', (body: any) => {
 			setInGame(true);
 			setData(body);
+			setMode(body.mode);
 			setGameLoading(false);
 			setInGameContext(true);
 		});

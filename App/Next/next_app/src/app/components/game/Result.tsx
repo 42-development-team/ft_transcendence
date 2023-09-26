@@ -43,9 +43,9 @@ const Result = ({ ...props }) => {
             setMode(data.mode);
         }
         setQueued(true);
-        await joinQueue();
-        setResult(undefined);
         setInGameContext(false);
+        setResult(undefined);
+        await joinQueue();
     }
 
     const backHome = () => {
