@@ -89,8 +89,10 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('isAlreadyInGame', (body: any) => {
-			const { invitedUsername } = body;
+			const { invitedUsername, sidePanelPopUp } = body;
 			closePanel(true);
+			if (!sidePanelPopUp)
+				return ;
 			openSent();
 			setMessage( invitedUsername + " is already in game");
 			setTimeoutId(setTimeout(() => {
@@ -175,6 +177,7 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			setInvitedId(invitedId);
+			console.log("invite to play with id: " + invitedId)
 			socket?.emit("invite", { invitedId,  modeEnabled });
 		}
 		catch (error) {
@@ -200,7 +203,7 @@ export default function GameInviteProvider({ children }: any) {
 	const cancelInvite = async (invitedId: string) => {
 		closePanel(true);
 		socket?.emit('cancelInvite', { invitedId });
-		console.log("cancelling invite");
+		console.log("cancelling invite wiht invitedId: " + invitedId);
 		return () => {
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 		}

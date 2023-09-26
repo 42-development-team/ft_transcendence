@@ -37,3 +37,12 @@ export const DropDownSeparator = () => {
         <div className="bg-surface1 h-[1px] rounded-sm m-1"></div>
     )
 }
+
+export const DropDownActionSurrender = ({children, onClick } : DropDownActionProps) => {
+    return (
+        <button onClick={onClick} id="dropdownAction"
+            className="text-left text-text w-full block px-4 py-2 text-sm hover:bg-red hover:font-[550] hover:text-mantle rounded-md">
+            {children}
+        </button>
+    )
+}

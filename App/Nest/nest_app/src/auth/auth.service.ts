@@ -26,6 +26,7 @@ export class AuthService {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
                 httpOnly: true,
+                SameSite: 'None',
             }
 
             if (userDB.isFirstLogin) {
@@ -64,7 +65,7 @@ export class AuthService {
     }
 
     async logout(res: Response): Promise<void> {
-        await res.clearCookie('jwt');
+        res.clearCookie('jwt');
         return;
     }
 

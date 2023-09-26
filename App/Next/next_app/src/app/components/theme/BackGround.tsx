@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import homeBackground from '../../../../public/background_11.png';
@@ -10,7 +11,6 @@ export const BackgroundBall = () => {
 
 	const { theme } = useContext(themeContext);
 	const [entered, setEntered] = useState<boolean>(false);
-	let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -23,7 +23,7 @@ export const BackgroundBall = () => {
 		<div >
 			<TransitionGroup>
 				<CSSTransition
-					key={typeof localStorage !== 'undefined' ? localStorage.getItem("theme") : ''}
+					key={localStorage.getItem("theme")}
 					in={entered}
 					appear={true}
 					timeout={900}

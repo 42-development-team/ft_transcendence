@@ -6,12 +6,15 @@ import { getStatusColor } from "@/app/utils/getStatusColor";
 import { clickOutsideHandler } from "@/app/hooks/clickOutsideHandler";
 import { useContext, useRef, useState } from "react";
 import GameInviteContext from "@/app/context/GameInviteContext";
+import DropDownActionGame from "../dropdown/DropDownActionGame";
+import { useRouter } from "next/navigation";
 
 type FriendProps = {
 	user: UserModel
 }
 
 const FriendActions = ({ user }: FriendProps) => {
+	const Router = useRouter();
 	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +23,14 @@ const FriendActions = ({ user }: FriendProps) => {
 	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 	const onProfileClick = () => {
 		sessionStorage.setItem("userId", user.id);
+		const currentRoute = window.location.pathname;
 		if (sessionStorage.getItem("userId") !== undefined)
-			window.location.href = "/profile";
+		{
+			if (currentRoute === "/profile")
+				window.location.href = "/profile";
+			else
+				Router.push("/profile");
+		}
 	}
 
 	const removeFriend = async () => {
@@ -41,12 +50,13 @@ const FriendActions = ({ user }: FriendProps) => {
 
 	return (
 		<div aria-orientation="vertical" >
-			<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>
-				Invite to play
-			</DropDownAction>
 			<DropDownAction onClick={() => handleAction(onProfileClick)}>
 				View profile
 			</DropDownAction>
+			<DropDownActionGame>
+				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, false))}>CLASSIC</DropDownAction>
+				<DropDownAction onClick={() => handleAction(() => inviteToPlay(user.id, true))}>MODE</DropDownAction>
+			</DropDownActionGame>
 			<DropDownActionRed onClick={() => handleAction(removeFriend)}>
 				Remove Friend
 			</DropDownActionRed>

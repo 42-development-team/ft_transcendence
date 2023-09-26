@@ -21,7 +21,7 @@ export class GameService {
         private userStatsService: UserStatsService,
     ) {
     }
-    
+
 
     gameRooms: GameRoomDto[] = [];
     queue: number[] = [];
@@ -33,12 +33,12 @@ export class GameService {
         try {
             const [winner, loser] = this.getGameWinnerLoser(data);
 
-        const createGameDto = {
-            winnerScore: winner.points,
-            loserScore: loser.points,
-            winnerId: winner.id,
-            loserId: loser.id,
-        }
+            const createGameDto = {
+                winnerScore: winner.points,
+                loserScore: loser.points,
+                winnerId: winner.id,
+                loserId: loser.id,
+            }
             const newGame = await this.prisma.game.create({
                 data: {
                     users: {
@@ -53,12 +53,12 @@ export class GameService {
                     loserScore: createGameDto.loserScore,
                 },
             });
-            
+
             await this.userStatsService.eloComputing(createGameDto.winnerId, createGameDto.loserId);
             return newGame;
-        }  catch (error) {
+        } catch (error) {
             console.log(error);
-            return ;
+            return;
         }
     }
 
@@ -181,65 +181,69 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(clients: readonly Socket [], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+    async handleInvite(clients: readonly Socket[], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+        console.log("invitorId:", invitorId, "invitedId:", invitedId, "invitedUsername:", invitedUsername)
         const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
         const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-        const inventedIsIngGame: boolean = await this.isInGame(invitedId);
-        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
+        const invitedIsInGame: boolean = await this.isInGame(invitedId);
+
+        if (invitedIsInGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
             if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
+                console.log("is already invited by someone else")
                 invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
             }
             else if (playersAreAlreadyInQueue !== -1) {
-                // Todo: what is this shitty condition?
+                console.log("is already in queue with me")
             }
-
             return false;
         }
         else if (invitorIsAlreadyInvited !== -1) {
+            console.log("is already invited me")
             const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
             const invitorIdToNotify = this.inviteQueue[idx].invitorId;
             const invitorSocketIdsToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            
             invitorSocketIdsToNotify.forEach(invitorSocketIdToNotify => {
                 const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
                 invitorSocketToNotify?.emit('inviteDeclined');
             });
-            this.inviteQueue.splice(idx, 1);
+            await this.handleRemoveQueue(invitorIdToNotify, invitorId);
         }
-        this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
+        console.log("handleInvite found a queue to add")
+        this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
         return true;
     }
 
     async handleRemoveQueue(invitorId: number, invitedId: number) {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         if (idx === -1) {
-            console.log("handleCancelInvite did not find a queue to cancel")
-            return ;
+            console.log("handleCancelInvite did not find a queue to remove")
+            return;
         }
-        console.log("handleCancelInvite found a queue to cancel")
+        console.log("handleCancelInvite found a queue to remove")
         this.inviteQueue.splice(idx, 1);
     }
 
-    async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+    async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId: number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
-        if (idx === -1)
-            return ;
-        console.log("2");
         if (!accept) {
-            this.inviteQueue.splice(idx, 1);
-            console.log("declined by ", invitorSocket.id)
+            console.log("declined by :", invitorSocket.id)
+            await this.handleRemoveQueue(invitorId, invitedId);
             invitorSocket?.emit('inviteDeclined');
-            return ;
+            return;
         }
-        console.log("3");
+        else if (idx === -1)
+            return;
+        console.log("2");
         if (await this.isInGame(invitorId))
-            return ;
-        console.log("4");
+        return;
+        console.log("3");
         if (await this.isInGame(invitedId))
-            return ;
-        console.log("5");
+        return;
+        console.log("4");
         invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }
@@ -273,7 +277,7 @@ export class GameService {
         }
     }
 
-    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[]}> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
@@ -298,7 +302,7 @@ export class GameService {
         return ({ newGameRoom, player1SocketIds, player2SocketIds });
     }
 
-    
+
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
         if (idx === -1) {
@@ -312,10 +316,10 @@ export class GameService {
         if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
             return this.gameRooms[idx];
     }
-    
+
     handleLeaveQueue(userId: number) {
         const modeidx = this.modeQueue.findIndex(user => user === userId);
-        
+
         if (modeidx !== -1)
             this.modeQueue.splice(modeidx, 1);
         else {
@@ -334,13 +338,13 @@ export class GameService {
         }
         const player1 = this.gameRooms[idx].data.player1;
         const player2 = this.gameRooms[idx].data.player2;
-        
+
         if (player1.id === userId) {
             if (event === "ArrowUp")
                 this.setVelocity(-0.01, player1);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player1);
-            
+
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.01, player1);
@@ -353,7 +357,7 @@ export class GameService {
                 this.setVelocity(-0.01, player2);
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player2);
-            
+
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player2);
@@ -420,9 +424,9 @@ export class GameService {
 
     async surrender(id: number, forfeiterId: number) {
         const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1 ) {
+        if (idx === -1) {
             console.log("Could not find game with id:", id);
-            return ;
+            return;
         }
         this.gameRooms[idx].data.forfeiterId = forfeiterId;
         this.gameRooms[idx].data.end = true;
@@ -567,7 +571,7 @@ export class GameService {
         if (checkCol === true) {
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
-            
+
             if (ball.x < player.x)
                 ball.speed[0] = -Math.abs(ball.speed[0]);
             else
@@ -715,7 +719,7 @@ export class GameService {
             ball: ball,
         }
 
-    
+
         return data;
     }
 
