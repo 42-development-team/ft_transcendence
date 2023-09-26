@@ -30,7 +30,7 @@ const Avatar = (
 		id = null,
 		width = 212,
 		height = 212,
-	}: AvatarProps ) => {
+	}: AvatarProps) => {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const { theme } = useContext(ThemeContext);
@@ -130,26 +130,38 @@ const Avatar = (
 			</div>
 			<div className={``}>
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
-					<div className="flex justify-center">
+					<div className="flex justify-center" >
+						<div style={{
+							backgroundImage: 'url(' + (imageUrlGetFromCloudinary as string || imageUrl as string) + ')',
+							backgroundPosition: 'center center',
+							backgroundSize: 'cover',
+							border: 'solid 0px' ,
+							borderRadius: height / 2 + 'px',
+							height: height + 'px',
+							width: height + 'px',
+						}}/>
+
 						{/* Display uploaded avatar image temporary stored in URL*/}
-						<Image
+						{/* <Image
 							src={imageUrlGetFromCloudinary as string || imageUrl as string}
 							alt="Selected Avatar"
 							className={` ${!disableImageResize && "transition-all duration-900 w-auto h-auto"}   drop-shadow-xl rounded-full`} 
 							width={width}
 							height={height}
-							/>
+							/> */}
 					</div>
 				) : (
 					<div className="flex justify-center">
 						{/* Display default avatar */}
-						<Image
-							src="https://img.freepik.com/free-icon/user_318-563642.jpg"
-							alt="Default Avatar"
-							className={`${!disableImageResize && "transition-all duration-900 h-auto w-auto "} drop-shadow-xl rounded-full`} 
-							width={width}
-							height={height}
-							/>
+												<div style={{
+							backgroundImage: 'url(https://img.freepik.com/free-icon/user_318-563642.jpg)',
+							backgroundPosition: 'center center',
+							backgroundSize: 'cover',
+							border: 'solid 0px' ,
+							borderRadius: height / 2 + 'px',
+							height: height + 'px',
+							width: height + 'px',
+						}}/>
 					</div>
 				)}
 				{!disableChooseAvatar &&
