@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { Public } from './public.routes';
 import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
+import { filterSensitiv } from 'src/utils/filterSensitiv';
 
 @Controller('auth')
 export class AuthController {
@@ -95,7 +96,7 @@ export class AuthController {
     async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
         try {
             const userId = Number(updateData.userId);
-            return await this.userService.updateUsername(userId, updateData.newUsername);
+            return filterSensitiv(await this.userService.updateUsername(userId, updateData.newUsername));
         } catch (error) {
             console.error('Error updating username:', error);
             throw error;
@@ -106,7 +107,7 @@ export class AuthController {
 	@Get('firstLogin/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
 		try {
-			return await this.userService.getUserFromId(Number(userId));
+			return filterSensitiv(await this.userService.getUserFromId(Number(userId)));
 		} catch (error) {
 			return error;
 		}

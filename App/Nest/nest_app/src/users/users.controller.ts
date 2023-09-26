@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { CreateUserDto, UpdateUsernameDto } from './dto';
 import { UsersService } from './users.service';
 import { Public } from '../auth/public.routes';
+import { filterSensitiv } from '../utils/filterSensitiv';
 
 @Controller('users')
 export class UsersController {
@@ -12,12 +13,13 @@ export class UsersController {
 
     /* C(reate) */
 
+    
     @Post()
     async create(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
         this.logger.log('Creating a new user');
         const newUser = await this.userService.createUser(createUserDto);
         this.logger.log(`Successfully created user with username ${createUserDto.username}` );
-        return newUser;
+        return filterSensitiv(newUser);
     }
 
     /* R(ead) */
@@ -32,7 +34,7 @@ export class UsersController {
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<CreateUserDto> {
         // this.logger.log(`gettin user with ID ${id}`);
-        return this.userService.getUserFromId(Number(id));
+        return filterSensitiv(await this.userService.getUserFromId(Number(id)));
     }
 
     @Get('/usernameExist/:username')
@@ -71,7 +73,7 @@ export class UsersController {
         this.logger.log(`Updating username for user with ID ${id}`);
         const { username } = updatedUsername;
         const updatedObject = await this.userService.updateUsername(id, username);
-        return updatedObject;
+        return filterSensitiv(updatedObject);
     }
 
     /* D(elete) */
