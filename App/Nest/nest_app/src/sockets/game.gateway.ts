@@ -96,7 +96,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             invitedSocketIds.forEach(async invitedSocketId => {
                 const invitedSocket: Socket = this.clients.find(c => c.id === invitedSocketId);
                 if (invitorId !== invitedId) {
-                    
                     if (await this.gameService.isInGame(invitorId) === true) { // invitor is in game
                         console.log("error: invitor is in a game")
                         invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
@@ -178,8 +177,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { invitorId }: { invitorId: number } = body;
         await this.gameService.handleRemoveInviteQueue(invitorId, invitedId);
     }
-
-
 
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket, mode: boolean) {
