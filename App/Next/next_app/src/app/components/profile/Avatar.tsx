@@ -128,16 +128,17 @@ const Avatar = (
 					</div>
 				}
 			</div>
-			<div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
+			<div className={`${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"}`}>
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
 					<div className="flex justify-center">
 						{/* Display uploaded avatar image temporary stored in URL*/}
 						<Image
 							src={imageUrlGetFromCloudinary as string || imageUrl as string}
 							alt="Selected Avatar"
+							className={` ${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"}   drop-shadow-xl rounded-full`} 
 							width={width}
 							height={height}
-							className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`} />
+							/>
 					</div>
 				) : (
 					<div className="flex justify-center">
@@ -145,9 +146,10 @@ const Avatar = (
 						<Image
 							src="https://img.freepik.com/free-icon/user_318-563642.jpg"
 							alt="Default Avatar"
+							className={`${!disableImageResize && "sm:transition-all duration-900 h-auto w-auto sm:h-[222px] sm:w-[auto] md:transition-all md:h-[232px] md:w-[auto] lg:transition-all lg:h-[240px] lg:w-[auto] xl:transition-all xl:h-[250px] xl:w-[auto]"} drop-shadow-xl rounded-full`} 
 							width={width}
 							height={height}
-							className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`} />
+							/>
 					</div>
 				)}
 				{!disableChooseAvatar &&
