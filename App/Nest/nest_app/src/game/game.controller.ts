@@ -35,25 +35,25 @@ export class GameController {
     }
 
     /* U(pdate) */
-    @Patch('update')
-    async updateGame(@Body() updateGameDto: UpdateGameDto) {
-        const game = await this.gameService.updateGame(updateGameDto);
-        this.logger.log(`Successfully updated game with ID ${game.id}`);
-        return game;
-    }
+    // @Patch('update')
+    // async updateGame(@Body() updateGameDto: UpdateGameDto) {
+    //     const game = await this.gameService.updateGame(updateGameDto);
+    //     this.logger.log(`Successfully updated game with ID ${game.id}`);
+    //     return game;
+    // }
 
-    @Patch('join')
-    async joinGame(@Body() joinGameDto: JoinGameDto) {
-        const game = await this.gameService.joinGame(joinGameDto);
-        this.logger.log(`Successfully updated game with ID ${game.id}`);
-        return game;
-    }
+    // @Patch('join')
+    // async joinGame(@Body() joinGameDto: JoinGameDto) {
+    //     const game = await this.gameService.joinGame(joinGameDto);
+    //     this.logger.log(`Successfully updated game with ID ${game.id}`);
+    //     return game;
+    // }
 
-    /* D(elete) */
-    @Delete('delete')
-    async deleteGame(@Body() deleteGameDto: DeleteGameDto) {
-        const gameDeleted = await this.gameService.deleteGame(deleteGameDto);
-        this.logger.log(`Successfully deleted game with ID ${deleteGameDto.gameId}`);
-        return gameDeleted;
-    }
+    // /* D(elete) */
+    // @Delete('delete')
+    // async deleteGame(@Body() deleteGameDto: DeleteGameDto) {
+    //     const gameDeleted = await this.gameService.deleteGame(deleteGameDto);
+    //     this.logger.log(`Successfully deleted game with ID ${deleteGameDto.gameId}`);
+    //     return gameDeleted;
+    // }
 }
