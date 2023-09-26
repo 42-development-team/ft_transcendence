@@ -374,7 +374,7 @@ export class GameService {
             if (event === "ArrowUp")
                 this.killVelocity(this.gameRooms[idx].data.player1);
             else if (event === "ArrowDown")
-            this.killVelocity(this.gameRooms[idx].data.player1);
+                this.killVelocity(this.gameRooms[idx].data.player1);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
                     this.killVelocitx(this.gameRooms[idx].data.player1);
@@ -384,7 +384,7 @@ export class GameService {
             if (event === "ArrowUp")
                 this.killVelocity(this.gameRooms[idx].data.player2);
             else if (event === "ArrowDown")
-            this.killVelocity(this.gameRooms[idx].data.player2);
+                this.killVelocity(this.gameRooms[idx].data.player2);
             if (this.gameRooms[idx].data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
                     this.killVelocitx(this.gameRooms[idx].data.player2);
@@ -439,19 +439,19 @@ export class GameService {
             this.gameRooms[idx].data.player2.points++;
     }
 
-    async setVelocity(val: number, player: PlayerDto) {
+    setVelocity(val: number, player: PlayerDto) {
         player.velocity = val;
     }
 
-    async killVelocity(player: PlayerDto) {
+    killVelocity(player: PlayerDto) {
         player.velocity = 0;
     }
 
-    async setVelocitx(val: number, player: PlayerDto) {
+    setVelocitx(val: number, player: PlayerDto) {
         player.velocitx = val;
     }
 
-    async killVelocitx(player: PlayerDto) {
+    killVelocitx(player: PlayerDto) {
         player.velocitx = 0;
     }
 
@@ -527,13 +527,11 @@ export class GameService {
         
         if (bottom !== 0) {
             const t: number = top / bottom;
-            console.log("t:", t);
             if (t >= 0 && t <= 1) {
                 const x: number = this.lerp(A.x, B.x, t);
                 const y: number = this.lerp(A.y, B.y, t);
                 ball.x = x + 0.7 * r;
                 ball.y = y;
-                console.log("TRUUUUE");
                 return true ;
             }
         }
@@ -543,34 +541,21 @@ export class GameService {
     checkCollision(ball: BallDto, player: PlayerDto, r: number): boolean {
         const dy: number = Math.abs(ball.y - player.y);
         const col: boolean = this.segmentColliding(ball, player, r);
-        // let dx: number;
 
-        // if (ball.x < player.x)
-        //     dx = Math.abs(player.x - player.w - ball.x + ball.r);
-        // else
-        //     dx = Math.abs(ball.x - ball.r - player.x + player.w);
-
-            console.log("====================================");
-            console.log(player.id, ":", player.points);
-        // if (dx <= (ball.r + player.w)) {
-            // console.log("CHECK DX");
         if (col === true) {
-                console.log("CHECK SEGMENT CROSS");
-                if (dy <= player.h / 2) {
-                    console.log("Col in Y");
+            if (dy <= player.h / 2) {
+                return true;
+            }
+            else if ((player.y + player.h / 2) > 1){
+                if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y))) {
                     return true;
                 }
-                else if ((player.y + player.h / 2) > 1){
-                    if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y))) {
-                        return true;
-                    }
+            }
+            else if (player.y - player.h / 2 < 0) {
+                if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y))) {
+                    return true;
                 }
-                else if (player.y - player.h / 2 < 0) {
-                    if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y))) {
-                        return true;
-                    }
-                }
-        // }
+            }
         }
 
         return false;
@@ -614,14 +599,13 @@ export class GameService {
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
 
-        // if (Math.random() < 0.5)
+        if (Math.random() < 0.5)
             sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
-        // if (Math.random() < 0.5)
-            // sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = 0; // to rm
-        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        if (Math.random() < 0.5)
+            sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -716,8 +700,7 @@ export class GameService {
             y: 0.5,
             r: 0.01,
             pi2: Math.PI * 2,
-            speed: [0.3, 0],
-            // speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
+            speed: [0.3, Math.random() * (0.8 - 0.2) + 0.2],
             incr: 0,
         }
 
