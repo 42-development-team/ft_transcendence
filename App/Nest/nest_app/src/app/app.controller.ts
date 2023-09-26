@@ -8,14 +8,4 @@ export class AppController {
     private readonly appService: AppService,
     private prisma: PrismaService,
   ) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-  
-  @Get('users')
-  getUsers(){
-    return this.prisma.user.findMany();
-  }
 }
