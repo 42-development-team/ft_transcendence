@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 const Result = ({ ...props }) => {
     const router = useRouter();
-    const { result, setResult, joinQueue, setInGameContext, data } = props;
+    const { result, setResult, joinQueue, setInGameContext, data, setMode } = props;
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);
@@ -38,10 +38,14 @@ const Result = ({ ...props }) => {
     }, [result.id, data.player1.id]);
 
     const matchmaking = async () => {
+        if (data) {
+            console.log(data);
+            setMode(data.mode);
+        }
         setQueued(true);
-        await joinQueue();
-        setResult(undefined);
         setInGameContext(false);
+        setResult(undefined);
+        await joinQueue();
     }
 
     const backHome = () => {
