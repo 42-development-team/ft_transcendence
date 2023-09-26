@@ -28,6 +28,7 @@ export default function useGame() {
 
 		socket?.on('matchIsReady', (body: any) => {
 			setInGame(true);
+			setResult(undefined);
 			setData(body);
 			setMode(body.mode);
 			setGameLoading(false);
