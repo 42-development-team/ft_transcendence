@@ -205,10 +205,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async joinGameRoom(player1SocketIds: string[], player2SocketIds: string[], room: GameRoomDto) {
-        console.log("JOIN GAME");
-        console.log("p1:", player1SocketIds);
-        console.log("p2:", player2SocketIds);
-        console.log("room:", room);
         player1SocketIds.forEach(async player1SocketId => {
             const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
             await player1Socket?.join(room.roomName);

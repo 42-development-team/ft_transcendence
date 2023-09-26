@@ -163,17 +163,14 @@ export class GameService {
     }
 
     async handleInvite(invitorId: number, invitedId: number, mode: boolean): Promise<number> {
-        const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => (q.invitorId === invitorId && q.invitedId === invitedId) || (q.invitorId === invitedId && q.invitedId === invitorId));
         // const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
         // const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId && q.invitedId === invitorId);
-
-        
-        console.log("handleInvite found a queue to add")
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
         return 1;
     }
 
     async handleRemoveInviteQueue(invitorId: number, invitedId: number) {
+        console.log("IN REMOVEINVITEQUEUE:", this.gameRooms);
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         if (idx === -1) {
             console.log("handleCancelInvite did not find a queue to remove")
@@ -243,8 +240,6 @@ export class GameService {
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
         const player1SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player1Id);
         const player2SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player2Id);
-        // add room to rooms list
-        this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
@@ -621,6 +616,7 @@ export class GameService {
             reconnect: false,
             data: this.setGameData(id, roomName, player1Id, player2Id, mode)
         }
+        this.gameRooms.push(newGameRoom);
         return newGameRoom;
     }
 
