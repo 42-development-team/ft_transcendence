@@ -24,12 +24,12 @@ export class UsersController {
 
     /* R(ead) */
 
-    @Get('/')
-    async getAllUsers(): Promise<CreateUserDto[]>{
-        this.logger.log('gettin all users');
-        const userListDto = await this.userService.getAllUsers();
-        return userListDto;
-    }
+    // @Get('/')
+    // async getAllUsers(): Promise<CreateUserDto[]>{
+    //     this.logger.log('gettin all users');
+    //     const userListDto = await this.userService.getAllUsers();
+    //     return userListDto;
+    // }
 
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<CreateUserDto> {
