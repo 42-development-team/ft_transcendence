@@ -22,3 +22,10 @@ export interface GameInterface {
 	player2: PlayerInterface,
 	ball: BallInterface,
 }
+
+export interface SegInterface {
+	x: number,
+	y: number,
+	x1: number,
+	y1: number,
+}
