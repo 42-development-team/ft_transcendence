@@ -1,6 +1,4 @@
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdateGameDto } from "./dto/update-game.dto";
-import { JoinGameDto } from "./dto/join-game.dto";
 import { Injectable } from "@nestjs/common";
 import { BallDto, GameDto, PlayerDto } from "./dto/game-data.dto";
 import { GameUserDto } from "./dto/game-user.dto";
@@ -478,10 +476,11 @@ export class GameService {
     }
 
     segmentColliding(ball: BallDto, player: PlayerDto, r: number): boolean {
+        
         interface Point {
             x: number,
             y: number,
-        };
+        }
 
         // ball is [AB]
         // player is [CD]
@@ -506,11 +505,9 @@ export class GameService {
         return false;
     }
 
-    checkCollision(ball: BallDto, player: PlayerDto, r: number): boolean {
+    checkCollisionY(ball: BallDto, player: PlayerDto): boolean {
         const dy: number = Math.abs(ball.y - player.y);
-        const col: boolean = this.segmentColliding(ball, player, r);
 
-        if (col === true) {
             if (dy <= player.h / 2) {
                 return true;
             }
@@ -524,9 +521,13 @@ export class GameService {
                     return true;
                 }
             }
-        }
-
         return false;
+    }
+
+    checkCollision(ball, player, r) {
+        if (this.checkCollisionY(ball, player) === true) {
+            return (this.segmentColliding(ball, player, r));
+        }
     }
     
     playerCollision(ball: BallDto, player: PlayerDto, r: number) {
