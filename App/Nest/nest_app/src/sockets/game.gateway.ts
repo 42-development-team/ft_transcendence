@@ -19,7 +19,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(
         private gameService: GameService,
         private userService: UsersService,
-    ) { }
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -111,7 +111,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         } catch (error) {
             console.log("error: ", error);
         }
-    } //TODO: handle cancel invite + handle multi invite ( multiple user invite the same )
+    }
 
     @SubscribeMessage('respondToInvite')
     async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {

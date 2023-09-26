@@ -9,7 +9,6 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
-import { SegInterface } from "./interface/game.interfaces";
 import { Socket } from "socket.io";
 
 
@@ -19,8 +18,7 @@ export class GameService {
         private prisma: PrismaService,
         private userService: UsersService,
         private userStatsService: UserStatsService,
-    ) {
-    }
+    ) {}
 
 
     gameRooms: GameRoomDto[] = [];
@@ -141,40 +139,6 @@ export class GameService {
             }
         }
         return false;
-    }
-
-    /* U(pdate) */
-    //TODO: now useless, remove when game finished
-    async updateGame(updateGameDto: UpdateGameDto) {
-        const game = await this.prisma.game.update({
-            where: { id: updateGameDto.gameId },
-            data: {
-                winner: { connect: { id: updateGameDto.winnerId } },
-                loser: { connect: { id: updateGameDto.loserId } },
-                winnerScore: updateGameDto.winnerScore,
-                loserScore: updateGameDto.loserScore,
-            },
-        });
-        return game;
-    }        // console.log(this)
-
-    //TODO: now useless, remove when game finished
-    async joinGame(joinGameDto: JoinGameDto) {
-        const game = await this.prisma.game.update({
-            where: { id: joinGameDto.gameId },
-            data: {
-                users: { connect: { id: joinGameDto.playerTwoId } },
-            },
-        });
-        return game;
-    }
-
-    /* D(elete) */
-    async deleteGame(deleteGameDto: any) {
-        this.prisma.game.delete({
-            where: { id: deleteGameDto.gameId },
-        });
-        return true;
     }
 
     //=================================================//
