@@ -20,6 +20,12 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL('/home', request.url));
             }
         }
+        else {
+            if (!nonSecurePaths.includes(request.nextUrl.pathname) && !loginPaths.includes(request.nextUrl.pathname)) {
+                console.log('MIDDLEWARE - TwoFA is not Verified: Redirecting to /');
+                return NextResponse.redirect(new URL('/', request.url));
+            }
+        }
     }
     else if (!nonSecurePaths.includes(request.nextUrl.pathname)) {
         console.log(`MIDDLEWARE - Not logged in, redirecting to /: ${request.nextUrl.pathname}}`);
