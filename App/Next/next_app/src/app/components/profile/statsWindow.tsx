@@ -67,8 +67,7 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 				userName={statsData.userName}
 				id={statsData.userId}
 				currId={userId}
-				isOnProfilePage={true}
-				disableImageResize={false} >
+				isOnProfilePage={true} >
 					<ProfileActions userId={userId} currentId={statsData.userId} friends={friends} invitedFriends={invitedFriends}
 						requestedFriends={requestedFriends} addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser}
 						unblockUser={unblockUser} />

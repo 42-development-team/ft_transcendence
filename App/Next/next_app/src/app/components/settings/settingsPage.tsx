@@ -224,7 +224,6 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				CallbackAvatarData={handleCallBackDataFromAvatar} 
 				imageUrlGetFromCloudinary={imageUrl}
 				disableChooseAvatar={false}
-				disableImageResize={false}
 				isOnProfilePage={false}>
 			</Avatar>
 			{

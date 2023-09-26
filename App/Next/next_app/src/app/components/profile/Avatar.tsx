@@ -1,6 +1,5 @@
 "use client";
 import { useState, ChangeEvent, useEffect, useContext } from "react";
-import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
 
 type AvatarProps = {
@@ -9,7 +8,6 @@ type AvatarProps = {
 	isOnProfilePage?: boolean;
 	imageUrlGetFromCloudinary?: string | null;
 	disableChooseAvatar?: boolean;
-	disableImageResize?: boolean;
 	userName?: string | null;
 	currId?: string | null;
 	id?: string | null;
@@ -24,7 +22,6 @@ const Avatar = (
 		isOnProfilePage = false,
 		imageUrlGetFromCloudinary = null,
 		disableChooseAvatar = false,
-		disableImageResize = false,
 		userName = null,
 		currId = null,
 		id = null,
@@ -129,39 +126,31 @@ const Avatar = (
 				}
 			</div>
 			<div className={``}>
+				{/* Display uploaded avatar image temporary stored in URL*/}
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
 					<div className="flex justify-center" >
 						<div style={{
 							backgroundImage: 'url(' + (imageUrlGetFromCloudinary as string || imageUrl as string) + ')',
 							backgroundPosition: 'center center',
 							backgroundSize: 'cover',
-							border: 'solid 0px' ,
+							border: 'solid 0px',
 							borderRadius: height / 2 + 'px',
 							height: height + 'px',
 							width: height + 'px',
-						}}/>
-
-						{/* Display uploaded avatar image temporary stored in URL*/}
-						{/* <Image
-							src={imageUrlGetFromCloudinary as string || imageUrl as string}
-							alt="Selected Avatar"
-							className={` ${!disableImageResize && "transition-all duration-900 w-auto h-auto"}   drop-shadow-xl rounded-full`} 
-							width={width}
-							height={height}
-							/> */}
+						}} />
 					</div>
 				) : (
 					<div className="flex justify-center">
 						{/* Display default avatar */}
-												<div style={{
+						<div style={{
 							backgroundImage: 'url(https://img.freepik.com/free-icon/user_318-563642.jpg)',
 							backgroundPosition: 'center center',
 							backgroundSize: 'cover',
-							border: 'solid 0px' ,
+							border: 'solid 0px',
 							borderRadius: height / 2 + 'px',
 							height: height + 'px',
 							width: height + 'px',
-						}}/>
+						}} />
 					</div>
 				)}
 				{!disableChooseAvatar &&
