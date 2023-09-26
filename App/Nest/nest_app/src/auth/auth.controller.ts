@@ -42,8 +42,7 @@ export class AuthController {
             }
             await this.authService.changeLoginBooleanStatus(req.user.sub);
             const jwt = await this.authService.getTokens(req.user, true);
-            res.cookie("jwt", jwt.access_token, cookieOptions)
-            .cookie("rt", jwt.refresh_token, cookieOptions);
+            res.cookie("jwt", jwt.access_token, cookieOptions);
         }
         catch (error) {
             console.log("Error: " + error.message);
