@@ -70,7 +70,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     invitorSocket?.emit('inviteCanceled', { invitorId });
                 });
             }
-           await this.gameService.handleRemoveQueue(invitorId, invitedId);
+           await this.gameService.handleRemoveInviteQueue(invitorId, invitedId);
         }
     }
         
@@ -80,34 +80,52 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('invite')
     async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
         try {
-            console.log("MODE: ", body.modeEnabled)
             const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
             if (invitorId === undefined)
                 return;
             const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;//TODO: this sequence is redundant, create a function
+
             const invitedIdNumber = Number(invitedId);
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
-            const invitorUsername: string = invitorUser.username;
-            const invitedUserName: string = invitedUser.username;
             const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
-        console.log("inviteQueue in invite", this.gameService.inviteQueue)
-            invitedSocketIds.forEach(async invitedSocketId => {
-                const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-                if (invitorId !== invitedId) {
-                    console.log("handleInvite: invitedId !== invitorId")
-                    const inviteCanBeDone = await this.gameService.handleInvite(this.clients, invitorId, invitedIdNumber, invitedUserName, invitorSocket, modeEnabled);
-                    if (!inviteCanBeDone) {
-                        console.log("handleInvite: inviteCanBeDone is false")
-                    }
-                    else {
-                        console.log("handleInvite: inviteCanBeDone")
-                        invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
-                        invitorSocket?.emit('inviteSent', { invitedUserName });
+            
+            const invitorUsername: string = invitorUser.username;
+            const invitedUsername: string = invitedUser.username;
 
+            invitedSocketIds.forEach(async invitedSocketId => {
+                const invitedSocket: Socket = this.clients.find(c => c.id === invitedSocketId);
+                if (invitorId !== invitedId) {
+                    if (await this.gameService.isInGame(invitorId) === true) { // invitor is in game
+                        console.log("error: invitor is in a game")
+                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        return ;
                     }
+                    if (await this.gameService.isInGame(invitedId) === true) { // invited is in game
+                        console.log("error: invited is in a game")
+                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        return ;
+                    }
+                    if (await this.gameService.queueAlreadyExists(invitorId, invitedId) === true) { // this exact queue alrady exist
+                        console.log("error: this exact queue already exist");
+                        return ;
+                    }
+
+                    const idToNotify: number = await this.gameService.invitorIsInvited(invitorId); // invitor is invited by someone else
+                    if (idToNotify >= 0) {
+                        const ids = await this.userService.getSocketIdsFromUserId(idToNotify); //
+
+                        ids.forEach(id => {
+                            const invitorSocketToNotify = this.clients.find(c => c.id === id);
+                            invitorSocketToNotify?.emit('inviteDeclined');
+                        });
+                    }
+                    await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
+                    invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    invitorSocket?.emit('inviteSent', { invitedUsername });
                 }
             });
+
         } catch (error) {
             console.log("error: ", error);
         }
@@ -115,21 +133,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('respondToInvite')
     async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
+
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         const { invitorId, response } = body;
+
         const invitorIdNumber = Number(invitorId);
         const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
-        console.log("inviteQueue in respond", this.gameService.inviteQueue)
+
         invitorSocketIds.forEach(async invitorSocketId => {
             const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-            const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorSocket, invitorIdNumber, invitedId, response);
-            if (inviteInfos !== undefined) {
-                console.log("inviteInfos is defined, gameRoom created (its broken)")
-                //TODO: check why game is BROKEn !!!!!!
-                // const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-                // const invitedSocketId: string = await this.userService.getUserSocketFromId(invitedId);
-                // await this.joinGameRoom(invitorSocketId, invitedSocketId, gameRoom);
-                await this.gameService.handleRemoveQueue(invitorIdNumber, invitedId);
+            const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorIdNumber, invitedId, response);
+            if (!response)
+                invitorSocket?.emit('inviteDeclined');
+            else if (inviteInfos !== undefined) {
+                invitorSocket?.emit('inviteAccepted');
+
+                const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
+                await this.joinGameRoom(invitorSocketIds, invitedSocketIds, gameRoom);
+                await this.gameService.handleRemoveInviteQueue(invitorIdNumber, invitedId);
             }
         });
     }
@@ -141,7 +163,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedIdNumber = Number(invitedId);
         const invitorIdNumber = Number(invitorId);
         if (invitorId !== invitedIdNumber)
-            await this.gameService.handleRemoveQueue(invitorIdNumber, invitedIdNumber);
+            await this.gameService.handleRemoveInviteQueue(invitorIdNumber, invitedIdNumber);
         const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
         invitedSocketIds.forEach(async invitedSocketId => {
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
@@ -153,10 +175,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         const { invitorId }: { invitorId: number } = body;
-        await this.gameService.handleRemoveQueue(invitorId, invitedId);
+        await this.gameService.handleRemoveInviteQueue(invitorId, invitedId);
     }
-
-
 
     @SubscribeMessage('joinQueue')
     async handleJoinQueue(player: Socket, mode: boolean) {
