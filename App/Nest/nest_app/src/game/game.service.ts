@@ -10,6 +10,7 @@ import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
 import { SegInterface } from "./interface/game.interfaces";
+import { Socket } from "socket.io";
 
 
 @Injectable()
@@ -18,7 +19,9 @@ export class GameService {
         private prisma: PrismaService,
         private userService: UsersService,
         private userStatsService: UserStatsService,
-    ) { }
+    ) {
+    }
+    
 
     gameRooms: GameRoomDto[] = [];
     queue: number[] = [];
@@ -153,7 +156,7 @@ export class GameService {
             },
         });
         return game;
-    }
+    }        // console.log(this)
 
     //TODO: now useless, remove when game finished
     async joinGame(joinGameDto: JoinGameDto) {
@@ -178,14 +181,47 @@ export class GameService {
     //============= HANDLE SOCKET EVENTS ==============//
     //=================================================//
 
-    async handleInvite(invitorId: number, invitedId: number, mode: boolean) {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx !== -1)
-            return ;
+    async handleInvite(clients: readonly Socket [], invitorId: number, invitedId: number, invitedUsername: string, invitorSocket: Socket, mode: boolean) {
+        const playersAreAlreadyInQueue: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
+        const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId);
+        const invitorIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+        const inventedIsIngGame: boolean = await this.isInGame(invitedId);
+        if (inventedIsIngGame || playersAreAlreadyInQueue !== -1 || invitedIsAlreadyInvited !== -1 || invitedIsAlreadyInvitor !== -1) {
+            if (playersAreAlreadyInQueue === -1 && invitedIsAlreadyInvited !== -1) {
+                invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+            }
+            else if (playersAreAlreadyInQueue !== -1) {
+                // Todo: what is this shitty condition?
+            }
+
+            return false;
+        }
+        else if (invitorIsAlreadyInvited !== -1) {
+            const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
+            const invitorIdToNotify = this.inviteQueue[idx].invitorId;
+            const invitorSocketIdsToNotify = await this.userService.getSocketIdsFromUserId(invitorIdToNotify);
+            invitorSocketIdsToNotify.forEach(invitorSocketIdToNotify => {
+                const invitorSocketToNotify = clients.find(c => c.id === invitorSocketIdToNotify);
+                invitorSocketToNotify?.emit('inviteDeclined');
+            });
+            this.inviteQueue.splice(idx, 1);
+        }
         this.inviteQueue.push({invitorId: invitorId, invitedId: invitedId, mode: mode});
+        return true;
     }
 
-    async handleRespondToInvite(invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
+    async handleRemoveQueue(invitorId: number, invitedId: number) {
+        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        if (idx === -1) {
+            console.log("handleCancelInvite did not find a queue to cancel")
+            return ;
+        }
+        console.log("handleCancelInvite found a queue to cancel")
+        this.inviteQueue.splice(idx, 1);
+    }
+
+    async handleRespondToInvite(invitorSocket: Socket, invitorId: number, invitedId:number, accept: boolean): Promise<InviteDto> {
         const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
         console.log("1");
         if (idx === -1)
@@ -193,21 +229,22 @@ export class GameService {
         console.log("2");
         if (!accept) {
             this.inviteQueue.splice(idx, 1);
+            console.log("declined by ", invitorSocket.id)
+            invitorSocket?.emit('inviteDeclined');
             return ;
         }
         console.log("3");
-        if (this.isInGame(invitorId))
+        if (await this.isInGame(invitorId))
             return ;
         console.log("4");
-        if (this.isInGame(invitedId))
+        if (await this.isInGame(invitedId))
             return ;
         console.log("5");
-        this.handleLeaveQueue(invitorId);
-        this.handleLeaveQueue(invitedId);
+        invitorSocket?.emit('inviteAccepted');
         return (this.inviteQueue[idx]);
     }
 
-    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         try {
             const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
             if (idx === -1) {
@@ -227,16 +264,16 @@ export class GameService {
             }
             else {
                 const newGameRoom: GameRoomDto = this.gameRooms[idx];
-                const player1SocketId: string = undefined;
-                const player2SocketId: string = undefined;
-                return ({ newGameRoom, player1SocketId, player2SocketId });
+                const player1SocketIds: string[] = [];
+                const player2SocketIds: string[] = [];
+                return ({ newGameRoom, player1SocketIds, player2SocketIds });
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketId: string, player2SocketId: string }> {
+    async handleJoinGame(mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[]}> {
         let player1Id: number;
         let player2Id: number;
         if (mode) {
@@ -250,16 +287,15 @@ export class GameService {
 
         // create room data
         const newGameRoom: GameRoomDto = await this.setGameRoom(player1Id, player2Id, mode);
-        // get sokcetId to join game
-        const player1SocketId: string = await this.userService.getUserSocketFromId(player1Id);
-        const player2SocketId: string = await this.userService.getUserSocketFromId(player2Id);
+        const player1SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player1Id);
+        const player2SocketIds: string[] = await this.userService.getSocketIdsFromUserId(player2Id);
         // add room to rooms list
         this.gameRooms.push(newGameRoom);
         // pop player from queue list
         this.handleLeaveQueue(player1Id);
         this.handleLeaveQueue(player2Id);
 
-        return ({ newGameRoom, player1SocketId, player2SocketId });
+        return ({ newGameRoom, player1SocketIds, player2SocketIds });
     }
 
     
@@ -368,7 +404,7 @@ export class GameService {
     }
 
     async isInGame(userId: number): Promise<boolean> {
-        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId)) {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined) {
             return true;
         }
         return false;
@@ -396,7 +432,7 @@ export class GameService {
     //================== GAME PLAY ====================//
     //=================================================//
     /* GamePlay Player */
-    async incrPoints(idx: number, player: number) {
+    incrPoints(idx: number, player: number) {
         if (player === 1)
             this.gameRooms[idx].data.player1.points++;
         else
@@ -419,34 +455,10 @@ export class GameService {
         player.velocitx = 0;
     }
 
-    isGoingToBug(ball: BallDto, player: PlayerDto) {
-        const ballSeg: SegInterface = {
-            x: ball.x,
-            y: ball.y,
-            x1: ball.x + (ball.speed[0] / 100),
-            y1: ball.y + (ball.speed[1] / 100),
-        }
-    
-        const p1Seg: SegInterface = {
-            x: player.x,
-            y: player.y - (player.h / 2),
-            x1: player.x,
-            y1: player.y + (player.h / 2),
-        }
-       
-        let result: {x: number, y: number} = this.areLineSegmentsColliding(ballSeg, p1Seg);
-        if (result.x === ballSeg.x1 && result.y === ballSeg.y1)
-            return false;
-        console.log("bug");
-        return true;
-    }
-
-    async movePlayerMode(ball: BallDto, player: PlayerDto) {
+    movePlayerMode(ball: BallDto, player: PlayerDto) {
         const valy: number = player.y + player.velocity;
         const valx: number = player.x + player.velocitx;
 
-        if (this.isGoingToBug(ball, player))
-            return ;
         if (valy >= 1)
             player.y = valy - 1;
         else if (valy <= 0)
@@ -460,7 +472,7 @@ export class GameService {
             this.killVelocitx(player);
     }
 
-    async movePlayer(player: PlayerDto) {
+    movePlayer(player: PlayerDto) {
         const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
             if (val + player.h / 2 < 0.99)
@@ -472,7 +484,7 @@ export class GameService {
         }
     }
 
-    async calculatePlayer(idx: number, mode: boolean) {
+    calculatePlayer(idx: number, mode: boolean) {
         if (mode) {
             const ball = this.gameRooms[idx].data.ball;
             this.movePlayerMode(ball, this.gameRooms[idx].data.player1);
@@ -486,56 +498,88 @@ export class GameService {
 
     /* GamePlay Ball */
     //========== BOUNCES =============//
-    async bounce(idx: number, ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-        this.borderBounce(ball);
-        this.paddleBounce(ball, player1, player2);
-        this.score(idx);
-    };
-
     // >>BORDER<< //
-    async borderBounce(ball: BallDto) {
+    borderBounce(ball: BallDto) {
         if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
             ball.speed[1] *= -1;
     }
 
-    // >>PADDLE<< //
-    async paddleBounce(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-            this.playerCollision(ball, player1);
-            this.playerCollision(ball, player2);
+    //>>PADDLE<//
+    lerp (A: number, B: number, t: number): number {
+        return (A + (B - A) * t);
     }
 
-    checkCollisionX(ball: BallDto, player: PlayerDto): boolean {
-        let dx: number;
+    segmentColliding(ball: BallDto, player: PlayerDto, r: number): boolean {
+        interface Point {
+            x: number,
+            y: number,
+        };
 
-        if (ball.x < player.x)
-            dx = Math.abs(player.x - player.w - ball.x + ball.r);
-        else
-            dx = Math.abs(ball.x - ball.r - player.x + player.w);
+        // ball is [AB]
+        // player is [CD]
+        const A: Point = {x: ball.x, y: ball.y};
+        const B: Point = {x: ball.x + ball.speed[0] / 100, y: ball.y + ball.speed[1] / 100};
+        const C: Point = {x: player.x, y: player.y - player.h / 2}
+        const D: Point = {x: player.x, y: player.y + player.h / 2}
+
+        const top = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
+        const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
         
-        if (dx <= (ball.r + player.w))
-            return true;
+        if (bottom !== 0) {
+            const t: number = top / bottom;
+            console.log("t:", t);
+            if (t >= 0 && t <= 1) {
+                const x: number = this.lerp(A.x, B.x, t);
+                const y: number = this.lerp(A.y, B.y, t);
+                ball.x = x + 0.7 * r;
+                ball.y = y;
+                console.log("TRUUUUE");
+                return true ;
+            }
+        }
         return false;
     }
 
-    checkCollisionY(ball: BallDto, player: PlayerDto): boolean {
+    checkCollision(ball: BallDto, player: PlayerDto, r: number): boolean {
         const dy: number = Math.abs(ball.y - player.y);
-        
-        if (dy <= player.h / 2)
-            return true;
-        else if ((player.y + player.h / 2) > 1) {
-            if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y)))
-                return true;
+        const col: boolean = this.segmentColliding(ball, player, r);
+        // let dx: number;
+
+        // if (ball.x < player.x)
+        //     dx = Math.abs(player.x - player.w - ball.x + ball.r);
+        // else
+        //     dx = Math.abs(ball.x - ball.r - player.x + player.w);
+
+            console.log("====================================");
+            console.log(player.id, ":", player.points);
+        // if (dx <= (ball.r + player.w)) {
+            // console.log("CHECK DX");
+        if (col === true) {
+                console.log("CHECK SEGMENT CROSS");
+                if (dy <= player.h / 2) {
+                    console.log("Col in Y");
+                    return true;
+                }
+                else if ((player.y + player.h / 2) > 1){
+                    if (ball.y - ball.r <= ((player.h / 2) - (1 - player.y))) {
+                        return true;
+                    }
+                }
+                else if (player.y - player.h / 2 < 0) {
+                    if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y))) {
+                        return true;
+                    }
+                }
+        // }
         }
-        else if (player.y - player.h / 2 < 0) {
-            if (ball.y + ball.r >=  (1 - (player.h / 2 - player.y)))
-                return true;
-        }
+
         return false;
     }
     
-    async playerCollision(ball: BallDto, player: PlayerDto) {
+    playerCollision(ball: BallDto, player: PlayerDto, r: number) {
 
-        if (this.checkCollisionX(ball, player) && this.checkCollisionY(ball, player) === true) {
+        const checkCol: boolean = this.checkCollision(ball, player, r);
+        if (checkCol === true) {
             const coef = 10 * (ball.y - player.y);
             const radian = (coef * player.angle) * (Math.PI / 180);
             
@@ -553,7 +597,7 @@ export class GameService {
     }
 
     //========== SCORE =============//
-    async score(idx: number) {
+    score(idx: number) {
         if (this.gameRooms[idx].data.ball.x <= 0) {
             this.incrPoints(idx, 2);
             this.reset(idx);
@@ -565,23 +609,24 @@ export class GameService {
     }
 
     //========== RESET BALL =============//
-    async reset(idx: number) {
+    reset(idx: number) {
         this.gameRooms[idx].data.ball.x = 0.5;
         this.gameRooms[idx].data.ball.y = 0.5;
         let sign = 1;
 
-        if (Math.random() < 0.5)
+        // if (Math.random() < 0.5)
             sign *= -1;
         this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
 
-        if (Math.random() < 0.5)
-            sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        // if (Math.random() < 0.5)
+            // sign *= -1;
+        this.gameRooms[idx].data.ball.speed[1] = 0; // to rm
+        // this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
     //>>ACCELERATION<<//
-    async incrementSpeed(ball: BallDto) {
+    incrementSpeed(ball: BallDto) {
         ball.incr++;
         if (ball.incr === 10) {
             ball.speed[0] += 0.01 * ball.speed[0];
@@ -590,131 +635,37 @@ export class GameService {
     }
 
     //>>UPDATE POSITION<<//
-
-    findLineSegmentCollision(seg1: SegInterface, seg2: SegInterface): {x: number, y: number} {
-        const Ix = seg1.x1 - seg1.x;
-        const Iy = seg1.y1 - seg1.y;
-        const Jx = seg2.x1 - seg2.x;
-        const Jy = seg2.y1 - seg2.y;
-        const Ax = seg1.x;
-        const Ay = seg1.y;
-        const Cx = seg2.x;
-        const Cy = seg2.y;
-
-        const denominator = Ix * Jy - Iy * Jx;
-
-        // Check if lines are parallel
-        if (denominator === 0) {
-            console.log("paralleles");
-            return null;
-        }
-
-        const m = (-Ix * Ay + Ix * Cy + Iy * Ax - Iy * Cx) / denominator;
-        const k = -(Ax * Jy - Cx * Jy - Jx * Ay + Jx * Cy) / denominator;
-
-        // Check if intersection point lies within the range of both line segments
-        if (m >= 0 && m <= 1 && k >= 0 && k <= 1) {
-            const intersectionX = Ax + k * Ix;
-            const intersectionY = Ay + k * Iy;
-            console.log("intersection");
-            return { x: intersectionX, y: intersectionY };
-        }
-
-        return {x: seg1.x1, y: seg1.y1 };
-    }
-
-    areLineSegmentsColliding(seg1: SegInterface, seg2: SegInterface): {x: number, y: number} {
-        const x1 = seg1.x;
-        const y1 = seg1.y;
-        const x2 = seg1.x1;
-        const y2 = seg1.y1;
-        const x3 = seg2.x;
-        const y3 = seg2.y;
-        const x4 = seg2.x1;
-        const y4 = seg2.y1;
-
-        // Calculate slopes
-        const slope1 = (y2 - y1) / (x2 - x1);
-        const slope2 = (y4 - y3) / (x4 - x3);
-
-        // Check if lines are parallel
-        if (slope1 === slope2)
-            return { x: seg1.x1, y: seg1.y1 + 0.05 };
-
-        // Calculate intersection point
-        const intersectionX = ((y3 - y1) + slope1 * x1 - slope2 * x3) / (slope1 - slope2);
-        const intersectionY = slope1 * (intersectionX - x1) + y1;
-
-        // Check if intersection point lies within the range of both line segments
-        if (
-            Math.min(x1, x2) <= intersectionX &&
-            intersectionX <= Math.max(x1, x2) &&
-            Math.min(y1, y2) <= intersectionY &&
-            intersectionY <= Math.max(y1, y2) &&
-            Math.min(x3, x4) <= intersectionX &&
-            intersectionX <= Math.max(x3, x4) &&
-            Math.min(y3, y4) <= intersectionY &&
-            intersectionY <= Math.max(y3, y4)
-        ) {
-            console.log("intersection");
-          return { x: intersectionX, y: intersectionY };
-        }
-
-        return { x: seg1.x1, y: seg1.y1 };
-    }
-    
-    async updateBall(ball: BallDto, player1: PlayerDto, player2: PlayerDto) {
-        const ballSeg: SegInterface = {
-            x: ball.x,
-            y: ball.y,
-            x1: ball.x + (ball.speed[0] / 100),
-            y1: ball.y + (ball.speed[1] / 100),
-        }
-    
-        const p1Seg: SegInterface = {
-            x: player1.x,
-            y: player1.y - (player1.h / 2),
-            x1: player1.x,
-            y1: player1.y + (player1.h / 2),
-        }
-    
-        const p2Seg: SegInterface = {
-            x: player2.x,
-            y: player2.y - (player2.h / 2),
-            x1: player2.x,
-            y1: player2.y + (player2.h / 2),
-        }
-        let result: {x: number, y: number} = this.findLineSegmentCollision(ballSeg, p1Seg);
-        // let result: {x: number, y: number} = this.areLineSegmentsColliding(ballSeg, p1Seg);
-        if (result.x === ballSeg.x1 && result.y === ballSeg.y1)
-            result = this.findLineSegmentCollision(ballSeg, p2Seg);
-            // result = this.areLineSegmentsColliding(ballSeg, p2Seg);
-        ball.x = result.x;
-        ball.y = result.y;
+    updateBall(ball: BallDto) {
+        ball.x += ball.speed[0] / 100 ;
+        ball.y += ball.speed[1] / 100;
     };
 
     //>>CALCUL POSITION<<//
-    async calculateBall(idx: number) {
+    calculateBall(idx: number) {
         const ball = this.gameRooms[idx].data.ball;
         const player1 = this.gameRooms[idx].data.player1;
         const player2 = this.gameRooms[idx].data.player2;
-        this.updateBall(ball, player1, player2);
-        this.bounce(idx, ball, player1, player2);
+
+        this.borderBounce(ball);
+        this.playerCollision(ball, player1, ball.r);
+        this.playerCollision(ball, player2, -ball.r);
+        this.updateBall(ball);
+        this.score(idx);
         this.incrementSpeed(ball);
     };
 
     async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
 
-        await this.calculatePlayer(idx, mode);
-        await this.calculateBall(idx);
+        this.calculatePlayer(idx, mode);
+        this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
-        this.gameRooms[idx].data.end = true;
+            this.gameRooms[idx].data.end = true;
     
     return { ...this.gameRooms[idx].data };
 }
 
 //=================================================//
-//================== INIT GAME ==================//
+//================== INIT GAME ====================//
 //=================================================//
     async setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
         const id: number = this.gameRooms.length;

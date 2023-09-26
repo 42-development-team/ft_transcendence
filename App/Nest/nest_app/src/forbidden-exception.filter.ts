@@ -13,7 +13,7 @@ export class ForbiddenExceptionsFilter implements ExceptionFilter {
         const response = ctx.getResponse<Response>();
         console.log("Forbidden Exception: " + exception);
         response.clearCookie("jwt");
-        response.clearCookie("rt");
+        // response.clearCookie("rt");
         response.redirect(`http://${this.configService.get<string>('ip')}:${this.configService.get<string>('frontPort')}/`);
     }
 }

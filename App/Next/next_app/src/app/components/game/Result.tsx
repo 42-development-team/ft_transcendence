@@ -42,7 +42,7 @@ const Result = ({...props}) => {
             >
                 Play Again
             </CustomBtn>
-            <div className=" flex fex-row items-center justify-center font-bold text-center text-2xl mb-2">
+            <div className=" flex flex-row items-center justify-center font-bold text-center text-2xl mb-2">
                 {user?.avatar &&
                     <Avatar
                         width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}

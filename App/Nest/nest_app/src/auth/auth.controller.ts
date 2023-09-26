@@ -39,9 +39,9 @@ export class AuthController {
                 secure: false,
                 httpOnly: true,
             }
+            await this.authService.changeLoginBooleanStatus(req.user.sub);
             const jwt = await this.authService.getTokens(req.user, true);
-            res.cookie("jwt", jwt.access_token, cookieOptions)
-            .cookie("rt", jwt.refresh_token, cookieOptions);
+            res.cookie("jwt", jwt.access_token, cookieOptions);
         }
         catch (error) {
             console.log("Error: " + error.message);
@@ -54,7 +54,6 @@ export class AuthController {
         try {
 			const userId: number = req.user.sub;
 			const user = this.userService.getUserFromId(userId);
-			await this.authService.updateCurrentStatus(user, userId, "offline");
             await this.authService.logout(res);
             res.send('Logged out successfully.');
         }
@@ -82,11 +81,7 @@ export class AuthController {
     async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
         try {
             const user = await this.userService.getUserFromUsername(username);
-            const isUsernameTaken = !!user; // double negation to turn user into a boolean
-            //If the user object is not null or undefined (truthy),
-            // !!user will evaluate to true, indicating that the username is taken.
-            // If the user object is null or undefined (falsy),
-            // !!user will evaluate to false, indicating that the username is available.
+            const isUsernameTaken = !!user;
             res.status(HttpStatus.OK).send({ isUsernameTaken });
         } catch (error) {
             console.error('Error checking username availability:', error.message);
@@ -115,31 +110,4 @@ export class AuthController {
 			return error;
 		}
 	}
-
-    // @Get('refresh')
-    // async generateNewTokens(@Req() req: any, @Res() res: Response) {
-    //     try {
-    //         const payload = await this.authService.verifyRefreshToken(req,  res);
-    //         if (!payload) throw new UnauthorizedException('Invalid refresh token');
-
-    //         const cookieOptions = {
-    //             expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    //             secure: false,
-    //             httpOnly: true,
-    //         }
-    //         const tokenObject: Tokens = await this.authService.getTokens(payload, payload.twoFactorAuthenticated);
-
-    //         res.cookie('jwt', tokenObject.access_token, cookieOptions);
-    //         res.cookie('rt', tokenObject.refresh_token, cookieOptions);
-    //         res.send();
-    //     } catch (error) {
-    //         console.log("Generate New Tokens Error:", error.message);
-    //         if (error instanceof UnauthorizedException) {
-    //             res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized' + error.message) // error 401
-    //         } else {
-    //             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while generating new tokens.');
-    //             throw error;
-    //         }
-    //     }
-    // }
 }

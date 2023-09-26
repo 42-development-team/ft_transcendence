@@ -19,7 +19,7 @@ export default function Home() {
 	let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
 	const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
 	const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
-	const [loading, setLoading] = useState<boolean>(true);
+	// const [loading, setLoading] = useState<boolean>(true);
 	const [pSpace, setPSpace] = useState<number>(-15);
 
 	if (typeof window !== "undefined") {
@@ -43,22 +43,23 @@ export default function Home() {
 		}
 	}, [theme]);
 
+	const handleResize = () => {
+		setFontSize(Math.max((window.innerWidth / 8.5), 80));
+		if (window.innerWidth < 1000)
+			setPSpace(-15);
+		else {
+			setPSpace(-35);
+		}
+	}
 
-  useEffect(() => {
-    if (typeof window === 'undefined')
-      setFontSize(80);
-    else {
-      setFontSize(Math.max((window.innerWidth / 8.5), 80));
-      if (window.innerWidth < 1000)
-        setPSpace(-15);
-      else {
-        setPSpace(-35);
-      }
-    }
-  }, [window]);
 
 	useEffect(() => {
+		if (typeof window === 'undefined') return;
 		login();
+		window.addEventListener('resize', handleResize);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		}
 	}, []);
 
 	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();

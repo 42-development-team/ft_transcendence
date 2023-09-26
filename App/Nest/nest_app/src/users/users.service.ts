@@ -7,7 +7,6 @@ import { Socket } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-
 @Injectable()
 export class UsersService {
     constructor(
@@ -49,11 +48,11 @@ export class UsersService {
         return userDto;
     }
 
-    async getUserSocketFromId(id: number): Promise<string> {
+    async getSocketIdsFromUserId(id: number): Promise<string[]> {
         const user = await this.prisma.user.findUniqueOrThrow({
             where: { id: id },
         });
-        return user.socketId;
+        return user.socketIds;
     }
 
     async getUserIdFromSocket(socket: Socket){
@@ -66,8 +65,6 @@ export class UsersService {
 			if(userId) {
 				return userId;
 			}
-			// Todo: if userId is undefined or null?
-			return null;
 		}
 		return null;
 	}
@@ -89,8 +86,6 @@ export class UsersService {
 		const user = await this.prisma.user.findFirst({
 			where: { login: login },
 		});
-		// console.log("user in getIdFromLogin", user);
-
 		if(user) {
 			return user.id;
 		}
@@ -119,13 +114,7 @@ export class UsersService {
     }
 
     async isUserBlocked(blockedId: number, userId: number): Promise<boolean> {
-        console.log("blockedId: ", blockedId);
         try {
-            // Check if user is blocked by the blockedId user
-            // await this.prisma.user.findUniqueOrThrow({
-            //     where: { blockedBy: { some: { id: userId } }, id: blockedId },
-            // });
-            // return true;
 			const user = await this.prisma.user.findFirst({
 				where: {
 					id: blockedId,
@@ -160,12 +149,34 @@ export class UsersService {
         return updatedUser;
     }
 
-    async updateSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
-        const updatedUser = await this.prisma.user.update({
-            where: { id: id },
-            data: { socketId: updatedSocketId },
-        });
-        return updatedUser;
+    async addSocketId(id: number, updatedSocketId: string): Promise<CreateUserDto> {
+        try {
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { push: updatedSocketId } },
+            });
+            return updatedUser;
+        } catch (error) {
+            console.log("Add socket: " + error.message);
+        }
+    }
+    
+    async removeSocketId(id: number, removedSocketId: string): Promise<CreateUserDto> {
+        // Remove socketId from user
+        try {
+            const user = await this.prisma.user.findUniqueOrThrow({
+                where: { id: id },
+            });
+            const newSocketIds = user.socketIds.filter(socketId => socketId !== removedSocketId);
+            const updatedUser = await this.prisma.user.update({
+                where: { id: id },
+                data: { socketIds: { set: newSocketIds } },
+            });
+            return updatedUser;
+        }
+        catch (error) {
+            console.log("Remove socket: " + error.message);
+        }
     }
 
     async updateStatus(id: number, newStatus: string) {
@@ -206,11 +217,11 @@ export class UsersService {
                 twoFAsecret: "",
                 isFirstLogin: true,
                 currentStatus: "online",
+                socketIds: [],
             };
             user = await this.createUser(createUserDto) as CreateUserDto;
         }
         else if (user && user.currentStatus != "online") {
-			// console.log("current user != online for user: ", user.username);
             user.currentStatus = "online";
 			await this.prisma.user.update({
                 where: { login: user.login},
