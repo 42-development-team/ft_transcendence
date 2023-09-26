@@ -1,6 +1,5 @@
 "use client";
 import { useState, ChangeEvent, useEffect, useContext } from "react";
-import Image from 'next/image';
 import ThemeContext from "../theme/themeContext";
 
 type AvatarProps = {
@@ -9,7 +8,6 @@ type AvatarProps = {
 	isOnProfilePage?: boolean;
 	imageUrlGetFromCloudinary?: string | null;
 	disableChooseAvatar?: boolean;
-	disableImageResize?: boolean;
 	userName?: string | null;
 	currId?: string | null;
 	id?: string | null;
@@ -24,13 +22,12 @@ const Avatar = (
 		isOnProfilePage = false,
 		imageUrlGetFromCloudinary = null,
 		disableChooseAvatar = false,
-		disableImageResize = false,
 		userName = null,
 		currId = null,
 		id = null,
 		width = 212,
 		height = 212,
-	}: AvatarProps ) => {
+	}: AvatarProps) => {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const { theme } = useContext(ThemeContext);
@@ -128,26 +125,32 @@ const Avatar = (
 					</div>
 				}
 			</div>
-			<div className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}`}>
+			<div className={``}>
+				{/* Display uploaded avatar image temporary stored in URL*/}
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
-					<div className="flex justify-center">
-						{/* Display uploaded avatar image temporary stored in URL*/}
-						<Image
-							src={imageUrlGetFromCloudinary as string || imageUrl as string}
-							alt="Selected Avatar"
-							width={width}
-							height={height}
-							className={` ${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"}   drop-shadow-xl rounded-full`} />
+					<div className="flex justify-center" >
+						<div style={{
+							backgroundImage: 'url(' + (imageUrlGetFromCloudinary as string || imageUrl as string) + ')',
+							backgroundPosition: 'center center',
+							backgroundSize: 'cover',
+							border: 'solid 0px',
+							borderRadius: height / 2 + 'px',
+							height: height + 'px',
+							width: height + 'px',
+						}} />
 					</div>
 				) : (
 					<div className="flex justify-center">
 						{/* Display default avatar */}
-						<Image
-							src="https://img.freepik.com/free-icon/user_318-563642.jpg"
-							alt="Default Avatar"
-							width={width}
-							height={height}
-							className={`${!disableImageResize && "sm:transition-all duration-900 sm:h-[222px] sm:w-[222px] md:transition-all md:h-[232px] md:w-[232px] lg:transition-all lg:h-[240px] lg:w-[240px] xl:transition-all xl:h-[250px] xl:w-[250px]"} drop-shadow-xl rounded-full`} />
+						<div style={{
+							backgroundImage: 'url(https://img.freepik.com/free-icon/user_318-563642.jpg)',
+							backgroundPosition: 'center center',
+							backgroundSize: 'cover',
+							border: 'solid 0px',
+							borderRadius: height / 2 + 'px',
+							height: height + 'px',
+							width: height + 'px',
+						}} />
 					</div>
 				)}
 				{!disableChooseAvatar &&

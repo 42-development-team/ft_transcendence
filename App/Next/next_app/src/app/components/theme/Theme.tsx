@@ -50,9 +50,9 @@ export const Theme = () => {
                 {
                     sun && sunLight ? (
                         theme === 'mocha' ? (
-                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} />
+                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} priority/>
                         ) : (
-                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} />
+                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} priority/>
                         )
                     ) : (
                         <div className="m-2">☀️</div>
