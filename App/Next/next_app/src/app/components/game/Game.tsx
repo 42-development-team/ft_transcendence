@@ -9,7 +9,7 @@ import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 
 const Game = ({ ...props }) => {
 
-	const { socket, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext } = props;
+	const { socket, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext, setMode } = props;
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [userName, setUserName] = useState<string>("");
 
@@ -64,6 +64,7 @@ const Game = ({ ...props }) => {
 							joinQueue={joinQueue}
 							setInGameContext={setInGameContext}
 							data={data}
+							setMode={setMode}
 						/>
 						<div className="basis-2/11"></div>
 					</div>

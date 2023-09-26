@@ -23,7 +23,7 @@ export default function Home() {
 
 	}, []);
 
-	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode } = useGame();
+	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
 
 	return (
 		<div className="flex w-full h-full">
@@ -61,6 +61,7 @@ export default function Home() {
 						setResult={setResult}
 						setInGameContext={setInGameContext}
 						mode={mode}
+						setMode={setMode}
 					/>
 				</div>
 			)}

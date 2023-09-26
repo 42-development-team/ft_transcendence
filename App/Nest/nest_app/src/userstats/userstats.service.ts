@@ -121,7 +121,7 @@ export class UserStatsService {
 					win: userUpdateDto.win,
 					lose: userUpdateDto.lose,
 					totalScore: userUpdateDto.totalScore,
-					ratio: Number((userUpdateDto.win / userUpdateDto.played).toFixed(1)),
+					ratio: Number(((userUpdateDto.win / userUpdateDto.played) * 100).toFixed(2)),
 					played: userUpdateDto.played,
 			},
 		});
