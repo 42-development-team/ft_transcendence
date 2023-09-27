@@ -45,6 +45,10 @@ export default function Home() {
 							mode={mode}
 						/>
 					</div>
+					{mode ?
+					<p>Use All Arrows To Move</p>
+					:
+					<p>Use Arrows To Move</p>}
 				</div>
 			) : (
 				<div className="flex justify-center flex-grow h-full w-full">
