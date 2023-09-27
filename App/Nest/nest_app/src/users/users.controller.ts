@@ -56,7 +56,6 @@ export class UsersController {
     async getStatus(@Param('id') id: string, @Res() response: Response) {
 		try {
 			const userId: number = parseInt(id);
-			// console.log("userId in get Current Status: ", userId);
 			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
 			response.status(HttpStatus.OK).json(currentStatus);
 		} catch (error) {
