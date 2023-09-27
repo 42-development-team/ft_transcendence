@@ -64,7 +64,6 @@ const ShowChannelSettingsButton = () => {
         <Tooltip content="Channel Settings" placement="left" className="tooltip text-text">
             <button className="mt-2 mx-2" type="button" onClick={() => {
                 updateChatBarState(ChatBarState.ChannelSettingsOpen)
-                console.log("Show channel settings");
             }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width={30} height={30} xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.2"></circle>

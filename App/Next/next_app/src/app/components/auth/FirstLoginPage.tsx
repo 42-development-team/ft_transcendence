@@ -152,7 +152,6 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			console.log("Error during avatar upload:", message);
 			return;
 		}
-		console.log("Avatar successfully uploaded");
 		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);

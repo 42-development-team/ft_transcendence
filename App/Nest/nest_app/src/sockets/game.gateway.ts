@@ -27,7 +27,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clients: Socket[] = [];
 
     async handleConnection(client: Socket) {
-        // await this.cleanQueues(client); //TODO: clean game room ? or add socket array
         const userId = await this.userService.getUserIdFromSocket(client);
         if (userId) {
             console.log("GameSocket Connected: ", client.id);
@@ -83,7 +82,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
             if (invitorId === undefined)
                 return;
-            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;//TODO: this sequence is redundant, create a function
+            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;
 
             const invitedIdNumber = Number(invitedId);
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);

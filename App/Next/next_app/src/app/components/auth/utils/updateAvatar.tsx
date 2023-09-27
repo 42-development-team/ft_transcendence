@@ -25,7 +25,6 @@ const UpdateAvatar = async (
         } else {
             const data = await response.json();
             avatarUrl = data.imageUrl;
-            console.log("Avatar URL from Cloudinary:", avatarUrl);
             setImageUrl(avatarUrl);
         }
     }
