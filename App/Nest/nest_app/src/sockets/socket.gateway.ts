@@ -144,15 +144,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleInvite(client: Socket, userId: number, roomId: string) {
 		const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
+		console.log("Handle invite");
 		const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
 		if (client) {
 			client.join(room);
-			client.emit('invitedRoom', { room });
-			console.log(`Client ${userId} (${client.id}) invited to room ${room}`);
+			client.emit('invitedRoom', { roomId });
+			console.log(`Client ${userId} (${client.id}) joined room ${room}`);
 		} else {
-			console.log(`Client ${userId} invited to room ${room}`);
+			console.log(`Client ${userId} joined room ${room}`);
 		}
-		this.server.to(room).emit('userInvited', { room, user });
 		this.server.to(room).emit('newConnectionOnChannel', { room, user });
 	}
 
