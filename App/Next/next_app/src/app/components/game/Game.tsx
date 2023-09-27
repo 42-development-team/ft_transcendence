@@ -3,8 +3,6 @@ import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
 import getUserNameById from "../utils/getUserNameById";
-import DropDownMenu from "../dropdown/DropDownMenu";
-import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { GameHeaderInfo } from "./GameHeaderInfo";
 
@@ -14,10 +12,16 @@ const Game = ({ ...props }) => {
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
+	const [dataReceived, setDataReceived] = useState<boolean>(false);
 
 	useEffect(() => {
+		if (userId === undefined || userId === "") return;
+		socket?.emit("retrieveData", userId);
+	}, [userId]);
+
+	useEffect(() => {
+		if (dataReceived) return ;
 		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
-			socket?.emit("retrieveData", props.userId);
 			return;
 		}
 		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
@@ -32,7 +36,8 @@ const Game = ({ ...props }) => {
 			getUserNameById(props.data.player1.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
-	}, [props.data ? props.data.player1 : props.data]);
+		setDataReceived(true);
+	}, [props.data]);
 
 	return (
 		<div className="flex flex-grow justify-center">
