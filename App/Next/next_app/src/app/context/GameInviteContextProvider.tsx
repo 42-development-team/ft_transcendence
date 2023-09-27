@@ -37,7 +37,6 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('inviteCanceled', (body: any) => {
-			console.log("invite cancelled from", body.invitorId);
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			clearInterval(timerRef.current as NodeJS.Timeout);
@@ -177,7 +176,6 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			setInvitedId(invitedId);
-			console.log("invite to play with id: " + invitedId)
 			socket?.emit("invite", { invitedId,  modeEnabled });
 		}
 		catch (error) {
@@ -203,7 +201,6 @@ export default function GameInviteProvider({ children }: any) {
 	const cancelInvite = async (invitedId: string) => {
 		closePanel(true);
 		socket?.emit('cancelInvite', { invitedId });
-		console.log("cancelling invite wiht invitedId: " + invitedId);
 		return () => {
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 		}

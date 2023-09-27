@@ -156,7 +156,7 @@ export default function useChannels(userId: string) {
         socket?.on('leftRoom', (body: any) => {
             handleLeftRoom(body);
         });
-        socket?.on('NewChatRoom', () => {
+        socket?.on('newChatRoom', () => {
             fetchChannelsInfo();
         });
         socket?.on('directMessage', (body: any) => {
@@ -165,6 +165,10 @@ export default function useChannels(userId: string) {
         socket?.on('chatroomUpdate', (body: any) => {
             handleChatroomUpdate(body);
         });
+        socket?.on('invitedRoom', (body: any) => {
+           const { roomId } = body;
+           fetchChannelContent(roomId);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -172,9 +176,10 @@ export default function useChannels(userId: string) {
             socket?.off('newConnectionOnChannel');
             socket?.off('newDisconnectionOnChannel');
             socket?.off('leftRoom');
-            socket?.off('NewChatRoom');
+            socket?.off('newChatRoom');
             socket?.off('directMessage');
             socket?.off('chatroomUpdate');
+            socket?.off('invitedRoom');
         }
     }, [socket, joinedChannels, channels]);
     // useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
@@ -297,6 +302,10 @@ export default function useChannels(userId: string) {
             if (fetchedChannel.type == ChannelType.DirectMessage) {
                 const targetMember = fetchedChannel.members?.find(m => m.id != userId);
                 fetchedChannel.directMessageTargetUsername = targetMember?.username;
+            } else if (fetchedChannel.type == ChannelType.Private) {
+                if (fetchedChannel.members && fetchedChannel.members?.length > 1) {
+                    fetchedChannel.unreadMessages = 1;
+                }
             }
             // Search if channel already exists
             const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === fetchedChannel.name);

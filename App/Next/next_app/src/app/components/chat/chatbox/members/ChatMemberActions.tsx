@@ -39,7 +39,6 @@ const ChatMemberActions = (
 	}: ChatMemberActionsProps) => {
 		const Router = useRouter();
 	const onProfileClick = () => {
-		console.log("onProfileClick");
 		sessionStorage.setItem("userId", user.id);
 		if (sessionStorage.getItem("userId") === undefined)
 			setOpenAlert(true);
@@ -77,7 +76,6 @@ const ChatMemberActions = (
 
 	clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
-	// Todo: invite to game button (if user is online)
 	return (
 		<div className="flex flex-row gap-2">
 			{adminActionsEnabled && !user.isBanned &&

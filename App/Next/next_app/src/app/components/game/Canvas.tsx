@@ -84,7 +84,7 @@ const Canvas = ({ ...props }) => {
 
 	const { move, stopMove, launchGame, data, mode, userId } = props;
 
-	const [width, setWidth] = useState<number>(window.innerWidth);
+	const [width, setWidth] = useState<number>(window.innerWidth * 0.9);
 	let height: number;
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -95,6 +95,8 @@ const Canvas = ({ ...props }) => {
 	}, []);
 
 	useEffect(() => {
+		if (!data)
+			return;
 		const canvas = canvasRef.current;
 		if (!canvas)
 			return;
@@ -126,8 +128,9 @@ const Canvas = ({ ...props }) => {
 	}, [data]);
 
 	return (
-		<div className="flex justify-center items-center canvas h-[9/16vw] w-full">
+		<div className="flex flex-col justify-center items-center canvas h-[9/16vw]">
 			<canvas className="border-2 border-color-#cba6f7" id="cnv" style={canvasStyle} width={width} height={width * (9 / 16)} ref={canvasRef} />
+			<div className="pt-2">Use Arrow Keys To Move</div>
 		</div>
 	);
 }

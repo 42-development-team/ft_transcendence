@@ -1,15 +1,29 @@
-import Link from 'next/link';
+"use client";
+
 import notFoundHigh from '../../public/notFoundHigh.png';
-import Image from 'next/image';
+import { useRouter } from "next/navigation";
+import CustomBtn from './components/CustomBtn';
 
 export default function NotFound() {
+    const router = useRouter();
+
+    const onClick = () => {
+        router.push('/home');
+    }
+
     return (
-        <div className='flex flex-col gap-4'>
-            <Image src={notFoundHigh} alt='404' width={500} height={500} className=' flex transition-transform translate-y-15'/>
-            <h1 className='text-center text-2xl mb-6'>404 - Page Not Found</h1>
-            <Link className='mb-10 bg-mauve hover:bg-pink cursor-pointer drop-shadow-xl rounded text-base font-bold text-lg p-2 text-center
-		disabled:pointer-events-none disabled:opacity-50' href="/">
-            Return home</Link>
+        <div className='flex flex-col items-center '>
+            <div style={{
+                backgroundImage: 'url(' + notFoundHigh.src + ')',
+                backgroundPosition: 'center center',
+                backgroundSize: 'cover',
+                border: 'solid 0px',
+                borderRadius: 400 / 2 + 'px',
+                height: 400 + 'px',
+                width: 400 + 'px',
+            }} />
+            <h1 className='text-center text-3xl mb-6'>404 - Page not found</h1>
+            <CustomBtn disable={false} onClick={onClick} color='bg-red'>Home</CustomBtn>
         </div>
     )
 }

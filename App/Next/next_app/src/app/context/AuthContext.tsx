@@ -1,9 +1,7 @@
 "use client";
-import { Dialog, DialogBody, DialogFooter, DialogHeader, Button } from "@material-tailwind/react";
 import React, { useContext, createContext, useState, useEffect } from "react";
 import LoadingContext from "./LoadingContext";
 import { io, Socket } from 'socket.io-client';
-import { delay } from "@/app/utils/delay";
 
 type AuthContextType = {
 	isLoggedIn: boolean;
@@ -32,10 +30,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 	const [uniqueLogin, setUniqueLogin] = useState<string>("");
 	const [userId, setUserId] = useState<string>("");
 	const [socket, setSocket] = useState<Socket | undefined>(undefined);
-	const [channelNameInvited, setChannelNameInvited] = useState("");
 	const ENDPOINT = `${process.env.BACK_URL}`;
-	const [open, setOpen] = useState(false);
-	const [invited, setInvited] = useState(false);
 	const { gameLoading, setGameLoading } = useContext(LoadingContext);
 	const [socketReady, setSocketReady] = useState(false);
 
@@ -91,9 +86,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
 			console.log("error fetching logout: " + error.message);
 		});
+		setUserId("");
 		setLoggedIn(false);
 		setUniqueLogin("");
-		setUserId("");
 		setGameLoading(false);
 		socket?.disconnect();
 	}
@@ -133,43 +128,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		}
 	};
 
-	useEffect(() => {
-		socket?.on('userInvited', (body: any) => {
-			const {room} = body;
-			setChannelNameInvited(room);
-			setInvited(true);
-			const userInvited = body.user;
-			if (userInvited.id === userId) {
-				console.log(`user ${userInvited.name} has been invited to join channel ${channelNameInvited}`);
-				setOpen(true);
-			}
-		})
-	}, [socket, invited]);
-
-	const handleOpen = async () => {
-		await delay(2000);
-		setOpen(!open);
-	}
-
 	return (
 		<AuthContext.Provider value={{ isLoggedIn, login, logout, uniqueLogin, userId, socket, socketReady }}>
 			{children}
-			<Dialog open={open} handler={handleOpen} className="mt-auto">
-				<DialogHeader>
-					Invitation
-				</DialogHeader>
-				<DialogBody divider>
-					You have been invited to join the channel: {channelNameInvited}
-				</DialogBody>
-				<DialogFooter>
-					<Button
-						variant="text" color="red"
-						onClick={handleOpen}
-						className="mr-1">
-						Ok
-					</Button>
-				</DialogFooter>
-			</Dialog>
 		</AuthContext.Provider>
 	)
 }

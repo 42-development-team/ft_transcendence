@@ -11,7 +11,7 @@ export function DisplayResultData({ user, opponent }: { user: any, opponent: any
                 {user ? (
                     <div className="flex flex-col text-center ml-[4vw] ">
                         <Avatar
-                            width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} disableImageResize={true} currId={user.id} isOnProfilePage={false}
+                            width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} currId={user.id} isOnProfilePage={false}
                         />
                         {user.userName}
                     </div>
@@ -36,7 +36,7 @@ export function DisplayResultData({ user, opponent }: { user: any, opponent: any
                 {opponent ? (
                     <div className="flex flex-col text-center mr-[4vw]">
                         <Avatar
-                            width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} disableImageResize={true} currId={opponent.id} isOnProfilePage={false}
+                            width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} currId={opponent.id} isOnProfilePage={false}
                         />
                         {opponent.userName}
                     </div>

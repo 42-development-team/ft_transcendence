@@ -7,16 +7,18 @@ import CustomBtn from "../CustomBtn";
 import Logo from "../home/Logo";
 import { DisplayResultData } from "./DisplayResultData";
 import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/app/context/AuthContext";
 
 const Result = ({ ...props }) => {
     const router = useRouter();
-    const { result, setResult, joinQueue, setInGameContext, data } = props;
+    const { userId } = useAuthContext();
+    const { result, setResult, joinQueue, setInGameContext, data, setMode } = props;
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!data || !data.player1) {
+        if (!data || !data.player1 || userId === undefined || userId === "") {
             return;
         }
         const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.points : data.player2.points;
@@ -33,22 +35,14 @@ const Result = ({ ...props }) => {
         };
 
         getUser(result.id);
-        console.log("data.player", data.player1, data.player2);
         getOpponent(data.player1.id === parseInt(result.id) ? data.player2.id : data.player1.id);
     }, [result.id, data.player1.id]);
-
-    const matchmaking = async () => {
-        setQueued(true);
-        await joinQueue();
-        setResult(undefined);
-        setInGameContext(false);
-    }
 
     const backHome = () => {
         setQueued(false);
         setResult(undefined);
         setInGameContext(false);
-        router.push("/");
+        router.push("/home");
     }
 
     return (
@@ -65,16 +59,6 @@ const Result = ({ ...props }) => {
             <div className="flex flex-col ">
                 <DisplayResultData user={user} opponent={opponent} />
                 <div className="flex flex-col items-center">
-                    <CustomBtn
-                        anim={true}
-                        color={'bg-mauve'}
-                        id="Play Again Button"
-                        onClick={matchmaking}
-                        disable={false}
-                        width="w-[60%]"
-                    >
-                        Play Again
-                    </CustomBtn>
                     <CustomBtn
                         anim={true}
                         color={'bg-red'}

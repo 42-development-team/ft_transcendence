@@ -58,7 +58,6 @@ export class UsersController {
     async getStatus(@Param('id') id: string, @Res() response: Response) {
 		try {
 			const userId: number = parseInt(id);
-			// console.log("userId in get Current Status: ", userId);
 			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
 			response.status(HttpStatus.OK).json(currentStatus);
 		} catch (error) {
@@ -81,6 +80,5 @@ export class UsersController {
     async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
         this.logger.log(`Deleting user with ID: ${id}`);
         await this.userService.deleteUser(id);
-        // todo update in order to remove the user from channel admins/members list
     }
 }
