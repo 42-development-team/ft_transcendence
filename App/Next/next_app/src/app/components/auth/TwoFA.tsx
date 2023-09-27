@@ -38,7 +38,6 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		  setEnableBtnActivated(!data);
 	  }
     }
-	console.log("enableBtnActivated", enableBtnActivated);
     fetchData().catch(console.error);
   }, [userId, isVisible]);
 
@@ -145,7 +144,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setImageUrl('');
 		setColor('bg-mauve');
 		setColorText('text-green-700');
-		setEnableBtnText(activTwoFA ? 'Enable 2FA ?' : '2FA enabled');
+		setEnableBtnText(activTwoFA ? 'Enable 2FA ' : '2FA enabled');
 		setMessage(activTwoFA ? 'Two Factor Auth disabled' : 'Two Factor Auth enabled');
 	  }
 
@@ -187,7 +186,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 						onClick={handleDisableClick} 
 						disable={!disableBtnActivated}
 					>
-						Disable 2FA ?
+						Disable 2FA 
 					</CustomBtn>
 				}
 				<CustomBtn
