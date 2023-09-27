@@ -34,7 +34,6 @@ const FriendInvite = ({ user, hideActions }: FriendProps) => {
 	}
 
 	const cancelFriendRequest = async () => {
-		console.log("test");
 		await fetch(`${process.env.BACK_URL}/friend/cancelFriend/${user.id}`, {
 			credentials: "include",
 			method: "PATCH"

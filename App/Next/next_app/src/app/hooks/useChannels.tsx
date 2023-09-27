@@ -156,7 +156,7 @@ export default function useChannels(userId: string) {
         socket?.on('leftRoom', (body: any) => {
             handleLeftRoom(body);
         });
-        socket?.on('NewChatRoom', () => {
+        socket?.on('newChatRoom', () => {
             fetchChannelsInfo();
         });
         socket?.on('directMessage', (body: any) => {
@@ -176,8 +176,7 @@ export default function useChannels(userId: string) {
             socket?.off('newConnectionOnChannel');
             socket?.off('newDisconnectionOnChannel');
             socket?.off('leftRoom');
-            // Todo: use lowercased event name
-            socket?.off('NewChatRoom');
+            socket?.off('newChatRoom');
             socket?.off('directMessage');
             socket?.off('chatroomUpdate');
             socket?.off('invitedRoom');

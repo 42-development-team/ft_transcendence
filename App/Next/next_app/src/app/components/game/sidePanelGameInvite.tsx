@@ -92,7 +92,7 @@ const SidePanelGameInvite = () => {
                 {receiveVisible &&
                     < div className="flex flex-col items-center justify-center my-1 text-lg font-semibold">
                         <div className="mb-2">
-                            {message !== ""? <span>{message}</span> : <span>{invitorUsername} want to play ({timer})</span>}{/* TODO: here put username */}
+                            {message !== ""? <span>{message}</span> : <span>{invitorUsername} want to play ({timer})</span>}
                         </div>
                         {message === "" &&
                             <div className="flex justify-evenly w-full flex-row">
