@@ -80,6 +80,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
     const goToProfile = () => {
         if (isButtonClicked) return;
         setIsButtonClicked(true);
+        setTimeout(() => setIsButtonClicked(false), 2000);
         setInGameContext(false);
         sessionStorage.setItem("userId", userId.toString());
         router.push('/profile');
@@ -98,6 +99,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
                         setInGameContext(false);
                         if (isButtonClicked) return;
                         setIsButtonClicked(true);
+                        setTimeout(() => setIsButtonClicked(false), 2000);
                         router.push('/settings')
                     }}>
                         Settings
@@ -107,6 +109,7 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
                         onClick={() => {
                             if (isButtonClicked) return;
                             setIsButtonClicked(true);
+                            setTimeout(() => setIsButtonClicked(false), 2000);
                             logout();
                             router.push("/");
                         }}>

@@ -39,7 +39,6 @@ const ChatMemberActions = (
 	}: ChatMemberActionsProps) => {
 		const Router = useRouter();
 	const onProfileClick = () => {
-		console.log("onProfileClick");
 		sessionStorage.setItem("userId", user.id);
 		if (sessionStorage.getItem("userId") === undefined)
 			setOpenAlert(true);
