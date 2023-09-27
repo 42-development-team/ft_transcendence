@@ -29,6 +29,7 @@ const Channel = ({channel :{name, type, id, unreadMessages}}: ChannelProps) => {
                     className={`
                         ${type == ChannelType.Public && "bg-blue text-base"} 
                         ${type == ChannelType.Protected && "bg-yellow text-base"}
+                        ${type == ChannelType.Private && "border-2 border-text"}
                         ${type == ChannelType.DirectMessage && "bg-green text-base"}
                         rounded-[inherit] w-[inherit] h-[inherit] relative p-1`}>
                     <p className='text-xs break-keep'>{name}</p>
