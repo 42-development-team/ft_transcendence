@@ -45,6 +45,8 @@ const Game = ({ ...props }) => {
 								userName={userName}
 								opponnentUsername={opponnentUsername}
 								userId={userId}
+								id={props.data.id}
+								surrender={props.surrender}
 							/>
 						</div>
 						<Canvas
