@@ -95,6 +95,8 @@ const Canvas = ({ ...props }) => {
 	}, []);
 
 	useEffect(() => {
+		if (!data)
+			return;
 		const canvas = canvasRef.current;
 		if (!canvas)
 			return;

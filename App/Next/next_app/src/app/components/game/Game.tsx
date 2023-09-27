@@ -2,26 +2,28 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
-import Logo from "../home/Logo";
 import getUserNameById from "../utils/getUserNameById";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownActionSurrender } from "../dropdown/DropDownItem";
+import { useAuthContext } from "@/app/context/AuthContext";
 
 const Game = ({ ...props }) => {
-
-	const { socket, move, stopMove, launchGame, joinQueue, data, mode, userId, result, setResult, setInGameContext, setMode } = props;
+	const { userId } = useAuthContext();
+	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode } = props;
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
+	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
 
 	useEffect(() => {
-		if (!props.data || !props.data.player1) {
+		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
 			socket?.emit("retrieveData", props.userId);
-			return ;
+			return;
 		}
+		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
 		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
 			setUserName(userName);
 		});
-		if ( props.data.player1.id === parseInt(props.userId))
+		if (props.data.player1.id === parseInt(props.userId))
 			getUserNameById(props.data.player2.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
@@ -37,15 +39,33 @@ const Game = ({ ...props }) => {
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
-							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
-							<div className="flex flex-row text-[2.2vw] text-mauve">
-								{userName}
-								<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
-									<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
-										Surrender
-									</DropDownActionSurrender>	
-								</DropDownMenu>	
-							</div>
+							{currUserIsOnLeft ? (
+								<>
+									<div className="flex flex-row text-[2.2vw] text-mauve">
+										{userName}
+										<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
+											<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
+												Surrender
+											</DropDownActionSurrender>
+										</DropDownMenu>
+									</div>
+									<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
+
+								</>
+							) : (
+								<>
+									<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
+									<div className="flex flex-row text-[2.2vw] text-mauve">
+										{userName}
+										<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
+											<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
+												Surrender
+											</DropDownActionSurrender>
+										</DropDownMenu>
+									</div>
+
+								</>
+							)}
 						</div>
 						<Canvas
 							move={move}

@@ -27,7 +27,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clients: Socket[] = [];
 
     async handleConnection(client: Socket) {
-        // await this.cleanQueues(client); //TODO: clean game room ? or add socket array
         const userId = await this.userService.getUserIdFromSocket(client);
         if (userId) {
             console.log("GameSocket Connected: ", client.id);
