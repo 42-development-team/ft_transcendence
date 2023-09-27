@@ -67,6 +67,13 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
             setGameLoading(false);
         });
 
+
+        return () => {
+            socket?.off('isQueued');
+            socket?.off('isNotQueued');
+            socket?.off('redirect');
+        }
+
     }, [socket]);
 
     useEffect(() => {
