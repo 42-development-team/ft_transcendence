@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Create the project if it doesn't exist
 if [ ! -d "/app/nest_app" ]; then
     nest new nest_app --template=typescript --package-manager npm
 
@@ -16,27 +15,11 @@ fi
 cd /app/nest_app
 
 npm install
-npm update
 npm update --save --save-dev
 
-######### TEST CORS ############3
-npm install cors
-
-####################################
-
-## Todo: regenerate database without reset
-echo "Prisma migrate reset"
-npx prisma migrate reset -f
-
-#2FA
-npm install otplib
-npm i --save-dev @types/qrcode
+npx prisma migrate dev
 
 # Allow to access and edit database in the browser via port 5555
-#npx prisma generate
-#npx prisma migrate dev
-
 (npx prisma studio&)
 
-echo "Starting backend"
 npm run start:dev
