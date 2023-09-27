@@ -308,9 +308,7 @@ export class ChatroomController {
 				response.send(JSON.stringify("ok"));
 			}
 		} else {
-			const notInDatabaseMessage = "User invited not found"
-			console.log(notInDatabaseMessage);
-			response.send(JSON.stringify("notInDatabaseMessage"));
+			response.send(JSON.stringify("User not found"));
 		}
 	}
 
