@@ -6,6 +6,7 @@ import getUserNameById from "../utils/getUserNameById";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import { useAuthContext } from "@/app/context/AuthContext";
+import { GameHeaderInfo } from "./GameHeaderInfo";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
@@ -39,33 +40,12 @@ const Game = ({ ...props }) => {
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
-							{currUserIsOnLeft ? (
-								<>
-									<div className="flex flex-row text-[2.2vw] text-mauve">
-										{userName}
-										<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
-											<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
-												Surrender
-											</DropDownActionSurrender>
-										</DropDownMenu>
-									</div>
-									<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
-
-								</>
-							) : (
-								<>
-									<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
-									<div className="flex flex-row text-[2.2vw] text-mauve">
-										{userName}
-										<DropDownMenu width="w-4" height="h-4" color="bg-crust" position="bottom-10 right-2">
-											<DropDownActionSurrender onClick={() => props.surrender(props.data.id, parseInt(userId))}>
-												Surrender
-											</DropDownActionSurrender>
-										</DropDownMenu>
-									</div>
-
-								</>
-							)}
+							<GameHeaderInfo
+								currUserIsOnLeft={currUserIsOnLeft}
+								userName={userName}
+								opponnentUsername={opponnentUsername}
+								userId={userId}
+							/>
 						</div>
 						<Canvas
 							move={move}
