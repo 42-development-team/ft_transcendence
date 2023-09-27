@@ -24,6 +24,7 @@ const StatsWindow = ({ userId, friends, invitedFriends, requestedFriends, addFri
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
 	useEffect(() => {
+		if (userId === undefined || userId === "") return ;
 		let sessionUserId = null;
 		sessionUserId = sessionStorageUser();
 
