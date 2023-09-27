@@ -69,7 +69,6 @@ export default function useGame() {
 			socket?.off('matchIsReady');
 			socket?.off('reconnectGame');
 			socket?.off('endOfGame');
-			socket?.off('surrender');
 			socket?.off('sendDataToUser');
 			socket?.off('isAlreadyInGame');
 		};
