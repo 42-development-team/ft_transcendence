@@ -73,7 +73,7 @@ const ChatMemberItem = ({
     };
 
 	useEffect(() => {
-		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId); console.log("Update event"); });
+		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
 			socket?.off("userStatusUpdate", statusChangeMonitor);
