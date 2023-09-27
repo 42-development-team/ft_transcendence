@@ -24,7 +24,7 @@ export class UserStatsService {
 			data: {
 				user: { connect: { id: userId } },
 			},
-		});
+		});	
 		return newUserStats;
 	}
 
@@ -34,16 +34,38 @@ export class UserStatsService {
 			include: { userStats: true },
 			where: { id: userId },
 		});
+		let userStatsDto: UserStatsDto;
 
 		if (user.userStats === undefined || !user.userStats) {
 			const newUserStats = await this.createUserStats(userId);
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
-			return newUserStats;
+			userStatsDto = {
+				avatar: user.avatar,
+				userName: user.username,
+				userId: newUserStats.userId,
+				winStreak: newUserStats.winStreak,
+				win: newUserStats.win,
+				lose: newUserStats.lose,
+				totalScore: newUserStats.totalScore,
+				ratio: newUserStats.ratio,
+				played: newUserStats.played,
+			};
+			return userStatsDto;
 		}
 
-		return user.userStats;
+		return userStatsDto = {
+			avatar: user.avatar,
+			userName: user.username,
+			userId: user.userStats.userId,
+			winStreak: user.userStats.winStreak,
+			win: user.userStats.win,
+			lose: user.userStats.lose,
+			totalScore: user.userStats.totalScore,
+			ratio: user.userStats.ratio,
+			played: user.userStats.played,
+		};
 	}
 
 	async createUserStatsIfNotExists( user: any ) {
@@ -66,12 +88,11 @@ export class UserStatsService {
 			where: { id: userId },
 		});
 		const username = user.username;
-		await this.createUserStatsIfNotExists(user);
+		// await this.createUserStatsIfNotExists(user);
 		const leaderBoard = await this.prisma.userStats.findMany({
 			include: { user: true },
 			orderBy: { totalScore: 'desc' },
 		});
-		console.log("leaderboard", leaderBoard);
 		const leaderBoardDto = leaderBoard.map((userStats) => {
 			return {
 				userId: userStats.userId,

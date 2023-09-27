@@ -16,6 +16,7 @@ export default function Profile() {
 	}, []);
 
     useEffect(() => {
+        if ( userId === undefined || userId === "" ) return ;
         createStats({userId: Number(userId)});
         console.log("Stats created with userId: ", userId)
     }, [userId]);
