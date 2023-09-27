@@ -35,7 +35,7 @@ const Game = ({ ...props }) => {
 		<div className="flex flex-grow justify-center">
 			{data && (
 				(result === undefined || result === null) ? (
-					<div className="flex flex-col flex-grow justify-center">
+					<div className="flex flex-col flex-grow justify-center h-full">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
 							<div className="flex text-[2.2vw] text-mauve">{opponnentUsername}</div>
 							<div className="flex flex-row text-[2.2vw] text-mauve">

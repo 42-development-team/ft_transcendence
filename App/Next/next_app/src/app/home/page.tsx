@@ -1,7 +1,6 @@
 "use client"
-
 import Chat from "@/components/chat/Chat";
-import { SetStateAction, useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
@@ -9,8 +8,6 @@ import useGame from "../hooks/useGame";
 import InGameContext from "../context/inGameContext";
 import useFriends from "@/hooks/useFriends";
 import Logo from "../components/home/Logo";
-import { get } from "http";
-import getUserNameById from "../components/utils/getUserNameById";
 
 export default function Home() {
 	const { login, userId } = useAuthContext();
@@ -20,7 +17,6 @@ export default function Home() {
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
 		login();
-
 	}, []);
 
 	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
@@ -45,13 +41,9 @@ export default function Home() {
 							mode={mode}
 						/>
 					</div>
-					{mode ?
-					<p>Use All Arrows To Move</p>
-					:
-					<p>Use Arrows To Move</p>}
 				</div>
 			) : (
-				<div className="flex justify-center flex-grow h-full w-full">
+				<div className="flex flex-col justify-center h-full w-full items-center">
 					<Game
 						socket={socket}
 						surrender={surrender}
