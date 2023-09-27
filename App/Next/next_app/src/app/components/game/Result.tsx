@@ -33,20 +33,8 @@ const Result = ({ ...props }) => {
         };
 
         getUser(result.id);
-        console.log("data.player", data.player1, data.player2);
         getOpponent(data.player1.id === parseInt(result.id) ? data.player2.id : data.player1.id);
     }, [result.id, data.player1.id]);
-
-    const matchmaking = async () => {
-        if (data) {
-            console.log(data);
-            setMode(data.mode);
-        }
-        setQueued(true);
-        setInGameContext(false);
-        setResult(undefined);
-        await joinQueue();
-    }
 
     const backHome = () => {
         setQueued(false);
@@ -69,16 +57,6 @@ const Result = ({ ...props }) => {
             <div className="flex flex-col ">
                 <DisplayResultData user={user} opponent={opponent} />
                 <div className="flex flex-col items-center">
-                    <CustomBtn
-                        anim={true}
-                        color={'bg-mauve'}
-                        id="Play Again Button"
-                        onClick={matchmaking}
-                        disable={false}
-                        width="w-[60%]"
-                    >
-                        Play Again
-                    </CustomBtn>
                     <CustomBtn
                         anim={true}
                         color={'bg-red'}

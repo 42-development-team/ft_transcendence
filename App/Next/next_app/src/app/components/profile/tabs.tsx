@@ -17,11 +17,15 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "red" : "peach");
 
     useEffect(() => {
+        if (userId === undefined || userId === "") return;
         let sessionUserId = null;
         sessionUserId = sessionStorageUser();
 
         if (sessionUserId !== null && sessionUserId !== undefined) {
             setUserIdNumber(Number(sessionUserId) as number);
+        }
+        else {
+            setUserIdNumber(Number(userId) as number);
         }
 
         const fetchGame = async (userIdNumber: number) => {
@@ -35,12 +39,9 @@ export function UnderlineTabs({ userId }: { userId: string }) {
         }
 
         try {
-
             if (userIdNumber === 0) return;
             fetchGame(userIdNumber);
             fetchStats(userIdNumber);
-            if (stats === undefined)
-                throw new Error();
         } catch (error) {
             console.log("Error response when fetching userstats/info:", error);
         }

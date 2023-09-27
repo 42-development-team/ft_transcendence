@@ -86,9 +86,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		await fetch(`${process.env.BACK_URL}/auth/logout`, { credentials: "include" }).catch((error) => {
 			console.log("error fetching logout: " + error.message);
 		});
+		setUserId("");
 		setLoggedIn(false);
 		setUniqueLogin("");
-		setUserId("");
 		setGameLoading(false);
 		socket?.disconnect();
 	}
