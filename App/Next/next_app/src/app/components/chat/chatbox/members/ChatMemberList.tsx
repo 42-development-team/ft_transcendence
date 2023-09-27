@@ -303,11 +303,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 	}
 
     return (
-        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg flex flex-col w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <BackToChatButton onClick={() => updateChatBarState(ChatBarState.ChatOpen)} />
             </ChatHeader>
-            <div className='overflow-auto h-[86vh]'>
+            <div className='overflow-auto h-full'>
                 <ChatMemberHeader>👑 Owner</ChatMemberHeader>
                 {OwnerList}
                 <ChatMemberHeader>🛡️ Admin</ChatMemberHeader>
