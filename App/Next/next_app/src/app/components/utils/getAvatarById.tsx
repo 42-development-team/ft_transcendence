@@ -8,7 +8,7 @@ const getAvatarById = async ( userId: string ) => {
         const data = await response.json();
         return (data.avatar);
     } catch (error) {
-        console.log("Error response when fetching userstats/info:", error);
+        console.log("Error response when fetching Avatar/userid:", error);
         return (null);
     }
 }

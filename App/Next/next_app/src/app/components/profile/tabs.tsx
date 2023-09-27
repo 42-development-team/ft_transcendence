@@ -23,6 +23,9 @@ export function UnderlineTabs({ userId }: { userId: string }) {
         if (sessionUserId !== null && sessionUserId !== undefined) {
             setUserIdNumber(Number(sessionUserId) as number);
         }
+        else {
+            setUserIdNumber(Number(userId) as number);
+        }
 
         const fetchGame = async (userIdNumber: number) => {
             const getgames = await getGames({ userId: userIdNumber });
@@ -35,12 +38,9 @@ export function UnderlineTabs({ userId }: { userId: string }) {
         }
 
         try {
-
             if (userIdNumber === 0) return;
             fetchGame(userIdNumber);
             fetchStats(userIdNumber);
-            if (stats === undefined)
-                throw new Error();
         } catch (error) {
             console.log("Error response when fetching userstats/info:", error);
         }

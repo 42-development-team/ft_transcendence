@@ -5,6 +5,7 @@ import Chat from "@/components/chat/Chat";
 import useFriends from "@/hooks/useFriends";
 import { useAuthContext } from "@/context/AuthContext";
 import { useEffect } from "react";
+import createStats from "../components/profile/createUserStats";
 
 export default function Profile() {
 	const { login, userId } = useAuthContext();
@@ -13,6 +14,11 @@ export default function Profile() {
 	useEffect(() => {
 		login();
 	}, []);
+
+    useEffect(() => {
+        createStats({userId: Number(userId)});
+        console.log("Stats created with userId: ", userId)
+    }, [userId]);
 
     return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
         <div className="flex w-full h-full">

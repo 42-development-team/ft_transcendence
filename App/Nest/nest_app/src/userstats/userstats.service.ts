@@ -1,11 +1,8 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserIdDto } from "./dto/user-id.dto";
 import { UserStatsDto } from "./dto/userstats.dto";
-import { stat } from "fs";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { GameService } from "src/game/game.service";
-import { GameUserDto } from "src/game/dto/game-user.dto";
-import { GetGameDto } from "src/game/dto/get-game.dto";
 
 @Injectable()
 export class UserStatsService {
@@ -16,16 +13,16 @@ export class UserStatsService {
 		 ) {}
 
 	/* C(reate) */
-	async createUserStats( userIdDto: UserIdDto ) {
+	async createUserStats( userId: number ) {
 		const stats = await this.prisma.userStats.findUnique({
-			where:  { userId: userIdDto.userId },
+			where:  { userId: userId },
 		});
 		if ( stats ) {
-			throw new Error("UsersStats already exists");
+			return stats;
 		}
 		const newUserStats = await this.prisma.userStats.create({
 			data: {
-				user: { connect: { id: userIdDto.userId } },
+				user: { connect: { id: userId } },
 			},
 		});
 		return newUserStats;
@@ -37,51 +34,30 @@ export class UserStatsService {
 			include: { userStats: true },
 			where: { id: userId },
 		});
-		const userName = user.username;
-
-		let statsDto = {
-			userId: user.id,
-			userName: userName,
-			avatar: user.avatar,
-			winStreak: 0,
-			win: 0,
-			lose: 0,
-			totalScore: 0,
-			ratio: 0,
-			played: 0,
-		};
 
 		if (user.userStats === undefined || !user.userStats) {
-			const newUserStats = await this.createUserStats({ userId: userId });
+			const newUserStats = await this.createUserStats(userId);
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
-			return statsDto;
+			return newUserStats;
 		}
 
-		statsDto.avatar = user.avatar;
-		statsDto.winStreak = user.userStats.winStreak;
-		statsDto.win = user.userStats.win;
-		statsDto.lose = user.userStats.lose;
-		statsDto.totalScore = user.userStats.totalScore;
-		statsDto.ratio = user.userStats.ratio;
-		statsDto.played = user.userStats.played;
-		
-		return statsDto;
+		return user.userStats;
 	}
 
-	async creteUserStatsIfNotExists( user: any ) {
-		if (user.userStats === undefined || !user.userStats) {
-			const newUserStats = await this.createUserStats({ userId: user.id });
+	async createUserStatsIfNotExists( user: any ) {
+		if (user.userStats === undefined || user.userStats === null) {
+			const newUserStats = await this.createUserStats(user.id);
 			if ( !newUserStats ) {
 				throw new Error("UserStats Creation failed");
 			}
 		}
-		user = await this.prisma.user.findUniqueOrThrow({
+		const userUpdated = await this.prisma.user.findUniqueOrThrow({
 			include: { userStats: true },
 			where: { id: user.id },
 		});
-		return user;
+		return userUpdated;
 	}
 
 	async getLeaderBoard(userId: number) : Promise<UserStatsDto[]>{
@@ -90,11 +66,12 @@ export class UserStatsService {
 			where: { id: userId },
 		});
 		const username = user.username;
-		await this.creteUserStatsIfNotExists(user);
+		await this.createUserStatsIfNotExists(user);
 		const leaderBoard = await this.prisma.userStats.findMany({
 			include: { user: true },
 			orderBy: { totalScore: 'desc' },
 		});
+		console.log("leaderboard", leaderBoard);
 		const leaderBoardDto = leaderBoard.map((userStats) => {
 			return {
 				userId: userStats.userId,
@@ -135,7 +112,7 @@ export class UserStatsService {
 		});
 		const win = isWinner ? 1 : 0;
 		try {
-			user = await this.creteUserStatsIfNotExists(user);
+			user = await this.createUserStatsIfNotExists(user);
 			const updatedStats = await this.prisma.userStats.update({
 				include: { user: true},
 				where: { userId: user.id },
@@ -169,8 +146,8 @@ export class UserStatsService {
 				include: { userStats: true },
 				where: { id: loserId },
 			});
-			winner = await this.creteUserStatsIfNotExists(winner);
-			loser = await this.creteUserStatsIfNotExists(loser);
+			winner = await this.createUserStatsIfNotExists(winner);
+			loser = await this.createUserStatsIfNotExists(loser);
 
 			const winnerElo = winner.userStats.totalScore;
 			const loserElo = loser.userStats.totalScore;
