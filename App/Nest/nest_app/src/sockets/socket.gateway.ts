@@ -17,7 +17,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private chatroomService: ChatroomService,
 		private userService: UsersService,
 		private memberShipService: MembershipService,
-	) { }
+	) {
+		this.userService.deleteAllPreviousSocketIds();
+	 }
 
 	@WebSocketServer()
 	server: Server;
