@@ -35,7 +35,6 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 	}
 
 	const removeFriend = async () => {
-		console.log("removing friend");
 		await fetch(`${process.env.BACK_URL}/friend/removeFriend/${currentId}`, {
 			credentials: "include",
 			method: "PATCH"

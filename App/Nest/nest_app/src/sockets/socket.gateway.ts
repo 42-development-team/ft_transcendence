@@ -114,7 +114,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleUnban(client: Socket, userId: number, roomId: string) {
 		const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
 		if (client) {
-			client.emit('NewChatRoom', { room });
+			client.emit('newChatRoom', { room });
 			console.log(`Client ${userId} (${client.id}) unbanned from room ${room}`);
 		} else {
 			console.log(`Client ${userId} unbanned from room ${room}`);

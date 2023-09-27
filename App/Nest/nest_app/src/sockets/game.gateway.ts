@@ -83,7 +83,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
             if (invitorId === undefined)
                 return;
-            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;//TODO: this sequence is redundant, create a function
+            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;
 
             const invitedIdNumber = Number(invitedId);
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
