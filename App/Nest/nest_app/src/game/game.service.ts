@@ -422,11 +422,11 @@ export class GameService {
     movePlayer(player: PlayerDto) {
         const val: number = player.y + player.velocity;
         if (player.velocity > 0) {
-            if (val + player.h / 2 < 0.99)
+            if (val + player.h / 2 < 0.98)
                 player.y = val;
         }
         else {
-            if (val - player.h / 2 > 0.01)
+            if (val - player.h / 2 > 0.02)
                 player.y = val;
         }
     }
