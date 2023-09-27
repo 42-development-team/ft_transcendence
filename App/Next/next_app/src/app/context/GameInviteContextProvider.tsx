@@ -177,7 +177,6 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			setInvitedId(invitedId);
-			console.log("invite to play with id: " + invitedId)
 			socket?.emit("invite", { invitedId,  modeEnabled });
 		}
 		catch (error) {
