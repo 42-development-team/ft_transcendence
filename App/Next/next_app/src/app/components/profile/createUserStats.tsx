@@ -11,11 +11,7 @@ const createStats = async ( {userId}: {userId: number} ) => {
             headers: {
                 "Content-Type": "application/json"
             }
-        })
-        const response = await data.json();
-        if (response.BAD_REQUEST)
-            console.log("Error during Stats creation");
-        return await response;
+        });
     } catch(error) {
         console.log("Error response when fetching LeaderBoard", error);
         return (error);
