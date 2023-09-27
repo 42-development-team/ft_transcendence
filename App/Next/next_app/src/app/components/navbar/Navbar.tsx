@@ -65,7 +65,6 @@ const NavLinks = ({ logout, isLoggedIn }: { logout: () => void, isLoggedIn: Bool
                 router.push('/home')
             }
             setGameLoading(false);
-            console.log(data);
         });
 
     }, [socket]);
