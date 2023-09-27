@@ -17,6 +17,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "red" : "peach");
 
     useEffect(() => {
+        if (userId === undefined || userId === "") return;
         let sessionUserId = null;
         sessionUserId = sessionStorageUser();
 

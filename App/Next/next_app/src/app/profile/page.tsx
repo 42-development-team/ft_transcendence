@@ -26,11 +26,13 @@ export default function Profile() {
 			<Chat userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
 				addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} />
             <div className="flex h-[calc(100%-48px)] w-full">
+                { userId && userId !== "" &&
                 <div className="mx-[3vw] sm:mx-[7vw] my-[4vw] flex flex-col flex-grow">
                     <StatsWindow userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
 				        addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser}/>
                     <UnderlineTabs userId={userId} />
                 </div>
+}
             </div>
         </div>
     )
