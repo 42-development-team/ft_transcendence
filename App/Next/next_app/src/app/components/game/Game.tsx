@@ -15,8 +15,9 @@ const Game = ({ ...props }) => {
 	const [dataReceived, setDataReceived] = useState<boolean>(false);
 
 	useEffect(() => {
+		if (userId === undefined || userId === "") return;
 		socket?.emit("retrieveData", userId);
-	}, []);
+	}, [userId]);
 
 	useEffect(() => {
 		if (dataReceived) return ;
