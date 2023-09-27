@@ -214,6 +214,12 @@ export class UsersService {
         });
     }
 
+    async deleteAllPreviousSocketIds(): Promise<void> {
+        await this.prisma.user.updateMany({
+            data: { socketIds: { set: [] } },
+        });
+    }
+
     /* Retreiving or creating a user when authenticating*/
 
     async createOrFindUser(login: string): Promise<CreateUserDto & { id?: number }> {
