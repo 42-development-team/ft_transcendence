@@ -21,7 +21,7 @@ stop:
 	$(DOCKER_COMPOSE) stop
 
 clean: stop
-	$(DOCKER_COMPOSE) down --rmi all --volumes --remove-orphans
+	$(DOCKER_COMPOSE) down --rmi all --remove-orphans
 	@echo "$(_GREEN)Removes images, containers and volumes$(_END)"
 
 ls:

@@ -1,29 +1,31 @@
-import TwoFA from "../components/auth/TwoFA";
-import getJwt from '@/app/utils/getJwt';
-import { useRouter } from "next/navigation";
-import SettingsPage from "../components/settings/settingsPage";
-import Chat from "../components/chat/Chat";
+"use client";
+import TwoFA from "@/components/auth/TwoFA";
+import SettingsPage from "@/components/settings/settingsPage";
+import Chat from "@/components/chat/Chat";
+import { useAuthContext } from "@/context/AuthContext";
+import { useEffect } from "react";
+import useFriends from "@/hooks/useFriends";
 
-export default async function Settings() {
+export default function Settings() {
+    const { login, userId } = useAuthContext();
+    const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
 
-    const payload = await getJwt();
-    if (payload === null || payload === undefined || payload.sub === undefined) {
-        const router = useRouter();
-        router.push('/');
-        return;
-    }
-    
-    const userId = payload.sub;
+    useEffect(() => {
+        login();
+    }, []);
 
     return (
         <div className="flex flex-auto w-full h-full">
-			<Chat userId={userId}/>
+			<Chat userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
+				addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} />
+            {userId !== "" && userId !== undefined && userId !== null && 
 				<div className="flex flex-col w-full h-[calc(100vh-48px)] justify-center">
-				<SettingsPage userId={userId}></SettingsPage>
-				<div className="flex flex-row justify-center">
-					<TwoFA userId={userId}></TwoFA>
-				</div>
-			</div>
+				    <SettingsPage userId={userId}></SettingsPage>
+				    <div className="flex flex-row justify-center">
+					    <TwoFA userId={userId}></TwoFA>
+				    </div>
+			    </div>
+            }
         </div>
     )
 }

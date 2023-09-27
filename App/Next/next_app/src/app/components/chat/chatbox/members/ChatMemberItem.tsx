@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { UserStatus } from "@/app/utils/models";
 import Image from "next/image";
 import ChatMemberActions from "./ChatMemberActions";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
+import { delay } from "@/app/utils/delay";
 
 type ChatMemberProps = {
     user: ChannelMember
@@ -18,63 +19,66 @@ type ChatMemberProps = {
     setAsAdmin: (newAdminId: string) => void
     removeAdmin: (removedAdminId: string) => void
     mute: (mutedId: string, muteDuration: number) => void
+    addFriend: (friendAddingId: string) => void
     blockUser: (blockedId: string) => void
     isBlocked: boolean
+	isFriend: boolean
+    isInvitedFriend: boolean
 }
 const ChatMemberItem = ({
 	user,
     isCurrentUser,
     kick, ban, unban, leaveChannel, directMessage, blockUser,
-    setAsAdmin, removeAdmin, mute, channelId, isBlocked
+    setAsAdmin, removeAdmin, mute, addFriend, channelId, isBlocked, isFriend, isInvitedFriend
 }: ChatMemberProps) => {
 	const [userStatus, setUserStatus] = useState(UserStatus.Offline);
-	const { socket } = useAuthcontext();
+	const { socket } = useAuthContext();
 	const [ statusChange, setStatusChange ] = useState(false);
 
+    const fetchedUserStatus = async () => {
+        try {
+            const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await response.json();
+            setUserStatus(data);
+        } catch (error) {
+            console.error('Error fetching user current status');
+        }
+    };
+
 	useEffect(() => {
-		const fetchedUserStatus = async () => {
-			try {
-				const response = await fetch(`${process.env.BACK_URL}/users/getCurrentStatus/${user.id}`, {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				});
-				const data = await response.json();
-				setUserStatus(data);
-			} catch (error) {
-				console.error('Error fetching user current status');
-			}
-		};
 		fetchedUserStatus();
 	}, [user.id, statusChange]);
 
-	useEffect(() => {
-		const statusChangeMonitor = async (userId: string) => {
-			const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
-			url.searchParams.append('userId', userId);
-			url.searchParams.append('channelId', channelId);
-			const response = await fetch(url.toString(), {
-				credentials: "include",
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-			});
-			const data = await response.json();
-			if (data) {
-				setStatusChange(usePrevious => !usePrevious);
-			}
-		};
+    const statusChangeMonitor = async (userId: string) => {
+        await delay(1000);
+        const url = new URL(`${process.env.BACK_URL}/chatroom/isMember`);
+        url.searchParams.append('userId', userId);
+        url.searchParams.append('channelId', channelId);
+        const response = await fetch(url.toString(), {
+            credentials: "include",
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        const data = await response.json();
+        if (data) {
+            setStatusChange(usePrevious => !usePrevious);
+        }
+    };
 
-		socket?.on("userLoggedIn", (body: any) => { statusChangeMonitor(body.userId) });
-		socket?.on("userLoggedOut", (body: any) => { statusChangeMonitor(body.userId) });
+	useEffect(() => {
+		socket?.on("userStatusUpdate", (body: any) => { statusChangeMonitor(body.userId) });
 
 		return () => {
-			socket?.off("userLoggedIn", statusChangeMonitor);
-  			socket?.off("userLoggedOut", statusChangeMonitor);
+			socket?.off("userStatusUpdate", statusChangeMonitor);
 		}
-	}, [socket])
+	}, [socket, statusChange])
 
     const kickUser = () => {
         if (kick == undefined) return;
@@ -112,14 +116,17 @@ const ChatMemberItem = ({
         blockUser(user.id);
     }
 
+    const addAsFriend = () => {
+        addFriend(user.id);
+    }
+
     const getColor = () => {
         if (user.isOwner) {
-            return 'text-red';
-            // return '#fab387';
+            return 'text-[red]';
         } else if (user.isAdmin) {
-            return 'text-orange';
+            return 'text-[orange]';
         } else if (user.isBanned) {
-            return 'text-gray';
+            return 'text-[gray]';
         }
         return 'text-text';
     }
@@ -138,12 +145,13 @@ const ChatMemberItem = ({
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(userStatus)}`}></div>
                     </div>
                 </div>
-                <h1 className={`${getColor()} pl[0.15rem] ${isCurrentUser && 'font-semibold'}`}>{user.username}</h1>
+                <p className={`${getColor()} pl[0.15rem] font-semibold text-md`}>{user.username}</p>
             </div>
             <ChatMemberActions isCurrentUser={isCurrentUser} user={user}
                 kickUser={kickUser} banUser={banUser} leaveChannel={leaveChannel}
                 unbanUser={unbanUser} sendDirectMessage={sendDirectMessage} muteUser={muteUser}
-                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked} />
+                setAdmin={setAdmin} unsetAdmin={unsetAdmin} block={block} isBlocked={isBlocked}
+				isFriend={isFriend} isInvitedFriend={isInvitedFriend} addAsFriend={addAsFriend} />
         </div>
     )
 }

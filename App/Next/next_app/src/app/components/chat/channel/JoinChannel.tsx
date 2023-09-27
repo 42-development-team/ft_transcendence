@@ -13,19 +13,11 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
 
     const { updateChatBarState } = useChatBarContext();
     const [publicChannels, setPublicChannels] = useState<any[]>([]);
-    const [privateChannels, setPrivateChannels] = useState<any[]>([]);
     const [protectedChannels, setProtectedChannels] = useState<any[]>([]);
-
-    // Todo: add a way to join a secret channel
 
     const displayChannels = async () => {
         const publicChannelsComp = channels
             .filter((channel: any) => channel.type === ChannelType.Public)
-            .map((channel: any) => (
-                <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
-            ));
-        const privateChannelsComp = channels
-            .filter((channel: any) => channel.type === ChannelType.Private)
             .map((channel: any) => (
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
@@ -35,7 +27,6 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
                 <JoinChannelItem key={channel.id} channel={channel} joinChannel={joinChannel} />
             ));
         setPublicChannels(publicChannelsComp);
-        setPrivateChannels(privateChannelsComp);
         setProtectedChannels(protectedChannelsComp);
     }
 
@@ -44,7 +35,7 @@ const JoinChannel = ({channels, joinChannel}: JoinChannelProps) => {
     }, [channels])
     
     return (
-        <div className='w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg w-[450px] px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title="Join a channel" onCollapse={() => updateChatBarState(ChatBarState.Closed)} />
             <div className='overflow-auto h-[92vh]'>
                 <div className='flex items-center justify-around py-2 my-2 '>

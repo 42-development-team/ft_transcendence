@@ -1,6 +1,8 @@
 
 const getGames = async ({userId}: {userId: number}) => {
     try {
+        if (userId === undefined)
+            return null;
         const response = await fetch(`${process.env.BACK_URL}/game/infoGames/${userId}`, {
             credentials: "include",
             method: "GET",

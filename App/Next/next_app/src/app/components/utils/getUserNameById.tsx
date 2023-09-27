@@ -1,5 +1,5 @@
 
-const getUserNameById = async (id: string) => {
+const getUserNameById = async (id: string) =>{
 	try {
 		const response = await fetch(`${process.env.BACK_URL}/users/${id}`, {
 			credentials: "include",

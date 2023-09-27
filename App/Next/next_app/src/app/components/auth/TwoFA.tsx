@@ -31,9 +31,12 @@ const TwoFA = ({ userId }: { userId: string }) => {
     const fetchData = async () => {
       const data = await isTwoFAActive(userId);
 
-      setActivTwoFA(data);
-      setDisableBtnActivated(data);
-      setEnableBtnActivated(!data);
+	  if (!displayBox) {
+
+		  setActivTwoFA(data);
+		  setDisableBtnActivated(data);
+		  setEnableBtnActivated(!data);
+	  }
     }
     fetchData().catch(console.error);
   }, [userId, isVisible]);
@@ -141,7 +144,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setImageUrl('');
 		setColor('bg-mauve');
 		setColorText('text-green-700');
-		setEnableBtnText(activTwoFA ? 'Enable 2FA ?' : '2FA enabled');
+		setEnableBtnText(activTwoFA ? 'Enable 2FA ' : '2FA enabled');
 		setMessage(activTwoFA ? 'Two Factor Auth disabled' : 'Two Factor Auth enabled');
 	  }
 
@@ -160,7 +163,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	}
 
 	return (
-		<div className="flex flex-col border-0 rounded-md bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.25)]">
+		<div className="flex flex-col border-0 rounded-md bg-opacity-50 bg-base shadow-[0_35px_90px_-10px_rgba(0,0,0,0.25)]">
 			<div className="flex justify-center mt-2">
 				{
 					!activTwoFA &&
@@ -183,7 +186,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 						onClick={handleDisableClick} 
 						disable={!disableBtnActivated}
 					>
-						Disable 2FA ?
+						Disable 2FA 
 					</CustomBtn>
 				}
 				<CustomBtn

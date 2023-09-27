@@ -6,7 +6,7 @@ import ChatMemberItem from './ChatMemberItem';
 import ChatHeader from '../ChatHeader';
 import { Tooltip } from '@material-tailwind/react';
 import { useUserRole } from "../members/UserRoleProvider"
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Alert } from "@material-tailwind/react";
 import { delay } from "@/app/utils/delay";
 
@@ -16,10 +16,14 @@ interface ChatMemberListProps {
     directMessage: (receiverId: string, senderId: string) => Promise<string>
     blockUser: (blockedId: string) => void
     blockedUsers: UserModel[]
+	friends: UserModel[]
+    requestedFriends: UserModel[];
+    invitedFriends: UserModel[];
+    addFriend: (friendAddingId: string) => void;
 }
 
-// Todo: extract functions to another file
-const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers }: ChatMemberListProps) => {
+const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUsers, 
+        friends, requestedFriends, invitedFriends, addFriend }: ChatMemberListProps) => {
     const {openChannel, updateChatBarState} = useChatBarContext();
 	const channelId = channel.id;
 	const channelType = channel.type;
@@ -40,13 +44,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error kicking user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error kicking user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -62,13 +64,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error banning user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error banning user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -84,13 +84,11 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             });
             if (!response.ok) {
                 console.log("Error unbanning user: " + response.status);
-                // Todo: use alert to inform user
                 return;
             }
         }
         catch (error) {
             console.log("Error unbanning user: " + error);
-                // Todo: use alert to inform user
         }
     }
 
@@ -124,7 +122,6 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
     }
 
     const setAsAdmin = async (newAdminId: string) => {
-        // Todo: alerts
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/setAdmin`, {
                 credentials: "include",
@@ -143,6 +140,7 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         }
     }
 
+
     const removeAdmin = async (removedAdminId: string) => {
         try {
             const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/removeAdmin`, {
@@ -154,17 +152,17 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({removedAdminId}),
             });
             if (!response.ok) {
-                console.log("Error removing admin role: " + response.status);
+				console.log("Error removing admin role: " + response.status);
             }
         }
         catch (error) {
-            console.log("Error removing admin role: " + error);
+			console.log("Error removing admin role: " + error);
         }
     }
 
     const mute = async (mutedId: string, muteDuration: number) => {
-        try {
-            const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
+		try {
+			const response = await fetch(`${process.env.BACK_URL}/chatroom/${channel.id}/mute`, {
                 credentials: "include",
                 method: 'PATCH',
                 headers: {
@@ -173,15 +171,13 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 body: JSON.stringify({mutedId, muteDuration}),
             });
             if (!response.ok) {
-                console.log("Error muting: " + response.status);
+				console.log("Error muting: " + response.status);
             }
-            // Todo: manage response
         }
         catch (error) {
-            console.log("Error muting: " + error);
+			console.log("Error muting: " + error);
         }
     }
-
 
     if (channel == undefined || channel.members == undefined) {
         console.log("Channel is undefined")
@@ -194,18 +190,24 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
         return <></>
     }
 
-    // Chat member list
-    // Todo: sort by ASCII
+    const isFriend = (memberId: string) =>  {
+        return friends.find(user => user.id == memberId) != undefined;
+    }
 
-    // Todo: filter props : ex (admin need remove Admin)
-    // ban need remove unban
+    const isInvitedFriend = (memberId: string) =>  {
+        return requestedFriends.find(user => user.id == memberId) != undefined 
+            || invitedFriends.find(user => user.id == memberId) != undefined;
+    }
+    
+    // Chat member list
     const OwnerList = channel.members
         .filter(member => member.isOwner && !member.isBanned)
         .map((member) => (
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
     const MemberList = channel.members
         .filter(member => !member.isAdmin && !member.isOwner && !member.isBanned)
@@ -213,7 +215,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const AdminList = channel.members
@@ -222,7 +225,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         ))
 
     const BannedList = channel.members
@@ -231,7 +235,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
             <ChatMemberItem key={member.id} user={member} isCurrentUser={member.id == userId} isBlocked={blockedUsers.find(user => user.id == member.id) != undefined}
                 kick={kick} ban={ban} unban={unban} leaveChannel={leaveChannel}
                 directMessage={handleDirectMessage} mute={mute}
-                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} />
+                setAsAdmin={setAsAdmin} removeAdmin={removeAdmin} channelId={channelId} blockUser={blockUser} addFriend={addFriend}
+				isFriend={isFriend(member.id)} isInvitedFriend={isInvitedFriend(member.id)} />
         )
     )
 
@@ -249,15 +254,15 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 				})
 			});
 			const responseData = await response.json();
-			if (response.status == 200){
+			if (responseData === "ok"){
 				setOpenAlert(true);
-				setAlertMessage("The user has been successfully invited and joined the channel")
+				setAlertMessage("The user has successfully joined the channel")
 				await delay(2000);
 				setOpenAlert(false);
 			}
-            else if (response.status == 404) {
+            else if (responseData == "User not found") {
 				setOpenAlert(true);
-				setAlertMessage(responseData.message)
+				setAlertMessage("User not found")
 				await delay(2000);
 				setOpenAlert(false);
             }
@@ -269,33 +274,40 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
 			setLogin(newLogin);
 		}
 
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            handleInvite();
+        }
+
 		return (
             <div className="relative grid h-10 w-full">
                 <div className="relative w-full">
+                    <form onSubmit={handleSubmit}>
                     <input type="login"
                         className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-pink-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                         placeholder=" " value={login} onChange={handleChange}
                         required
                     />
                     <button onClick={ handleInvite }
-                        className="!absolute right-1 top-1 z-10 select-none rounded bg-pink-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
+                        className="!absolute right-1 top-1 select-none rounded bg-pink-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
                         type="button" data-ripple-light="true" >
-                        Invite
+                        Add
                     </button>
                     <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-pink-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-pink-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-pink-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                         Username
                     </label>
+                    </form>
                 </div>
             </div>
 		)
 	}
 
     return (
-        <div className='w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
+        <div className='bg-opacity-90 backdrop-blur-lg flex flex-col w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>
             <ChatHeader title={channel.name} onCollapse={() => updateChatBarState(ChatBarState.Closed)} >
                 <BackToChatButton onClick={() => updateChatBarState(ChatBarState.ChatOpen)} />
             </ChatHeader>
-            <div className=' overflow-auto h-[86vh]'>
+            <div className='overflow-auto h-full'>
                 <ChatMemberHeader>👑 Owner</ChatMemberHeader>
                 {OwnerList}
                 <ChatMemberHeader>🛡️ Admin</ChatMemberHeader>
@@ -304,9 +316,8 @@ const ChatMemberList = ({ channel, userId, directMessage, blockUser, blockedUser
                 {MemberList}
                 <ChatMemberHeader>🚫 Banned</ChatMemberHeader>
                 {BannedList}
-				{/* todo: add icon Font Awsome */}
 				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&
-                <ChatMemberHeader>👪 Invite to your channel</ChatMemberHeader> }
+                <ChatMemberHeader>👪 Add user</ChatMemberHeader> }
 				{ channelType === ChannelType.Private && (isCurrentUserOwner || isCurrentUserAdmin) &&
                 < InviteFieldButton /> }
                 <Alert className="mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all"

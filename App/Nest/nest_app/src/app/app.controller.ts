@@ -20,5 +20,4 @@ export class AppController {
   getUsers(){
     return this.prisma.user.findMany();
   }
-
 }

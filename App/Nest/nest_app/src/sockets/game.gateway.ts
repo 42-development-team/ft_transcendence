@@ -5,14 +5,17 @@ import { UsersService } from '../users/users.service'
 import { GameService } from 'src/game/game.service';
 import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
-import { UserIdDto } from 'src/userstats/dto/user-id.dto';
+import { InviteDto } from 'src/game/dto/invite-game.dto';
+import { CreateUserDto } from 'src/users/dto';
 
 @Injectable()
-@WebSocketGateway({cors:{
-    credentials: true,
-}})
+@WebSocketGateway({
+    cors: {
+        credentials: true,
+    }
+})
 
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(
         private gameService: GameService,
         private userService: UsersService,
@@ -23,47 +26,217 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
     clients: Socket[] = [];
 
-	async handleConnection(client: Socket) {
-		const userId = await this.userService.getUserIdFromSocket(client);
-		if (userId) {
-			console.log('Client connected in game: ' + client.id);
-			this.clients.push(client);
-		} else {
-			console.log('User not authenticated');
-			client.disconnect();
-		}
-	}
+    async handleConnection(client: Socket) {
+        const userId = await this.userService.getUserIdFromSocket(client);
+        if (userId) {
+            console.log("GameSocket Connected: ", client.id);
+            this.clients.push(client);
+        } else {
+            console.log('User not authenticated');
+            client.disconnect();
+        }
+    }
 
-    async handleDisconnect(client: Socket){
-		console.log('Client disconnected from game: ' + client.id);
+    async handleDisconnect(client: Socket) {
+		const userId = await this.userService.getUserIdFromSocket(client);
+        const updateUser = await this.userService.removeSocketId(userId, client.id);
+        if (updateUser && updateUser.socketIds.length === 0) {
+			await this.userService.updateStatus(userId, "offline");
+            await this.cleanQueues(client);
+            this.gameService.handleLeaveQueue(userId);
+		}
+        console.log("GameSocket Disconnected: ", client.id);
         this.clients = this.clients.filter(c => c.id !== client.id);
     }
 
+    async cleanQueues(client: Socket) {
+        const userId = await this.userService.getUserIdFromSocket(client);
+        const inviteQueue = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
+        if (inviteQueue) {
+            const { invitorId, invitedId } = inviteQueue;
+            const invitorIdNumber = Number(invitorId);
+            const invitedIdNumber = Number(invitedId);
+            if (invitorId === userId) {
+                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+                invitedSocketIds.forEach(async invitedSocketId => {
+                    const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                    invitedSocket?.emit('inviteCanceled', { invitorId });
+                });
+            }
+            else if (invitedId === userId) {
+                const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
+                invitorSocketIds.forEach(async invitorSocketId => {
+                    const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+                    invitorSocket?.emit('inviteCanceled', { invitorId });
+                });
+            }
+           await this.gameService.handleRemoveInviteQueue(invitorId, invitedId);
+        }
+    }
+        
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
     // =========================================================================== //
+    @SubscribeMessage('invite')
+    async handleInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
+        try {
+            const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
+            if (invitorId === undefined)
+                return;
+            const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;
+
+            const invitedIdNumber = Number(invitedId);
+            const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
+            const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
+            const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+            
+            const invitorUsername: string = invitorUser.username;
+            const invitedUsername: string = invitedUser.username;
+
+            invitedSocketIds.forEach(async invitedSocketId => {
+                const invitedSocket: Socket = this.clients.find(c => c.id === invitedSocketId);
+                if (invitorId !== invitedId) {
+                    if (await this.gameService.isInGame(invitorId) === true) { // invitor is in game
+                        console.log("error: invitor is in a game")
+                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        return ;
+                    }
+                    if (await this.gameService.isInGame(invitedId) === true) { // invited is in game
+                        console.log("error: invited is in a game")
+                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        return ;
+                    }
+                    if (await this.gameService.queueAlreadyExists(invitorId, invitedId) === true) { // this exact queue alrady exist
+                        console.log("error: this exact queue already exist");
+                        return ;
+                    }
+
+                    const idToNotify: number = await this.gameService.invitorIsInvited(invitorId); // invitor is invited by someone else
+                    if (idToNotify >= 0) {
+                        const ids = await this.userService.getSocketIdsFromUserId(idToNotify); //
+
+                        ids.forEach(id => {
+                            const invitorSocketToNotify = this.clients.find(c => c.id === id);
+                            invitorSocketToNotify?.emit('inviteDeclined');
+                        });
+                    }
+                    await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
+                    invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    invitorSocket?.emit('inviteSent', { invitedUsername });
+                }
+            });
+
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    }
+
+    @SubscribeMessage('respondToInvite')
+    async handleRespondToInvite(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
+
+        const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
+        const { invitorId, response } = body;
+
+        const invitorIdNumber = Number(invitorId);
+        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
+
+        invitorSocketIds.forEach(async invitorSocketId => {
+            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+            const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorIdNumber, invitedId, response);
+            if (!response)
+                invitorSocket?.emit('inviteDeclined');
+            else if (inviteInfos !== undefined) {
+                invitorSocket?.emit('inviteAccepted');
+
+                const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
+                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
+                await this.joinGameRoom(invitorSocketIds, invitedSocketIds, gameRoom);
+                await this.gameService.handleRemoveInviteQueue(invitorIdNumber, invitedId);
+            }
+        });
+    }
+
+    @SubscribeMessage('cancelInvite')
+    async handleCancelInvite(@ConnectedSocket() invitorSocket: Socket, @MessageBody() body: any) {
+        const invitorId: number = await this.userService.getUserIdFromSocket(invitorSocket);
+        const { invitedId }: { invitedId: number } = body;
+        const invitedIdNumber = Number(invitedId);
+        const invitorIdNumber = Number(invitorId);
+        if (invitorId !== invitedIdNumber)
+            await this.gameService.handleRemoveInviteQueue(invitorIdNumber, invitedIdNumber);
+        const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+        invitedSocketIds.forEach(async invitedSocketId => {
+            const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+            invitedSocket?.emit('inviteCanceled', { invitorId });
+        });
+    }
+
+    @SubscribeMessage('removeInviteQueue')
+    async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
+        const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
+        const { invitorId }: { invitorId: number } = body;
+        await this.gameService.handleRemoveInviteQueue(invitorId, invitedId);
+    }
+
     @SubscribeMessage('joinQueue')
-    async handleJoinQueue(player: Socket) {
-        const result = await this.gameService.handleJoinQueue(player);
+    async handleJoinQueue(player: Socket, mode: boolean) {
+        const userId: number = await this.userService.getUserIdFromSocket(player);
+        const result = await this.gameService.handleJoinQueue(userId, mode);
 
+        // queue not full
         if (!result)
-            return ;
+            return;
 
-        const {newGameRoom, player2SocketId} = result;
-        if (player2SocketId) {
-            const player2Socket: Socket = await this.clients.find(c => c.id == player2SocketId);
-            await player2Socket?.join(newGameRoom.roomName);
-            this.server.to(newGameRoom.roomName).emit('matchIsReady', newGameRoom.data);
+        // queue is full => game is created
+        const { newGameRoom, player1SocketIds, player2SocketIds } = result;
+        if (player1SocketIds && player2SocketIds && player1SocketIds.length > 0 && player2SocketIds.length > 0) {
+            //game is created from scratch
+            this.joinGameRoom(player1SocketIds, player2SocketIds, newGameRoom);
         }
         else {
-            newGameRoom.reconnect = true;
+            // game already exist and player have to join it
+            player?.join(newGameRoom.roomName);
             this.server.to(newGameRoom.roomName).emit('reconnectGame', newGameRoom.data);
         }
     }
 
+    async joinGameRoom(player1SocketIds: string[], player2SocketIds: string[], room: GameRoomDto) {
+        player1SocketIds.forEach(async player1SocketId => {
+            const player1Socket: Socket = this.clients.find(c => c.id == player1SocketId);
+            await player1Socket?.join(room.roomName);
+        });
+        player2SocketIds.forEach(async player2SocketId => {
+            const player2Socket: Socket = this.clients.find(c => c.id == player2SocketId);
+            await player2Socket?.join(room.roomName);
+        });
+        this.server.to(room.roomName).emit('redirect', 'redirectToHomeForGame');
+        this.server.to(room.roomName).emit('matchIsReady', room.data);
+    }
+
+    @SubscribeMessage('isInGame')
+    async isAlreadyInGame(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        const socketOwnerId = await this.userService.getUserIdFromSocket(socket);
+        const sidePanelPopUp = socketOwnerId !== userId ? true : false;
+        const isAlreadyInGame = data ? true : false;
+        if (isAlreadyInGame) {
+            socket.emit('isAlreadyInGame', {data, sidePanelPopUp});
+        }
+        return;
+    }
+
     @SubscribeMessage('leaveQueue')
-    handleLeaveQueue(userId: UserIdDto) {
+    handleLeaveQueue(socket: Socket, userId: number) {
         this.gameService.handleLeaveQueue(userId);
+    }
+
+    @SubscribeMessage('isUserQueued')
+    async isUserQueued(socket: Socket, userId: number) {
+        const isQueued = await this.gameService.getIsQueued(userId);
+        if (isQueued)
+            socket.emit('isQueued');
+        else
+            socket.emit('isNotQueued');
     }
 
     @SubscribeMessage('move')
@@ -81,32 +254,59 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('launchGame')
     async handleLaunchGame(socket: Socket, id: number) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
-
         let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
-            if (room.reconnect === false)
+            if (room.reconnect === false) {
+                room.reconnect = true;
                 this.gameLogic(room.data);
+            }
         }
+        await this.userService.updateStatus(userId, "in a game");
+        this.server.emit("userStatusUpdate", { userId });
     }
 
+    @SubscribeMessage('retrieveData')
+    async handleRetrieveData(socket: Socket, userId: number) {
+        const data = await this.gameService.getDataFromUserId(userId);
+        if (data === undefined || !data)
+            console.log("Error retrieving Game Data: data is null");
+        socket?.emit('sendDataToUser', data);
+        socket?.join(data.roomName);
+    }
+
+    @SubscribeMessage('surrender')
+    async handleSurrender(@MessageBody() body: any) {
+        const [id, userId] = body;
+        this.gameService.surrender(id, userId);
+        await this.userService.updateStatus(userId, "online");
+        this.server.emit("userStatusUpdate", { userId });
+    }
+
+    // ============================== //
+    // ========= GAME LOGIC =========//
+
     async sleepAndCalculate(data: GameDto): Promise<GameDto> {
-        const promiseSleep = this.gameService.sleep(1000 / 60);
-        const promiseCalculate = this.gameService.calculateGame(data.id);
-    
+        const promiseSleep = this.gameService.sleep(1000/60);
+        const promiseCalculate = this.gameService.calculateGame(data.id, data.mode);
+
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;
     }
 
     async gameLogic(data: GameDto) {
-        console.log(data.roomName);
         while (data.end === false) {
             await this.sleepAndCalculate(data);
-            this.sendDataToRoom(data);
+            await this.sendDataToRoom(data);
         }
-        await this.gameService.createGame(data);
-        console.log(data.roomName);
-        this.server.to(data.roomName).emit('endOfGame');
-        this.gameService.removeRoom(data.roomName);
+        const results = await this.gameService.createGame(data);
+        console.log('results: ', results);
+        this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
+        await this.gameService.removeRoom(data.id);
+        await this.userService.updateStatus(results.gameLosedId, "online");
+        await this.userService.updateStatus(results.gameWonId, "online");
+        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
+        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
     }
 
     async sendDataToRoom(data: GameDto) {

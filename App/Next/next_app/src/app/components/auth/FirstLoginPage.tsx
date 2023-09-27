@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, useState, useEffect } from 'react';
+import { ChangeEvent, useState, useEffect, useContext } from 'react';
 import ValidateBtn from '../ValidateBtn';
 import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
@@ -7,6 +7,7 @@ import UpdateAvatar from './utils/updateAvatar';
 import { useRouter } from 'next/navigation';
 import { isAlphanumeric } from '../utils/isAlphanumeric';
 import { useEffectTimer } from './utils/useEffectTimer';
+import ThemeContext from '../theme/themeContext';
 
 const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
@@ -21,9 +22,20 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	const [inputUserName, setInputUserName] = useState('');
 	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const Router = useRouter();
+	const { theme } = useContext(ThemeContext);
+	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
 
 	useEffectTimer(wrongFormat, 2600, setWrongFormat);
-	
+
+	useEffect(() => {
+		if (theme === "latte") {
+			setTextColor("text-base");
+		}
+		else {
+			setTextColor("text-text");
+		}
+	}, [theme]);
+
 	useEffect(() => {
 		try {
 			getUserName(userId);
@@ -75,10 +87,8 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 					},
 				});
 			}
-
 			setMessage("Avatar/username successfully updated");
-			const jwtUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: "include" });
-
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
 			redirectToHome();
 		} catch (error) {
 			console.log("Error during avatar upload or username update:", error);
@@ -142,7 +152,6 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			console.log("Error during avatar upload:", message);
 			return;
 		}
-		console.log("Avatar successfully uploaded");
 		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
@@ -151,7 +160,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	return (
 		<div className="flex flex-col items-center ">
 			<div className="flex flex-col m-4 pt-4 ">
-				<p className="font-bold text-center">Choose your username</p>
+				<p className={`font-bold text-center ` + textColor}>Choose your username</p>
 				<div className='flex justify-center'>
 					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
 						id="username"
@@ -174,7 +183,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				}
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true} isOnProfilePage={false}>
 			</Avatar>
 			<div className='flex justify-center text-red-700'>
 				{wrongFormat && <p>{message}</p>}

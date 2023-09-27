@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { ChannelMember, ChannelModel, ChannelType, MessageModel, UserStatus } from "../utils/models";
-import { useAuthcontext } from "../context/AuthContext";
+import { useAuthContext } from "../context/AuthContext";
 import bcrypt from 'bcryptjs';
 
 export interface NewChannelInfo {
@@ -12,21 +12,23 @@ export interface NewChannelInfo {
 }
 
 export default function useChannels(userId: string) {
-    const { socket } = useAuthcontext();
+    const { socket, socketReady } = useAuthContext();
     const [channels, setChannels] = useState<ChannelModel[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<ChannelModel[]>([]);
     const [currentChannelId, setCurrentChannelId] = useState<string>("");
+    let alreadyJoined = false;
 
     useEffect(() => {
+        if (userId == "") return;
         fetchChannelsInfo();
         fetchChannelsContent();
     }, [userId]);
 
     useEffect(() => {
-        if (joinedChannels.length > 0 && socket != undefined) {
+        if (!alreadyJoined && joinedChannels.length > 0 && socket && socket.id) {
             joinPreviousChannels();
         }
-    }, [joinedChannels, socket]);
+    }, [joinedChannels, socket, socketReady]);
 
     useEffect(() => {
         // Update the notification count to 0 when the channel is open
@@ -154,7 +156,7 @@ export default function useChannels(userId: string) {
         socket?.on('leftRoom', (body: any) => {
             handleLeftRoom(body);
         });
-        socket?.on('NewChatRoom', () => {
+        socket?.on('newChatRoom', () => {
             fetchChannelsInfo();
         });
         socket?.on('directMessage', (body: any) => {
@@ -163,19 +165,24 @@ export default function useChannels(userId: string) {
         socket?.on('chatroomUpdate', (body: any) => {
             handleChatroomUpdate(body);
         });
+        socket?.on('invitedRoom', (body: any) => {
+           const { roomId } = body;
+           fetchChannelContent(roomId);
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
             socket?.off('new-message');
-            socket?.off('newConnection');
-            socket?.off('newDisconnection');
+            socket?.off('newConnectionOnChannel');
+            socket?.off('newDisconnectionOnChannel');
             socket?.off('leftRoom');
-            socket?.off('NewChatRoom');
+            socket?.off('newChatRoom');
             socket?.off('directMessage');
             socket?.off('chatroomUpdate');
+            socket?.off('invitedRoom');
         }
     }, [socket, joinedChannels, channels]);
-    // Note: The useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
+    // useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
 
     const directMessage = async (receiverId: string, senderId: string) =>  {
         const targetChannel = joinedChannels.find(c =>
@@ -295,6 +302,10 @@ export default function useChannels(userId: string) {
             if (fetchedChannel.type == ChannelType.DirectMessage) {
                 const targetMember = fetchedChannel.members?.find(m => m.id != userId);
                 fetchedChannel.directMessageTargetUsername = targetMember?.username;
+            } else if (fetchedChannel.type == ChannelType.Private) {
+                if (fetchedChannel.members && fetchedChannel.members?.length > 1) {
+                    fetchedChannel.unreadMessages = 1;
+                }
             }
             // Search if channel already exists
             const channelIndex = joinedChannels.findIndex((channel: ChannelModel) => channel.name === fetchedChannel.name);
@@ -352,13 +363,14 @@ export default function useChannels(userId: string) {
     }
 
     const joinPreviousChannels = useCallback(() => {
+        alreadyJoined = true;
         joinedChannels.forEach(channel => {
             if (!channel.joined) {
                 socket?.emit("joinRoom", channel.name);
                 channel.joined = true;
             }
         });
-    }, [socket, joinedChannels]);
+    }, [socket, joinedChannels, alreadyJoined]);
 
     return {
         socket,

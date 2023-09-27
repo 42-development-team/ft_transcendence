@@ -16,7 +16,6 @@ const BlockUserItem = ({ user, unblockUser }: BlockedProps) => {
         if (lockSubmit) return;
         setLockSubmit(true);
         action();
-		console.log("unblockUser");
         setTimeout(() => setLockSubmit(false), 1500);
     }
 

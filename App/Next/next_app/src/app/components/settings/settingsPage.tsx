@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import UpdateAvatar from "../auth/utils/updateAvatar";
 import Avatar from "../profile/Avatar";
 import ValidateBtn from "../ValidateBtn";
@@ -7,12 +7,13 @@ import { useEffectTimer } from "../auth/utils/useEffectTimer";
 import getUserNameById from "../utils/getUserNameById";
 import UpdateUsernameById from "../utils/updateUsernameById";
 import DoesUserNameExist from "../utils/DoesUsernameExist";
-import { useAuthcontext } from "@/app/context/AuthContext";
+import { useAuthContext } from "@/app/context/AuthContext";
 import { isAlphanumeric } from "../utils/isAlphanumeric";
+import ThemeContext from "../theme/themeContext";
 
 const SettingsPage = ({userId}: {userId: string}) => {
 
-	const { login } = useAuthcontext();
+	const { login } = useAuthContext();
 	useEffect(() => {
 	  login();
 	}, []);
@@ -32,6 +33,8 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	const [updatingUsername, setUpdatingUsername] = useState<boolean>(false);
 	const [updatingAvatar, setUpdatingAvatar] = useState<boolean>(false);
 	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
+	const {theme} = useContext(ThemeContext);
+	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
 
 	useEffect(() => {
 		const getAvatar = async () => {
@@ -51,6 +54,15 @@ const SettingsPage = ({userId}: {userId: string}) => {
 			console.log(error);
 		}
 	}, [avatarLoaded]);
+
+	useEffect(() => {
+		if (theme === "latte") {
+			setTextColor("text-base");
+		}
+		else {
+			setTextColor("text-text");
+		}
+	}, [theme]);
 
 	useEffectTimer(isVisibleTimer, 2600, setIsVisibleTimer);
 	useEffectTimer(isVisibleTimerAvatar, 2600, setIsVisibleTimerAvatar);
@@ -161,6 +173,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 		}
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
+		setWrongFormat(false);
 		if (childAvatarFile !== null && childImageUrl !== null)
 			setValidateAvatarEnabled(true);
 	}
@@ -168,7 +181,7 @@ const SettingsPage = ({userId}: {userId: string}) => {
 	return (
 		<div className="flex flex-col w-full justify-center">
 			<div className="flex flex-col w-full p-4">
-				<p className="flex flex-row font-bold justify-center">Choose your username</p>
+				<p className={`flex flex-row font-bold justify-center ` + textColor}>Choose your username</p>
 				<div className="flex flex-row justify-center">
 					{ !updatingUsername &&
 					<input style={{ backgroundColor: "#FFFFFF", color: "#000000", padding: "10px", borderRadius: "5px", fontWeight: "bold" }}
@@ -208,19 +221,22 @@ const SettingsPage = ({userId}: {userId: string}) => {
 				</div>
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} 
+				imageUrlGetFromCloudinary={imageUrl}
+				disableChooseAvatar={false}
+				isOnProfilePage={false}>
 			</Avatar>
 			{
 				!validateAvatarEnabled && updatingAvatar && isVisibleTimerAvatar &&
 				<div className=" text-green-400 text-center mb-2">
 					{!wrongFormat && <p>{message}</p>}
 					<div className="text-red-700">
-						{ wrongFormat && <p>{message}</p>}
+						{ wrongFormat && <p>{message}</p> }
 					</div>
 				</div>
 			}
 			<div className="flex justify-center mb-6">
-				{ !updatedUsername &&
+				{ !updatedUsername && validateAvatarEnabled &&
 					<ValidateBtn onClick={handleClickAvatar} disable={!validateAvatarEnabled} >
 						Validate
 					</ValidateBtn>

@@ -31,7 +31,7 @@ export class UsersController {
 
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<CreateUserDto> {
-        this.logger.log(`gettin user with ID ${id}`);
+        // this.logger.log(`gettin user with ID ${id}`);
         return this.userService.getUserFromId(Number(id));
     }
 
@@ -56,7 +56,6 @@ export class UsersController {
     async getStatus(@Param('id') id: string, @Res() response: Response) {
 		try {
 			const userId: number = parseInt(id);
-			// console.log("userId in get Current Status: ", userId);
 			const currentStatus: string = await this.userService.getCurrentStatusFromId(userId);
 			response.status(HttpStatus.OK).json(currentStatus);
 		} catch (error) {
@@ -74,27 +73,10 @@ export class UsersController {
         return updatedObject;
     }
 
-	@Put('/update_status/:id')
-    async updatestatus(@Request() req: any, @Res() response: Response) {
-		try {
-			const userId = req.user.sub;
-			const currentStatus = req.body.currentStatus;
-			if (await this.userService.getCurrentStatusFromId(userId) !== currentStatus) {
-				// this.logger.log(`Updating currentStatus to ${currentStatus} for user with ID ${userId}`);
-				this.userService.updateStatus(userId, currentStatus);
-			}
-			response.status(HttpStatus.OK);
-		} catch (error) {
-			response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
-		}
-    }
-
     /* D(elete) */
-
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
         this.logger.log(`Deleting user with ID: ${id}`);
         await this.userService.deleteUser(id);
-        // todo update in order to remove the user from channel admins/members list
     }
 }

@@ -9,9 +9,10 @@ export class UserstatsController {
 
 	/* C(reate) */
 	@Post('create')
-	async createUserStats(@Body() userIdDto: UserIdDto, @Res() response: any) {
+	async createUserStats(@Body() id: any, @Res() response: any) {
 		try {
-			const newUserStats = await this.userstatsService.createUserStats(userIdDto);
+			const { userId } = id;
+			const newUserStats = await this.userstatsService.createUserStats(userId);
 			await response.status(HttpStatus.CREATED);
 		} catch (error) {
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));

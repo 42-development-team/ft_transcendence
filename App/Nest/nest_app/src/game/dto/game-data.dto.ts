@@ -1,3 +1,5 @@
+import { defaultIfEmpty } from "rxjs";
+
 export class BallDto {
 	color: string;
 	x: number;
@@ -17,13 +19,16 @@ export class PlayerDto {
 	h: number;
     points: number;
 	velocity: number;
+	velocitx: number;
 	angle: number;
 };
 
 export class GameDto {
 	id: number;
+	forfeiterId: null | number;
 	roomName: string;
 	end: boolean;
+	mode: boolean;
 	player1: PlayerDto;
 	player2: PlayerDto;
 	ball: BallDto;

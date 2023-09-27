@@ -1,8 +1,5 @@
 import { useState, useRef, ReactNode } from 'react';
 import { clickOutsideHandler } from '@/app/hooks/clickOutsideHandler';
-import Image from "next/image"
-import ProfileIcon from "../../../../public/profile-svgrepo-com.svg"
-import ProfileIconLight from "../../../../public/profile-light.svg"
 
 const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -11,13 +8,13 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
     clickOutsideHandler({ ref: wrapperRef, handler: () => setIsOpen(false) });
 
     return (
-        <div ref={wrapperRef} className="relative inline-block text-left pt-1">
+        <div ref={wrapperRef} className="z-999 relative inline-block text-left pt-1">
             <button
                 type="button"
                 className="inline-flex justify-center w-full rounded-full px-2 py-2 bg-base 
                             hover:bg-crust hover:scale-105 transform transition"
                 onClick={() => setIsOpen(!isOpen)}>
-                <svg fill="text" width="32px" height="32px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <svg fill="text" width="26px" height="26px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                         <g id="Dribbble-Light-Preview" transform="translate(-180.000000, -2159.000000)" fill="currentColor">
                             <g id="icons" transform="translate(56.000000, 160.000000)">
@@ -29,7 +26,7 @@ const NavDropDownMenu = ({ children }: { children: ReactNode }) => {
                 </svg>
             </button>
             {isOpen && 
-                <div className="absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
+                <div className="z-999 absolute z-10 mt-2 w-40 right-1 rounded-md bg-crust">
                     {children}
                 </div>
             }
