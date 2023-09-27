@@ -12,13 +12,17 @@ const Game = ({ ...props }) => {
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
+	const [dataReceived, setDataReceived] = useState<boolean>(false);
 
 	useEffect(() => {
+		socket?.emit("retrieveData", props.userId);
+	}, []);
+
+	useEffect(() => {
+		if (dataReceived) return ;
 		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
-			socket?.emit("retrieveData", props.userId);
 			return;
 		}
-		console.log("useEffect game");
 		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
 		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
 			setUserName(userName);
@@ -31,7 +35,8 @@ const Game = ({ ...props }) => {
 			getUserNameById(props.data.player1.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
-	}, [props.data ? props.data.player1 : props.data]);
+		setDataReceived(true);
+	}, [props.data]);
 
 	return (
 		<div className="flex flex-grow justify-center">

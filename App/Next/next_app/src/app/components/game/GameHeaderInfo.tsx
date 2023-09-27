@@ -26,7 +26,6 @@ export function GameHeaderInfo({ userName, userId, opponnentUsername, currUserIs
                         </DropDownMenu>
                     </div>
                     <div className="flex text-[2.2vw] text-white">{opponnentUsername}</div>
-
                 </>
             ) : (
                 <>
@@ -39,10 +38,8 @@ export function GameHeaderInfo({ userName, userId, opponnentUsername, currUserIs
                             </DropDownActionSurrender>
                         </DropDownMenu>
                     </div>
-
                 </>
             )}
-
         </>
     )
 }
