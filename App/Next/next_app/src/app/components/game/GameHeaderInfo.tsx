@@ -3,7 +3,16 @@
 import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import DropDownMenu from "../dropdown/DropDownMenu";
 
-export function GameHeaderInfo({ userName, userId, opponnentUsername, currUserIsOnLeft, id, surrender }: { userName: string, userId: string, opponnentUsername: string, currUserIsOnLeft: boolean, id: string, surrender: (id: number, userId: number) => void }) {
+type GameHeaderInfoProps = {
+    userName: string,
+    userId: string,
+    opponnentUsername: string,
+    currUserIsOnLeft: boolean,
+    id: string,
+    surrender: (id: number, userId: number) => void
+}
+
+export function GameHeaderInfo({ userName, userId, opponnentUsername, currUserIsOnLeft, id, surrender }:  GameHeaderInfoProps) {
     return (
         <>
             {currUserIsOnLeft ? (

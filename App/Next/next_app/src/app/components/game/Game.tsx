@@ -3,8 +3,6 @@ import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
 import getUserNameById from "../utils/getUserNameById";
-import DropDownMenu from "../dropdown/DropDownMenu";
-import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { GameHeaderInfo } from "./GameHeaderInfo";
 
@@ -20,6 +18,7 @@ const Game = ({ ...props }) => {
 			socket?.emit("retrieveData", props.userId);
 			return;
 		}
+		console.log("useEffect game");
 		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
 		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
 			setUserName(userName);
