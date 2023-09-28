@@ -29,6 +29,8 @@ const GameInviteContext = createContext({
     setInvitedUsername: (invitedUsername: string) => {},
     invitedId: "",
     setInvitedId: (invitedId: string) => {},
+    inviteQueued: false,
+    setInviteQueued: (inviteQueued: boolean) => {},
 
 });
 

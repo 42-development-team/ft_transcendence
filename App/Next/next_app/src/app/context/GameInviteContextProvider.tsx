@@ -19,6 +19,7 @@ export default function GameInviteProvider({ children }: any) {
 	const [sentVisible, setSentVisible] = useState(false);
 	const [slide, setSlide] = useState("translateX(100%)");
 	const [timer, setTimer] = useState<any>(20);
+	const [inviteQueued, setInviteQueued] = useState(false);
 	const { socket } = useAuthContext();
 
 	/* SOCKET LISTENERS */
@@ -248,7 +249,9 @@ export default function GameInviteProvider({ children }: any) {
 			invitedUsername,
 			setInvitedUsername,
 			invitedId,
-			setInvitedId
+			setInvitedId,
+			inviteQueued,
+			setInviteQueued,
 		}}>
 			{children}
 		</GameInviteContext.Provider>
