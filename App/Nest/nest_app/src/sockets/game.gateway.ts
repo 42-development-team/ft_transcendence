@@ -327,7 +327,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
                 console.log("player disconnected");
                 for (let i = 0; i < this.reconnectionTimer; i++) {
-                    console.log("beforeLeave: ", 20 - i);
                     game.playerOneDisconnected ? 
                         await this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i}) 
                         :
@@ -339,6 +338,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         await this.emitToUser(game.playerOneId, 'playerReconnected', null)
                         :
                         await this.emitToUser(game.playerTwoId, 'playerReconnected', null);
+                        break;
+                    }
+                    else if ( game.data.end ) {
                         break;
                     }
                 }
