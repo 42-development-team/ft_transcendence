@@ -588,8 +588,9 @@ export class GameService {
         this.incrementSpeed(ball);
     };
 
-    async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
+    async calculateGame(gameId: number, mode: boolean): Promise<GameDto> {
 
+        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
         this.calculatePlayer(idx, mode);
         this.calculateBall(idx);
         if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
@@ -602,7 +603,7 @@ export class GameService {
 //================== INIT GAME ====================//
 //=================================================//
     async   setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
-        const id: number = this.gameRooms.length;
+        const id: number = player1Id * 350 * player2Id * 150;
         const roomName: string = player1Id + "_" + player2Id;
         const newGameRoom: GameRoomDto = {
             id: id,
