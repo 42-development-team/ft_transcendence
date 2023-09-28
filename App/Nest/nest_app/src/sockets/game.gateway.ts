@@ -296,8 +296,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ============================== //
     // ========= GAME LOGIC =========//
 
+    frameTime: number = 1000 / 60;
+
     async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
-        const promiseSleep = this.gameService.sleep(1000 / 60);
+        const promiseSleep = this.gameService.sleep(this.frameTime);
         const promiseCalculate = this.gameService.calculateGame(game);
 
         await Promise.all([promiseSleep, promiseCalculate]);
@@ -313,7 +315,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const results = await this.gameService.createGame(data);
         console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
-        await this.gameService.removeRoom(game);
+        await this.gameService.removeRoom(game.id);
         await this.userService.updateStatus(results.gameLosedId, "online");
         await this.userService.updateStatus(results.gameWonId, "online");
         this.server.emit("userStatusUpdate", { userId: results.gameLosedId });

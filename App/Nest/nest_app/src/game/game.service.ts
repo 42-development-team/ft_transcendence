@@ -343,8 +343,8 @@ export class GameService {
         }
     }
 
-    async removeRoom(game: GameRoomDto) {
-       this.gameRooms = this.gameRooms.filter(game => game.id !== game.id);
+    async removeRoom(gameId: number) {
+       this.gameRooms = this.gameRooms.filter(game => game.id !== gameId);
     }
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
