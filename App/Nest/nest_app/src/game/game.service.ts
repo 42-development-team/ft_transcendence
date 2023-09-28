@@ -130,8 +130,8 @@ export class GameService {
     }
 
     async getIsQueued(userId: number): Promise<boolean> {
-        const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
-        if (idx === -1) {
+        const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
+        if (game === undefined) {
             if (this.queue.find(user => user === userId)) {
                 return true;
             }
@@ -195,8 +195,8 @@ export class GameService {
 
     async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         try {
-            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
-            if (idx === -1) {
+            const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (game === undefined) {
                 if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
                     return;
                 }
@@ -212,7 +212,7 @@ export class GameService {
                 }
             }
             else {
-                const newGameRoom: GameRoomDto = this.gameRooms[idx];
+                const newGameRoom: GameRoomDto = game;
                 const player1SocketIds: string[] = [];
                 const player2SocketIds: string[] = [];
                 return ({ newGameRoom, player1SocketIds, player2SocketIds });
@@ -247,17 +247,17 @@ export class GameService {
 
 
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleLaunchGame: !LaunchGameRoom")
             return;
         }
-        if (this.gameRooms[idx].playerOneId === userId)
-            this.gameRooms[idx].readyPlayerOne = true;
-        else if (this.gameRooms[idx].playerTwoId === userId)
-            this.gameRooms[idx].readyPlayerTwo = true;
-        if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
-            return this.gameRooms[idx];
+        if (game.playerOneId === userId)
+        game.readyPlayerOne = true;
+        else if (game.playerTwoId === userId)
+        game.readyPlayerTwo = true;
+        if (game.readyPlayerOne === true && game.readyPlayerTwo === true)
+            return game;
     }
 
     handleLeaveQueue(userId: number) {
@@ -273,14 +273,14 @@ export class GameService {
         }
     }
 
-    handleMove(event: string, id: number, userId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+    async handleMove(event: string, id: number, userId: number) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleMove: !MoveGameRoom")
             return;
         }
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
+        const player1 = game.data.player1;
+        const player2 = game.data.player2;
 
         if (player1.id === userId) {
             if (event === "ArrowUp")
@@ -288,7 +288,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player1);
 
-            if (this.gameRooms[idx].data.mode) {
+            if (game.data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.01, player1);
                 else if (event === "ArrowRight")
@@ -301,7 +301,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player2);
 
-            if (this.gameRooms[idx].data.mode) {
+            if (game.data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player2);
                 else if (event === "ArrowRight")
@@ -311,30 +311,30 @@ export class GameService {
 
     }
 
-    handleStopMove(event: string, id: number, userId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+    async handleStopMove(event: string, id: number, userId: number) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleStopMove: !StopMoveGameRoom")
             return;
         }
-        if (this.gameRooms[idx].data.player1.id === userId) {
+        if (game.data.player1.id === userId) {
             if (event === "ArrowUp")
-                this.killVelocity(this.gameRooms[idx].data.player1);
+                this.killVelocity(game.data.player1);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player1);
-            if (this.gameRooms[idx].data.mode) {
+                this.killVelocity(game.data.player1);
+            if (game.data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
-                    this.killVelocitx(this.gameRooms[idx].data.player1);
+                    this.killVelocitx(game.data.player1);
             }
         }
         else {
             if (event === "ArrowUp")
-                this.killVelocity(this.gameRooms[idx].data.player2);
+                this.killVelocity(game.data.player2);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player2);
-            if (this.gameRooms[idx].data.mode) {
+                this.killVelocity(game.data.player2);
+            if (game.data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
-                    this.killVelocitx(this.gameRooms[idx].data.player2);
+                    this.killVelocitx(game.data.player2);
             }
         }
     }
@@ -348,6 +348,10 @@ export class GameService {
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
         return this.gameRooms.find(game => game.id === id).data;
+    }
+
+    async getGameFromId(id: number): Promise<GameRoomDto> {
+        return this.gameRooms.find(game => game.id === id);
     }
 
     async isInGame(userId: number): Promise<boolean> {
@@ -366,13 +370,13 @@ export class GameService {
     }
 
     async surrender(id: number, forfeiterId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("Could not find game with id:", id);
             return;
         }
-        this.gameRooms[idx].data.forfeiterId = forfeiterId;
-        this.gameRooms[idx].data.end = true;
+        game.data.forfeiterId = forfeiterId;
+        game.data.end = true;
     }
 
     //=================================================//

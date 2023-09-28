@@ -295,7 +295,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async gameLogic(data: GameDto) {
-        const game = this.gameService.gameRooms.find(g => g.data.id === data.id);
+        const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
             await this.sleepAndCalculate(game);
             await this.sendDataToRoom(game);
