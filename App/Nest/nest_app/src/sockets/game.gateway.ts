@@ -73,6 +73,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
            await this.gameService.handleRemoveInviteQueue(inviteQueue);
         }
     }
+
+    async emitToUser(userId: number, event: string, data: any) {
+        const socketIds: string[] = await this.userService.getSocketIdsFromUserId(userId);
+        socketIds.forEach(async socketId => {
+            const socket: Socket = this.clients.find(c => c.id == socketId);
+            socket?.emit(event, data);
+        });
+    }
         
     // =========================================================================== //
     // ============================ GAME EVENTS ================================== //
@@ -94,17 +102,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorUsername: string = invitorUser.username;
             const invitedUsername: string = invitedUser.username;
 
-            invitedSocketIds.forEach(async invitedSocketId => {
-                const invitedSocket: Socket = this.clients.find(c => c.id === invitedSocketId);
                 if (invitorId !== invitedId) {
                     if (await this.gameService.isInGame(invitorId) || await this.gameService.getIsQueued(invitorId)) { // invitor is in game - matchmaking queue
                         console.log("error: invitor is in a game")
-                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        await this.emitToUser(invitorId, 'isAlreadyInGame', { invitedUsername });
                         return ;
                     }
                     if (await this.gameService.isInGame(invitedId) || await this.gameService.getIsQueued(invitedIdNumber)) { // invited is in game - matchmaking queue
                         console.log("error: invited is in a game")
-                        invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
+                        await this.emitToUser(invitedIdNumber, 'isAlreadyInGame', { invitorUsername });
                         return ;
                     }
                     if (await this.gameService.queueAlreadyExists(invitorId, invitedId) === true) { // this exact queue alrady exist
@@ -114,25 +120,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
                     const idToNotify: number = await this.gameService.invitorIsInvited(invitorId); // invitor is invited by someone else
                     if (idToNotify >= 0) {
-                        const ids = await this.userService.getSocketIdsFromUserId(idToNotify); //
-
-                        ids.forEach(id => {
-                            const invitorSocketToNotify = this.clients.find(c => c.id === id);
-                            invitorSocketToNotify?.emit('inviteDeclined');
-                        });
+                        await this.emitToUser(idToNotify, 'inviteDeclined', { invitorId });
                     }
                     await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
-                    invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
-                    if (invitedSocketId === invitedSocketIds[0]) {
-                        invitorSocketIds.forEach(async invitorSocketId => {
-                            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-                            invitorSocket?.emit('inviteSent', { invitedUsername });
-                        });
-                    }
-                    
+                    this.emitToUser(invitedIdNumber, 'receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    this.emitToUser(invitorId, 'inviteSent', { invitedUsername });
                 }
-            });
-
         } catch (error) {
             console.log("error: ", error);
         }
