@@ -25,6 +25,8 @@ export default function GameInviteProvider({ children }: any) {
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
+			const {invitedIdNumber} = body;
+			setInvitedId(invitedIdNumber);
 			closePanel(true);
 			openSent();
 			setInvitedUsername(body.invitedUserName);
