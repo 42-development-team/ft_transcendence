@@ -5,10 +5,13 @@ import Result from './Result';
 import getUserNameById from "../utils/getUserNameById";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { GameHeaderInfo } from "./GameHeaderInfo";
+import OverlayMessage from "./overlayMessage";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
 	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode } = props;
+	const [beforeLeave, setBeforeLeave] = useState<number>(20);
+	const [paused, setPaused] = useState<boolean>(false);
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
@@ -18,6 +21,23 @@ const Game = ({ ...props }) => {
 		if (userId === undefined || userId === "") return;
 		socket?.emit("retrieveData", userId);
 	}, [userId]);
+
+	useEffect(() => {
+		socket?.on("playerDisconnected", (body: any) => {
+			const {beforeLeave} = body;
+			setBeforeLeave(beforeLeave);
+			setPaused(true);
+		});
+
+		socket?.on("playerReconnected", () => {
+			setPaused(false);
+		}
+		);
+		return () => {
+			socket?.off("playerDisconnected");
+		}
+	}
+	, [socket]);
 
 	useEffect(() => {
 		if (dataReceived) return ;
@@ -45,6 +65,9 @@ const Game = ({ ...props }) => {
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center h-full">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
+							{paused && 
+								<OverlayMessage message={`Your opponent has left the game. You will be redirected in ${beforeLeave} seconds.`} />
+							}
 							<GameHeaderInfo
 								currUserIsOnLeft={currUserIsOnLeft}
 								userName={userName}
