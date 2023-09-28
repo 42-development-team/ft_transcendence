@@ -36,6 +36,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log('User not authenticated');
             client.disconnect();
         }
+            console.log("reconnection");
+            const game: GameRoomDto = await this.gameService.getGameFromUserId(userId);
+            if (game !== undefined) {
+                userId === game.playerOneId ? game.playerOneDisconnected = false : game.playerTwoDisconnected = false;
+        }
     }
 
     async handleDisconnect(client: Socket) {
@@ -302,6 +307,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ========= GAME LOGIC =========//
 
     frameTime: number = 1000 / 60;
+    reconnectionTimer: number = 15;
 
     async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(this.frameTime);
@@ -311,18 +317,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return promiseCalculate;
     }
 
+    async asyncDelay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async gameLogic(data: GameDto) {
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
-                for (let i = 0; i < 10; i++) {
+                const playerDisconnectedId = game.playerOneDisconnected ? game.playerOneId : game.playerTwoId;
+                console.log("player disconnected");
+                for (let i = 0; i < this.reconnectionTimer; i++) {
+                    console.log("beforeLeave: ", 20 - i);
                     game.playerOneDisconnected ? 
-                        this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: 20 - i}) : this.emitToUser(game.playerOneId, 'playerDisconnected', {beforeLeave: 20 - i});
-                    delay(1000);
+                        this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i}) 
+                        :
+                        this.emitToUser(game.playerOneId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i});
+                    await this.asyncDelay(1000);
+                    if ( !game.playerOneDisconnected && !game.playerTwoDisconnected) {
+                        console.log("player reconnected");   
+                        break;
+                    }
+                }
+                if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
+                    game.data.end = true;
+                    console.log("endGame player not reconnected");
                 }
             }
-            await this.sleepAndCalculate(game);
-            this.sendDataToRoom(game);
+            else {
+                await this.sleepAndCalculate(game);
+                this.sendDataToRoom(game);
+            }
         }
         const results = await this.gameService.createGame(data);
         console.log('results: ', results);
