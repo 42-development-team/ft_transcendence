@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 import CustomBtnPlay from '../CustomBtnPlay'
 import ThemeContext from '../theme/themeContext';
 import LoadingContext from '@/app/context/LoadingContext';
+import GameInviteContext from '@/app/context/GameInviteContext';
 
 const Play = ({...props}) => {
 
@@ -15,6 +16,7 @@ const Play = ({...props}) => {
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
 	const {gameLoading, setGameLoading} = useContext(LoadingContext);
+	const { inviteQueued } = useContext(GameInviteContext);
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
@@ -30,14 +32,15 @@ const Play = ({...props}) => {
 		}
 		);
 	}, [socket]);
-	
-	useEffect(() => {
-		if (typeof window === "undefined") {
-			return;
+
+		useEffect(() => {
+		if (inviteQueued === true || gameLoading === true) {
+			setDisable(true);
+		} else {
+			setDisable(false);
 		}
-		setDisable(false);
-		isUserQueued(parseInt(userId));
-	}, [socket]);
+		console.log("inviteQueued: ", inviteQueued);
+	}, [inviteQueued || gameLoading]);
 
 	useEffect(() => {
 		if (theme === "latte") {

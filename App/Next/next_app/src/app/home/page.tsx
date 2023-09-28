@@ -8,14 +8,11 @@ import useGame from "../hooks/useGame";
 import InGameContext from "../context/inGameContext";
 import useFriends from "@/hooks/useFriends";
 import Logo from "../components/home/Logo";
-import LoadingContext from "../context/LoadingContext";
-import GameInviteContext from "../context/GameInviteContext";
 
 export default function Home() {
 	const { login, userId } = useAuthContext();
 	const { inGameContext } = useContext(InGameContext);
-	const { gameLoading } = useContext(LoadingContext);
-	const { inviteQueued } = useContext(GameInviteContext);
+
 	const [disable, setDisable] = useState(true);
 	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
 	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
@@ -24,14 +21,6 @@ export default function Home() {
 		if (typeof window === 'undefined') return;
 		login();
 	}, []);
-
-	useEffect(() => {
-		if (inviteQueued === true || gameLoading === true) {
-			setDisable(true);
-		} else {
-			setDisable(false);
-		}
-	}, [inviteQueued || gameLoading]);
 
 	return (
 		<div className="flex w-full h-full">
@@ -52,6 +41,7 @@ export default function Home() {
 							changeMode={changeMode}
 							mode={mode}
 							disabled={disable}
+							setDisable={setDisable}
 						/>
 					</div>
 				</div>
