@@ -8,5 +8,7 @@ export class GameRoomDto {
 	readyPlayerOne: boolean;
 	readyPlayerTwo: boolean;
 	reconnect: boolean;
+	playerOneDisconnected: boolean;
+	playerTwoDisconnected: boolean;
 	data: GameDto;
 }

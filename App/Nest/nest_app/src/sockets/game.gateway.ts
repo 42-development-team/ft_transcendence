@@ -7,6 +7,7 @@ import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { InviteDto } from 'src/game/dto/invite-game.dto';
 import { CreateUserDto } from 'src/users/dto';
+import { delay } from 'rxjs';
 
 @Injectable()
 @WebSocketGateway({
@@ -42,6 +43,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const updateUser = await this.userService.removeSocketId(userId, client.id);
         await this.cleanQueues(client);
         if (updateUser && updateUser.socketIds.length === 0) {
+            const game: GameRoomDto = await this.gameService.getGameFromUserId(userId);
+            if (game !== undefined) {
+                userId === game.playerOneId ? game.playerOneDisconnected = true : game.playerTwoDisconnected = true;
+            }
             await this.userService.updateStatus(userId, "offline");
             this.gameService.handleLeaveQueue(userId);
         }
@@ -309,6 +314,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async gameLogic(data: GameDto) {
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
+            if (game.playerOneDisconnected || game.playerTwoDisconnected) {
+                for (let i = 0; i < 10; i++) {
+                    game.playerOneDisconnected ? 
+                        this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: 20 - i}) : this.emitToUser(game.playerOneId, 'playerDisconnected', {beforeLeave: 20 - i});
+                    delay(1000);
+                }
+            }
             await this.sleepAndCalculate(game);
             this.sendDataToRoom(game);
         }
