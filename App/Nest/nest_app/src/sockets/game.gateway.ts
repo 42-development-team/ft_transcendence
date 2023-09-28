@@ -304,7 +304,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ========= GAME LOGIC =========//
 
     frameTime: number = 1000 / 60;
-    reconnectionTimer: number = 1000;
+    reconnectionTimer: number = 15;
 
     async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(this.frameTime);
