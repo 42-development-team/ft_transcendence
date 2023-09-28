@@ -82,7 +82,7 @@ const Canvas = ({ ...props }) => {
 	if (typeof window === 'undefined')
 		return;
 
-	const { move, stopMove, launchGame, data, mode, userId } = props;
+	const { move, stopMove, launchGame, data, mode, userId, socket } = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth * 0.9);
 	let height: number;
@@ -90,9 +90,14 @@ const Canvas = ({ ...props }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-		if (data)
+		if (!data)
+			return ;
+		if (data.end === true) {
+			socket?.emit("retrieveData", userId);
+		}
+		else
 			launchGame(data.id);
-	}, []);
+	}, [data?.end]);
 
 	useEffect(() => {
 		if (!data)
