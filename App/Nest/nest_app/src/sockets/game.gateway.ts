@@ -86,20 +86,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 return;
             const { invitedId, modeEnabled }: { invitedId: number, modeEnabled: boolean } = await body;
             const invitedIdNumber = Number(invitedId);
+            const invitorIdNumber = Number(invitorId);
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
             const invitorUsername: string = invitorUser.username;
             const invitedUsername: string = invitedUser.username;
 
                 if (invitorId !== invitedId) {
-                    if (await this.gameService.isInGame(invitorId) || await this.gameService.getIsQueued(invitorId)) { // invitor is in game - matchmaking queue
+                    if (await this.gameService.isInGame(invitorIdNumber) || await this.gameService.getIsQueued(invitorIdNumber)) { // invitor is in game - matchmaking queue
                         console.log("error: invitor is in a game")
-                        await this.emitToUser(invitorId, 'isAlreadyInGame', { invitedUsername });
+                        await this.emitToUser(invitorIdNumber, 'isAlreadyInGame', { invitedUsername: invitedUsername, sidePanelPopUp: false });
                         return ;
                     }
-                    if (await this.gameService.isInGame(invitedId) || await this.gameService.getIsQueued(invitedIdNumber)) { // invited is in game - matchmaking queue
+                    if (await this.gameService.isInGame(invitedIdNumber) || await this.gameService.getIsQueued(invitedIdNumber)) { // invited is in game - matchmaking queue
                         console.log("error: invited is in a game")
-                        await this.emitToUser(invitedIdNumber, 'isAlreadyInGame', { invitorUsername });
+                        await this.emitToUser(invitorIdNumber, 'isAlreadyInGame', { invitedUsername: invitedUsername, sidePanelPopUp: true });
                         return ;
                     }
                     if (await this.gameService.queueAlreadyExists(invitorId, invitedId) === true) { // this exact queue alrady exist
@@ -109,9 +110,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
                     const idToNotify: number = await this.gameService.invitorIsInvited(invitorId); // invitor is invited by someone else
                     if (idToNotify >= 0) {
-                        await this.emitToUser(idToNotify, 'inviteDeclined', { invitorId });
+                        await this.emitToUser(idToNotify, 'inviteDeclined', null);
                     }
-                    await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
+                    await this.gameService.addInviteQueue(invitorIdNumber, invitedIdNumber, modeEnabled);
                     await this.emitToUser(invitedIdNumber, 'receiveInvite', { invitorId, invitorUsername, modeEnabled });
                     await this.emitToUser(invitorId, 'inviteSent', { invitedUsername, invitedIdNumber });
                 }
@@ -208,7 +209,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const data = await this.gameService.getDataFromUserId(userId);
         const socketOwnerId = await this.userService.getUserIdFromSocket(socket);
         const sidePanelPopUp = socketOwnerId !== userId ? true : false;
-        const isAlreadyInGame = data ? true : false;
+        const isAlreadyInGame = data !== undefined ? true : false;
         if (isAlreadyInGame) {
             socket.emit('isAlreadyInGame', {data, sidePanelPopUp});
         }
@@ -260,7 +261,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleRetrieveData(socket: Socket, userId: number) {
         const data = await this.gameService.getDataFromUserId(userId);
         if (data === undefined || !data)
+        {
             console.log("Error retrieving Game Data: data is null");
+            return ;
+        }
         socket?.emit('sendDataToUser', data);
         socket?.join(data.roomName);
     }
