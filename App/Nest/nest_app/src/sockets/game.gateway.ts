@@ -112,8 +112,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         await this.emitToUser(idToNotify, 'inviteDeclined', { invitorId });
                     }
                     await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
-                    this.emitToUser(invitedIdNumber, 'receiveInvite', { invitorId, invitorUsername, modeEnabled });
-                    this.emitToUser(invitorId, 'inviteSent', { invitedUsername, invitedIdNumber });
+                    await this.emitToUser(invitedIdNumber, 'receiveInvite', { invitorId, invitorUsername, modeEnabled });
+                    await this.emitToUser(invitorId, 'inviteSent', { invitedUsername, invitedIdNumber });
                 }
         } catch (error) {
             console.log("error: ", error);
