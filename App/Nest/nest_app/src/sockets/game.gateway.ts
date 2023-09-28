@@ -97,12 +97,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             invitedSocketIds.forEach(async invitedSocketId => {
                 const invitedSocket: Socket = this.clients.find(c => c.id === invitedSocketId);
                 if (invitorId !== invitedId) {
-                    if (await this.gameService.isInGame(invitorId) === true) { // invitor is in game
+                    if (await this.gameService.isInGame(invitorId) || this.gameService.getIsQueued(invitorId)) { // invitor is in game - matchmaking queue
                         console.log("error: invitor is in a game")
                         invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
                         return ;
                     }
-                    if (await this.gameService.isInGame(invitedId) === true) { // invited is in game
+                    if (await this.gameService.isInGame(invitedId) || this.gameService.getIsQueued(invitedIdNumber)) { // invited is in game - matchmaking queue
                         console.log("error: invited is in a game")
                         invitorSocket?.emit('isAlreadyInGame', { invitedUsername });
                         return ;

@@ -132,7 +132,7 @@ export class GameService {
     async getIsQueued(userId: number): Promise<boolean> {
         const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (game === undefined) {
-            if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId) || this.inviteQueue.find(user => user.invitorId === userId || user.invitedId === userId))) {
+            if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
                 return true;
             }
         }
