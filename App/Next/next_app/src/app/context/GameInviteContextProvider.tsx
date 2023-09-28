@@ -27,12 +27,11 @@ export default function GameInviteProvider({ children }: any) {
 
 	useEffect(() => {
 		socket?.on('inviteSent', (body: any) => {
-			const {invitedIdNumber} = body;
-			setInviteQueued(true);
+			const {invitedUsername, invitedIdNumber} = body;
 			setInvitedId(invitedIdNumber);
 			closePanel(true);
 			openSent();
-			setInvitedUsername(body.invitedUserName);
+			setInvitedUsername(invitedUsername);
 			setTimeoutId(setTimeout(() => {
 				closePanel(true);
 			}, 20000));
@@ -42,7 +41,6 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('closePanel', (body: any) => {
-			setInviteQueued(false);
 			closePanel(true);
 			return () => {
 				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -52,7 +50,6 @@ export default function GameInviteProvider({ children }: any) {
 		);
 
 		socket?.on('inviteCanceled', (body: any) => {
-			setInviteQueued(false);
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			clearInterval(timerRef.current as NodeJS.Timeout);
@@ -77,7 +74,6 @@ export default function GameInviteProvider({ children }: any) {
 		});
 
 		socket?.on('inviteDeclined', (body: any) => {
-			setInviteQueued(false);
 			setMessage("Invite declined");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			clearInterval(timerRef.current as NodeJS.Timeout);
@@ -120,14 +116,6 @@ export default function GameInviteProvider({ children }: any) {
 			}
 		});
 
-		socket?.on('isQueuedInvite', (body: any) => {
-			const { isQueued } = body;
-			setInviteQueued(isQueued);
-			return () => {
-				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
-			}
-		});
-
 		return () => {
 			socket?.off('inviteSent');
 			socket?.off('inviteCancelled');
@@ -136,7 +124,6 @@ export default function GameInviteProvider({ children }: any) {
 			socket?.off('inviteDeclined');
 			socket?.off('isAlreadyInGame');
 			socket?.off('closePanel');
-			socket?.off('isQueuedInvite');
 
 		}
 	}, [socket]);
@@ -150,6 +137,7 @@ export default function GameInviteProvider({ children }: any) {
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			clearInterval(timerRef.current as NodeJS.Timeout);
 		}
+		setInviteQueued(false);
 		setSlide("translateX(100%)");
 		setInvitedBy("");
 		setMessage("");
@@ -197,10 +185,6 @@ export default function GameInviteProvider({ children }: any) {
 		if (timeoutId)
 			timeoutRefId.current = timeoutId;
 	}, [timeoutId]);
-
-	useEffect(() => {
-		socket?.emit('isUserQueuedInvite', parseInt(userId));
-	}, [socket?.connected]);
 
 	/* END USE EFFECTS SIDE PANEL*/
 
@@ -269,8 +253,6 @@ export default function GameInviteProvider({ children }: any) {
 			setInvitedUsername,
 			invitedId,
 			setInvitedId,
-			inviteQueued,
-			setInviteQueued,
 		}}>
 			{children}
 		</GameInviteContext.Provider>
