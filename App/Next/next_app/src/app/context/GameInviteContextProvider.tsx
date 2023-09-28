@@ -201,7 +201,7 @@ export default function GameInviteProvider({ children }: any) {
 	useEffect(() => {
 		console.log('isUserQueuedInvite')
 		socket?.emit('isUserQueuedInvite', parseInt(userId));
-	}, []);
+	}, [socket]);
 
 	/* END USE EFFECTS SIDE PANEL*/
 

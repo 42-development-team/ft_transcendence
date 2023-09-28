@@ -232,6 +232,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('isUserQueuedInvite') //in invite queue
     async isUserQueuedInvite(socket: Socket, userId: number) {
+        console.log("isUserQueuedInvite: ", userId)
         const isQueued = this.gameService.inviteQueue.find(i => i.invitedId === userId || i.invitorId === userId);
         console.log("isQueued: ", isQueued);
         if (isQueued !== undefined)
