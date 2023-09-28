@@ -379,11 +379,11 @@ export class GameService {
     //================== GAME PLAY ====================//
     //=================================================//
     /* GamePlay Player */
-    incrPoints(idx: number, player: number) {
+    incrPoints(game: GameRoomDto, player: number) {
         if (player === 1)
-            this.gameRooms[idx].data.player1.points++;
+        game.data.player1.points++;
         else
-            this.gameRooms[idx].data.player2.points++;
+        game.data.player2.points++;
     }
 
     setVelocity(val: number, player: PlayerDto) {
@@ -431,15 +431,15 @@ export class GameService {
         }
     }
 
-    calculatePlayer(idx: number, mode: boolean) {
+    calculatePlayer(game: GameRoomDto, mode: boolean) {
         if (mode) {
-            const ball = this.gameRooms[idx].data.ball;
-            this.movePlayerMode(ball, this.gameRooms[idx].data.player1);
-            this.movePlayerMode(ball, this.gameRooms[idx].data.player2);
+            const ball = game.data.ball;
+            this.movePlayerMode(ball, game.data.player1);
+            this.movePlayerMode(ball, game.data.player2);
         }
         else {
-            this.movePlayer(this.gameRooms[idx].data.player1);
-            this.movePlayer(this.gameRooms[idx].data.player2);
+            this.movePlayer(game.data.player1);
+            this.movePlayer(game.data.player2);
         }
     }
 
@@ -532,30 +532,30 @@ export class GameService {
     }
 
     //========== SCORE =============//
-    score(idx: number) {
-        if (this.gameRooms[idx].data.ball.x <= 0) {
-            this.incrPoints(idx, 2);
-            this.reset(idx);
+    score(game: GameRoomDto) {
+        if (game.data.ball.x <= 0) {
+            this.incrPoints(game, 2);
+            this.reset(game);
         }
-        else if (this.gameRooms[idx].data.ball.x >= 1) {
-            this.incrPoints(idx, 1);
-            this.reset(idx);
+        else if (game.data.ball.x >= 1) {
+            this.incrPoints(game, 1);
+            this.reset(game);
         }
     }
 
     //========== RESET BALL =============//
-    reset(idx: number) {
-        this.gameRooms[idx].data.ball.x = 0.5;
-        this.gameRooms[idx].data.ball.y = 0.5;
+    reset(game: GameRoomDto) {
+        game.data.ball.x = 0.5;
+        game.data.ball.y = 0.5;
         let sign = 1;
 
         if (Math.random() < 0.5)
             sign *= -1;
-        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+            game.data.ball.speed[0] = 0.3 * sign;
 
         if (Math.random() < 0.5)
             sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+            game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -575,28 +575,27 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    calculateBall(idx: number) {
-        const ball = this.gameRooms[idx].data.ball;
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
+    calculateBall(game: GameRoomDto) {
+        const ball = game.data.ball;
+        const player1 = game.data.player1;
+        const player2 = game.data.player2;
 
         this.borderBounce(ball);
         this.playerCollision(ball, player1, ball.r);
         this.playerCollision(ball, player2, -ball.r);
         this.updateBall(ball);
-        this.score(idx);
+        this.score(game);
         this.incrementSpeed(ball);
     };
 
-    async calculateGame(gameId: number, mode: boolean): Promise<GameDto> {
+    async calculateGame(game: GameRoomDto): Promise<GameDto> {
 
-        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
-        this.calculatePlayer(idx, mode);
-        this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
-            this.gameRooms[idx].data.end = true;
+        this.calculatePlayer(game, game.data.mode);
+        this.calculateBall(game);
+        if (game.data.player1.points > 10 || game.data.player2.points > 10)
+            game.data.end = true;
     
-    return { ...this.gameRooms[idx].data };
+    return { ...game.data };
 }
 
 //=================================================//

@@ -286,18 +286,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ============================== //
     // ========= GAME LOGIC =========//
 
-    async sleepAndCalculate(data: GameDto): Promise<GameDto> {
+    async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
         const promiseSleep = this.gameService.sleep(1000/60);
-        const promiseCalculate = this.gameService.calculateGame(data.id, data.mode);
+        const promiseCalculate = this.gameService.calculateGame(game);
 
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;
     }
 
     async gameLogic(data: GameDto) {
-        while (data.end === false) {
-            await this.sleepAndCalculate(data);
-            await this.sendDataToRoom(data);
+        const game = this.gameService.gameRooms.find(g => g.data.id === data.id);
+        while (game.data.end === false) {
+            await this.sleepAndCalculate(game);
+            await this.sendDataToRoom(game);
         }
         const results = await this.gameService.createGame(data);
         console.log('results: ', results);
@@ -309,7 +310,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit("userStatusUpdate", { userId: results.gameWonId });
     }
 
-    async sendDataToRoom(data: GameDto) {
-        this.server.to(data.roomName).emit('updateGame', data);
+    async sendDataToRoom(game: GameRoomDto) {
+        this.server.to(game.data.roomName).emit('updateGame', game.data);
     }
 }
