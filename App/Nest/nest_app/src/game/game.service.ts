@@ -132,7 +132,7 @@ export class GameService {
     async getIsQueued(userId: number): Promise<boolean> {
         const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
         if (game === undefined) {
-            if (this.queue.find(user => user === userId)) {
+            if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId) || this.inviteQueue.find(user => user.invitorId === userId || user.invitedId === userId))) {
                 return true;
             }
         }
@@ -340,10 +340,7 @@ export class GameService {
     }
 
     async removeRoom(gameId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
-        if (idx === -1)
-            return;
-        this.gameRooms.splice(idx, 1);
+       this.gameRooms = this.gameRooms.filter(game => game.id !== gameId);
     }
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
@@ -355,7 +352,7 @@ export class GameService {
     }
 
     async isInGame(userId: number): Promise<boolean> {
-        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined) {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined ) {
             return true;
         }
         return false;
