@@ -146,17 +146,29 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const invitorIdNumber = Number(invitorId);
         const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
+        const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
 
         invitorSocketIds.forEach(async invitorSocketId => {
             const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
             const inviteInfos: InviteDto = await this.gameService.handleRespondToInvite(invitorIdNumber, invitedId, response);
-            if (!response)
+            if (!response) {
                 invitorSocket?.emit('inviteDeclined');
+                if (invitorSocketId === invitorSocketIds[0]) {
+                    invitedSocketIds.forEach(async invitedSocketId => {
+                        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                        invitedSocket?.emit('closePanel', { invitorId });
+                    });
+                }
+            }
             else if (inviteInfos !== undefined) {
                 invitorSocket?.emit('inviteAccepted');
-
+                if (invitorSocketId === invitorSocketIds[0]) {
+                    invitedSocketIds.forEach(async invitedSocketId => {
+                        const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
+                        invitedSocket?.emit('closePanel', { invitorId });
+                    });
+                }
                 const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
-                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
                 const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedId, invitorIdNumber);
                 await this.joinGameRoom(invitorSocketIds, invitedSocketIds, gameRoom);
                 await this.gameService.handleRemoveInviteQueue(inviteQueue);
