@@ -44,7 +44,6 @@ const Play = ({ ...props }) => {
 			}
 			setDisable(true);
 			setOpenAlert(true);
-			console.log("already in invite queue");
 			setTimeout(() => {
 				setDisable(false);
 				setOpenAlert(false);
