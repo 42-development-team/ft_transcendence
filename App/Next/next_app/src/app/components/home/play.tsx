@@ -33,7 +33,7 @@ const Play = ({ ...props }) => {
 		}
 		);
 
-		socket?.on('alreadyInInviteQueue', (body:any) => {
+		socket?.on('alreadyInInviteQueue', (body: any) => {
 			const {isQueued} = body;
 			if (!isQueued) {
 				setLoading(true)
