@@ -24,7 +24,7 @@ const Game = ({ ...props }) => {
 
 	useEffect(() => {
 		socket?.on("playerDisconnected", (body: any) => {
-			const {beforeLeave} = body;
+			const { beforeLeave } = body;
 			setBeforeLeave(beforeLeave);
 			setPaused(true);
 		});
@@ -37,10 +37,10 @@ const Game = ({ ...props }) => {
 			socket?.off("playerDisconnected");
 		}
 	}
-	, [socket]);
+		, [socket]);
 
 	useEffect(() => {
-		if (dataReceived) return ;
+		if (dataReceived) return;
 		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
 			return;
 		}
@@ -64,18 +64,20 @@ const Game = ({ ...props }) => {
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center h-full">
-						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
-							{paused && 
-								<OverlayMessage message={`Your opponent has left the game. You will be redirected in ${beforeLeave} seconds.`} />
+						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
+							{paused &&
+								<OverlayMessage surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
 							}
-							<GameHeaderInfo
-								currUserIsOnLeft={currUserIsOnLeft}
-								userName={userName}
-								opponnentUsername={opponnentUsername}
-								userId={userId}
-								id={props.data.id}
-								surrender={props.surrender}
-							/>
+							{!paused &&
+								<GameHeaderInfo
+									currUserIsOnLeft={currUserIsOnLeft}
+									userName={userName}
+									opponnentUsername={opponnentUsername}
+									userId={userId}
+									id={props.data.id}
+									surrender={props.surrender}
+								/>
+							}
 						</div>
 						<Canvas
 							move={move}
