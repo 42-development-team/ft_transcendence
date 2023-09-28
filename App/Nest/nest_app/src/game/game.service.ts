@@ -144,12 +144,12 @@ export class GameService {
     //=================================================//
 
     async invitorIsInvited(invitorId: number): Promise<number> {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-        if (idx === -1)
+        const inviteQueue: InviteDto = this.inviteQueue.find(q => q.invitedId === invitorId);
+        if (inviteQueue === undefined)
             return -1;
 
-        const idToNotify = this.inviteQueue[idx].invitorId;
-        await this.handleRemoveInviteQueue(idToNotify, invitorId);
+        const idToNotify = inviteQueue.invitorId;
+        await this.handleRemoveInviteQueue(inviteQueue);
     
         return idToNotify;
     }
@@ -167,30 +167,34 @@ export class GameService {
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
     }
 
-    async handleRemoveInviteQueue(invitorId: number, invitedId: number) {
+    async getInviteQueue(invitedId: number, invitorId: number) : Promise<InviteDto> {
+        const inviteQueue: InviteDto = this.inviteQueue.find(q => q.invitedId === invitedId && q.invitorId === invitorId);
+        return inviteQueue;
+    }
+
+    async handleRemoveInviteQueue(inviteQueue: InviteDto) {
         console.log("IN REMOVEINVITEQUEUE:", this.gameRooms);
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx === -1) {
+        if (inviteQueue === undefined) {
             console.log("handleCancelInvite did not find a queue to remove")
             return;
         }
         console.log("handleCancelInvite found a queue to remove")
-        this.inviteQueue.splice(idx, 1);
+        this.inviteQueue = this.inviteQueue.filter(q => q.invitorId !== inviteQueue.invitorId && q.invitedId !== inviteQueue.invitedId);
     }
 
     async handleRespondToInvite(invitorId: number, invitedId: number, accept: boolean): Promise<InviteDto> {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        const inviteQueue: InviteDto = await this.getInviteQueue(invitedId, invitorId);
         if (!accept) {
-            await this.handleRemoveInviteQueue(invitorId, invitedId);
+            await this.handleRemoveInviteQueue(inviteQueue);
             return;
         }
-        else if (idx === -1)
+        else if (inviteQueue === undefined)
             return;
         if (await this.isInGame(invitorId))
             return;
         if (await this.isInGame(invitedId))
             return;
-        return (this.inviteQueue[idx]);
+        return (inviteQueue);
     }
 
     async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
