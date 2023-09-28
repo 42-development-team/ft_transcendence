@@ -12,7 +12,6 @@ import Logo from "../components/home/Logo";
 export default function Home() {
 	const { login, userId } = useAuthContext();
 	const { inGameContext } = useContext(InGameContext);
-
 	const [disable, setDisable] = useState(true);
 	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
 	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();

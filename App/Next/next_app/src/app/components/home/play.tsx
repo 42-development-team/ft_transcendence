@@ -39,7 +39,6 @@ const Play = ({...props}) => {
 		} else {
 			setDisable(false);
 		}
-		console.log("inviteQueued: ", inviteQueued);
 	}, [inviteQueued || gameLoading]);
 
 	useEffect(() => {
