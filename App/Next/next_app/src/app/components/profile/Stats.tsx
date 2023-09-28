@@ -37,7 +37,7 @@ const Stats = ( {userId, stats}: {userId : string, stats: any } ) => {
 								W / L - R
 							</div>
 							<div className="text-xl">
-								{stats.win} / {stats.lose} - {stats.ratio}%
+								{stats.win} / {stats.lose} - {(stats.ratio * 100).toFixed(0)}%
 							</div>
 						</div>
 					</div>

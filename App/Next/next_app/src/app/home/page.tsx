@@ -1,6 +1,6 @@
 "use client"
 import Chat from "@/components/chat/Chat";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Play from "../components/home/play";
 import Game from "../components/game/Game";
@@ -12,14 +12,14 @@ import Logo from "../components/home/Logo";
 export default function Home() {
 	const { login, userId } = useAuthContext();
 	const { inGameContext } = useContext(InGameContext);
+	const [disable, setDisable] = useState(true);
 	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
+	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
 		login();
 	}, []);
-
-	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
 
 	return (
 		<div className="flex w-full h-full">
@@ -39,6 +39,8 @@ export default function Home() {
 							userId={userId}
 							changeMode={changeMode}
 							mode={mode}
+							disabled={disable}
+							setDisable={setDisable}
 						/>
 					</div>
 				</div>

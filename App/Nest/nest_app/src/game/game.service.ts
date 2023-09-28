@@ -130,9 +130,9 @@ export class GameService {
     }
 
     async getIsQueued(userId: number): Promise<boolean> {
-        const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
-        if (idx === -1) {
-            if (this.queue.find(user => user === userId)) {
+        const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
+        if (game === undefined) {
+            if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
                 return true;
             }
         }
@@ -144,12 +144,12 @@ export class GameService {
     //=================================================//
 
     async invitorIsInvited(invitorId: number): Promise<number> {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitedId === invitorId);
-        if (idx === -1)
+        const inviteQueue: InviteDto = this.inviteQueue.find(q => q.invitedId === invitorId);
+        if (inviteQueue === undefined)
             return -1;
 
-        const idToNotify = this.inviteQueue[idx].invitorId;
-        await this.handleRemoveInviteQueue(idToNotify, invitorId);
+        const idToNotify = inviteQueue.invitorId;
+        await this.handleRemoveInviteQueue(inviteQueue);
     
         return idToNotify;
     }
@@ -167,36 +167,40 @@ export class GameService {
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
     }
 
-    async handleRemoveInviteQueue(invitorId: number, invitedId: number) {
-        console.log("IN REMOVEINVITEQUEUE:", this.gameRooms);
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
-        if (idx === -1) {
+    async getInviteQueue(invitedId: number, invitorId: number) : Promise<InviteDto> {
+        const inviteQueue: InviteDto = this.inviteQueue.find(q => q.invitedId === invitedId && q.invitorId === invitorId);
+        return inviteQueue;
+    }
+
+    async handleRemoveInviteQueue(inviteQueue: InviteDto) {
+        console.log("IN REMOVEINVITEQUEUE:", inviteQueue);
+        if (inviteQueue === undefined) {
             console.log("handleCancelInvite did not find a queue to remove")
             return;
         }
         console.log("handleCancelInvite found a queue to remove")
-        this.inviteQueue.splice(idx, 1);
+        this.inviteQueue = this.inviteQueue.filter(q => q.invitorId !== inviteQueue.invitorId && q.invitedId !== inviteQueue.invitedId);
     }
 
     async handleRespondToInvite(invitorId: number, invitedId: number, accept: boolean): Promise<InviteDto> {
-        const idx: number = this.inviteQueue.findIndex(q => q.invitorId === invitorId && q.invitedId === invitedId);
+        const inviteQueue: InviteDto = await this.getInviteQueue(invitedId, invitorId);
         if (!accept) {
-            await this.handleRemoveInviteQueue(invitorId, invitedId);
+            await this.handleRemoveInviteQueue(inviteQueue);
             return;
         }
-        else if (idx === -1)
+        else if (inviteQueue === undefined)
             return;
         if (await this.isInGame(invitorId))
             return;
         if (await this.isInGame(invitedId))
             return;
-        return (this.inviteQueue[idx]);
+        return (inviteQueue);
     }
 
     async handleJoinQueue(userId: number, mode: boolean): Promise<{ newGameRoom: GameRoomDto, player1SocketIds: string[], player2SocketIds: string[] }> {
         try {
-            const idx: number = this.gameRooms.findIndex(game => game.playerOneId === userId || game.playerTwoId === userId);
-            if (idx === -1) {
+            const game: GameRoomDto = this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
+            if (game === undefined) {
                 if (this.queue.find(user => user === userId) || this.modeQueue.find(user => user === userId)) {
                     return;
                 }
@@ -212,7 +216,7 @@ export class GameService {
                 }
             }
             else {
-                const newGameRoom: GameRoomDto = this.gameRooms[idx];
+                const newGameRoom: GameRoomDto = game;
                 const player1SocketIds: string[] = [];
                 const player2SocketIds: string[] = [];
                 return ({ newGameRoom, player1SocketIds, player2SocketIds });
@@ -247,17 +251,17 @@ export class GameService {
 
 
     async handleLaunchGame(id: number, userId: number): Promise<GameRoomDto> {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleLaunchGame: !LaunchGameRoom")
             return;
         }
-        if (this.gameRooms[idx].playerOneId === userId)
-            this.gameRooms[idx].readyPlayerOne = true;
-        else if (this.gameRooms[idx].playerTwoId === userId)
-            this.gameRooms[idx].readyPlayerTwo = true;
-        if (this.gameRooms[idx].readyPlayerOne === true && this.gameRooms[idx].readyPlayerTwo === true)
-            return this.gameRooms[idx];
+        if (game.playerOneId === userId)
+        game.readyPlayerOne = true;
+        else if (game.playerTwoId === userId)
+        game.readyPlayerTwo = true;
+        if (game.readyPlayerOne === true && game.readyPlayerTwo === true)
+            return game;
     }
 
     handleLeaveQueue(userId: number) {
@@ -273,14 +277,14 @@ export class GameService {
         }
     }
 
-    handleMove(event: string, id: number, userId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+    async handleMove(event: string, id: number, userId: number) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleMove: !MoveGameRoom")
             return;
         }
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
+        const player1 = game.data.player1;
+        const player2 = game.data.player2;
 
         if (player1.id === userId) {
             if (event === "ArrowUp")
@@ -288,7 +292,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player1);
 
-            if (this.gameRooms[idx].data.mode) {
+            if (game.data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.01, player1);
                 else if (event === "ArrowRight")
@@ -301,7 +305,7 @@ export class GameService {
             else if (event === "ArrowDown")
                 this.setVelocity(0.01, player2);
 
-            if (this.gameRooms[idx].data.mode) {
+            if (game.data.mode) {
                 if (event === "ArrowLeft")
                     this.setVelocitx(-0.005, player2);
                 else if (event === "ArrowRight")
@@ -311,47 +315,48 @@ export class GameService {
 
     }
 
-    handleStopMove(event: string, id: number, userId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+    async handleStopMove(event: string, id: number, userId: number) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("game.service-handleStopMove: !StopMoveGameRoom")
             return;
         }
-        if (this.gameRooms[idx].data.player1.id === userId) {
+        if (game.data.player1.id === userId) {
             if (event === "ArrowUp")
-                this.killVelocity(this.gameRooms[idx].data.player1);
+                this.killVelocity(game.data.player1);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player1);
-            if (this.gameRooms[idx].data.mode) {
+                this.killVelocity(game.data.player1);
+            if (game.data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
-                    this.killVelocitx(this.gameRooms[idx].data.player1);
+                    this.killVelocitx(game.data.player1);
             }
         }
         else {
             if (event === "ArrowUp")
-                this.killVelocity(this.gameRooms[idx].data.player2);
+                this.killVelocity(game.data.player2);
             else if (event === "ArrowDown")
-                this.killVelocity(this.gameRooms[idx].data.player2);
-            if (this.gameRooms[idx].data.mode) {
+                this.killVelocity(game.data.player2);
+            if (game.data.mode) {
                 if (event === "ArrowLeft" || event === "ArrowRight")
-                    this.killVelocitx(this.gameRooms[idx].data.player2);
+                    this.killVelocitx(game.data.player2);
             }
         }
     }
 
     async removeRoom(gameId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === gameId);
-        if (idx === -1)
-            return;
-        this.gameRooms.splice(idx, 1);
+       this.gameRooms = this.gameRooms.filter(game => game.id !== gameId);
     }
 
     async getDataFromRoomId(id: number): Promise<GameDto> {
         return this.gameRooms.find(game => game.id === id).data;
     }
 
+    async getGameFromId(id: number): Promise<GameRoomDto> {
+        return this.gameRooms.find(game => game.id === id);
+    }
+
     async isInGame(userId: number): Promise<boolean> {
-        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined) {
+        if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined ) {
             return true;
         }
         return false;
@@ -366,24 +371,24 @@ export class GameService {
     }
 
     async surrender(id: number, forfeiterId: number) {
-        const idx: number = this.gameRooms.findIndex(game => game.id === id);
-        if (idx === -1) {
+        const game: GameRoomDto = await this.getGameFromId(id);
+        if (game === undefined) {
             console.log("Could not find game with id:", id);
             return;
         }
-        this.gameRooms[idx].data.forfeiterId = forfeiterId;
-        this.gameRooms[idx].data.end = true;
+        game.data.forfeiterId = forfeiterId;
+        game.data.end = true;
     }
 
     //=================================================//
     //================== GAME PLAY ====================//
     //=================================================//
     /* GamePlay Player */
-    incrPoints(idx: number, player: number) {
+    incrPoints(game: GameRoomDto, player: number) {
         if (player === 1)
-            this.gameRooms[idx].data.player1.points++;
+        game.data.player1.points++;
         else
-            this.gameRooms[idx].data.player2.points++;
+        game.data.player2.points++;
     }
 
     setVelocity(val: number, player: PlayerDto) {
@@ -431,15 +436,15 @@ export class GameService {
         }
     }
 
-    calculatePlayer(idx: number, mode: boolean) {
+    calculatePlayer(game: GameRoomDto, mode: boolean) {
         if (mode) {
-            const ball = this.gameRooms[idx].data.ball;
-            this.movePlayerMode(ball, this.gameRooms[idx].data.player1);
-            this.movePlayerMode(ball, this.gameRooms[idx].data.player2);
+            const ball = game.data.ball;
+            this.movePlayerMode(ball, game.data.player1);
+            this.movePlayerMode(ball, game.data.player2);
         }
         else {
-            this.movePlayer(this.gameRooms[idx].data.player1);
-            this.movePlayer(this.gameRooms[idx].data.player2);
+            this.movePlayer(game.data.player1);
+            this.movePlayer(game.data.player2);
         }
     }
 
@@ -532,30 +537,30 @@ export class GameService {
     }
 
     //========== SCORE =============//
-    score(idx: number) {
-        if (this.gameRooms[idx].data.ball.x <= 0) {
-            this.incrPoints(idx, 2);
-            this.reset(idx);
+    score(game: GameRoomDto) {
+        if (game.data.ball.x <= 0) {
+            this.incrPoints(game, 2);
+            this.reset(game);
         }
-        else if (this.gameRooms[idx].data.ball.x >= 1) {
-            this.incrPoints(idx, 1);
-            this.reset(idx);
+        else if (game.data.ball.x >= 1) {
+            this.incrPoints(game, 1);
+            this.reset(game);
         }
     }
 
     //========== RESET BALL =============//
-    reset(idx: number) {
-        this.gameRooms[idx].data.ball.x = 0.5;
-        this.gameRooms[idx].data.ball.y = 0.5;
+    reset(game: GameRoomDto) {
+        game.data.ball.x = 0.5;
+        game.data.ball.y = 0.5;
         let sign = 1;
 
         if (Math.random() < 0.5)
             sign *= -1;
-        this.gameRooms[idx].data.ball.speed[0] = 0.3 * sign;
+            game.data.ball.speed[0] = 0.3 * sign;
 
         if (Math.random() < 0.5)
             sign *= -1;
-        this.gameRooms[idx].data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+            game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
@@ -575,34 +580,34 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    calculateBall(idx: number) {
-        const ball = this.gameRooms[idx].data.ball;
-        const player1 = this.gameRooms[idx].data.player1;
-        const player2 = this.gameRooms[idx].data.player2;
+    calculateBall(game: GameRoomDto) {
+        const ball = game.data.ball;
+        const player1 = game.data.player1;
+        const player2 = game.data.player2;
 
         this.borderBounce(ball);
         this.playerCollision(ball, player1, ball.r);
         this.playerCollision(ball, player2, -ball.r);
         this.updateBall(ball);
-        this.score(idx);
+        this.score(game);
         this.incrementSpeed(ball);
     };
 
-    async calculateGame(idx: number, mode: boolean): Promise<GameDto> {
+    async calculateGame(game: GameRoomDto): Promise<GameDto> {
 
-        this.calculatePlayer(idx, mode);
-        this.calculateBall(idx);
-        if (this.gameRooms[idx].data.player1.points > 10 || this.gameRooms[idx].data.player2.points > 10)
-            this.gameRooms[idx].data.end = true;
+        this.calculatePlayer(game, game.data.mode);
+        this.calculateBall(game);
+        if (game.data.player1.points > 10 || game.data.player2.points > 10)
+            game.data.end = true;
     
-    return { ...this.gameRooms[idx].data };
+    return { ...game.data };
 }
 
 //=================================================//
 //================== INIT GAME ====================//
 //=================================================//
     async   setGameRoom(player1Id: number, player2Id: number, mode: boolean): Promise<GameRoomDto> {
-        const id: number = this.gameRooms.length;
+        const id: number = player1Id * 350 * player2Id * 150;
         const roomName: string = player1Id + "_" + player2Id;
         const newGameRoom: GameRoomDto = {
             id: id,

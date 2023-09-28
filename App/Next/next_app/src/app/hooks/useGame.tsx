@@ -47,7 +47,6 @@ export default function useGame() {
 				setResult({ id: winnerId, won: true });
 			else if (parseInt(userId) === loserId)
 				setResult({ id: loserId, won: false });
-
 			setInGame(false);
 		});
 
