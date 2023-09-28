@@ -36,6 +36,15 @@ export default function GameInviteProvider({ children }: any) {
 			}
 		});
 
+		socket?.on('closePanel', (body: any) => {
+			closePanel(true);
+			return () => {
+				clearTimeout(timeoutRefId.current as NodeJS.Timeout);
+				clearInterval(timerRef.current as NodeJS.Timeout);
+			}
+		}
+		);
+
 		socket?.on('inviteCanceled', (body: any) => {
 			setMessage("Invite cancelled");
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
@@ -91,9 +100,9 @@ export default function GameInviteProvider({ children }: any) {
 			const { invitedUsername, sidePanelPopUp } = body;
 			closePanel(true);
 			if (!sidePanelPopUp)
-				return ;
+				return;
 			openSent();
-			setMessage( invitedUsername + " is already in game");
+			setMessage(invitedUsername + " is already in game");
 			setTimeoutId(setTimeout(() => {
 				closePanel(true);
 			}, 1500));
@@ -109,6 +118,7 @@ export default function GameInviteProvider({ children }: any) {
 			socket?.off('inviteAccepted');
 			socket?.off('inviteDeclined');
 			socket?.off('isAlreadyInGame');
+			socket?.off('closePanel');
 
 		}
 	}, [socket]);
@@ -117,8 +127,8 @@ export default function GameInviteProvider({ children }: any) {
 
 	/* sidePanelActions */
 
-	const closePanel = ( clear: boolean ) => {
-		if ( true ) {
+	const closePanel = (clear: boolean) => {
+		if (true) {
 			clearTimeout(timeoutRefId.current as NodeJS.Timeout);
 			clearInterval(timerRef.current as NodeJS.Timeout);
 		}
@@ -176,7 +186,7 @@ export default function GameInviteProvider({ children }: any) {
 	const inviteToPlay = async (invitedId: string, modeEnabled: boolean) => {
 		try {
 			setInvitedId(invitedId);
-			socket?.emit("invite", { invitedId,  modeEnabled });
+			socket?.emit("invite", { invitedId, modeEnabled });
 		}
 		catch (error) {
 			console.log("Invite to play:" + error);
@@ -190,7 +200,7 @@ export default function GameInviteProvider({ children }: any) {
 		else
 			setMessage("Cancelled");
 		setTimeoutId(setTimeout(() => {
-            closePanel(true);
+			closePanel(true);
 		}, 1500));
 		socket?.emit('respondToInvite', { invitorId, response });
 		return () => {
@@ -209,34 +219,35 @@ export default function GameInviteProvider({ children }: any) {
 	/* End Action */
 
 	return (
-		<GameInviteContext.Provider value={{ 
-			invitedBy, 
-			setInvitedBy, 
-			inviteToPlay, 
-			respondToInvite, 
-			cancelInvite, 
-			inviteSent, 
-			setInviteSent, 
-			mode, 
-			setMode, 
-			timeoutId, 
-			setTimeoutId, 
-			message, 
-			setMessage, 
-			receiveVisible, 
-			setReceiveVisible, 
-			sentVisible, 
-			setSentVisible, 
-			slide, 
-			setSlide, 
-			timer, 
-			setTimer, 
+		<GameInviteContext.Provider value={{
+			invitedBy,
+			setInvitedBy,
+			inviteToPlay,
+			respondToInvite,
+			cancelInvite,
+			inviteSent,
+			setInviteSent,
+			mode,
+			setMode,
+			timeoutId,
+			setTimeoutId,
+			message,
+			setMessage,
+			receiveVisible,
+			setReceiveVisible,
+			sentVisible,
+			setSentVisible,
+			slide,
+			setSlide,
+			timer,
+			setTimer,
 			invitorUsername,
 			setInvitorUsername,
 			invitedUsername,
 			setInvitedUsername,
 			invitedId,
-			setInvitedId}}>
+			setInvitedId
+		}}>
 			{children}
 		</GameInviteContext.Provider>
 	)

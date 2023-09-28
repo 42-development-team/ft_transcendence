@@ -89,6 +89,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorUser: CreateUserDto = await this.userService.getUserFromId(invitorId);
             const invitedUser: CreateUserDto = await this.userService.getUserFromId(invitedIdNumber);
             const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
+            const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorId);
             
             const invitorUsername: string = invitorUser.username;
             const invitedUsername: string = invitedUser.username;
@@ -122,7 +123,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     }
                     await this.gameService.addInviteQueue(invitorId, invitedIdNumber, modeEnabled);
                     invitedSocket?.emit('receiveInvite', { invitorId, invitorUsername, modeEnabled });
-                    invitorSocket?.emit('inviteSent', { invitedUsername });
+                    if (invitedSocketId === invitedSocketIds[0]) {
+                        invitorSocketIds.forEach(async invitorSocketId => {
+                            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+                            invitorSocket?.emit('inviteSent', { invitedUsername });
+                        });
+                    }
+                    
                 }
             });
 
@@ -164,11 +171,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitorIdNumber = Number(invitorId);
         if (invitorId !== invitedIdNumber)
             await this.gameService.handleRemoveInviteQueue(invitorIdNumber, invitedIdNumber);
+        const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
         const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
         invitedSocketIds.forEach(async invitedSocketId => {
             const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
             invitedSocket?.emit('inviteCanceled', { invitorId });
         });
+        invitorSocketIds.forEach(async invitorSocketId => {
+            const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
+            invitorSocket?.emit('closePanel', { invitorId });
+        }
     }
 
     @SubscribeMessage('removeInviteQueue')
