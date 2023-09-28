@@ -66,7 +66,7 @@ const Game = ({ ...props }) => {
 					<div className="flex flex-col flex-grow justify-center h-full">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
 							{paused &&
-								<OverlayMessage surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
+								<OverlayMessage id={props.data.id} userId={userId} surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
 							}
 							{!paused &&
 								<GameHeaderInfo
