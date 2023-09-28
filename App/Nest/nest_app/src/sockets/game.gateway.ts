@@ -57,18 +57,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const invitorIdNumber = Number(invitorId);
             const invitedIdNumber = Number(invitedId);
             if (invitorId === userId) {
-                const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedIdNumber);
-                invitedSocketIds.forEach(async invitedSocketId => {
-                    const invitedSocket: Socket = this.clients.find(c => c.id == invitedSocketId);
-                    invitedSocket?.emit('inviteCanceled', { invitorId });
-                });
+                await this.emitToUser(invitedIdNumber, 'inviteCanceled', { invitorId });
             }
             else if (invitedId === userId) {
                 const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
-                invitorSocketIds.forEach(async invitorSocketId => {
-                    const invitorSocket: Socket = this.clients.find(c => c.id == invitorSocketId);
-                    invitorSocket?.emit('inviteDeclined', { invitorId });
-                });
+                await this.emitToUser(invitorIdNumber, 'inviteDeclined', { invitedId });
             }
            await this.gameService.handleRemoveInviteQueue(inviteQueue);
         }
