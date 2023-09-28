@@ -7,7 +7,6 @@ import { GameRoomDto } from "./dto/create-room.dto";
 import { UsersService } from "src/users/users.service";
 import { UserStatsService } from "src/userstats/userstats.service";
 import { InviteDto } from "./dto/invite-game.dto";
-import { Socket } from "socket.io";
 
 
 @Injectable()
@@ -355,6 +354,10 @@ export class GameService {
         return this.gameRooms.find(game => game.id === id);
     }
 
+    async getGameFromUserId(userId: number): Promise<GameRoomDto> {
+        return this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId);
+    }
+
     async isInGame(userId: number): Promise<boolean> {
         if (this.gameRooms.find(game => game.playerOneId === userId || game.playerTwoId === userId) !== undefined ) {
             return true;
@@ -373,7 +376,6 @@ export class GameService {
     async surrender(id: number, forfeiterId: number) {
         const game: GameRoomDto = await this.getGameFromId(id);
         if (game === undefined) {
-            console.log("Could not find game with id:", id);
             return;
         }
         game.data.forfeiterId = forfeiterId;
@@ -616,6 +618,8 @@ export class GameService {
             playerTwoId: player2Id,
             readyPlayerOne: false,
             readyPlayerTwo: false,
+            playerOneDisconnected: false,
+            playerTwoDisconnected: false,
             reconnect: false,
             data: this.setGameData(id, roomName, player1Id, player2Id, mode)
         }

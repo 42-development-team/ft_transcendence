@@ -5,7 +5,6 @@ import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
 import IsInGameContext from "../context/inGameContext";
-import { on } from "events";
 
 export default function useGame() {
 

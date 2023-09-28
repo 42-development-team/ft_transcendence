@@ -5,10 +5,13 @@ import Result from './Result';
 import getUserNameById from "../utils/getUserNameById";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { GameHeaderInfo } from "./GameHeaderInfo";
+import OverlayMessage from "./overlayMessage";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
 	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode } = props;
+	const [beforeLeave, setBeforeLeave] = useState<number>(20);
+	const [paused, setPaused] = useState<boolean>(false);
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
@@ -20,7 +23,24 @@ const Game = ({ ...props }) => {
 	}, [userId]);
 
 	useEffect(() => {
-		if (dataReceived) return ;
+		socket?.on("playerDisconnected", (body: any) => {
+			const { beforeLeave } = body;
+			setBeforeLeave(beforeLeave);
+			setPaused(true);
+		});
+
+		socket?.on("playerReconnected", () => {
+			setPaused(false);
+		}
+		);
+		return () => {
+			socket?.off("playerDisconnected");
+		}
+	}
+		, [socket]);
+
+	useEffect(() => {
+		if (dataReceived) return;
 		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
 			return;
 		}
@@ -44,15 +64,20 @@ const Game = ({ ...props }) => {
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center h-full">
-						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
-							<GameHeaderInfo
-								currUserIsOnLeft={currUserIsOnLeft}
-								userName={userName}
-								opponnentUsername={opponnentUsername}
-								userId={userId}
-								id={props.data.id}
-								surrender={props.surrender}
-							/>
+						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
+							{paused &&
+								<OverlayMessage id={props.data.id} userId={userId} surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
+							}
+							{!paused &&
+								<GameHeaderInfo
+									currUserIsOnLeft={currUserIsOnLeft}
+									userName={userName}
+									opponnentUsername={opponnentUsername}
+									userId={userId}
+									id={props.data.id}
+									surrender={props.surrender}
+								/>
+							}
 						</div>
 						<Canvas
 							move={move}

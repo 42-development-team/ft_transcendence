@@ -7,6 +7,7 @@ import { GameDto } from 'src/game/dto/game-data.dto';
 import { GameRoomDto } from 'src/game/dto/create-room.dto';
 import { InviteDto } from 'src/game/dto/invite-game.dto';
 import { CreateUserDto } from 'src/users/dto';
+import { delay } from 'rxjs';
 
 @Injectable()
 @WebSocketGateway({
@@ -35,6 +36,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log('User not authenticated');
             client.disconnect();
         }
+            const game: GameRoomDto = await this.gameService.getGameFromUserId(userId);
+            if (game !== undefined) {
+                userId === game.playerOneId ? game.playerOneDisconnected = false : game.playerTwoDisconnected = false;
+        }
     }
 
     async handleDisconnect(client: Socket) {
@@ -42,6 +47,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const updateUser = await this.userService.removeSocketId(userId, client.id);
         await this.cleanQueues(client);
         if (updateUser && updateUser.socketIds.length === 0) {
+            const game: GameRoomDto = await this.gameService.getGameFromUserId(userId);
+            if (game !== undefined) {
+                userId === game.playerOneId ? game.playerOneDisconnected = true : game.playerTwoDisconnected = true;
+            }
             await this.userService.updateStatus(userId, "offline");
             this.gameService.handleLeaveQueue(userId);
         }
@@ -153,8 +162,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedIdNumber = Number(invitedId);
         const invitorIdNumber = Number(invitorId);
         const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedIdNumber, invitorIdNumber);
-
-        console.log("invitorId: ", invitorId, "invitedId: ", invitedId, "inviteQueue: ", inviteQueue);
 
         if (invitorIdNumber !== invitedIdNumber)
             await this.gameService.handleRemoveInviteQueue(inviteQueue);
@@ -296,24 +303,54 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ============================== //
     // ========= GAME LOGIC =========//
 
+    frameTime: number = 1000 / 60;
+    reconnectionTimer: number = 15;
+
     async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
-        const promiseSleep = this.gameService.sleep(1000 / 60);
+        const promiseSleep = this.gameService.sleep(this.frameTime);
         const promiseCalculate = this.gameService.calculateGame(game);
 
         await Promise.all([promiseSleep, promiseCalculate]);
         return promiseCalculate;
     }
 
+    async asyncDelay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async gameLogic(data: GameDto) {
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
-            await this.sleepAndCalculate(game);
-            await this.sendDataToRoom(game);
+            if (game.playerOneDisconnected || game.playerTwoDisconnected) {
+                for (let i = 0; i < this.reconnectionTimer; i++) {
+                    game.playerOneDisconnected ? 
+                        await this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i}) 
+                        :
+                        await this.emitToUser(game.playerOneId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i});
+                    await this.asyncDelay(1000);
+                    if ( !game.playerOneDisconnected && !game.playerTwoDisconnected) {
+                        game.playerOneDisconnected ? 
+                        await this.emitToUser(game.playerOneId, 'playerReconnected', null)
+                        :
+                        await this.emitToUser(game.playerTwoId, 'playerReconnected', null);
+                        break;
+                    }
+                    else if ( game.data.end ) {
+                        break;
+                    }
+                }
+                if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
+                    game.data.end = true;
+                }
+            }
+            else {
+                await this.sleepAndCalculate(game);
+                this.sendDataToRoom(game);
+            }
         }
         const results = await this.gameService.createGame(data);
-        console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
-        await this.gameService.removeRoom(data.id);
+        await this.gameService.removeRoom(game.id);
         await this.userService.updateStatus(results.gameLosedId, "online");
         await this.userService.updateStatus(results.gameWonId, "online");
         this.server.emit("userStatusUpdate", { userId: results.gameLosedId });

@@ -18,7 +18,7 @@ const DropDownMenu = ({children, width="w-6", height="h-6", color="bg-base", pos
                 </svg>
             </button>
             {isOpen && (
-                <div className={`absolute z-10 mt-2 w-40 ${position} rounded-md bg-crust`}>
+                <div className={`absolute z-9 mt-2 w-40 ${position} rounded-md bg-crust`}>
                     {children}
                 </div>
             )}
