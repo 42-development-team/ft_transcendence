@@ -376,7 +376,6 @@ export class GameService {
     async surrender(id: number, forfeiterId: number) {
         const game: GameRoomDto = await this.getGameFromId(id);
         if (game === undefined) {
-            console.log("Could not find game with id:", id);
             return;
         }
         game.data.forfeiterId = forfeiterId;

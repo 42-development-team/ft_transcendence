@@ -36,7 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log('User not authenticated');
             client.disconnect();
         }
-            console.log("reconnection");
             const game: GameRoomDto = await this.gameService.getGameFromUserId(userId);
             if (game !== undefined) {
                 userId === game.playerOneId ? game.playerOneDisconnected = false : game.playerTwoDisconnected = false;
@@ -163,8 +162,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const invitedIdNumber = Number(invitedId);
         const invitorIdNumber = Number(invitorId);
         const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedIdNumber, invitorIdNumber);
-
-        console.log("invitorId: ", invitorId, "invitedId: ", invitedId, "inviteQueue: ", inviteQueue);
 
         if (invitorIdNumber !== invitedIdNumber)
             await this.gameService.handleRemoveInviteQueue(inviteQueue);
@@ -325,7 +322,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
-                console.log("player disconnected");
                 for (let i = 0; i < this.reconnectionTimer; i++) {
                     game.playerOneDisconnected ? 
                         await this.emitToUser(game.playerTwoId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i}) 
@@ -333,7 +329,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         await this.emitToUser(game.playerOneId, 'playerDisconnected', {beforeLeave: this.reconnectionTimer - i});
                     await this.asyncDelay(1000);
                     if ( !game.playerOneDisconnected && !game.playerTwoDisconnected) {
-                        console.log("player reconnected");
                         game.playerOneDisconnected ? 
                         await this.emitToUser(game.playerOneId, 'playerReconnected', null)
                         :
@@ -346,7 +341,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
                 if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
                     game.data.end = true;
-                    console.log("endGame player not reconnected");
                 }
             }
             else {
@@ -355,7 +349,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
         }
         const results = await this.gameService.createGame(data);
-        console.log('results: ', results);
         this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
         await this.gameService.removeRoom(game.id);
         await this.userService.updateStatus(results.gameLosedId, "online");
