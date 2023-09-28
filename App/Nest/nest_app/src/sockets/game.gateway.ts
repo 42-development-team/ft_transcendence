@@ -157,7 +157,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
                 const gameRoom: GameRoomDto = await this.gameService.setGameRoom(inviteInfos.invitorId, inviteInfos.invitedId, inviteInfos.mode);
                 const invitedSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitedId);
-                const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitorIdNumber, invitedId);
+                const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedId, invitorIdNumber);
                 await this.joinGameRoom(invitorSocketIds, invitedSocketIds, gameRoom);
                 await this.gameService.handleRemoveInviteQueue(inviteQueue);
             }
@@ -170,7 +170,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const { invitedId }: { invitedId: number } = body;
         const invitedIdNumber = Number(invitedId);
         const invitorIdNumber = Number(invitorId);
-        const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitorIdNumber, invitedId);
+        const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedIdNumber, invitorIdNumber);
+        console.log("invitorId: ", invitorId, "invitedId: ", invitedId, "inviteQueue: ", inviteQueue) ;
         if (invitorIdNumber !== invitedIdNumber)
             await this.gameService.handleRemoveInviteQueue(inviteQueue);
         const invitorSocketIds: string[] = await this.userService.getSocketIdsFromUserId(invitorIdNumber);
@@ -190,7 +191,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleRemoveInviteQueue(@ConnectedSocket() invitedSocket: Socket, @MessageBody() body: any) {
         const invitedId: number = await this.userService.getUserIdFromSocket(invitedSocket);
         const { invitorId }: { invitorId: number } = body;
-        const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitorId, invitedId);
+        const inviteQueue: InviteDto = await this.gameService.getInviteQueue(invitedId, invitorId);
         await this.gameService.handleRemoveInviteQueue(inviteQueue);
     }
 
