@@ -66,7 +66,7 @@ const Chat = ({
     }, [joinedChannels]);
 
     return (
-        <div className=' flex h-[calc(100vh-48px)]'>
+        <div className=' flex h-[calc(100vh-48px)] z-5'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
                 <ChatSideBar channels={joinedChannels} friendRequestCount={requestedFriends.length} />
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
