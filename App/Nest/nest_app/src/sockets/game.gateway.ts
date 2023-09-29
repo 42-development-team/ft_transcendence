@@ -340,6 +340,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     }
                 }
                 if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
+                    game.playerOneDisconnected ? data.forfeiterId = game.playerOneId : data.forfeiterId = game.playerTwoId;
                     game.data.end = true;
                 }
             }
