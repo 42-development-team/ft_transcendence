@@ -1,9 +1,8 @@
 'use client';
-
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import homeBackground from '../../../../public/background_11.png';
-import homeBackgroundLight from '../../../../public/backgroundLight_11.png';
+import homeBackground from '../../../../public/background_11-min.webp';
+import homeBackgroundLight from '../../../../public/backgroundLight_11-min.webp';
 import themeContext from "./themeContext";
 import './styleBackground.css'
 
