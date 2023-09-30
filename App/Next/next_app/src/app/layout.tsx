@@ -28,12 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 									<InGameProvider>
 										<Navbar />
 										<SidePanelGameInvite />
-										{/* <div className='flex flex-col flex-auto items-stretch'> */}
 										<BackgroundBall />
 										<div className=' flex-auto grid place-items-center h-full'>
 											{children}
 										</div>
-										{/* <p>{jwt?.value}</p> */}
 									</InGameProvider>
 								</LoadingProvider>
 							</ChatBarContextProvider>
