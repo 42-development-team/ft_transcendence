@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { isAlphanumeric } from '../utils/isAlphanumeric';
 import { useEffectTimer } from './utils/useEffectTimer';
 import ThemeContext from '../theme/themeContext';
+import UpdateUsernameById from '../utils/updateUsernameById';
 
 const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
@@ -79,13 +80,14 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				userId: userId,
 			};
 			if (inputUserName !== '') {
-				const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-					method: "PUT",
-					body: JSON.stringify(updateData),
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
+				const usernameUpdateResponse = await UpdateUsernameById(updateData.newUsername, updateData.userId);
+				// const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
+				// 	method: "PUT",
+				// 	body: JSON.stringify(updateData),
+				// 	headers: {
+				// 		"Content-Type": "application/json",
+				// 	},
+				// });
 			}
 			setMessage("Avatar/username successfully updated");
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
@@ -120,6 +122,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			}
 
 			const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
+				credentials: "include",
 				method: "GET",
 			});
 			const data = await response.json();
@@ -149,6 +152,9 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			setImageUrl(null);
 			setAvatarFile(null);
 			setMessage(message);
+			setTimeout(() => {
+				setMessage('');
+			}, 1800);
 			console.log("Error during avatar upload:", message);
 			return;
 		}
@@ -183,7 +189,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				}
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} disableImageResize={true} isOnProfilePage={false}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} isOnProfilePage={false}>
 			</Avatar>
 			<div className='flex justify-center text-red-700'>
 				{wrongFormat && <p>{message}</p>}

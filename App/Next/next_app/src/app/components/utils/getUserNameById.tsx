@@ -6,9 +6,12 @@ const getUserNameById = async (id: string) =>{
 			method: "GET",
 		});
 		const data = await response.json();
-		if (data.username === undefined)
-			throw new Error("Username not found");
-		return (data.username);
+		if (data === undefined) {
+			console.log("Error: data is undefined")
+			return data;
+		}
+		return data.username;
+			
 	}
 	catch (error) {
 		console.log(error);
