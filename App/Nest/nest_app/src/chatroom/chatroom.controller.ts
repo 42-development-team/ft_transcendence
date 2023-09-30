@@ -287,6 +287,9 @@ export class ChatroomController {
 					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
 					this.socketGateway.handleMute(clientSocket, mutedId, id);
 				});
+				if (userSocketIds.length === 0) {
+					this.socketGateway.handleMute(null, mutedId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
