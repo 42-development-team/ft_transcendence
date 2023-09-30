@@ -25,6 +25,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	const Router = useRouter();
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
+	const [isUserAlreadyTaken, setIsUserAlreadyTaken] = useState<boolean>(false);
 
 	useEffectTimer(wrongFormat, 2600, setWrongFormat);
 
@@ -70,6 +71,14 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	/* handle validate click, so username update and avagtar update in cloudinary */
 	const handleClick = async () => {
 		try {
+			if (isUserAlreadyTaken) {
+				
+				setMessage("Username already taken")
+				setTimeout(() => {
+					setMessage('');
+				}, 1800);
+				return;
+			}
 			setWaiting2fa(false);
 			setRedirecting(true);
 			setMessage("Updating avatar/username...")
@@ -82,13 +91,6 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			};
 			if (inputUserName !== '') {
 				const usernameUpdateResponse = await UpdateUsernameById(updateData.newUsername, updateData.userId);
-				// const usernameUpdateResponse = await fetch(`${process.env.BACK_URL}/auth/firstLogin/updateUsername`, {
-				// 	method: "PUT",
-				// 	body: JSON.stringify(updateData),
-				// 	headers: {
-				// 		"Content-Type": "application/json",
-				// 	},
-				// });
 			}
 			setMessage("Avatar/username successfully updated");
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
@@ -127,7 +129,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 				method: "GET",
 			});
 			const data = await response.json();
-			const isUserAlreadyTaken = data.isUsernameTaken;
+			setIsUserAlreadyTaken(data.isUsernameTaken);
 			const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
 			if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
@@ -179,7 +181,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 					/>
 				</div>
 				{
-					validateEnabled || redirecting ?
+					(validateEnabled || redirecting) && !wrongFormat ?
 						<div className=" text-green-400 text-center">
 							{isVisible && <p>{message}</p>}
 						</div>
