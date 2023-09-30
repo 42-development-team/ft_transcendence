@@ -306,7 +306,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     frameTime: number = 1000 / 60;
     reconnectionTimer: number = 15;
 
-    async sleepAndCalculate(game: GameRoomDto): Promise<GameDto> {
+    async sleepAndCalculate(game: GameRoomDto): Promise<{data: GameDto, goal: boolean}> {
         const promiseSleep = this.gameService.sleep(this.frameTime);
         const promiseCalculate = this.gameService.calculateGame(game);
 
@@ -318,7 +318,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    async launchCountdown(data: GameDto) {
+        for(let i = 0; i < 3; i++) {
+            await this.emitToUser(data.player1.id, 'countdown', {countdown: 3 - i});
+            await this.emitToUser(data.player2.id, 'countdown', {countdown: 3 - i});
+            await this.asyncDelay(1000);
+        }
+    }
+
     async gameLogic(data: GameDto) {
+
+        await this.launchCountdown(data);
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
@@ -345,8 +355,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
             }
             else {
-                await this.sleepAndCalculate(game);
+                let {data, goal} = await this.sleepAndCalculate(game);
                 this.sendDataToRoom(game);
+                if (goal === true) {
+                    goal = false;
+                    await this.launchCountdown(data);
+                }
             }
         }
         const results = await this.gameService.createGame(data);
