@@ -420,10 +420,12 @@ export class GameService {
         else
             player.y = valy;
 
-        if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
-            player.x = valx;
-        else
-            this.killVelocitx(player);
+        if ((ball.x < player.x && ball.x < valx) || (ball.x > player.x && ball.x > valx)) {
+            if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
+                player.x = valx;
+            else
+                this.killVelocitx(player);
+        }
     }
 
     movePlayer(player: PlayerDto) {
@@ -470,8 +472,17 @@ export class GameService {
             y: number,
         }
 
-        // ball is [AB]
-        // player is [CD]
+        let dx: number;
+
+        if (ball.x < player.x)
+            dx = Math.abs(player.x - player.w - ball.x + ball.r);
+        else
+            dx = Math.abs(ball.x - ball.r - player.x + player.w);
+
+        if (dx <= (ball.r + player.w)) // check immediate disctance
+            return true;
+
+        // check segments [AB] (ball) && [CD] (player)
         const A: Point = {x: ball.x, y: ball.y};
         const B: Point = {x: ball.x + ball.speed[0] / 100, y: ball.y + ball.speed[1] / 100};
         const C: Point = {x: player.x, y: player.y - player.h / 2}
