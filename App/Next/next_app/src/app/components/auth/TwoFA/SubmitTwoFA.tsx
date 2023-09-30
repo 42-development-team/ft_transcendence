@@ -57,7 +57,7 @@ const Submit2FA = (
 				</div>
 			}
 			<Alert
-				className='mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all'
+				className='mb-4 mt-4 p-2 text-center text-text border-mauve border-[1px] break-all'
 				variant='gradient'
 				open={isVisible}
 				color={ error ? 'red' : 'green'}
