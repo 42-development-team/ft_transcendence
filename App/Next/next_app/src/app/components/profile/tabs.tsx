@@ -81,10 +81,10 @@ export function UnderlineTabs({ userId }: { userId: string }) {
                         <Tab
                             key={value}
                             value={value}
-                            activeClassName="bg-transparent z-30" 
+                            activeClassName="bg-transparent z-20" 
                             onClick={() => handleClick(value)}
                             style={indicatorStyle}
-                            className={`z-11 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
+                            className={`z-10 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
                                 } border-b-4 ${activeTab === value ?  headerBorderColor : "border-gray-500"
                                 }`}
                         >
