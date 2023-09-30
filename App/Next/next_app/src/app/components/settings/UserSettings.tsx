@@ -14,6 +14,7 @@ import { useEffectTimer } from '../auth/utils/useEffectTimer';
 import ThemeContext from '../theme/themeContext';
 import UpdateUsernameById from '../utils/updateUsernameById';
 import getUserNameById from '../utils/getUserNameById';
+import getAvatarById from '../utils/getAvatarById';
 
 
 const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSettings: boolean }) => {
@@ -48,9 +49,15 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		}
 	}, [theme]);
 
+	const getAvatar = async (id: string) => {
+		const avatar: string = await getAvatarById(id);
+		setImageUrl(avatar);
+	};
+
 	useEffect(() => {
 		try {
 			getUserName(userId);
+			getAvatar(userId);
 		} catch (error) {
 			console.log(error);
 		}
