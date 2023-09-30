@@ -33,8 +33,10 @@ const Game = ({ ...props }) => {
 			setPaused(false);
 		}
 		);
+
 		return () => {
 			socket?.off("playerDisconnected");
+			socket?.off("playerReconnected");
 		}
 	}
 		, [socket]);

@@ -319,6 +319,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async gameLogic(data: GameDto) {
+        for(let i = 0; i < 3; i++) {
+            await this.asyncDelay(1000);
+            await this.emitToUser(data.player1.id, 'countdown', {countdown: 3 - i});
+            await this.emitToUser(data.player2.id, 'countdown', {countdown: 3 - i});
+        }
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {

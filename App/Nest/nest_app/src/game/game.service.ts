@@ -549,6 +549,10 @@ export class GameService {
         }
     }
 
+    async asyncDelay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     //========== SCORE =============//
     score(game: GameRoomDto) {
         if (game.data.ball.x <= 0) {
