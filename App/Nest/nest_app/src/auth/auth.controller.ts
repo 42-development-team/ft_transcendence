@@ -77,7 +77,6 @@ export class AuthController {
         }
     }
 
-    @Public()
     @Get('firstLogin/doesUserNameExist/:username')
     async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
         try {
@@ -90,19 +89,18 @@ export class AuthController {
         }
     }
 
-    @Public()
-    @Put('firstLogin/updateUsername')
-    async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-        try {
-            const userId = Number(updateData.userId);
-            return await this.userService.updateUsername(userId, updateData.newUsername);
-        } catch (error) {
-            console.error('Error updating username:', error);
-            throw error;
-        }
-    }
+    // @Public()
+    // @Put('firstLogin/updateUsername')
+    // async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
+    //     try {
+    //         const userId = Number(updateData.userId);
+    //         return await this.userService.updateUsername(userId, updateData.newUsername);
+    //     } catch (error) {
+    //         console.error('Error updating username:', error);
+    //         throw error;
+    //     }
+    // }
 
-    @Public()
 	@Get('firstLogin/getUser/:userId')
 	async getUserByName(@Param('userId') userId: string): Promise<any> {
 		try {

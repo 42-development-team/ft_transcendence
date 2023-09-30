@@ -52,6 +52,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
 		const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
+			credentials: "include",
 			method: "GET",
 		});
 		const data = await response.json();
