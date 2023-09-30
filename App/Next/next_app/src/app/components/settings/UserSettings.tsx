@@ -199,6 +199,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
+		setSubmitable(true);
 	}
 
 	return (
