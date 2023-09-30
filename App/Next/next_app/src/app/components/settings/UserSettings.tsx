@@ -204,10 +204,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			setAlert(message, true, false, true, false);
 			return;
 		}
-		setValidateEnabled(true);
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
-		setSubmitable(true);
+		if (validateEnabled)
+			setSubmitable(true);
 	}
 
 	return (
