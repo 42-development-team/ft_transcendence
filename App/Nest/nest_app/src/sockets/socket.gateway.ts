@@ -69,9 +69,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleLeaveRoom(client: Socket, roomId: string) {
 		const userId = await this.userService.getUserIdFromSocket(client);
 		const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
-		client.leave(room);
-		client.emit('leftRoom', { room });
-		console.log(`Client ${userId} (${client.id}) left room ${room}`);
+		if (client) {
+			client.leave(room);
+			client.emit('leftRoom', { room });
+			console.log(`Client ${userId} (${client.id}) left room ${room}`);
+		}
+		else {
+			console.log(`Client ${userId} left room ${room}`);
+		}
 		this.server.to(room).emit('newDisconnectionOnChannel', { room, userId });
 	}
 
@@ -99,6 +104,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	async handleBan(client: Socket, userId: number, roomId: string) {
+		console.log("handleBan");
 		const room = await this.chatroomService.getChannelNameFromId(Number(roomId));
 		const user = await this.memberShipService.getMemberShipFromUserAndChannelId(userId, Number(roomId));
 		if (client) {
@@ -108,6 +114,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		} else {
 			console.log(`Client ${userId} banned from room ${room}`);
 		}
+		console.log("room", room);
 		this.server.to(room).emit('newConnectionOnChannel', { room, user });
 	}
 
