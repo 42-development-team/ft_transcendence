@@ -9,7 +9,7 @@ import OverlayMessage from "./overlayMessage";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
-	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode } = props;
+	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode, countdown } = props;
 	const [beforeLeave, setBeforeLeave] = useState<number>(20);
 	const [paused, setPaused] = useState<boolean>(false);
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
@@ -88,6 +88,7 @@ const Game = ({ ...props }) => {
 							data={data}
 							userId={userId}
 							mode={mode}
+							countdown={countdown}
 						/>
 					</div>
 				) : (
