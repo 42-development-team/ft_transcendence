@@ -11,7 +11,7 @@ import InGameProvider from './context/inGameContextProvider';
 import GameInviteProvider from './context/GameInviteContextProvider';
 import SidePanelGameInvite from './components/game/sidePanelGameInvite';
 export const metadata = {
-	title: 'Pongolin',
+	title: 'Pong',
 	description: 'Awesome pong game',
 }
 
