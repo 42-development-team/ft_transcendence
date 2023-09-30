@@ -14,8 +14,6 @@ fi
 cd /app/next_app
 npm install
 npm update --save --save-dev
-npm install @types/react-transition-group@4.4.6 --force --no-shrinkwrap
-npm install @material-tailwind/react@2.0.8 --force --no-shrinkwrap
 ## Development
 npm run dev
 
