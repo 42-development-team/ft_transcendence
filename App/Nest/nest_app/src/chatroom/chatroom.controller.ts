@@ -159,17 +159,16 @@ export class ChatroomController {
 	async ban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const bannedId: number = body.bannedId;
-		let bannedUserSocket = undefined;
-		try {
-			bannedUserSocket = await this.userService.getSocketIdsFromUserId(bannedId);
-		}
-		catch (error) {
-			console.log("banned user not connected");
-		}
+		let bannedUserSocketIds = await this.userService.getSocketIdsFromUserId(bannedId);
 		await this.chatroomService.ban(+id, userId, bannedId)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === bannedUserSocket);
-				this.socketGateway.handleBan(clientSocket, bannedId, id);
+				bannedUserSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleBan(clientSocket, bannedId, id);
+				});
+				if (bannedUserSocketIds.length === 0) {
+					this.socketGateway.handleBan(null, bannedId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
@@ -181,17 +180,16 @@ export class ChatroomController {
 	async unban(@Param('id') id: string, @Request() req: any, @Res() response: Response, @Body() body: any) {
 		const userId: number = req.user.sub;
 		const unbannedId: number = body.unbannedId;
-		let unbannedUserSocket = undefined;
-		try {
-			unbannedUserSocket = await this.userService.getSocketIdsFromUserId(unbannedId);
-		}
-		catch (error) {
-			console.log("unbanned user not connected");
-		}
+		let unbannedUserSocketIds = await this.userService.getSocketIdsFromUserId(unbannedId);
 		await this.chatroomService.unban(+id, userId, unbannedId)
 			.then(() => {
-				const clientSocket = this.socketGateway.clients.find(c => c.id === unbannedUserSocket);
-				this.socketGateway.handleUnban(clientSocket, unbannedId, id);
+				unbannedUserSocketIds.forEach(unbannedUserSocketIds => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === unbannedUserSocketIds);
+					this.socketGateway.handleUnban(clientSocket, unbannedId, id);
+				});
+				if (unbannedUserSocketIds.length === 0) {
+					this.socketGateway.handleUnban(null, unbannedId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
@@ -205,11 +203,15 @@ export class ChatroomController {
 		const kickedId: number = body.kickedId;
 		const kickedUserSocketIds = await this.userService.getSocketIdsFromUserId(kickedId);
 		await this.chatroomService.kick(+id, userId, kickedId)
-			.then(() => {
+			.then(async () => {
 				kickedUserSocketIds.forEach(sock => {
 					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
 					this.socketGateway.handleLeaveRoom(clientSocket, id);
 				});
+				if (kickedUserSocketIds.length === 0) {
+					const room = await this.chatroomService.getChannelNameFromId(Number(id));
+					this.socketGateway.server.to(room).emit('newDisconnectionOnChannel', { room, userId: kickedId });
+				}
 				response.send();
 			})
 			.catch(error => {
@@ -285,6 +287,9 @@ export class ChatroomController {
 					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
 					this.socketGateway.handleMute(clientSocket, mutedId, id);
 				});
+				if (userSocketIds.length === 0) {
+					this.socketGateway.handleMute(null, mutedId, id);
+				}
 				response.send();
 			})
 			.catch(error => {
