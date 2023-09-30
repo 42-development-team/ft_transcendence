@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import CustomBtn from "../CustomBtn";
+import CustomBtn from "../../CustomBtn";
 import QrCodeDisplay from "./QrCodeDisplay";
-import isTwoFAValid from "./utils/isTwoFAValid";
-import generateTwoFA from "./utils/generateTwoFA";
+import isTwoFAValid from "./isTwoFAValid";
+import generateTwoFA from "./generateTwoFA";
 import Submit2FA from "./SubmitTwoFA";
-import { useEffectTimer } from "./utils/useEffectTimer";
-import ButtonAnimation from "./ButtonAnimation";
-import refreshImage from '../../../../public/refresh-icon-10834.svg';
-import isTwoFAActive from "./utils/isTwoFAActive";
+import { useEffectTimer } from "../utils/useEffectTimer";
+import ButtonAnimation from "../ButtonAnimation";
+import refreshImage from "../../../../../public/refresh-icon-10834.svg";
+import isTwoFAActive from "./isTwoFAActive";
 
 const TwoFA = ({ userId }: { userId: string }) => {
   const [imageUrl, setImageUrl] = useState<string>('');

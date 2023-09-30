@@ -5,21 +5,22 @@ import ValidateBtn from '../ValidateBtn';
 import { Alert } from '@material-tailwind/react';
 import { AlertErrorIcon } from '../alert/AlertErrorIcon';
 import { AlertSuccessIcon } from '../alert/AlertSuccessIcon';
-import TwoFA from '@/app/components/auth/TwoFA';
+import TwoFA from '../auth/TwoFA/TwoFA';
 import Avatar from '../profile/Avatar';
-import UpdateAvatar from './utils/updateAvatar';
+import UpdateAvatar from '../auth/utils/updateAvatar';
 import { useRouter } from 'next/navigation';
 import { isAlphanumeric } from '../utils/isAlphanumeric';
-import { useEffectTimer } from './utils/useEffectTimer';
+import { useEffectTimer } from '../auth/utils/useEffectTimer';
 import ThemeContext from '../theme/themeContext';
 import UpdateUsernameById from '../utils/updateUsernameById';
 
-const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
+
+const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSettings: boolean }) => {
 
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
-	const [isVisible, setIsVisible] = useState(false);
 	const [validateEnabled, setValidateEnabled] = useState(true);
+	const [isVisible, setIsVisible] = useState(false);
 	const [redirecting, setRedirecting] = useState(false);
 	const [placeHolder, setPlaceHolder] = useState('');
 	const [waiting2fa, setWaiting2fa] = useState(true);
@@ -74,8 +75,10 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
 	const redirectToHome = () => {
 		setOpenUsernameAlert(false);
-		setAlert("Redirecting ..", true, false, true, false);
-		Router.push('/home');
+		if (!onSettings) {
+			setAlert("Redirecting ..", true, false, true, false);
+			Router.push('/home');
+		}
 	}
 
 	const setAlert = (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
@@ -251,5 +254,5 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 }
 
 
-export default FirstLoginPageComponent;
+export default UserSettingsComponent;
 

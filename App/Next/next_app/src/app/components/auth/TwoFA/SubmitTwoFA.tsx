@@ -1,10 +1,10 @@
 "user client";
 
 import OtpInput from "./OtpInput";
-import SubmitBtn from "./SubmitBtn";
+import SubmitBtn from "../SubmitBtn";
 import { Alert } from "@material-tailwind/react";
-import { AlertErrorIcon } from "../alert/AlertErrorIcon";
-import { AlertSuccessIcon } from "../alert/AlertSuccessIcon";
+import { AlertErrorIcon } from "../../alert/AlertErrorIcon";
+import { AlertSuccessIcon } from "../../alert/AlertSuccessIcon";
 import { useState } from "react";
 
 const Submit2FA = (
