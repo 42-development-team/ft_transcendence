@@ -58,7 +58,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 	
 	const handleCancelClick = () => {
 		if (activTwoFA)
-		setDisableBtnActivated(true);
+			setDisableBtnActivated(true);
 		else
 			setEnableBtnActivated(true);
 		setDisplayBox(false);
@@ -220,6 +220,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 					handleCallbackEnter={handleCallbackEnter}
 					isVisible={isVisible}
 					message={message}
+					
 					colorText={colorText}
 				>
 					Enter 2FA code:
