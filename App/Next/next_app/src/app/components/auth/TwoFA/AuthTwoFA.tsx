@@ -1,7 +1,7 @@
 "use client";
 import React, {useState} from "react";
 import '../../globals.css'
-import isTwoFAValid from "./utils/isTwoFAValid";
+import isTwoFAValid from "./isTwoFAValid";
 import Submit2FA from "./SubmitTwoFA";
 import {useRouter} from "next/navigation";
 
@@ -62,7 +62,7 @@ const AuthTwoFA = ({userId}: {userId: string}) => {
 				handleCallbackEnter={handleCallbackEnter}
 				isVisible={isVisible}
 				message={message}
-				colorText={colorText}
+				error={isActive}
 			>Enter 2FA code:</Submit2FA>
 		</div>
 	);

@@ -1,11 +1,6 @@
 "use client";
-import React, {useState, useEffect, useRef} from "react";
-import '../../globals.css'
 
-// interface OtpInputProps {
-//     parentCallbackData: (concatString: string) => void;
-//     parentCallbackEnter: () => void;
-// }
+import React, {useState, useEffect, useRef} from "react";
 
 let currentOtpIndex: number = 0;
 
