@@ -18,6 +18,7 @@ import getUserNameById from '../utils/getUserNameById';
 
 const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSettings: boolean }) => {
 
+	const [submitable, setSubmitable] = useState<boolean>(onSettings ? false : true);
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
 	const [validateEnabled, setValidateEnabled] = useState(true);
@@ -30,7 +31,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const Router = useRouter();
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
-	const [isUserAlreadyTaken, setIsUserAlreadyTaken] = useState<boolean>(false);
+	let isUserAlreadyTaken = false;
 	const [openAvatarAlert, setOpenAvatarAlert] = useState<boolean>(false);
 	const [openUsernameAlert, setOpenUsernameAlert] = useState<boolean>(false);
 	const [error, setError] = useState<boolean>(false);
@@ -85,6 +86,14 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		if (avatar) {
 			setOpenAvatarAlert(false);
 			setErrorAvatar(error);
+			if ( error && onSettings ) {
+				if (inputUserName !== "" && !isUserAlreadyTaken)
+					setSubmitable(true);
+				else
+					setSubmitable(false);
+			}
+			else
+				setSubmitable(true);
 			setAvatarMessage(message);
 			setOpenAvatarAlert(true);
 			
@@ -99,6 +108,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			setOpenUsernameAlert(false);
 			setUsernameMessage(message);
 			setError(error);
+			if ( error && onSettings )
+				setSubmitable(false);
+			else
+				setSubmitable(true);
 			setOpenUsernameAlert(true);
 			if (!keepVisible) {
 				setTimeout(() => {
@@ -161,7 +174,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				method: "GET",
 			});
 			const data = await response.json();
-			setIsUserAlreadyTaken(data.isUsernameTaken);
+			isUserAlreadyTaken = (data.isUsernameTaken);
 			const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
 			if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
@@ -237,9 +250,11 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				<TwoFA userId={userId}></TwoFA>
 			}
 			<div className="flex justify-center mb-6 mt-4">
+				{ ((onSettings && submitable) || (!onSettings)) &&
 				<ValidateBtn onClick={handleClick} disable={!validateEnabled} >
 					Validate
 				</ValidateBtn>
+				}
 			</div>
 		</div>
 	)
