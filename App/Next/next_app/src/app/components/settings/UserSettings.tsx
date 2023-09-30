@@ -86,17 +86,12 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		if (avatar) {
 			setOpenAvatarAlert(false);
 			setErrorAvatar(error);
-			if ( error && onSettings ) {
-				if (inputUserName !== "" && !isUserAlreadyTaken)
+				if (inputUserName !== "" && !error)
 					setSubmitable(true);
 				else
 					setSubmitable(false);
-			}
-			else
-				setSubmitable(true);
 			setAvatarMessage(message);
 			setOpenAvatarAlert(true);
-			
 			if (!keepVisible) {
 				setTimeout(() => {
 					setAvatarMessage('');
@@ -108,7 +103,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			setOpenUsernameAlert(false);
 			setUsernameMessage(message);
 			setError(error);
-			if ( error && onSettings )
+			if (error)
 				setSubmitable(false);
 			else
 				setSubmitable(true);
@@ -122,7 +117,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		}
 	}
 
-	/* handle validate click, so username update and avagtar update in cloudinary */
+	/* handle validate click, so username update and avatar update in cloudinary */
 	const handleClick = async () => {
 		try {
 			if (isUserAlreadyTaken) {
@@ -250,10 +245,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				<TwoFA userId={userId}></TwoFA>
 			}
 			<div className="flex justify-center mb-6 mt-4">
-				{ ((onSettings && submitable) || (!onSettings)) &&
-				<ValidateBtn onClick={handleClick} disable={!validateEnabled} >
-					Validate
-				</ValidateBtn>
+				{((onSettings && submitable) || (!onSettings)) &&
+					<ValidateBtn onClick={handleClick} disable={!submitable} >
+						Validate
+					</ValidateBtn>
 				}
 			</div>
 		</div>
