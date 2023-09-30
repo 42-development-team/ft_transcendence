@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useContext } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
@@ -16,6 +17,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     const { theme } = useContext(ThemeContext);
     const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "text-red" : "text-peach");
     const [headerBorderColor, setHeaderBorderColor] = useState<string>(theme === "latte" ? "border-red" : "border-peach");
+
     useEffect(() => {
         if (userId === undefined || userId === "") return;
         let sessionUserId = null;

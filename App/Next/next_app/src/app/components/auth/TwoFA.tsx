@@ -20,7 +20,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   const [cancelDisable, setCancelDisable] = useState<boolean>(true);
   const [message, setMessage] = useState('');
   const [colorClick, setColor] = useState<string>('bg-mauve');
-  const [colorText, setColorText] = useState<string>('text-red-700');
+  const [error, setError] = useState<boolean>(false);
   const [activTwoFA, setActivTwoFA] = useState<boolean>(false);
   const [enableBtnActivated, setEnableBtnActivated] = useState<boolean>(false);
   const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
@@ -96,13 +96,13 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			setActivTwoFA(false);
 			setEnableBtnActivated(true);
 			setCancelDisable(true);
+			setMessage("Two Factor Auth disabled");
+			setError(false);
 			setIsVisible(true);
 			setDisplayBox(false);
 			setImageUrl('');
 			setColor('bg-mauve');
-			setColorText('text-green-700');
 			setEnableBtnText('Enable 2FA?');
-			setMessage("Two Factor Auth disabled");
 		  } else {
 			console.log("Error turning off 2FA:", response.status);
 		  }
@@ -119,8 +119,8 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		setInputValue('');
 		if (!isValid) {
+			setError(true)
 		  setIsVisible(true);
-		  setColorText('text-red-700');
 		  setMessage("Error: code doesn't match");
 		  return;
 		}
@@ -139,13 +139,13 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setEnableBtnActivated(!activTwoFA);
 		setDisableBtnActivated(activTwoFA);
 		setCancelDisable(true);
+		setMessage(activTwoFA ? 'Two Factor Auth disabled' : 'Two Factor Auth enabled');
+		setError(false);
 		setIsVisible(true);
 		setDisplayBox(false);
 		setImageUrl('');
 		setColor('bg-mauve');
-		setColorText('text-green-700');
 		setEnableBtnText(activTwoFA ? 'Enable 2FA ' : '2FA enabled');
-		setMessage(activTwoFA ? 'Two Factor Auth disabled' : 'Two Factor Auth enabled');
 	  }
 
 	const handleCallback = (childData: string) =>{
@@ -220,8 +220,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 					handleCallbackEnter={handleCallbackEnter}
 					isVisible={isVisible}
 					message={message}
-					
-					colorText={colorText}
+					error
 				>
 					Enter 2FA code:
 				</Submit2FA>

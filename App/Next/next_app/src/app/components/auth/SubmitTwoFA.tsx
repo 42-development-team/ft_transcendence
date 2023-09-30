@@ -21,7 +21,6 @@ const Submit2FA = (
 		isVisible = false,
 		message = '',
 		error = false,
-		colorText = 'text-red-700',
 	}
 		:
 		{
@@ -37,7 +36,6 @@ const Submit2FA = (
 			isVisible: boolean,
 			message: string,
 			error: boolean,
-			colorText: string,
 		}) => {
 
 
