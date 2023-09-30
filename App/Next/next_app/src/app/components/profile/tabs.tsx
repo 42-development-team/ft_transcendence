@@ -14,8 +14,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     const [stats, setStats] = useState<any>([]);
     const [userIdNumber, setUserIdNumber] = useState<number>(Number(userId));
     const { theme } = useContext(ThemeContext);
-    const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "red" : "peach");
-
+    const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "text-red" : "text-peach");
+    const [headerBorderColor, setHeaderBorderColor] = useState<string>(theme === "latte" ? "border-red" : "border-peach");
     useEffect(() => {
         if (userId === undefined || userId === "") return;
         let sessionUserId = null;
@@ -53,7 +53,8 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     };
 
     useEffect(() => {
-        setHeaderTextColor(theme === "latte" ? "red" : "peach");
+        setHeaderTextColor(theme === "latte" ? "text-red" : "text-peach");
+        setHeaderBorderColor(theme === "latte" ? "border-red" : "border-peach");
     }, [theme]);
 
     const data = [
@@ -80,10 +81,11 @@ export function UnderlineTabs({ userId }: { userId: string }) {
                         <Tab
                             key={value}
                             value={value}
+                            activeClassName="bg-transparent z-30" 
                             onClick={() => handleClick(value)}
                             style={indicatorStyle}
-                            className={`${activeTab === value ? "text-" + headerTextColor + " text-xl" : " text-gray-400"
-                                } border-b-4 ${activeTab === value ? "border-" + headerTextColor : "border-gray-500"
+                            className={`z-11 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
+                                } border-b-4 ${activeTab === value ?  headerBorderColor : "border-gray-500"
                                 }`}
                         >
                             {label}

@@ -14,7 +14,6 @@ cd /app/next_app
 
 npm install
 npm update --save --save-dev
-
 ## Development
 npm run dev
 
