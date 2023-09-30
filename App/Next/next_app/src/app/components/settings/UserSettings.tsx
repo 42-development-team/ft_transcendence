@@ -138,6 +138,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			}
 			setAlert("Username/avatar updated successfully", false, false, true, false);
 			await redirectOrReload();
+			setSubmitable(false);
 		} catch (error) {
 			console.log("Error during avatar upload or username update:", error);
 		}
