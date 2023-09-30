@@ -1,6 +1,10 @@
 "use client";
-import { ChangeEvent, useState, useEffect, useContext } from 'react';
+
+import { ChangeEvent, useState, useEffect, useContext, useRef } from 'react';
 import ValidateBtn from '../ValidateBtn';
+import { Alert } from '@material-tailwind/react';
+import { AlertErrorIcon } from '../alert/AlertErrorIcon';
+import { AlertSuccessIcon } from '../alert/AlertSuccessIcon';
 import TwoFA from '@/app/components/auth/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from './utils/updateAvatar';
@@ -12,7 +16,8 @@ import UpdateUsernameById from '../utils/updateUsernameById';
 
 const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 
-	const [message, setMessage] = useState('');
+	const [usernameMessage, setUsernameMessage] = useState('');
+	const [AvatarMessage, setAvatarMessage] = useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [validateEnabled, setValidateEnabled] = useState(true);
 	const [redirecting, setRedirecting] = useState(false);
@@ -26,6 +31,10 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
 	const [isUserAlreadyTaken, setIsUserAlreadyTaken] = useState<boolean>(false);
+	const [openAvatarAlert, setOpenAvatarAlert] = useState<boolean>(false);
+	const [openUsernameAlert, setOpenUsernameAlert] = useState<boolean>(false);
+	const [error, setError] = useState<boolean>(false);
+	const [errorAvatar, setErrorAvatar] = useState<boolean>(false);
 
 	useEffectTimer(wrongFormat, 2600, setWrongFormat);
 
@@ -64,24 +73,49 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 	}
 
 	const redirectToHome = () => {
-		setMessage("Redirecting...");
+		setOpenUsernameAlert(false);
+		setAlert("Redirecting ..", true, false, true, false);
 		Router.push('/home');
+	}
+
+	const setAlert = (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
+		if (avatar) {
+			setOpenAvatarAlert(false);
+			setErrorAvatar(error);
+			setAvatarMessage(message);
+			setOpenAvatarAlert(true);
+			
+			if (!keepVisible) {
+				setTimeout(() => {
+					setAvatarMessage('');
+					setOpenAvatarAlert(false);
+				}, 3500);
+			}
+		}
+		if (username) {
+			setOpenUsernameAlert(false);
+			setUsernameMessage(message);
+			setError(error);
+			setOpenUsernameAlert(true);
+			if (!keepVisible) {
+				setTimeout(() => {
+					setUsernameMessage('');
+					setOpenUsernameAlert(false);
+				}, 3500);
+			}
+		}
 	}
 
 	/* handle validate click, so username update and avagtar update in cloudinary */
 	const handleClick = async () => {
 		try {
 			if (isUserAlreadyTaken) {
-				
-				setMessage("Username already taken")
-				setTimeout(() => {
-					setMessage('');
-				}, 1800);
+				setAlert("Username already taken", true, true, false, true);
 				return;
 			}
 			setWaiting2fa(false);
 			setRedirecting(true);
-			setMessage("Updating avatar/username...")
+			setAlert("Updating username/avatar...", false, false, true, false)
 			setIsVisible(true);
 			if (!wrongFormat)
 				await UpdateAvatar(avatarFile, userId, setImageUrl);
@@ -92,7 +126,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			if (inputUserName !== '') {
 				const usernameUpdateResponse = await UpdateUsernameById(updateData.newUsername, updateData.userId);
 			}
-			setMessage("Avatar/username successfully updated");
+			setAlert("Username/avatar updated successfully", false, false, true, false);
 			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
 			redirectToHome();
 		} catch (error) {
@@ -106,19 +140,20 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 		try {
 			const newinputUserName = e.target.value;
 			if (newinputUserName === "") {
+				setOpenUsernameAlert(false);
 				setInputUserName(placeHolder);
 				setValidateEnabled(true);
 				setIsVisible(false);
 				return;
 			}
 			else if (isAlphanumeric(newinputUserName) === false) {
-				setMessage("Username can only contain letters and numbers");
+				setAlert("Username can only contain letters and numbers", true, true, false, true);
 				setValidateEnabled(false);
 				setIsVisible(true);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
-				setMessage("Username must be at least 3 characters long, and at most 15 characters long");
+				setAlert("Username must be at least 3 characters long, and at most 15 characters long", true, true, false, true);
 				setValidateEnabled(false);
 				setIsVisible(true);
 				return;
@@ -135,12 +170,12 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
 				setValidateEnabled(false);
 				setIsVisible(true);
-				setMessage("Username already taken");
+				setAlert("Username already taken", true, true, false, true);
 			}
 			else {
 				setIsVisible(true);
 				setValidateEnabled(true);
-				setMessage("Username available");
+				setAlert("Username available", false, true, false, true);
 				setInputUserName(newinputUserName);
 			}
 		} catch (error) {
@@ -154,11 +189,7 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 			setWrongFormat(true);
 			setImageUrl(null);
 			setAvatarFile(null);
-			setMessage(message);
-			setTimeout(() => {
-				setMessage('');
-			}, 1800);
-			console.log("Error during avatar upload:", message);
+			setAlert(message, true, false, true, false);
 			return;
 		}
 		setValidateEnabled(true);
@@ -180,23 +211,32 @@ const FirstLoginPageComponent = ({ userId }: { userId: string }) => {
 						className=" m-2 bg-base border-red  border-0  w-64 h-8 focus:outline-none"
 					/>
 				</div>
-				{
-					(validateEnabled || redirecting) && !wrongFormat ?
-						<div className=" text-green-400 text-center">
-							{isVisible && <p>{message}</p>}
-						</div>
-						:
-						<div className=" text-red-700 text-center ">
-							{isVisible && <p>{message}</p>}
-						</div>
-				}
+				<Alert
+					className='mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all'
+					variant='gradient'
+					open={openUsernameAlert}
+					icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
+					animate={{
+						mount: { y: 0 },
+						unmount: { y: 100 },
+					}}>
+					{usernameMessage}
+				</Alert>
 			</div>
 			<Avatar
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} isOnProfilePage={false}>
 			</Avatar>
-			<div className='flex justify-center text-red-700'>
-				{wrongFormat && <p>{message}</p>}
-			</div>
+			<Alert
+				className='mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all'
+				variant='gradient'
+				open={openAvatarAlert}
+				icon={errorAvatar ? <AlertErrorIcon /> : <AlertSuccessIcon />}
+				animate={{
+					mount: { y: 0 },
+					unmount: { y: 100 },
+				}}>
+				{AvatarMessage}
+			</Alert>
 			{
 				waiting2fa &&
 				<TwoFA userId={userId}></TwoFA>
