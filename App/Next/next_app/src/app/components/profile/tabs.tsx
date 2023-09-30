@@ -70,8 +70,6 @@ export function UnderlineTabs({ userId }: { userId: string }) {
 
     const indicatorStyle = {
         transition: "border-color 0.5s ease-in-out, text-shadow 0.5s ease-in-out, color 0.5s ease-in-out,font-size 0.1s ease-in-out",
-
-
     };
 
     return (
@@ -83,10 +81,10 @@ export function UnderlineTabs({ userId }: { userId: string }) {
                         <Tab
                             key={value}
                             value={value}
-                            activeClassName="bg-transparent z-20"
+                            activeClassName="bg-transparent z-30" 
                             onClick={() => handleClick(value)}
                             style={indicatorStyle}
-                            className={`z-10 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
+                            className={`z-11 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
                                 } border-b-4 ${activeTab === value ?  headerBorderColor : "border-gray-500"
                                 }`}
                         >
