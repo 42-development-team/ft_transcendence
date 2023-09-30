@@ -114,9 +114,6 @@ const Canvas = ({ ...props }) => {
 			return;
 		height = width * (9 / 16);
 
-		console.log(countdown);
-		console.log(typeof(countdown));
-
 		printCountdown(context, width, height, countdown);
 		printMidLine(context, width, height);
 		renderGame(context, data, width, height, mode);
@@ -155,7 +152,6 @@ const Canvas = ({ ...props }) => {
 		blurEffect(context, width, height);
 		printMidLine(context, width, height);
 		renderGame(context, data, width, height, mode);
-		// }
 
 		document.addEventListener("keydown", handleKeyDown);
 		document.addEventListener("keyup", handleKeyUp);
