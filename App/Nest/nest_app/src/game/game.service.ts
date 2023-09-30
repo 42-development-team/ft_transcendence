@@ -554,15 +554,18 @@ export class GameService {
     }
 
     //========== SCORE =============//
-    score(game: GameRoomDto) {
+    score(game: GameRoomDto): boolean {
         if (game.data.ball.x <= 0) {
             this.incrPoints(game, 2);
             this.reset(game);
+            return true;
         }
         else if (game.data.ball.x >= 1) {
             this.incrPoints(game, 1);
             this.reset(game);
+            return true;
         }
+        return false;
     }
 
     //========== RESET BALL =============//
@@ -597,7 +600,7 @@ export class GameService {
     };
 
     //>>CALCUL POSITION<<//
-    calculateBall(game: GameRoomDto) {
+    calculateBall(game: GameRoomDto): boolean {
         const ball = game.data.ball;
         const player1 = game.data.player1;
         const player2 = game.data.player2;
@@ -606,18 +609,20 @@ export class GameService {
         this.playerCollision(ball, player1, ball.r);
         this.playerCollision(ball, player2, -ball.r);
         this.updateBall(ball);
-        this.score(game);
+        const goal: boolean = this.score(game);
         this.incrementSpeed(ball);
+        return goal;
     };
 
-    async calculateGame(game: GameRoomDto): Promise<GameDto> {
+    async calculateGame(game: GameRoomDto): Promise<{data: GameDto, goal: boolean}> {
 
+        let goal: boolean;
         this.calculatePlayer(game, game.data.mode);
-        this.calculateBall(game);
+        goal = this.calculateBall(game);
         if (game.data.player1.points > 10 || game.data.player2.points > 10)
             game.data.end = true;
     
-    return { ...game.data };
+    return { data: game.data, goal };
 }
 
 //=================================================//
