@@ -77,7 +77,7 @@ export class AuthController {
         }
     }
 
-    @Get('firstLogin/doesUserNameExist/:username')
+    @Get('doesUserNameExist/:username')
     async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
         try {
             const user = await this.userService.getUserFromUsername(username);
@@ -88,13 +88,4 @@ export class AuthController {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
         }
     }
-
-	@Get('firstLogin/getUser/:userId')
-	async getUserByName(@Param('userId') userId: string): Promise<any> {
-		try {
-			return await this.userService.getUserFromId(Number(userId));
-		} catch (error) {
-			return error;
-		}
-	}
 }

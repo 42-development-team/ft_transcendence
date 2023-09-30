@@ -13,6 +13,7 @@ import { isAlphanumeric } from '../utils/isAlphanumeric';
 import { useEffectTimer } from '../auth/utils/useEffectTimer';
 import ThemeContext from '../theme/themeContext';
 import UpdateUsernameById from '../utils/updateUsernameById';
+import getUserNameById from '../utils/getUserNameById';
 
 
 const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSettings: boolean }) => {
@@ -20,8 +21,6 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
 	const [validateEnabled, setValidateEnabled] = useState(true);
-	const [isVisible, setIsVisible] = useState(false);
-	const [redirecting, setRedirecting] = useState(false);
 	const [placeHolder, setPlaceHolder] = useState('');
 	const [waiting2fa, setWaiting2fa] = useState(true);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -62,22 +61,23 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
-		const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/getUser/${userId}`, {
-			credentials: "include",
-			method: "GET",
-		});
-		const data = await response.json();
-		if (data && !data.ok && data.error)
-			console.log(data.error);
-		setPlaceHolder(data.username);
-		setInputUserName(data.username);
+		const username = await getUserNameById(userId);
+		if (username === undefined) {
+			console.log("Error fetching username");
+		}
+		setPlaceHolder(username);
+		setInputUserName(username);
 	}
 
-	const redirectToHome = () => {
+	const redirectOrReload = async () => {
 		setOpenUsernameAlert(false);
 		if (!onSettings) {
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
 			setAlert("Redirecting ..", true, false, true, false);
 			Router.push('/home');
+		}
+		else {
+			await getUserName(userId);
 		}
 	}
 
@@ -117,9 +117,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				return;
 			}
 			setWaiting2fa(false);
-			setRedirecting(true);
 			setAlert("Updating username/avatar...", false, false, true, false)
-			setIsVisible(true);
 			if (!wrongFormat)
 				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			const updateData = {
@@ -127,11 +125,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				userId: userId,
 			};
 			if (inputUserName !== '') {
-				const usernameUpdateResponse = await UpdateUsernameById(updateData.newUsername, updateData.userId);
+				await UpdateUsernameById(updateData.newUsername, updateData.userId);
 			}
 			setAlert("Username/avatar updated successfully", false, false, true, false);
-			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
-			redirectToHome();
+			await redirectOrReload();
 		} catch (error) {
 			console.log("Error during avatar upload or username update:", error);
 		}
@@ -146,23 +143,20 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				setOpenUsernameAlert(false);
 				setInputUserName(placeHolder);
 				setValidateEnabled(true);
-				setIsVisible(false);
 				return;
 			}
 			else if (isAlphanumeric(newinputUserName) === false) {
 				setAlert("Username can only contain letters and numbers", true, true, false, true);
 				setValidateEnabled(false);
-				setIsVisible(true);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
 				setAlert("Username must be at least 3 characters long, and at most 15 characters long", true, true, false, true);
 				setValidateEnabled(false);
-				setIsVisible(true);
 				return;
 			}
 
-			const response = await fetch(`${process.env.BACK_URL}/auth/firstLogin/doesUserNameExist/${newinputUserName}`, {
+			const response = await fetch(`${process.env.BACK_URL}/auth/doesUserNameExist/${newinputUserName}`, {
 				credentials: "include",
 				method: "GET",
 			});
@@ -172,11 +166,9 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 
 			if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
 				setValidateEnabled(false);
-				setIsVisible(true);
 				setAlert("Username already taken", true, true, false, true);
 			}
 			else {
-				setIsVisible(true);
 				setValidateEnabled(true);
 				setAlert("Username available", false, true, false, true);
 				setInputUserName(newinputUserName);
