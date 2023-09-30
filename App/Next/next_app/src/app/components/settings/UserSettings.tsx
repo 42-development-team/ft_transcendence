@@ -201,6 +201,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			setWrongFormat(true);
 			setImageUrl(null);
 			setAvatarFile(null);
+			console.log("ALERT");
 			setAlert(message, true, false, true, false);
 			return;
 		}
