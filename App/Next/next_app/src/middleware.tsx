@@ -16,19 +16,16 @@ export async function middleware(request: NextRequest) {
     if (verifiedJWT && verifiedJWT.exp && verifiedJWT.exp > currentTime) {
         if (verifiedJWT.twoFactorAuthenticated) {
             if (nonSecurePaths.includes(request.nextUrl.pathname) || loginPaths.includes(request.nextUrl.pathname)) {
-                console.log('MIDDLEWARE - JWT is already valid : Redirecting to /home');
                 return NextResponse.redirect(new URL('/home', request.url));
             }
         }
         else {
             if (!nonSecurePaths.includes(request.nextUrl.pathname) && !loginPaths.includes(request.nextUrl.pathname)) {
-                console.log('MIDDLEWARE - TwoFA is not Verified: Redirecting to /');
                 return NextResponse.redirect(new URL('/', request.url));
             }
         }
     }
     else if (!nonSecurePaths.includes(request.nextUrl.pathname)) {
-        console.log(`MIDDLEWARE - Not logged in, redirecting to /: ${request.nextUrl.pathname}}`);
         return NextResponse.redirect(new URL( '/', request.url)); 
     }
     return NextResponse.next();
