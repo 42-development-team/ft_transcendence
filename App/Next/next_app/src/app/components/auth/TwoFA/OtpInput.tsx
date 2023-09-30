@@ -1,4 +1,5 @@
 "use client";
+
 import React, {useState, useEffect, useRef} from "react";
 
 let currentOtpIndex: number = 0;

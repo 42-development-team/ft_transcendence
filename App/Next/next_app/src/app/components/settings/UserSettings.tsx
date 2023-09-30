@@ -65,6 +65,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		const username = await getUserNameById(userId);
 		if (username === undefined) {
 			console.log("Error fetching username");
+			return ;
 		}
 		setPlaceHolder(username);
 		setInputUserName(username);
