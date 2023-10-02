@@ -23,15 +23,11 @@ export function GameHeaderInfo({ userId, data, surrender }:  GameHeaderInfoProps
 		const opName = await getUserNameById(opponentId);
 		setUserName(name);
 		setOpponnentUsername(opName);
-		console.log("my username:", name, userId);
-		console.log("my opponent username:", opName, opponentId);
 	}
 
     useEffect(() => {
 		if (!data || !data.player1 || userId === undefined || userId === "")
 			return;
-
-		console.log("p1 id:", data.player1.id); // p1 id is always left side => perfect
 
 		setCurrUserIsOnLeft(data.player1.id === parseInt(userId));
 		if (data.player1.id === parseInt(userId))
