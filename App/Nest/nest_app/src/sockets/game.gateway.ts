@@ -319,15 +319,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async launchCountdown(data: GameDto) {
-        for(let i = 0; i < 3; i++) {
+        for(let i = 0; i < 2; i++) {
             await this.emitToUser(data.player1.id, 'countdown', {countdown: 3 - i});
-            await this.emitToUser(data.player2.id, 'countdown', {countdown: 3 - i});
+            this.server.to(data.roomName).emit('countdown', {countdown: 3 - i});
             await this.asyncDelay(1000);
         }
     }
 
-    async gameLogic(data: GameDto) {
+    async handleEndOfGame(gameRoom: GameRoomDto) {
+        const results = await this.gameService.createGame(gameRoom.data);
+        this.server.to(gameRoom.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
+        await this.gameService.removeRoom(gameRoom.id);
+        await this.userService.updateStatus(results.gameLosedId, "online");
+        await this.userService.updateStatus(results.gameWonId, "online");
+        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
+        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
+    }
 
+    async gameLogic(data: GameDto) {
         await this.launchCountdown(data);
         const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
         while (game.data.end === false) {
@@ -363,13 +372,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
             }
         }
-        const results = await this.gameService.createGame(data);
-        this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
-        await this.gameService.removeRoom(game.id);
-        await this.userService.updateStatus(results.gameLosedId, "online");
-        await this.userService.updateStatus(results.gameWonId, "online");
-        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
-        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
+        this.handleEndOfGame(game);
     }
 
     async sendDataToRoom(game: GameRoomDto) {
