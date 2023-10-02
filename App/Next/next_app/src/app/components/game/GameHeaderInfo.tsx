@@ -28,16 +28,25 @@ export function GameHeaderInfo({ userId, data, surrender }:  GameHeaderInfoProps
 	}
 
     useEffect(() => {
+        if (!data || !data.player1 || userId === undefined || userId === "")
+            return;
+        if (data.player1.id === parseInt(userId))
+			getAndSetUsersName(userId, data.player2.id.toString());
+		else
+			getAndSetUsersName(userId, data.player1.id.toString());
+    }, [currUserIsOnLeft]);
+
+    useEffect(() => {
 		if (!data || !data.player1 || userId === undefined || userId === "")
 			return;
 
 		console.log("p1 id:", data.player1.id); // p1 id is always left side => perfect
 
 		setCurrUserIsOnLeft(data.player1.id === parseInt(userId));
-		if (data.player1.id === parseInt(userId))
-			getAndSetUsersName(userId, data.player2.id.toString());
-		else
-			getAndSetUsersName(userId, data.player1.id.toString());
+		// if (data.player1.id === parseInt(userId))
+		// 	getAndSetUsersName(userId, data.player2.id.toString());
+		// else
+		// 	getAndSetUsersName(userId, data.player1.id.toString());
 	}, [data, userId]);
 
     return (
