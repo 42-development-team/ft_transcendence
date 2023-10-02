@@ -9,7 +9,7 @@ import OverlayMessage from "./overlayMessage";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
-	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode, countdown } = props;
+	const { socket, surrender, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode, countdown } = props;
 	const [beforeLeave, setBeforeLeave] = useState<number>(20);
 	const [paused, setPaused] = useState<boolean>(false);
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
@@ -18,9 +18,10 @@ const Game = ({ ...props }) => {
 	const [dataReceived, setDataReceived] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (userId === undefined || userId === "") return;
+		if (userId === undefined || userId === "")
+			return;
 		socket?.emit("retrieveData", userId);
-	}, [userId]);
+	}, [userId, socket]);
 
 	useEffect(() => {
 		socket?.on("playerDisconnected", (body: any) => {
@@ -32,34 +33,40 @@ const Game = ({ ...props }) => {
 		socket?.on("playerReconnected", () => {
 			setPaused(false);
 		}
-		);
+);
 
 		return () => {
 			socket?.off("playerDisconnected");
 			socket?.off("playerReconnected");
 		}
+	}, [socket]);
+
+	const getAndSetUsersName = async (userId: string, opponentId: string) => {
+		const name = await getUserNameById(userId);
+		const opName = await getUserNameById(opponentId);
+		setUserName(name);
+		setOpponnentUsername(opName);
+		console.log("my username:", name, userId);
+		console.log("my opponent username:", opName, opponentId);
 	}
-		, [socket]);
+
+	useEffect(() => {}, [userName, opponnentUsername]);
 
 	useEffect(() => {
-		if (dataReceived) return;
-		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
+		if (dataReceived)
 			return;
-		}
-		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
-		getUserNameById(props.userId).then((userName: SetStateAction<string>) => {
-			setUserName(userName);
-		});
-		if (props.data.player1.id === parseInt(props.userId))
-			getUserNameById(props.data.player2.id).then((userName: SetStateAction<string>) => {
-				setOpponnentUsername(userName);
-			});
+		if (!data || !data.player1 || userId === undefined || userId === "")
+			return;
+
+		console.log("p1 id:", data.player1.id); // p1 id is always left side => perfect
+
+		setCurrUserIsOnLeft(data.player1.id === parseInt(userId));
+		if (data.player1.id === parseInt(userId))
+			getAndSetUsersName(userId, data.player2.id.toString());
 		else
-			getUserNameById(props.data.player1.id).then((userName: SetStateAction<string>) => {
-				setOpponnentUsername(userName);
-			});
+			getAndSetUsersName(userId, data.player1.id.toString());
 		setDataReceived(true);
-	}, [props.data]);
+	}, [data, userId, dataReceived]);
 
 	return (
 		<div className="flex flex-grow justify-center">
@@ -68,7 +75,7 @@ const Game = ({ ...props }) => {
 					<div className="flex flex-col flex-grow justify-center h-full">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
 							{paused &&
-								<OverlayMessage id={props.data.id} userId={userId} surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
+								<OverlayMessage id={data.id} userId={userId} surrender={surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
 							}
 							{!paused &&
 								<GameHeaderInfo
@@ -76,8 +83,8 @@ const Game = ({ ...props }) => {
 									userName={userName}
 									opponnentUsername={opponnentUsername}
 									userId={userId}
-									id={props.data.id}
-									surrender={props.surrender}
+									id={data.id}
+									surrender={surrender}
 								/>
 							}
 						</div>

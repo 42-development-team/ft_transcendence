@@ -271,8 +271,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
         const game: GameDto = await this.gameService.getDataFromUserId(userId);
         let room: GameRoomDto = await this.gameService.handleLaunchGame(game.id, userId);
+        //=====================//
+        //=====================//
         this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
+            console.log("p1 id:", room.data.player1.id);
+            console.log("p2 id:", room.data.player2.id);
             if (room.reconnect === false) {
                 room.reconnect = true;
                 this.gameLogic(room);
@@ -289,8 +293,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log("Error retrieving Game Data: data is null");
             return;
         }
-        socket?.emit('sendDataToUser', data);
         socket?.join(data.roomName);
+        socket?.emit('sendDataToUser', data);
     }
 
     @SubscribeMessage('surrender')
@@ -321,8 +325,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async launchCountdown(data: GameDto) {
         for(let i = 0; i < 2; i++) {
-            await this.emitToUser(data.player1.id, 'countdown', {countdown: 3 - i});
-            this.server.to(data.roomName).emit('countdown', {countdown: 3 - i});
+            this.server.to(data.roomName).emit('countdown', {countdown: 2 - i});
             await this.asyncDelay(1000);
         }
     }
