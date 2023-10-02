@@ -5,12 +5,16 @@ import sun from "../../../../public/sun.png";
 import sunLight from "../../../../public/sunLight.png";
 import { useContext, useEffect } from "react";
 import themeContext from './themeContext';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
+import homeBackground from '../../../../public/background_11-min.webp';
+import homeBackgroundLight from '../../../../public/backgroundLight_11-min.webp';
 
 export const Theme = () => {
 
     const { theme, setTheme } = useContext(themeContext);
 
-    const handleThemeChange = () => {        
+    const handleThemeChange = () => {
         if (typeof window === 'undefined')
             return;
         const themeStored = localStorage.getItem('theme');
@@ -33,7 +37,7 @@ export const Theme = () => {
                         type="checkbox"
                         className="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-overlay0 transition-colors duration-300 checked:bg-pink-500 peer-checked:border-pink-500 peer-checked:before:bg-pink-500"
                         onClick={handleThemeChange}
-                        defaultChecked={typeof window !== 'undefined' &&  localStorage.getItem('theme') === "latte"}
+                        defaultChecked={typeof window !== 'undefined' && localStorage.getItem('theme') === "latte"}
                     />
                     <label
                         htmlFor="switch-component"
@@ -50,9 +54,9 @@ export const Theme = () => {
                 {
                     sun && sunLight ? (
                         theme === 'mocha' ? (
-                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} priority/>
+                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} priority />
                         ) : (
-                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} priority/>
+                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} priority />
                         )
                     ) : (
                         <div className="m-2">☀️</div>
