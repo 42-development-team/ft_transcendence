@@ -22,7 +22,6 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
 	const [placeHolder, setPlaceHolder] = useState('');
-	const [waiting2fa, setWaiting2fa] = useState(true);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [inputUserName, setInputUserName] = useState('');
@@ -124,7 +123,6 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				setAlert("Username already taken", true, true, false, true);
 				return;
 			}
-			setWaiting2fa(false);
 			setAlert("Updating username/avatar...", false, false, true, false)
 			if (!errorAvatar)
 				await UpdateAvatar(avatarFile, userId, setImageUrl);
@@ -237,7 +235,6 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				{AvatarMessage}
 			</Alert>
 			{
-				waiting2fa &&
 				<TwoFA userId={userId}></TwoFA>
 			}
 			<div className="flex justify-center mb-6 mt-4 ">
