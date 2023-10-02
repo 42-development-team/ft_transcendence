@@ -104,8 +104,8 @@ export default function useGame() {
 		socket?.emit("stopMove", event, id, uid);
 	}
 
-	const launchGame = async (id: number) => {
-		socket?.emit("launchGame", id);
+	const launchGame = async () => {
+		socket?.emit("launchGame");
 	}
 
 	const isUserQueued = async (uid: number) => {

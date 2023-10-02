@@ -267,14 +267,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('launchGame')
-    async handleLaunchGame(socket: Socket, id: number) {
+    async handleLaunchGame(socket: Socket) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
-        let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        const game: GameDto = await this.gameService.getDataFromUserId(userId);
+        let room: GameRoomDto = await this.gameService.handleLaunchGame(game.id, userId);
         this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
             if (room.reconnect === false) {
                 room.reconnect = true;
-                this.gameLogic(room.data);
+                this.gameLogic(room);
             }
         }
         await this.userService.updateStatus(userId, "in a game");
@@ -336,9 +337,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit("userStatusUpdate", { userId: results.gameWonId });
     }
 
-    async gameLogic(data: GameDto) {
-        await this.launchCountdown(data);
-        const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
+    async gameLogic(game: GameRoomDto) {
+        await this.launchCountdown(game.data);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
                 for (let i = 0; i < this.reconnectionTimer; i++) {
@@ -359,14 +359,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     }
                 }
                 if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
-                    game.playerOneDisconnected ? data.forfeiterId = game.playerOneId : data.forfeiterId = game.playerTwoId;
+                    game.playerOneDisconnected ? game.data.forfeiterId = game.playerOneId : game.data.forfeiterId = game.playerTwoId;
                     game.data.end = true;
                 }
             }
             else {
                 let {data, goal} = await this.sleepAndCalculate(game);
                 this.sendDataToRoom(game);
-                if (goal === true) {
+                if (goal === true && data.end === false) {
                     goal = false;
                     await this.launchCountdown(data);
                 }
