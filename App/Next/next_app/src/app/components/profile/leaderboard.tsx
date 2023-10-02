@@ -55,7 +55,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                                     </div>
                                 </div>
                                 <Avatar
-                                    width={64} height={64} imageUrlGetFromCloudinary={item.avatar} disableChooseAvatar={true} userName={item.username} currId={item.userId} isOnProfilePage={false}
+                                    height={64} imageUrlGetFromCloudinary={item.avatar} disableChooseAvatar={true} userName={item.username} currId={item.userId} isOnProfilePage={false}
                                 />
                             </div>
                             <button className={item.userId === currentUserId ? `flex flex-col justify-center text-[1.5rem] md:text-[1.7rem] ` + textColor

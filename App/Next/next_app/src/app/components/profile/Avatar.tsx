@@ -11,7 +11,6 @@ type AvatarProps = {
 	userName?: string | null;
 	currId?: string | null;
 	id?: string | null;
-	width?: number;
 	height?: number;
 }
 
@@ -25,7 +24,6 @@ const Avatar = (
 		userName = null,
 		currId = null,
 		id = null,
-		width = 212,
 		height = 212,
 	}: AvatarProps) => {
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
