@@ -8,6 +8,7 @@ import { useContext, useRef, useState } from "react";
 import GameInviteContext from "@/app/context/GameInviteContext";
 import DropDownActionGame from "../dropdown/DropDownActionGame";
 import { useRouter } from "next/navigation";
+import { CustomImage } from "../CustomImage";
 
 type FriendProps = {
 	user: UserModel
@@ -71,10 +72,10 @@ const FriendItem = ({ user }: FriendProps) => {
 			<div className="flex items-center">
 				<div className="relative mr-2 rounded-full w-10 h-10 object-cover">
 					{user.avatar.startsWith("https://")
-						? <Image alt="Member avatar" src={user.avatar} height={32} width={32}
-							className="w-[inherit] rounded-[inherit]" />
-						: <Image alt="default avatar" src="https://img.freepik.com/free-icon/user_318-563642.jpg" height={32} width={32}
-							className="w-[inherit] rounded-[inherit]" />
+						? 
+						<CustomImage url={user.avatar} size={32}/>
+                        :
+                        <CustomImage size={32}/>
 					}
 					<div className="absolute bg-base p-[2px] rounded-full -bottom-[1px] -right-[1px]">
 						<div className={`w-3 h-3 rounded-full ${getStatusColor(user.currentStatus)}`}></div>
