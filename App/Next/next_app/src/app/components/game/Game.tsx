@@ -33,7 +33,7 @@ const Game = ({ ...props }) => {
 			socket?.off("playerDisconnected");
 			socket?.off("playerReconnected");
 		}
-	}, [socket]);
+	}, [socket, paused]);
 
 	return (
 		<div className="flex flex-grow justify-center">

@@ -1,6 +1,6 @@
 "use client";
+
 import React, {useState} from "react";
-import '../../globals.css'
 import isTwoFAValid from "./isTwoFAValid";
 import Submit2FA from "./SubmitTwoFA";
 import {useRouter} from "next/navigation";
