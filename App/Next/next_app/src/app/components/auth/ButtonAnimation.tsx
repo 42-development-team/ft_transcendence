@@ -4,15 +4,15 @@ const ButtonAnimation = (
 	{ 
 		imageUrl='', 
 		handleRefreshClick= () => {},
-		cancelActive=false,
-		refreshImage= ''
+		refreshImage= '',
+		disable=false
 	}
 	:
 	{
 		imageUrl: string,
 		handleRefreshClick: any,
-		cancelActive: boolean
-		refreshImage: any
+		refreshImage: any,
+		disable: boolean
 	}) => (
 	<div className="self-center mt-2 duration-500">
 		{
@@ -22,7 +22,7 @@ const ButtonAnimation = (
 				color="bg-mauve"
 				id="Refresh2FA"
 				onClick={handleRefreshClick}
-				disabled={cancelActive}>
+				disabled={disable}>
 				<Image src={refreshImage}
 					alt="refresh"
 					width={30}
