@@ -127,7 +127,7 @@ const Canvas = ({ ...props }) => {
 			socket?.emit("retrieveData", userId);
 		}
 		else
-			launchGame(data.id);
+			launchGame();
 	}, [data?.end]);
 
 	useEffect(() => {
