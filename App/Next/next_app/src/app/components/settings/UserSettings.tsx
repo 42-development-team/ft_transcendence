@@ -29,10 +29,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const Router = useRouter();
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
-	let isUserAlreadyTaken = false;
+	let 	isUserAlreadyTaken = false;
 	const [openAvatarAlert, setOpenAvatarAlert] = useState<boolean>(false);
 	const [openUsernameAlert, setOpenUsernameAlert] = useState<boolean>(false);
-	const [error, setError] = useState<boolean>(false);
+	const [errorUsername, setErrorUsername] = useState<boolean>(false);
 	const [errorAvatar, setErrorAvatar] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -46,7 +46,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 
 	const getAvatar = async (id: string) => {
 		const avatar: string = await getAvatarById(id);
-		setImageUrl(avatar);
+		setImageUrl( avatar);
 	};
 
 	useEffect(() => {
@@ -81,11 +81,11 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		}
 	}
 
-	const setAlert = (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
+	const setAlert = async (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
 		if (avatar) {
 			setOpenAvatarAlert(false);
 			setErrorAvatar(error);
-			if (!error)
+			if (!errorUsername)
 				setSubmitable(true);
 			else
 				setSubmitable(false);
@@ -101,7 +101,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		if (username) {
 			setOpenUsernameAlert(false);
 			setUsernameMessage(message);
-			setError(error);
+			setErrorUsername(error);
 			if (error)
 				setSubmitable(false);
 			else
@@ -119,6 +119,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	/* handle validate click, so username update and avatar update in cloudinary */
 	const handleClick = async () => {
 		try {
+			setSubmitable(false);
 			if (isUserAlreadyTaken) {
 				setAlert("Username already taken", true, true, false, true);
 				return;
@@ -174,8 +175,8 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				setAlert("Username already taken", true, true, false, true);
 			}
 			else {
-				setAlert("Username available", false, true, false, true);
 				setInputUserName(newinputUserName);
+				setAlert("Username available", false, true, false, true);
 			}
 		} catch (error) {
 			console.log(error);
@@ -213,7 +214,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 					className='mb-4 mt-4 p-2 text-text text-center border-mauve border-[1px] break-all justify-center'
 					variant='gradient'
 					open={openUsernameAlert}
-					icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
+					icon={errorUsername ? <AlertErrorIcon /> : <AlertSuccessIcon />}
 					animate={{
 						mount: { y: 0 },
 						unmount: { y: 100 },

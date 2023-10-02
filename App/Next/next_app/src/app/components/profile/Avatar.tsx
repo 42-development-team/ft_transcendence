@@ -1,6 +1,7 @@
 "use client";
 import { useState, ChangeEvent, useEffect, useContext } from "react";
 import ThemeContext from "../theme/themeContext";
+import { CustomImage } from "../CustomImage";
 
 type AvatarProps = {
 	children?: any;
@@ -127,28 +128,15 @@ const Avatar = (
 				{/* Display uploaded avatar image temporary stored in URL*/}
 				{imageUrl || (imageUrlGetFromCloudinary && imageUrlGetFromCloudinary != 'noavatar.jpg') ? (
 					<div className="flex justify-center" >
-						<div style={{
-							backgroundImage: 'url(' + (imageUrlGetFromCloudinary as string || imageUrl as string) + ')',
-							backgroundPosition: 'center center',
-							backgroundSize: 'cover',
-							border: 'solid 0px',
-							borderRadius: height / 2 + 'px',
-							height: height + 'px',
-							width: height + 'px',
-						}} />
+						<CustomImage
+							url={imageUrl ? imageUrl as string : imageUrlGetFromCloudinary as string}
+							size={height}
+						/>	
 					</div>
 				) : (
 					<div className="flex justify-center">
 						{/* Display default avatar */}
-						<div style={{
-							backgroundImage: 'url(https://img.freepik.com/free-icon/user_318-563642.jpg)',
-							backgroundPosition: 'center center',
-							backgroundSize: 'cover',
-							border: 'solid 0px',
-							borderRadius: height / 2 + 'px',
-							height: height + 'px',
-							width: height + 'px',
-						}} />
+						<CustomImage size={height} />
 					</div>
 				)}
 				{!disableChooseAvatar &&
