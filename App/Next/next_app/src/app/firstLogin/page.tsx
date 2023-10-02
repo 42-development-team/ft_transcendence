@@ -8,6 +8,6 @@ export default async function FirstLogin() {
     }
 
     return (
-        <FirstLoginPageComponent userId={payload.sub} CallbackAvatarFile={null} CallbackImageUrl={null} />
+        <FirstLoginPageComponent userId={payload.sub} />
     )
 }
