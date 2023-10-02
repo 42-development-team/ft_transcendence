@@ -1,4 +1,5 @@
 export interface PlayerInterface {
+	id: number,
 	name: string,
 	color: string,
 	x: number,
