@@ -1,11 +1,11 @@
 "use client";
 
-import { ChangeEvent, useState, useEffect, useContext } from 'react';
+import { ChangeEvent, useState, useEffect, useContext, useRef } from 'react';
 import ValidateBtn from '../ValidateBtn';
 import { Alert } from '@material-tailwind/react';
 import { AlertErrorIcon } from '../alert/AlertErrorIcon';
 import { AlertSuccessIcon } from '../alert/AlertSuccessIcon';
-import TwoFA from '../auth/TwoFA';
+import TwoFA from '../auth/TwoFA/TwoFA';
 import Avatar from '../profile/Avatar';
 import UpdateAvatar from '../auth/utils/updateAvatar';
 import { useRouter } from 'next/navigation';

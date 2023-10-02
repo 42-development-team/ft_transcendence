@@ -50,9 +50,9 @@ export class AuthService {
         }
     }
 
-    async changeLoginBooleanStatus(user: any) {
+    async changeLoginBooleanStatus(userId: number) {
 			await this.prisma.user.updateMany({
-				where: { username: user.username },
+				where: { id: userId },
                 data: { isFirstLogin: false },
             });
     }

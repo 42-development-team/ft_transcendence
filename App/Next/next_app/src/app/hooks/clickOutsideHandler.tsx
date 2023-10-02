@@ -11,9 +11,6 @@ function clickOutsideHandler({ref , handler}: ClickOutsideHandlerProps) {
             if (ref && ref.current && !ref.current.contains(event.target as Node)) {
                 handler();
             }
-            // if ((event.target as HTMLElement).id === "dropdownAction") {
-            //     handler();
-            // }
         }
         document.addEventListener('mousedown', handleClickOutside);
         return () => {

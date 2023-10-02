@@ -81,7 +81,6 @@ const SidePanelGameInvite = () => {
     }
 
     const onChange = (accept: boolean) => {
-        console.log("accept", accept);
         respondToInvite(invitedBy, accept);
     }
 

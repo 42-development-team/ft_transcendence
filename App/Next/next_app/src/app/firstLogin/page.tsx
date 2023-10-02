@@ -1,4 +1,4 @@
-import FirstLoginPageComponent from '../components/auth/FirstLoginPage';
+import UserSettingsComponent from '../components/settings/UserSettings';
 import getJwt from '../utils/getJwt';
 
 export default async function FirstLogin() {
@@ -8,6 +8,6 @@ export default async function FirstLogin() {
     }
 
     return (
-        <FirstLoginPageComponent userId={payload.sub} />
+        <UserSettingsComponent userId={payload.sub} onSettings={false}/>
     )
 }

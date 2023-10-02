@@ -34,6 +34,7 @@ export class AuthController {
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
+            console.log("getJwt: " + req.user.sub)
             const cookieOptions = {
                 expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
                 secure: false,
@@ -77,8 +78,7 @@ export class AuthController {
         }
     }
 
-    @Public()
-    @Get('firstLogin/doesUserNameExist/:username')
+    @Get('doesUserNameExist/:username')
     async doesUserNameExist(@Param('username') username: string, @Res() res: Response) {
         try {
             const user = await this.userService.getUserFromUsername(username);
@@ -89,26 +89,4 @@ export class AuthController {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred while checking username availability.');
         }
     }
-
-    @Public()
-    @Put('firstLogin/updateUsername')
-    async updateUsername(@Body() updateData: FirstLoginDto): Promise<any> {
-        try {
-            const userId = Number(updateData.userId);
-            return await this.userService.updateUsername(userId, updateData.newUsername);
-        } catch (error) {
-            console.error('Error updating username:', error);
-            throw error;
-        }
-    }
-
-    @Public()
-	@Get('firstLogin/getUser/:userId')
-	async getUserByName(@Param('userId') userId: string): Promise<any> {
-		try {
-			return await this.userService.getUserFromId(Number(userId));
-		} catch (error) {
-			return error;
-		}
-	}
 }

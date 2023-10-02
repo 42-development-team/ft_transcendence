@@ -13,10 +13,11 @@ interface ChatMessagesBoxProps {
     sendToChannel: (Channel: ChannelModel, message: string) => void;
     channel: ChannelModel;
     userId: string;
-    blockedUsers: UserModel[]
+    blockedUsers: UserModel[],
+    refresh: boolean;
 }
 
-const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatMessagesBoxProps ) => {
+const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers, refresh }: ChatMessagesBoxProps ) => {
     const {updateChatBarState} = useChatBarContext();
     const [channelTitle, setChannelTitle] = useState<string>(channel.name);
     const [cannotSendMessage, setCannotSendMessage] = useState<boolean>(false);
@@ -58,7 +59,7 @@ const ChatMessagesBox = ({ sendToChannel, channel, userId, blockedUsers }: ChatM
         const currentUser = channel.members?.find(member => member.id == userId);
         if (currentUser == undefined) return;
         setCannotSendMessage(currentUser.isMuted && Date.now() < Date.parse(currentUser.mutedUntil))
-    }, [channel]);
+    }, [channel, userId, channel.members, refresh]);
 
     return (
         <div className='bg-opacity-90 backdrop-blur-lg flex flex-col w-[450px] h-full px-2 py-2 rounded-r-lg bg-base border-crust border-2'>

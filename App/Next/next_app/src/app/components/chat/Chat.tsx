@@ -35,6 +35,7 @@ const Chat = ({
     const [ currentChannel, setCurrentChannel ] = useState<ChannelModel>();
     const [ isCurrentUserAdmin, setIsCurrentUserAdmin ] = useState<boolean>(false);
     const [ isCurrentUserOwner, setIsCurrentUserOwner ] = useState<boolean>(false);
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     let currentUser = undefined;
 
@@ -44,6 +45,7 @@ const Chat = ({
             return ;
         }
         setCurrentChannel(joinedChannels.find(channel => channel.id == openChannelId));
+        setRefresh(!refresh);
     }, [openChannelId, chatBarState, joinedChannels]);
 
     useEffect(() => {
@@ -66,11 +68,11 @@ const Chat = ({
     }, [joinedChannels]);
 
     return (
-        <div className=' flex h-[calc(100vh-48px)]'>
+        <div className=' flex h-[calc(100vh-48px)] z-5'>
             <UserRoleProvider isCurrentUserAdmin={isCurrentUserAdmin} isCurrentUserOwner={isCurrentUserOwner}>
                 <ChatSideBar channels={joinedChannels} friendRequestCount={requestedFriends.length} />
                 {chatBarState == ChatBarState.ChatOpen && currentChannel &&
-                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers}/>
+                    <ChatMessagesBox sendToChannel={sendToChannel} channel={currentChannel} userId={userId} blockedUsers={blockedUsers} refresh={refresh}/>
                 }
                 {chatBarState == ChatBarState.ChatMembersOpen && currentChannel &&
                     <ChatMemberList channel={currentChannel} userId={userId} directMessage={directMessage} 
