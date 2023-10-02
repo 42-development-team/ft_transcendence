@@ -32,7 +32,6 @@
         <li><a href="#env">env</a></li>
       </ul>
     </li>
-    <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 
@@ -115,9 +114,6 @@ CLOUDINARY_API_SECRET=""
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Contact
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

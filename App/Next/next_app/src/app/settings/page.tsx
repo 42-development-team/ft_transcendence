@@ -1,10 +1,9 @@
 "use client";
-import TwoFA from "@/components/auth/TwoFA";
-import SettingsPage from "@/components/settings/settingsPage";
 import Chat from "@/components/chat/Chat";
 import { useAuthContext } from "@/context/AuthContext";
 import { useEffect } from "react";
 import useFriends from "@/hooks/useFriends";
+import UserSettingsComponent from "../components/settings/UserSettings";
 
 export default function Settings() {
     const { login, userId } = useAuthContext();
@@ -20,10 +19,7 @@ export default function Settings() {
 				addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} />
             {userId !== "" && userId !== undefined && userId !== null && 
 				<div className="flex flex-col w-full h-[calc(100vh-48px)] justify-center">
-				    <SettingsPage userId={userId}></SettingsPage>
-				    <div className="flex flex-row justify-center">
-					    <TwoFA userId={userId}></TwoFA>
-				    </div>
+				    <UserSettingsComponent userId={userId} onSettings={true} ></UserSettingsComponent>
 			    </div>
             }
         </div>

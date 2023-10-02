@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { GameInterface, PlayerInterface, BallInterface } from "./interfaces/game.interfaces";
+import { count } from "console";
 
 // ======== CANVAS CSS ==============//
 const canvasStyle: any = {
@@ -78,11 +79,24 @@ function renderGame(context: CanvasRenderingContext2D, data: GameInterface, widt
 	printScore(context, data.player1, data.player2, width, height);
 };
 
+function printCountdown(context: CanvasRenderingContext2D, width: number, height: number, countdown: number) {
+	context.fillStyle = 'rgba(0, 0, 0, 1';
+	context.beginPath();
+		context.fillRect(0, 0, width, height);
+	context.closePath();
+	
+	context.fillStyle = '#cba6f7';
+	context.beginPath();
+    	context.font = `72px serif`;
+		context.fillText(countdown.toString(), width / 2.125, height / 2.1);
+	context.closePath();
+}
+
 const Canvas = ({ ...props }) => {
 	if (typeof window === 'undefined')
 		return;
 
-	const { move, stopMove, launchGame, data, mode, userId, socket } = props;
+	const { move, stopMove, launchGame, data, mode, userId, socket, countdown } = props;
 
 	const [width, setWidth] = useState<number>(window.innerWidth * 0.9);
 	let height: number;
@@ -91,12 +105,29 @@ const Canvas = ({ ...props }) => {
 
 	useEffect(() => {
 		if (!data)
+			return;
+		const canvas = canvasRef.current;
+		if (!canvas)
+			return;
+		const context = canvas.getContext('2d');
+		if (!context)
+			return;
+		height = width * (9 / 16);
+
+		printCountdown(context, width, height, countdown);
+		printMidLine(context, width, height);
+		renderGame(context, data, width, height, mode);
+
+	}, [countdown]);
+
+	useEffect(() => {
+		if (!data)
 			return ;
 		if (data.end === true) {
 			socket?.emit("retrieveData", userId);
 		}
 		else
-			launchGame(data.id);
+			launchGame();
 	}, [data?.end]);
 
 	useEffect(() => {

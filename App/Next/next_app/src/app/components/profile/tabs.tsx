@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useContext } from "react";
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
 import MatchHistory from "./matchHistory";
@@ -16,6 +17,7 @@ export function UnderlineTabs({ userId }: { userId: string }) {
     const { theme } = useContext(ThemeContext);
     const [headerTextColor, setHeaderTextColor] = useState<string>(theme === "latte" ? "text-red" : "text-peach");
     const [headerBorderColor, setHeaderBorderColor] = useState<string>(theme === "latte" ? "border-red" : "border-peach");
+
     useEffect(() => {
         if (userId === undefined || userId === "") return;
         let sessionUserId = null;
@@ -81,10 +83,10 @@ export function UnderlineTabs({ userId }: { userId: string }) {
                         <Tab
                             key={value}
                             value={value}
-                            activeClassName="bg-transparent z-30" 
+                            activeClassName="bg-transparent z-20" 
                             onClick={() => handleClick(value)}
                             style={indicatorStyle}
-                            className={`z-11 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
+                            className={`z-10 ${activeTab === value ?  headerTextColor + " text-xl" : " text-text"
                                 } border-b-4 ${activeTab === value ?  headerBorderColor : "border-gray-500"
                                 }`}
                         >
