@@ -14,7 +14,7 @@ export default function Home() {
 	const { inGameContext } = useContext(InGameContext);
 	const [disable, setDisable] = useState(true);
 	const { friends, invitedFriends, requestedFriends, addFriend, blockedUsers, blockUser, unblockUser } = useFriends();
-	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode } = useGame();
+	const { surrender, move, stopMove, leaveQueue, joinQueue, isUserQueued, launchGame, socket, inGame, setInGameContext, result, setResult, data, changeMode, mode, setMode, countdown } = useGame();
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -60,6 +60,7 @@ export default function Home() {
 						setInGameContext={setInGameContext}
 						mode={mode}
 						setMode={setMode}
+						countdown={countdown}
 					/>
 				</div>
 			)}

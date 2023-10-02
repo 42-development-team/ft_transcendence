@@ -20,6 +20,6 @@ npm update --save --save-dev
 npx prisma migrate dev
 
 # Allow to access and edit database in the browser via port 5555
-(npx prisma studio&)
+# (npx prisma studio&)
 
 npm run start:dev

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Avatar from "../profile/Avatar";
 
 export function DisplayResultData({ user, opponent }: { user: any, opponent: any }) {
@@ -11,7 +10,7 @@ export function DisplayResultData({ user, opponent }: { user: any, opponent: any
                 {user ? (
                     <div className="flex flex-col text-center ml-[4vw] ">
                         <Avatar
-                            width={64} height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} currId={user.id} isOnProfilePage={false}
+                            height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} currId={user.id} isOnProfilePage={false}
                         />
                         {user.userName}
                     </div>
@@ -36,7 +35,7 @@ export function DisplayResultData({ user, opponent }: { user: any, opponent: any
                 {opponent ? (
                     <div className="flex flex-col text-center mr-[4vw]">
                         <Avatar
-                            width={64} height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} currId={opponent.id} isOnProfilePage={false}
+                            height={64} imageUrlGetFromCloudinary={opponent.avatar} disableChooseAvatar={true} currId={opponent.id} isOnProfilePage={false}
                         />
                         {opponent.userName}
                     </div>

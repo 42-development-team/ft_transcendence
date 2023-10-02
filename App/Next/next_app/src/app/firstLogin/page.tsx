@@ -8,6 +8,6 @@ export default async function FirstLogin() {
     }
 
     return (
-        <UserSettingsComponent userId={payload.sub} CallbackAvatarFile={null} CallbackImageUrl={null} />
+        <UserSettingsComponent userId={payload.sub} onSettings={false}/>
     )
 }

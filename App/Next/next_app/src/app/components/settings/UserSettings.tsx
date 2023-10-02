@@ -10,7 +10,6 @@ import Avatar from '../profile/Avatar';
 import UpdateAvatar from '../auth/utils/updateAvatar';
 import { useRouter } from 'next/navigation';
 import { isAlphanumeric } from '../utils/isAlphanumeric';
-import { useEffectTimer } from '../auth/utils/useEffectTimer';
 import ThemeContext from '../theme/themeContext';
 import UpdateUsernameById from '../utils/updateUsernameById';
 import getUserNameById from '../utils/getUserNameById';
@@ -22,23 +21,19 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const [submitable, setSubmitable] = useState<boolean>(onSettings ? false : true);
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
-	const [validateEnabled, setValidateEnabled] = useState(true);
 	const [placeHolder, setPlaceHolder] = useState('');
 	const [waiting2fa, setWaiting2fa] = useState(true);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [inputUserName, setInputUserName] = useState('');
-	const [wrongFormat, setWrongFormat] = useState<boolean>(false);
 	const Router = useRouter();
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
-	let isUserAlreadyTaken = false;
+	let 	isUserAlreadyTaken = false;
 	const [openAvatarAlert, setOpenAvatarAlert] = useState<boolean>(false);
 	const [openUsernameAlert, setOpenUsernameAlert] = useState<boolean>(false);
-	const [error, setError] = useState<boolean>(false);
+	const [errorUsername, setErrorUsername] = useState<boolean>(false);
 	const [errorAvatar, setErrorAvatar] = useState<boolean>(false);
-
-	useEffectTimer(wrongFormat, 2600, setWrongFormat);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -51,7 +46,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 
 	const getAvatar = async (id: string) => {
 		const avatar: string = await getAvatarById(id);
-		setImageUrl(avatar);
+		setImageUrl( avatar);
 	};
 
 	useEffect(() => {
@@ -63,16 +58,12 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		}
 	}, []);
 
-	useEffect(() => {
-
-	}, [wrongFormat]);
-
 	/* called on page load, set the placeholder with default username */
 	const getUserName = async (userId: string) => {
 		const username = await getUserNameById(userId);
 		if (username === undefined) {
 			console.log("Error fetching username");
-			return ;
+			return;
 		}
 		setPlaceHolder(username);
 		setInputUserName(username);
@@ -90,14 +81,14 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		}
 	}
 
-	const setAlert = (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
+	const setAlert = async (message: string, error: boolean, keepVisible: boolean, avatar: boolean, username: boolean) => {
 		if (avatar) {
 			setOpenAvatarAlert(false);
 			setErrorAvatar(error);
-				if (inputUserName !== "" && !error)
-					setSubmitable(true);
-				else
-					setSubmitable(false);
+			if (!errorUsername)
+				setSubmitable(true);
+			else
+				setSubmitable(false);
 			setAvatarMessage(message);
 			setOpenAvatarAlert(true);
 			if (!keepVisible) {
@@ -110,7 +101,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		if (username) {
 			setOpenUsernameAlert(false);
 			setUsernameMessage(message);
-			setError(error);
+			setErrorUsername(error);
 			if (error)
 				setSubmitable(false);
 			else
@@ -128,13 +119,14 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	/* handle validate click, so username update and avatar update in cloudinary */
 	const handleClick = async () => {
 		try {
+			setSubmitable(false);
 			if (isUserAlreadyTaken) {
 				setAlert("Username already taken", true, true, false, true);
 				return;
 			}
 			setWaiting2fa(false);
 			setAlert("Updating username/avatar...", false, false, true, false)
-			if (!wrongFormat)
+			if (!errorAvatar)
 				await UpdateAvatar(avatarFile, userId, setImageUrl);
 			const updateData = {
 				newUsername: inputUserName,
@@ -157,19 +149,17 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 		try {
 			const newinputUserName = e.target.value;
 			if (newinputUserName === "") {
+				setSubmitable(true);
 				setOpenUsernameAlert(false);
 				setInputUserName(placeHolder);
-				setValidateEnabled(true);
 				return;
 			}
 			else if (isAlphanumeric(newinputUserName) === false) {
 				setAlert("Username can only contain letters and numbers", true, true, false, true);
-				setValidateEnabled(false);
 				return;
 			}
 			else if (newinputUserName.length < 3 || newinputUserName.length > 15) {
 				setAlert("Username must be at least 3 characters long, and at most 15 characters long", true, true, false, true);
-				setValidateEnabled(false);
 				return;
 			}
 
@@ -182,13 +172,11 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 			const isUsernameSameAsCurrent = newinputUserName === placeHolder;
 
 			if (isUserAlreadyTaken && !isUsernameSameAsCurrent) {
-				setValidateEnabled(false);
 				setAlert("Username already taken", true, true, false, true);
 			}
 			else {
-				setValidateEnabled(true);
-				setAlert("Username available", false, true, false, true);
 				setInputUserName(newinputUserName);
+				setAlert("Username available", false, true, false, true);
 			}
 		} catch (error) {
 			console.log(error);
@@ -198,16 +186,14 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 
 	const handleCallBackDataFromAvatar = (childAvatarFile: File | null, childImageUrl: string | null, message: string | null) => {
 		if (message !== null) {
-			setWrongFormat(true);
 			setImageUrl(null);
 			setAvatarFile(null);
 			setAlert(message, true, false, true, false);
 			return;
 		}
+		setAlert("Ready to be uploaded", false, false, true, false)
 		setAvatarFile(childAvatarFile);
 		setImageUrl(childImageUrl);
-		if (validateEnabled)
-			setSubmitable(true);
 	}
 
 	return (
@@ -225,10 +211,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 					/>
 				</div>
 				<Alert
-					className='mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all'
+					className='mb-4 mt-4 p-2 text-text text-center border-mauve border-[1px] break-all justify-center'
 					variant='gradient'
 					open={openUsernameAlert}
-					icon={error ? <AlertErrorIcon /> : <AlertSuccessIcon />}
+					icon={errorUsername ? <AlertErrorIcon /> : <AlertSuccessIcon />}
 					animate={{
 						mount: { y: 0 },
 						unmount: { y: 100 },
@@ -240,7 +226,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} isOnProfilePage={false}>
 			</Avatar>
 			<Alert
-				className='mb-4 mt-4 p-2 text-text border-mauve border-[1px] break-all'
+				className='mb-4 mt-4 p-2 text-text text-center border-mauve border-[1px] break-all w-[60%] justify-center'
 				variant='gradient'
 				open={openAvatarAlert}
 				icon={errorAvatar ? <AlertErrorIcon /> : <AlertSuccessIcon />}
@@ -254,7 +240,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				waiting2fa &&
 				<TwoFA userId={userId}></TwoFA>
 			}
-			<div className="flex justify-center mb-6 mt-4">
+			<div className="flex justify-center mb-6 mt-4 ">
 				{((onSettings && submitable) || (!onSettings)) &&
 					<ValidateBtn onClick={handleClick} disable={!submitable} >
 						Validate
