@@ -267,14 +267,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('launchGame')
-    async handleLaunchGame(socket: Socket, id: number) {
+    async handleLaunchGame(socket: Socket) {
         const userId: number = await this.userService.getUserIdFromSocket(socket);
-        let room: GameRoomDto = await this.gameService.handleLaunchGame(id, userId);
+        const game: GameDto = await this.gameService.getDataFromUserId(userId);
+        let room: GameRoomDto = await this.gameService.handleLaunchGame(game.id, userId);
         this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
             if (room.reconnect === false) {
                 room.reconnect = true;
-                this.gameLogic(room.data);
+                this.gameLogic(room);
             }
         }
         await this.userService.updateStatus(userId, "in a game");
@@ -319,17 +320,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     async launchCountdown(data: GameDto) {
-        for(let i = 0; i < 3; i++) {
+        for(let i = 0; i < 2; i++) {
             await this.emitToUser(data.player1.id, 'countdown', {countdown: 3 - i});
-            await this.emitToUser(data.player2.id, 'countdown', {countdown: 3 - i});
+            this.server.to(data.roomName).emit('countdown', {countdown: 3 - i});
             await this.asyncDelay(1000);
         }
     }
 
-    async gameLogic(data: GameDto) {
+    async handleEndOfGame(gameRoom: GameRoomDto) {
+        const results = await this.gameService.createGame(gameRoom.data);
+        this.server.to(gameRoom.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
+        await this.gameService.removeRoom(gameRoom.id);
+        await this.userService.updateStatus(results.gameLosedId, "online");
+        await this.userService.updateStatus(results.gameWonId, "online");
+        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
+        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
+    }
 
-        await this.launchCountdown(data);
-        const game: GameRoomDto = await this.gameService.getGameFromId(data.id);
+    async gameLogic(game: GameRoomDto) {
+        await this.launchCountdown(game.data);
         while (game.data.end === false) {
             if (game.playerOneDisconnected || game.playerTwoDisconnected) {
                 for (let i = 0; i < this.reconnectionTimer; i++) {
@@ -350,26 +359,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     }
                 }
                 if ( game.playerOneDisconnected || game.playerTwoDisconnected) {
-                    game.playerOneDisconnected ? data.forfeiterId = game.playerOneId : data.forfeiterId = game.playerTwoId;
+                    game.playerOneDisconnected ? game.data.forfeiterId = game.playerOneId : game.data.forfeiterId = game.playerTwoId;
                     game.data.end = true;
                 }
             }
             else {
                 let {data, goal} = await this.sleepAndCalculate(game);
                 this.sendDataToRoom(game);
-                if (goal === true) {
+                if (goal === true && data.end === false) {
                     goal = false;
                     await this.launchCountdown(data);
                 }
             }
         }
-        const results = await this.gameService.createGame(data);
-        this.server.to(data.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
-        await this.gameService.removeRoom(game.id);
-        await this.userService.updateStatus(results.gameLosedId, "online");
-        await this.userService.updateStatus(results.gameWonId, "online");
-        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
-        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
+        this.handleEndOfGame(game);
     }
 
     async sendDataToRoom(game: GameRoomDto) {
