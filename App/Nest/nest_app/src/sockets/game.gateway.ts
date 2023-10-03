@@ -52,7 +52,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 userId === game.playerOneId ? game.playerOneDisconnected = true : game.playerTwoDisconnected = true;
             }
             await this.userService.updateStatus(userId, "offline");
-            this.gameService.handleLeaveQueue(userId);
+            await this.asyncDelay(3000)
+            const socketIds = await this.userService.getSocketIdsFromUserId(userId);
+            if ( socketIds.length === 0) {
+                this.gameService.handleLeaveQueue(userId);
+            }
         }
         console.log("GameSocket Disconnected: ", client.id);
         this.clients = this.clients.filter(c => c.id !== client.id);
@@ -332,12 +336,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async handleEndOfGame(gameRoom: GameRoomDto) {
         const results = await this.gameService.createGame(gameRoom.data);
-        this.server.to(gameRoom.roomName).emit('endOfGame', { winnerId: results.gameWonId, loserId: results.gameLosedId });
         await this.gameService.removeRoom(gameRoom.id);
-        await this.userService.updateStatus(results.gameLosedId, "online");
-        await this.userService.updateStatus(results.gameWonId, "online");
-        this.server.emit("userStatusUpdate", { userId: results.gameLosedId });
-        this.server.emit("userStatusUpdate", { userId: results.gameWonId });
+        await this.emitToUser(results.newGame.gameWonId, 'endOfGame',  { winnerId: results.newGame.gameWonId, loserId: results.newGame.gameLosedId, elo: results.eloData });
+        await this.emitToUser(results.newGame.gameLosedId, 'endOfGame',  { winnerId: results.newGame.gameWonId, loserId: results.newGame.gameLosedId, elo: results.eloData });
+        await this.userService.updateStatus(results.newGame.gameLosedId, "online");
+        await this.userService.updateStatus(results.newGame.gameWonId, "online");
+        this.server.emit("userStatusUpdate", { userId: results.newGame.gameLosedId });
+        this.server.emit("userStatusUpdate", { userId: results.newGame.gameWonId });
     }
 
     async gameLogic(game: GameRoomDto) {
@@ -369,7 +374,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
             }
         }
-        this.handleEndOfGame(game);
+        await this.handleEndOfGame(game);
     }
 
     async sendDataToRoom(game: GameRoomDto) {

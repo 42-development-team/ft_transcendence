@@ -13,7 +13,7 @@ export default function useGame() {
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [mode, setMode] = useState<boolean>(false);
 	const [countdown, setCountdown] = useState<number>(0);
-	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
+	const [result, setResult] = useState<{ id: number, won: boolean, elo: any } | undefined>(undefined);
 	const { setGameLoading } = useContext(LoadingContext);
 	const { setInGameContext } = useContext(IsInGameContext);
 
@@ -41,12 +41,13 @@ export default function useGame() {
 		});
 
 		socket?.on('endOfGame', (body: any) => {
-			const { winnerId, loserId } = body;
+			const { winnerId, loserId, elo } = body;
 
 			if (parseInt(userId) === winnerId)
-				setResult({ id: winnerId, won: true });
+				setResult({ id: winnerId, won: true, elo: elo });
 			else if (parseInt(userId) === loserId)
-				setResult({ id: loserId, won: false });
+				setResult({ id: loserId, won: false, elo: elo });
+			console.log("result", result);
 			setInGame(false);
 		});
 
