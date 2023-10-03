@@ -38,7 +38,7 @@ const Loading = () => {
             {gameLoading &&  /*window.location.pathname !== "/home" && */
                 <div className="flex items-center justify-center h-screen mr-2">
                     <div className="flex shapes-4 text-peach" style={{ opacity: 1 }}></div>
-                    <div className="ml-4 flex text-peach">Queue up...</div>
+                    <div className="ml-4 flex text-peach">Searching...</div>
                 </div>
             }
         </div>
