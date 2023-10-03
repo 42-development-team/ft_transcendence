@@ -187,6 +187,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return;
         }
         const userId: number = await this.userService.getUserIdFromSocket(player);
+        await this.emitToUser(userId, 'queueJoined', null);
         const result = await this.gameService.handleJoinQueue(userId, mode);
 
         // queue not full

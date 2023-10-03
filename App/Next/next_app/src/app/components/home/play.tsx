@@ -57,7 +57,7 @@ const Play = ({ ...props }) => {
 			socket?.off('alreadyInInviteQueue');
 			socket?.off('queueLeft');
 		}
-	}, [socket]);
+	}, [socket, gameLoading, setGameLoading]);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -69,13 +69,13 @@ const Play = ({ ...props }) => {
 	}, [theme]);
 
 	useEffect(() => {
-		if (loading || userAlreadyQueued) {
+		if (loading || userAlreadyQueued || gameLoading) {
 			setButtonText("Cancel")
 		}
 		else {
 			setButtonText("Play")
 		}
-	}, [loading, userAlreadyQueued])
+	}, [loading, userAlreadyQueued, gameLoading])
 
 	const matchmaking = async () => {
 		await joinQueue();
@@ -97,12 +97,12 @@ const Play = ({ ...props }) => {
 	return (
 		<div className='flex flex-col '>
 			<div className='flex flex-col justify-center items-center'>
-				{loading || userAlreadyQueued ? (
+				{loading || userAlreadyQueued || gameLoading ? (
 					<div className='flex flex-col'>
 						<div className='flex flex-row justify-center'>
 							<div className='flex shapes-5 text-peach' style={{ opacity: 1 }}></div>
 						</div>
-						<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Queue up...</div>
+						<div className={`flex text-center text-[1.4rem] mt-6 italic font-extralight ` + textColor}>Searching...</div>
 					</div>
 				) : (
 					<>
@@ -131,7 +131,7 @@ const Play = ({ ...props }) => {
 
 				)}
 			</div>
-			{(loading || userAlreadyQueued) &&
+			{(loading || userAlreadyQueued || gameLoading) &&
 				<div className='flex flex-row justify-center'>
 					<div className='flex '>
 						<CustomBtnPlay onClick={cancelMatchmaking} width={110} height={60} color='bg-red-500' disable={false} anim={false}>

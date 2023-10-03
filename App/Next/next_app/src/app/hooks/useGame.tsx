@@ -20,7 +20,7 @@ export default function useGame() {
 	useEffect(() => {
 		socket?.emit('isInGame', userId)
 	}, [socket?.connected]);
-	
+
 	useEffect(() => {
 		socket?.on('updateGame', (body: any) => {
 			setData(body);
@@ -66,6 +66,12 @@ export default function useGame() {
 			setCountdown(countdown);
 		});
 
+		socket?.on('queueJoined', () => {
+			setGameLoading(true);
+			setInGameContext(false);
+			setInGame(false);
+		});
+
 		return () => {
 			socket?.off('isQueued');
 			socket?.off('isNotQueued');
@@ -76,6 +82,7 @@ export default function useGame() {
 			socket?.off('sendDataToUser');
 			socket?.off('isAlreadyInGame');
 			socket?.off('countdown');
+			socket?.off('queueJoined');
 		};
 	}, [socket]);
 
