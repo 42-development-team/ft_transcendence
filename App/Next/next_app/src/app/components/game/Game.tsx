@@ -36,10 +36,10 @@ const Game = ({ ...props }) => {
 	}, [socket, paused]);
 
 	return (
-		<div className="flex flex-grow justify-center">
+		<div className="flex flex-grow justify-center w-full h-full">
 			{data && (
 				(result === undefined || result === null) ? (
-					<div className="flex flex-col flex-grow justify-center h-full">
+					<div className="flex flex-col flex-grow justify-center h-full w-full">
 						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
 							{paused &&
 								<OverlayMessage id={data.id} userId={userId} surrender={surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
@@ -65,7 +65,7 @@ const Game = ({ ...props }) => {
 						/>
 					</div>
 				) : (
-					<div className="flex flex-col justify-center w-[70%]">
+					<div className="flex flex-col justify-center w-[80%] h-full">
 						<Result
 							result={result}
 							setResult={setResult}

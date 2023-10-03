@@ -64,7 +64,7 @@ const Result = ({ ...props }) => {
                     <Logo text="defeat" colorTextOverride="text-red" />
                 </div>
             )}
-            <div className="flex flex-col ">
+            <div className="flex flex-col">
                 <DisplayResultData user={user} opponent={opponent} />
                 <div className="flex flex-col items-center">
                     <CustomBtn
