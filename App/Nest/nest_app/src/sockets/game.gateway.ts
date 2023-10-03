@@ -370,7 +370,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 }
             }
         }
-        this.handleEndOfGame(game);
+        await this.handleEndOfGame(game);
     }
 
     async sendDataToRoom(game: GameRoomDto) {

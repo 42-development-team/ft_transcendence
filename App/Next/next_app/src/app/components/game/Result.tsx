@@ -18,7 +18,7 @@ const Result = ({ ...props }) => {
     const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!data || !data.player1 || userId === undefined || userId === "") {
+        if (!data || !data.player1 || !data.player2 || userId === undefined || userId === "") {
             return;
         }
         const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.points : data.player2.points;
@@ -48,7 +48,7 @@ const Result = ({ ...props }) => {
 
         getUser(result.id);
         getOpponent(data.player1.id === parseInt(result.id) ? data.player2.id : data.player1.id);
-    }, [result.id, data.player1.id]);
+    }, [result?.id, data?.player1.id]);
 
     const backHome = () => {
         setQueued(false);
