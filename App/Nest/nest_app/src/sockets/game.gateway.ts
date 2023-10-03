@@ -277,8 +277,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         //=====================//
         this.gameService.handleLeaveQueue(userId);
         if (room && room.data) {
-            console.log("p1 id:", room.data.player1.id);
-            console.log("p2 id:", room.data.player2.id);
             if (room.reconnect === false) {
                 room.reconnect = true;
                 this.gameLogic(room);
