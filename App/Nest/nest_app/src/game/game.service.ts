@@ -421,7 +421,7 @@ export class GameService {
             player.y = valy;
 
         if ((ball.x < player.x && ball.x < valx) || (ball.x > player.x && ball.x > valx)) {
-            if (valx < 0.48 && valx > 0.02 || valx > 0.52 && valx < 0.98)
+            if ((valx < 0.48 && valx > 0.01) || (valx > 0.52 && valx < 0.99))
                 player.x = valx;
             else
                 this.killVelocitx(player);
@@ -456,8 +456,14 @@ export class GameService {
     //========== BOUNCES =============//
     // >>BORDER<< //
     borderBounce(ball: BallDto) {
-        if (ball.y - ball.r <= 0 || ball.y + ball.r >= 1)
+        if (ball.y - ball.r <= 0) {
+            ball.y = 0 + ball.r;
             ball.speed[1] *= -1;
+        }
+        else if (ball.y + ball.r >= 1) {
+            ball.y = 1 - ball.r;
+            ball.speed[1] *= -1;
+        }
     }
 
     //>>PADDLE<//
@@ -507,7 +513,7 @@ export class GameService {
     checkCollisionY(ball: BallDto, player: PlayerDto): boolean {
         const dy: number = Math.abs(ball.y - player.y);
 
-            if (dy <= player.h / 2) {
+            if (dy <= player.h / 2 + 0.02) {
                 return true;
             }
             else if ((player.y + player.h / 2) > 1){
@@ -574,13 +580,14 @@ export class GameService {
         game.data.ball.y = 0.5;
         let sign = 1;
 
-        if (Math.random() < 0.5)
+        // if (Math.random() < 0.5)
             sign *= -1;
-            game.data.ball.speed[0] = 0.3 * sign;
+        game.data.ball.speed[0] = 0.3 * sign;
 
         if (Math.random() < 0.5)
             sign *= -1;
-            game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        game.data.ball.speed[1] = 0;
+            // game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
