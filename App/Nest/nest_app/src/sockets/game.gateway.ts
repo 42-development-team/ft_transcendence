@@ -234,6 +234,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('leaveQueue')
     handleLeaveQueue(socket: Socket, userId: number) {
         this.gameService.handleLeaveQueue(userId);
+        this.emitToUser(userId, 'queueLeft', null);
     }
 
     @SubscribeMessage('isUserQueued') //in matchmaking queue

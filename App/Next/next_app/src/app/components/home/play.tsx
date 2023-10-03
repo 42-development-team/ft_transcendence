@@ -13,7 +13,7 @@ const Play = ({ ...props }) => {
 	const [openAlert, setOpenAlert] = useState(false);
 	const [loading, setLoading] = useState(false)
 	const [disable, setDisable] = useState(false)
-	const { leaveQueue, joinQueue, isUserQueued, userId, socket, changeMode, mode } = props;
+	const { leaveQueue, joinQueue, socket, changeMode, mode } = props;
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-maroon" : "text-peach");
 	const [userAlreadyQueued, setUserAlreadyQueued] = useState<boolean>(false);
@@ -34,13 +34,10 @@ const Play = ({ ...props }) => {
 		);
 
 		socket?.on('alreadyInInviteQueue', (body: any) => {
-			const {isQueued} = body;
+			const { isQueued } = body;
 			if (!isQueued) {
-				setLoading(true)
-				setUserAlreadyQueued(true);
-				setDisable(true)
-				setGameLoading(true);
-				return ;
+				buttonChange(true);
+				return;
 			}
 			setDisable(true);
 			setOpenAlert(true);
@@ -49,10 +46,16 @@ const Play = ({ ...props }) => {
 				setOpenAlert(false);
 			}, 1500);
 		});
+
+		socket?.on('queueLeft', () => {
+			buttonChange(false);
+		});
+
 		return () => {
 			socket?.off('isQueued');
 			socket?.off('isNotQueued');
 			socket?.off('alreadyInInviteQueue');
+			socket?.off('queueLeft');
 		}
 	}, [socket]);
 
@@ -79,12 +82,16 @@ const Play = ({ ...props }) => {
 	}
 
 	const cancelMatchmaking = async () => {
-		setLoading(false)
-		setUserAlreadyQueued(false);
-		setDisable(false)
-		setGameLoading(false);
-		setButtonText("Play")
+		buttonChange(false);
 		await leaveQueue();
+	}
+
+	const buttonChange = ( inQueue: boolean ) => {
+		setLoading(inQueue);
+		setUserAlreadyQueued(inQueue);
+		setDisable(inQueue);
+		setGameLoading(inQueue);
+		setButtonText( inQueue ? "Cancel" : "Play" );
 	}
 
 	return (
