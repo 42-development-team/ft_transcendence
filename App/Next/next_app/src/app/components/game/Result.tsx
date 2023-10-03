@@ -25,12 +25,20 @@ const Result = ({ ...props }) => {
         const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.points : data.player1.points;
         const getUser = async (id: string) => {
             const avatar = await getAvatarById(id);
-            const userName = await getUserNameById(id);
+            let userName: string = await getUserNameById(id);
+            if ( userName.length > 4 && window.innerWidth < 920 ) {
+                userName = userName.slice(0, 4);
+                userName += "..";
+            }
             setUser({ id, userName, avatar, score: currUserScore });
         };
         const getOpponent = async (id: string) => {
             const avatar = await getAvatarById(id);
-            const userName = await getUserNameById(id);
+            let userName: string = await getUserNameById(id);
+            if ( userName.length > 4 && window.innerWidth < 920 ) {
+                userName = userName.slice(0, 4);
+                userName += "..";
+            }
             setOpponent({ id, userName, avatar, score: opponentScore });
         };
 
