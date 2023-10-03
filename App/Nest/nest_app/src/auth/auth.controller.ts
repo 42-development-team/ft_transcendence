@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { Public } from './public.routes';
 import { UsersService } from '../users/users.service';
 import { FirstLoginDto } from './dto/firstLoginDto';
+import { filterSensitiv } from 'src/utils/filterSensitiv';
 
 @Controller('auth')
 export class AuthController {
