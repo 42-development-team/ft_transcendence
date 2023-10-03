@@ -26,6 +26,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
   const [disableBtnActivated, setDisableBtnActivated] = useState<boolean>(false);
   const [colorClickCancel, setColorCancel] = useState<string>('bg-mauve');
   const [disable2FA, setDisable2FA] = useState<boolean>(false);
+  const [refreshDisabled, setRefreshDisabled] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,6 +116,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setEnableBtnActivated(false);
 		setDisableBtnActivated(false);
 		setDisable2FA(true);
+		setRefreshDisabled(true);
 	  
 		const isValid = await isTwoFAValid(inputValue, userId, `${process.env.BACK_URL}/2fa/verifyTwoFA/`);
 		setInputValue('');
@@ -122,6 +124,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			setError(true)
 		  setIsVisible(true);
 		  setMessage("Error: code doesn't match");
+		  setRefreshDisabled(false);
 		  return;
 		}
 
@@ -131,6 +134,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 			
 		  } catch (error) {
 			console.log(error);
+			setRefreshDisabled(false);
 			return;
 		  }
 		}
@@ -146,6 +150,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 		setImageUrl('');
 		setColor('bg-mauve');
 		setEnableBtnText(activTwoFA ? 'Enable 2FA ' : '2FA enabled');
+		setRefreshDisabled(false);
 	  }
 
 	const handleCallback = (childData: string) =>{
@@ -208,7 +213,7 @@ const TwoFA = ({ userId }: { userId: string }) => {
 					imageUrl={imageUrl}
 					handleRefreshClick={handleRefreshClick}
 					refreshImage={refreshImage}
-					cancelActive={cancelDisable}
+					disable={refreshDisabled}
 				/>
 			</div>
 				<Submit2FA 	
