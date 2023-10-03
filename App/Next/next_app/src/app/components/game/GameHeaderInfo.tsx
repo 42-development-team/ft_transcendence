@@ -34,7 +34,7 @@ export function GameHeaderInfo({ userId, data, surrender }:  GameHeaderInfoProps
 			getAndSetUsersName(userId, data.player2.id.toString());
 		else
 			getAndSetUsersName(userId, data.player1.id.toString());
-	}, [data, userId]);
+	}, [data?.id, userId]);
 
     return (
         <>
