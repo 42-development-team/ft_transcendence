@@ -5,11 +5,14 @@ import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import DropDownMenu from "../dropdown/DropDownMenu";
 import { GameInterface } from "./interfaces/game.interfaces";
 import getUserNameById from "../utils/getUserNameById";
+import { Socket } from "socket.io-client";
 
 type GameHeaderInfoProps = {
     userId: string,
     data: GameInterface,
-    surrender: (id: number, userId: number) => void
+    surrender: (id: number, userId: number) => void,
+    socket: Socket | undefined,
+    setData: (data: GameInterface) => void
 }
 
 export function GameHeaderInfo({ userId, data, surrender }:  GameHeaderInfoProps) {
@@ -34,7 +37,7 @@ export function GameHeaderInfo({ userId, data, surrender }:  GameHeaderInfoProps
 			getAndSetUsersName(userId, data.player2.id.toString());
 		else
 			getAndSetUsersName(userId, data.player1.id.toString());
-	}, [data?.id, userId]);
+	}, [data?.player1.id, data.player2.id, userId, currUserIsOnLeft, setCurrUserIsOnLeft, opponnentUsername, userName, setOpponnentUsername, setUserName]);
 
     return (
         <>

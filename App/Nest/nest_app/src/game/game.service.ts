@@ -580,14 +580,13 @@ export class GameService {
         game.data.ball.y = 0.5;
         let sign = 1;
 
-        // if (Math.random() < 0.5)
+        if (Math.random() < 0.5)
             sign *= -1;
         game.data.ball.speed[0] = 0.3 * sign;
 
         if (Math.random() < 0.5)
             sign *= -1;
-        game.data.ball.speed[1] = 0;
-            // game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
+        game.data.ball.speed[1] = Math.random() * (0.8 - 0.2) + 0.2 * sign;
     }
 
     //========== MOVEMENT =============//
