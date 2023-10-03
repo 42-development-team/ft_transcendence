@@ -513,7 +513,7 @@ export class GameService {
     checkCollisionY(ball: BallDto, player: PlayerDto): boolean {
         const dy: number = Math.abs(ball.y - player.y);
 
-            if (dy <= player.h / 2) {
+            if (dy <= player.h / 2 + 0.02) {
                 return true;
             }
             else if ((player.y + player.h / 2) > 1){
