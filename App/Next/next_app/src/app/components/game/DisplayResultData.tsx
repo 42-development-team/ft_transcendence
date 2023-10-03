@@ -1,5 +1,3 @@
-"use client";
-
 import Avatar from "../profile/Avatar";
 
 export function DisplayResultData(
@@ -13,7 +11,7 @@ export function DisplayResultData(
         text-xl sm:text-2xl md:text-3xl h-[54vw] sm:h-[28vw] md:h-[25vw] lg:h-[20vw] xl:h-[13vw] 2xl:h-[13vw] mb-10 transition-all">
             <div className="flex">
                 {user ? (
-                    <div className="flex flex-col text-center ">
+                    <div className="flex flex-col text-center p-4">
                         {user.userElo}  {user.userEloDiff > 0 ? "(+" + user.userEloDiff + ")" : "(" + user.userEloDiff + ")"}
                         <Avatar
                             height={64} imageUrlGetFromCloudinary={user.avatar} disableChooseAvatar={true} currId={user.id} isOnProfilePage={false}

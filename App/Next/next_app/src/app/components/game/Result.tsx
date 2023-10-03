@@ -15,7 +15,6 @@ const Result = ({ ...props }) => {
     const { result, setResult, setInGameContext, data } = props;
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number, userElo: number, userEloDiff: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number, opponentElo: number, opponentEloDiff: number }>();
-    const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
         if (!data || !data.player1 || !data.player2 || userId === undefined || userId === "") {
@@ -25,7 +24,7 @@ const Result = ({ ...props }) => {
         const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.points : data.player1.points;
         const userElo: number = result.won === true ? result.elo.winnerElo : result.elo.loserElo;
         const opponentElo: number = result.won === true ? result.elo.loserElo : result.elo.winnerElo;
-        const userEloDiff: number = result.won === true ? result.elo.winnerEloChange : result.elo.eloLoserChange;
+        const userEloDiff: number = result.won === true ? result.elo.eloWinnerChange : result.elo.eloLoserChange;
         const opponentEloDiff: number = result.won === true ? result.elo.eloLoserChange : result.elo.eloWinnerChange;
         const getUser = async (id: string) => {
             const avatar = await getAvatarById(id);
@@ -51,7 +50,6 @@ const Result = ({ ...props }) => {
     }, [result?.id, data?.player1.id]);
 
     const backHome = () => {
-        setQueued(false);
         setResult(undefined);
         setInGameContext(false);
         router.push("/home");
