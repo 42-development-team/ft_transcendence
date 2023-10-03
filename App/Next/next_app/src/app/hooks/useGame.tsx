@@ -130,6 +130,7 @@ export default function useGame() {
 		result,
 		setResult,
 		data,
+		setData,
 		changeMode,
 		setMode,
 		mode,

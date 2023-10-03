@@ -33,6 +33,7 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const [openUsernameAlert, setOpenUsernameAlert] = useState<boolean>(false);
 	const [errorUsername, setErrorUsername] = useState<boolean>(false);
 	const [errorAvatar, setErrorAvatar] = useState<boolean>(false);
+	const [action, setAction] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (theme === "latte") {
@@ -113,6 +114,14 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				}, 3500);
 			}
 		}
+	}
+
+	const handleAction = async ( action: () =>  Promise<void> ) => {
+		setAction(true);
+		await action();
+		setTimeout(() => {
+			setAction(false);
+		}, 3500);
 	}
 
 	/* handle validate click, so username update and avatar update in cloudinary */
@@ -238,8 +247,8 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				<TwoFA userId={userId}></TwoFA>
 			}
 			<div className="flex justify-center mb-6 mt-4 ">
-				{((onSettings && submitable) || (!onSettings)) &&
-					<ValidateBtn onClick={handleClick} disable={!submitable} >
+				{ !action && ((onSettings && submitable) || (!onSettings)) &&
+					<ValidateBtn onClick={() => handleAction(handleClick)} disable={!submitable} >
 						Validate
 					</ValidateBtn>
 				}
