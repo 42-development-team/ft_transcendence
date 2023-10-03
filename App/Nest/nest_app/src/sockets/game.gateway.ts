@@ -52,7 +52,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 userId === game.playerOneId ? game.playerOneDisconnected = true : game.playerTwoDisconnected = true;
             }
             await this.userService.updateStatus(userId, "offline");
-            this.gameService.handleLeaveQueue(userId);
+            await this.asyncDelay(3000)
+            const socketIds = await this.userService.getSocketIdsFromUserId(userId);
+            if ( socketIds.length === 0) {
+                this.gameService.handleLeaveQueue(userId);
+            }
         }
         console.log("GameSocket Disconnected: ", client.id);
         this.clients = this.clients.filter(c => c.id !== client.id);
