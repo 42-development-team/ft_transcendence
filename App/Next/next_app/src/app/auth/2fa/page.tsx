@@ -1,4 +1,4 @@
-import AuthTwoFA from "../../components/auth/AuthTwoFA";
+import AuthTwoFA from "../../components/auth/TwoFA/AuthTwoFA";
 import getJwt from '@/app/utils/getJwt';
 
 export default async function TwoFAAuth() {

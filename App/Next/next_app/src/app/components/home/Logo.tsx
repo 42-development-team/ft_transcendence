@@ -8,11 +8,13 @@ import themeContext from "../theme/themeContext";
 const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: string, shadowOverride?: string, colorTextOverride?: string }) => {
 
     const { theme } = useContext(themeContext);
-    let storage = typeof window !== "undefined" ? localStorage.getItem("theme") : "mocha";
+    let windowUndefined = typeof window === "undefined";
+    let storage = "mocha";
     const [colorText, setColorText] = useState<string>(storage === "latte" ? "text-[#e7a446]" : "text-[#f0f471]");
     const [neonColor, setNeonColor] = useState<string>(storage === "latte" ? "#e7a446" : "#0073e6");
 
     useEffect(() => {
+        if (windowUndefined) { return; }
         if (theme === "latte") {
             if (colorTextOverride)
                 setColorText(colorTextOverride);
@@ -28,7 +30,7 @@ const Logo = ({ text = "", shadowOverride="", colorTextOverride="" }: { text?: s
             }
             setNeonColor("#cba6f9");
         }
-    }, [theme]);
+    }, [theme, windowUndefined]);
 
     useEffect(() => {
         if (colorTextOverride)

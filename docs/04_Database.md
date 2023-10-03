@@ -1,6 +1,18 @@
 [Home Page](./00_Documentation.md)
 # Database
 
+## Postgresql
+
+`docker exec -it database sh`
+
+- Connect to the DB: `psql -U <username> -d <database_name>`
+- List all the databases: `\l`
+- Connect: `\c db_name`
+- List all tables: `\dt`
+- View a schema: `\d "schema"`
+- `TABLE "table_name";`
+
+
 ## CRUD
 - [CRUD - definition & overview | Sumo Logic](https://www.sumologic.com/glossary/crud/#:~:text=CRUD%20Meaning%3A%20CRUD%20is%20an,%2C%20read%2C%20update%20and%20delete)
 

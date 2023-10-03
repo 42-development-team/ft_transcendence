@@ -3,21 +3,47 @@ import React, { SetStateAction, useEffect, useState } from "react";
 import Canvas from './Canvas';
 import Result from './Result';
 import getUserNameById from "../utils/getUserNameById";
-import DropDownMenu from "../dropdown/DropDownMenu";
-import { DropDownActionSurrender } from "../dropdown/DropDownItem";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { GameHeaderInfo } from "./GameHeaderInfo";
+import OverlayMessage from "./overlayMessage";
 
 const Game = ({ ...props }) => {
 	const { userId } = useAuthContext();
-	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode } = props;
+	const { socket, move, stopMove, launchGame, joinQueue, data, mode, result, setResult, setInGameContext, setMode, countdown } = props;
+	const [beforeLeave, setBeforeLeave] = useState<number>(20);
+	const [paused, setPaused] = useState<boolean>(false);
 	const [opponnentUsername, setOpponnentUsername] = useState<string>("");
 	const [currUserIsOnLeft, setCurrUserIsOnLeft] = useState<boolean>(false);
 	const [userName, setUserName] = useState<string>("");
+	const [dataReceived, setDataReceived] = useState<boolean>(false);
 
 	useEffect(() => {
+		if (userId === undefined || userId === "") return;
+		socket?.emit("retrieveData", userId);
+	}, [userId]);
+
+	useEffect(() => {
+		socket?.on("playerDisconnected", (body: any) => {
+			const { beforeLeave } = body;
+			setBeforeLeave(beforeLeave);
+			setPaused(true);
+		});
+
+		socket?.on("playerReconnected", () => {
+			setPaused(false);
+		}
+		);
+
+		return () => {
+			socket?.off("playerDisconnected");
+			socket?.off("playerReconnected");
+		}
+	}
+		, [socket]);
+
+	useEffect(() => {
+		if (dataReceived) return;
 		if (!props.data || !props.data.player1 || userId === undefined || userId === "") {
-			socket?.emit("retrieveData", props.userId);
 			return;
 		}
 		setCurrUserIsOnLeft(props.data.player1.id === parseInt(props.userId));
@@ -32,22 +58,28 @@ const Game = ({ ...props }) => {
 			getUserNameById(props.data.player1.id).then((userName: SetStateAction<string>) => {
 				setOpponnentUsername(userName);
 			});
-	}, [props.data ? props.data.player1 : props.data]);
+		setDataReceived(true);
+	}, [props.data]);
 
 	return (
 		<div className="flex flex-grow justify-center">
 			{data && (
 				(result === undefined || result === null) ? (
 					<div className="flex flex-col flex-grow justify-center h-full">
-						<div className="flex flex-row justify-between mb-2 mx-[12vw]">
-							<GameHeaderInfo
-								currUserIsOnLeft={currUserIsOnLeft}
-								userName={userName}
-								opponnentUsername={opponnentUsername}
-								userId={userId}
-								id={props.data.id}
-								surrender={props.surrender}
-							/>
+						<div className="flex flex-row justify-between mb-2 mx-[12vw] z-100">
+							{paused &&
+								<OverlayMessage id={props.data.id} userId={userId} surrender={props.surrender} message={`Your opponent has left the game. Redirect in ${beforeLeave} s.`} />
+							}
+							{!paused &&
+								<GameHeaderInfo
+									currUserIsOnLeft={currUserIsOnLeft}
+									userName={userName}
+									opponnentUsername={opponnentUsername}
+									userId={userId}
+									id={props.data.id}
+									surrender={props.surrender}
+								/>
+							}
 						</div>
 						<Canvas
 							move={move}
@@ -56,6 +88,7 @@ const Game = ({ ...props }) => {
 							data={data}
 							userId={userId}
 							mode={mode}
+							countdown={countdown}
 						/>
 					</div>
 				) : (

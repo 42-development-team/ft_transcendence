@@ -5,7 +5,6 @@ import { GameInterface } from "../components/game/interfaces/game.interfaces";
 import { useAuthContext } from "../context/AuthContext";
 import LoadingContext from "../context/LoadingContext";
 import IsInGameContext from "../context/inGameContext";
-import { on } from "events";
 
 export default function useGame() {
 
@@ -13,6 +12,7 @@ export default function useGame() {
 	const [data, setData] = useState<GameInterface>();
 	const [inGame, setInGame] = useState<boolean>(false);
 	const [mode, setMode] = useState<boolean>(false);
+	const [countdown, setCountdown] = useState<number>(0);
 	const [result, setResult] = useState<{ id: number, won: boolean } | undefined>(undefined);
 	const { setGameLoading } = useContext(LoadingContext);
 	const { setInGameContext } = useContext(IsInGameContext);
@@ -47,7 +47,6 @@ export default function useGame() {
 				setResult({ id: winnerId, won: true });
 			else if (parseInt(userId) === loserId)
 				setResult({ id: loserId, won: false });
-
 			setInGame(false);
 		});
 
@@ -62,6 +61,11 @@ export default function useGame() {
 			setInGame(true);
 		});
 
+		socket?.on('countdown', (body: any) => {
+			const { countdown } = body;
+			setCountdown(countdown);
+		});
+
 		return () => {
 			socket?.off('isQueued');
 			socket?.off('isNotQueued');
@@ -71,6 +75,7 @@ export default function useGame() {
 			socket?.off('endOfGame');
 			socket?.off('sendDataToUser');
 			socket?.off('isAlreadyInGame');
+			socket?.off('countdown');
 		};
 	}, [socket]);
 
@@ -99,8 +104,8 @@ export default function useGame() {
 		socket?.emit("stopMove", event, id, uid);
 	}
 
-	const launchGame = async (id: number) => {
-		socket?.emit("launchGame", id);
+	const launchGame = async () => {
+		socket?.emit("launchGame");
 	}
 
 	const isUserQueued = async (uid: number) => {
@@ -128,5 +133,6 @@ export default function useGame() {
 		changeMode,
 		setMode,
 		mode,
+		countdown,
 	}
 }

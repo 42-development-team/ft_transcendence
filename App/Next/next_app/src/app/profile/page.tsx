@@ -20,7 +20,7 @@ export default function Profile() {
         createStats({userId: Number(userId)});
     }, [userId]);
 
-    return ( //create a component for leader/matchhistory + fix z-index of Stats vs DropDownMenu
+    return (
         <div className="flex w-full h-full">
 			<Chat userId={userId} friends={friends} invitedFriends={invitedFriends} requestedFriends={requestedFriends}
 				addFriend={addFriend} blockedUsers={blockedUsers} blockUser={blockUser} unblockUser={unblockUser} />

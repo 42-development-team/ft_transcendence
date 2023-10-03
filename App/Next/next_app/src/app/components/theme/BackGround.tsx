@@ -1,13 +1,12 @@
 'use client';
-
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import homeBackground from '../../../../public/background_11.png';
-import homeBackgroundLight from '../../../../public/backgroundLight_11.png';
+import homeBackground from '../../../../public/background_11-min.webp';
+import homeBackgroundLight from '../../../../public/backgroundLight_11-min.webp';
 import themeContext from "./themeContext";
 import './styleBackground.css'
 
-export const BackgroundBall = () => {
+export const Background = () => {
 
 	const { theme } = useContext(themeContext);
 	const [entered, setEntered] = useState<boolean>(false);
@@ -21,9 +20,9 @@ export const BackgroundBall = () => {
 
 	return (
 		<div >
-			<TransitionGroup>
+			<TransitionGroup className={'fade'}>
 				<CSSTransition
-					key={localStorage.getItem("theme")}
+					key={theme}
 					in={entered}
 					appear={true}
 					timeout={900}
@@ -31,7 +30,7 @@ export const BackgroundBall = () => {
 					mountOnEnter
 				>
 					<img
-						src={typeof window !== "undefined" && localStorage.getItem("theme") === "latte" ? homeBackgroundLight.src : homeBackground.src}
+						src={theme === "latte" ? homeBackgroundLight.src : homeBackground.src}
 						alt="Bg"
 						className="blur-md -z-10 fixed w-full h-full object-cover"
 					/>

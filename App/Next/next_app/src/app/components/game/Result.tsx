@@ -12,7 +12,7 @@ import { useAuthContext } from "@/app/context/AuthContext";
 const Result = ({ ...props }) => {
     const router = useRouter();
     const { userId } = useAuthContext();
-    const { result, setResult, joinQueue, setInGameContext, data, setMode } = props;
+    const { result, setResult, setInGameContext, data } = props;
     const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
     const [queued, setQueued] = useState<boolean>(false);

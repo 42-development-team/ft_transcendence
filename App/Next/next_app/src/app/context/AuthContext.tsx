@@ -49,7 +49,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 				return response;
 			}
 			catch (error) {
-				return ;
+				const errorResponse = new Response(null, { status: 500, statusText: "Internal Server Error" });
+       			return Promise.resolve(errorResponse);
 			}
 		};
 	}, []);

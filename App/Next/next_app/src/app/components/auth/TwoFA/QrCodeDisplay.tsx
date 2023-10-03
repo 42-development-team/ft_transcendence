@@ -1,4 +1,3 @@
-import '../../globals.css'
 
 const QrCodeDisplay = ({children, imageUrl="", displayBox=false} : {children: any, imageUrl: string, displayBox: Boolean}) => {
     return (
