@@ -147,7 +147,12 @@ export class ChatroomController {
 		const userId: number = req.user.sub;
 		const password: string = body.password;
 		await this.chatroomService.join(+id, userId, password)
-			.then((res) => {
+			.then(async (res) => {
+				const clientSocketIds = await this.userService.getSocketIdsFromUserId(userId);
+				clientSocketIds.forEach(sock => {
+					const clientSocket = this.socketGateway.clients.find(c => c.id === sock);
+					this.socketGateway.handleJoin(clientSocket, id, userId);
+				});
 				response.send(res);
 			})
 			.catch(error => {

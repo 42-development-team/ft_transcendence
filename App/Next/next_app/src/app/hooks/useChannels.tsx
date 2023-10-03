@@ -169,6 +169,11 @@ export default function useChannels(userId: string) {
            const { roomId } = body;
            fetchChannelContent(roomId);
         });
+        socket?.on('roomJoined', (body: any) => {
+            const {roomId} = body;
+            fetchChannelContent(roomId);
+            fetchChannelsInfo();
+        });
 
         // return is used for cleanup, remove the socket listener on unmount
         return () => {
@@ -180,6 +185,7 @@ export default function useChannels(userId: string) {
             socket?.off('directMessage');
             socket?.off('chatroomUpdate');
             socket?.off('invitedRoom');
+            socket?.off('roomJoined');
         }
     }, [socket, joinedChannels, channels]);
     // useEffect dependency array is needed to avoid memoization of the joinedChannels and channels variables
@@ -243,9 +249,6 @@ export default function useChannels(userId: string) {
             if (!response.ok || responseJson == "Wrong password") {
                 return responseJson;
             }
-            socket?.emit("joinRoom", name);
-            await fetchChannelContent(id);
-            await fetchChannelsInfo();
             return responseJson;
         }
         catch (err : any) {
