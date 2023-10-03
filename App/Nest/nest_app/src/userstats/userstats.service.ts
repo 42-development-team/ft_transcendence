@@ -157,7 +157,7 @@ export class UserStatsService {
 		}
 	}
 
-	async eloComputing( winnerId: number, loserId: number ) {
+	async eloComputing( winnerId: number, loserId: number ) : Promise<any> {
 		try {
 			let winner = await this.prisma.user.findUniqueOrThrow({
 				include: { userStats: true },
@@ -181,6 +181,8 @@ export class UserStatsService {
 			const newLoserElo = loserElo + eloLoserChange;
 			await this.updateUserStatsOnEndGame(winnerId, true, newWinnerElo);
 			await this.updateUserStatsOnEndGame(loserId, false, newLoserElo);
+
+			return { winnerElo: winnerElo, loserElo: loserElo, eloWinnerChange: eloWinnerChange, eloLoserChange: eloLoserChange };
 		} catch (error) {
 			console.log(error);
 		}

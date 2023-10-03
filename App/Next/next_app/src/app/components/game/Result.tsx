@@ -13,8 +13,8 @@ const Result = ({ ...props }) => {
     const router = useRouter();
     const { userId } = useAuthContext();
     const { result, setResult, setInGameContext, data } = props;
-    const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number }>();
-    const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number }>();
+    const [user, setUser] = useState<{ id: string, userName: string, avatar: string, score: number, userElo: number, userEloDiff: number }>();
+    const [opponent, setOpponent] = useState<{ id: string, userName: string, avatar: string, score: number, opponentElo: number, opponentEloDiff: number }>();
     const [queued, setQueued] = useState<boolean>(false);
 
     useEffect(() => {
@@ -23,6 +23,10 @@ const Result = ({ ...props }) => {
         }
         const currUserScore: number = data.player1.id === parseInt(result.id) ? data.player1.points : data.player2.points;
         const opponentScore: number = data.player1.id === parseInt(result.id) ? data.player2.points : data.player1.points;
+        const userElo: number = result.won === true ? result.elo.winnerElo : result.elo.loserElo;
+        const opponentElo: number = result.won === true ? result.elo.loserElo : result.elo.winnerElo;
+        const userEloDiff: number = result.won === true ? result.elo.winnerEloChange : result.elo.eloLoserChange;
+        const opponentEloDiff: number = result.won === true ? result.elo.eloLoserChange : result.elo.eloWinnerChange;
         const getUser = async (id: string) => {
             const avatar = await getAvatarById(id);
             let userName: string = await getUserNameById(id);
@@ -30,7 +34,7 @@ const Result = ({ ...props }) => {
                 userName = userName.slice(0, 4);
                 userName += "..";
             }
-            setUser({ id, userName, avatar, score: currUserScore });
+            setUser({ id, userName, avatar, score: currUserScore, userElo, userEloDiff });
         };
         const getOpponent = async (id: string) => {
             const avatar = await getAvatarById(id);
@@ -39,7 +43,7 @@ const Result = ({ ...props }) => {
                 userName = userName.slice(0, 4);
                 userName += "..";
             }
-            setOpponent({ id, userName, avatar, score: opponentScore });
+            setOpponent({ id, userName, avatar, score: opponentScore, opponentElo, opponentEloDiff });
         };
 
         getUser(result.id);

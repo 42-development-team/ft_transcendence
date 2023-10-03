@@ -24,7 +24,7 @@ export class GameService {
     inviteQueue: InviteDto[] = [];
 
     /* C(reate) */
-    async createGame(data: GameDto) {
+    async createGame(data: GameDto): Promise<{newGame: any, eloData: any}> {
         try {
             const [winner, loser] = this.getGameWinnerLoser(data);
 
@@ -49,8 +49,8 @@ export class GameService {
                 },
             });
 
-            await this.userStatsService.eloComputing(createGameDto.winnerId, createGameDto.loserId);
-            return newGame;
+            const eloData = await this.userStatsService.eloComputing(createGameDto.winnerId, createGameDto.loserId);
+            return {newGame, eloData};
         } catch (error) {
             console.log(error);
             return;
