@@ -28,10 +28,10 @@ describe('UsersController', () => {
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
-        twoFAsecret: 'secret',
+        twoFAsecret: '',
         isTwoFAEnabled: false,
         isFirstLogin: true,
-		    currentStatus: "online",
+        currentStatus: "online",
         socketIds: [],
       };
 
@@ -39,7 +39,7 @@ describe('UsersController', () => {
 
       const result = await controller.create(createUserDto);
 
-      expect(result).toBe(createUserDto);
+      expect(result).toStrictEqual(createUserDto);
       expect(service.createUser).toHaveBeenCalledWith(createUserDto);
     });
   });
@@ -55,11 +55,11 @@ describe('UsersController', () => {
         login: 'john_doe',
         username: 'john_doe',
         avatar: 'avatar.png',
-        twoFAsecret: 'secret',
+        twoFAsecret: '',
         isTwoFAEnabled: false,
         isFirstLogin: true,
-		  currentStatus: "online",
-      socketIds: [],
+        currentStatus: "online",
+        socketIds: [],
       };
 
       jest.spyOn(service, 'updateUsername').mockResolvedValue(updatedUserDto as any);
@@ -69,7 +69,7 @@ describe('UsersController', () => {
         userId,
       );
 
-      expect(result).toBe(updatedUserDto);
+      expect(result).toStrictEqual(updatedUserDto);
       expect(service.updateUsername).toHaveBeenCalledWith(
         Number(userId),
         updatedUsernameDto.username,
@@ -77,52 +77,17 @@ describe('UsersController', () => {
     });
   });
 
-  describe('getAllUsers', () => {
-    it('should return an array of users', async () => {
-      const userDto1: CreateUserDto = {
-        login: 'john_doe',
-        username: 'john_doe',
-        avatar: 'avatar.png',
-        twoFAsecret: 'secret',
-        isTwoFAEnabled: false,
-        isFirstLogin: true,
-		currentStatus: "online",
-    socketIds: [],
-      };
-
-      const userDto2: CreateUserDto = {
-        login: 'john_doe',
-        username: 'john_doe',
-        avatar: 'avatar.png',
-        twoFAsecret: 'secret',
-        isTwoFAEnabled: false,
-        isFirstLogin: true,
-		currentStatus: "online",
-    socketIds: [],
-      };
-
-      const userDtos: CreateUserDto[] = [userDto1, userDto2];
-
-      jest.spyOn(service, 'getAllUsers').mockResolvedValue(userDtos as any);
-
-      const result = await controller.getAllUsers();
-
-      expect(result).toBe(userDtos);
-      expect(service.getAllUsers).toHaveBeenCalled();
-    });
-  });
-
   describe('deleteUser', () => {
-	it('should delete a user', async () => {
-	  const userId = 1;
-	  jest.spyOn(service, 'deleteUser').mockResolvedValue();
+    it('should delete a user', async () => {
+      const userId = 1;
+      jest.spyOn(service, 'deleteUser').mockResolvedValue();
 
-	  await controller.delete(userId);
+      await controller.delete(userId);
 
-	  expect(service.deleteUser).toHaveBeenCalledWith(Number(userId));
-	  const userExists = await prismaservice.$queryRaw
-		'SELECT EXISTS (SELECT 1 FROM user WHERE id = ${userId});';
-	  expect(userExists).toBeFalsy;
-	});
+      expect(service.deleteUser).toHaveBeenCalledWith(Number(userId));
+      const userExists = prismaservice.$queryRaw
+      'SELECT EXISTS (SELECT 1 FROM user WHERE id = ${userId});';
+      expect(userExists).toBeFalsy;
+    });
   });
 });

@@ -187,6 +187,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             return;
         }
         const userId: number = await this.userService.getUserIdFromSocket(player);
+        await this.emitToUser(userId, 'queueJoined', null);
         const result = await this.gameService.handleJoinQueue(userId, mode);
 
         // queue not full
@@ -234,6 +235,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('leaveQueue')
     handleLeaveQueue(socket: Socket, userId: number) {
         this.gameService.handleLeaveQueue(userId);
+        this.emitToUser(userId, 'queueLeft', null);
     }
 
     @SubscribeMessage('isUserQueued') //in matchmaking queue
