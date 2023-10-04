@@ -230,10 +230,10 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 				</Alert>
 			</div>
 			<Avatar
-				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} isOnProfilePage={false}>
+				CallbackAvatarData={handleCallBackDataFromAvatar} imageUrlGetFromCloudinary={imageUrl} disableChooseAvatar={false} isOnProfilePage={false} height={242}>
 			</Avatar>
 			<Alert
-				className='mb-4 mt-4 p-2 text-text text-center border-mauve border-[1px] break-all w-[60%] justify-center'
+				className='mb-4 mt-4 p-2 text-text text-center border-mauve border-[1px] break-all w-full justify-center'
 				variant='gradient'
 				open={openAvatarAlert}
 				icon={errorAvatar ? <AlertErrorIcon /> : <AlertSuccessIcon />}
