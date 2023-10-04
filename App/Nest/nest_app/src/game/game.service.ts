@@ -172,12 +172,10 @@ export class GameService {
     }
 
     async handleRemoveInviteQueue(inviteQueue: InviteDto) {
-        console.log("IN REMOVEINVITEQUEUE:", inviteQueue);
         if (inviteQueue === undefined) {
             console.log("handleCancelInvite did not find a queue to remove")
             return;
         }
-        console.log("handleCancelInvite found a queue to remove")
         this.inviteQueue = this.inviteQueue.filter(q => q.invitorId !== inviteQueue.invitorId && q.invitedId !== inviteQueue.invitedId);
     }
 
