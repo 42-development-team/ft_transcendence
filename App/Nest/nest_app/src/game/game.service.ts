@@ -161,8 +161,6 @@ export class GameService {
     }
 
     async addInviteQueue(invitorId: number, invitedId: number, mode: boolean) {
-        // const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
-        // const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId && q.invitedId === invitorId);
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
     }
 
