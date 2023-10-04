@@ -35,16 +35,9 @@ export class AuthController {
     @Get('jwt')
     async getJwt(@Req() req: any, @Res({passthrough: true}) res: Response) {
         try {
-            console.log("getJwt: " + req.user.sub)
-            const cookieOptions = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                secure: false,
-                httpOnly: true,
-                SameSite: 'None',
-            }
             await this.authService.changeLoginBooleanStatus(req.user.sub);
             const jwt = await this.authService.getTokens(req.user, true);
-            res.cookie("jwt", jwt.access_token, cookieOptions);
+            res.cookie("jwt", jwt.access_token, {sameSite: "lax"});
         }
         catch (error) {
             console.log("Error: " + error.message);
