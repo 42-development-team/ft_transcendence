@@ -9,6 +9,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import homeBackground from '../../../../public/background_11-min.webp';
 import homeBackgroundLight from '../../../../public/backgroundLight_11-min.webp';
+import { CustomImage } from '../CustomImage';
 
 export const Theme = () => {
 
@@ -54,9 +55,9 @@ export const Theme = () => {
                 {
                     sun && sunLight ? (
                         theme === 'mocha' ? (
-                            <Image className={"m-2"} alt="Sun" src={sunLight} height={22} width={22} priority />
+                            <CustomImage url={sunLight.src} size={22}/>
                         ) : (
-                            <Image className={"m-2"} alt="Sun" src={sun} height={22} width={22} priority />
+                            <CustomImage url={sun.src} size={22}/>
                         )
                     ) : (
                         <div className="m-2">☀️</div>
