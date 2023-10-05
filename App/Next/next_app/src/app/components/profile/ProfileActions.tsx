@@ -28,7 +28,7 @@ const ProfileActions = ({ userId, currentId, friends, invitedFriends, requestedF
 	// Prevent spam clicking
 	const [lockSubmit, setLockSubmit] = useState<boolean>(false);
 	const handleAction = (action: () => void) => {
-		if (lockSubmit) return;
+		if (lockSubmit || userId === currentId || Number(userId) <= 0 || Number(currentId) <= 0 ) return;
 		setLockSubmit(true);
 		action();
 		setTimeout(() => setLockSubmit(false), 1500);
