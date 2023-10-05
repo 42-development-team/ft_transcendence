@@ -45,6 +45,6 @@ export const verifyJWT = async (jwtCookie: string) => {
         return verifiedJwt.payload;
     }
     catch (error) {
-        throw new Error(`MIDDLEWARE - JWT token is not valid:  + ${error}`);
+        throw new Error(`JWT token is not valid`);
     }
 }
