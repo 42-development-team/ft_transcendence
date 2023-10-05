@@ -161,8 +161,6 @@ export class GameService {
     }
 
     async addInviteQueue(invitorId: number, invitedId: number, mode: boolean) {
-        // const invitedIsAlreadyInvited: number = this.inviteQueue.findIndex(q => q.invitedId === invitedId);
-        // const invitedIsAlreadyInvitor: number = this.inviteQueue.findIndex(q => q.invitorId === invitedId && q.invitedId === invitorId);
         this.inviteQueue.push({ invitorId: invitorId, invitedId: invitedId, mode: mode });
     }
 
@@ -172,12 +170,10 @@ export class GameService {
     }
 
     async handleRemoveInviteQueue(inviteQueue: InviteDto) {
-        console.log("IN REMOVEINVITEQUEUE:", inviteQueue);
         if (inviteQueue === undefined) {
             console.log("handleCancelInvite did not find a queue to remove")
             return;
         }
-        console.log("handleCancelInvite found a queue to remove")
         this.inviteQueue = this.inviteQueue.filter(q => q.invitorId !== inviteQueue.invitorId && q.invitedId !== inviteQueue.invitedId);
     }
 
