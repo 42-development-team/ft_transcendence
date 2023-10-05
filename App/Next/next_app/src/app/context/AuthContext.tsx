@@ -2,6 +2,7 @@
 import React, { useContext, createContext, useState, useEffect } from "react";
 import LoadingContext from "./LoadingContext";
 import { io, Socket } from 'socket.io-client';
+import createStats from "../components/profile/createUserStats";
 
 type AuthContextType = {
 	isLoggedIn: boolean;
@@ -36,7 +37,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
 	// Exception catcher for fetch
 	useEffect(() => {
-		const { fetch : originalFetch } = window;
+		const { fetch: originalFetch } = window;
 		window.fetch = async (...args) => {
 			try {
 				let [resource, config] = args;
@@ -50,7 +51,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			}
 			catch (error) {
 				const errorResponse = new Response(null, { status: 500, statusText: "Internal Server Error" });
-       			return Promise.resolve(errorResponse);
+				return Promise.resolve(errorResponse);
 			}
 		};
 	}, []);
@@ -69,6 +70,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 			setUniqueLogin(newLogin);
 			let newUserId: string = data.sub as string;
 			setUserId(newUserId);
+			await createStats({ userId: Number(newUserId) }).catch((error) => {
+				console.log("error creating stats: " + error.message);
+			});
 		}
 		catch (error) {
 			console.log("Error fetching profile: " + error);
@@ -81,6 +85,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 		await fetchProfile().catch((error) => {
 			console.log("error fetching profile: " + error.message);
 		});
+
 	}
 
 	const logout = async () => {

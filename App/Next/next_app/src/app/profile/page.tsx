@@ -5,7 +5,7 @@ import Chat from "@/components/chat/Chat";
 import useFriends from "@/hooks/useFriends";
 import { useAuthContext } from "@/context/AuthContext";
 import { useEffect } from "react";
-import createStats from "../components/profile/createUserStats";
+// import createStats from "../components/profile/createUserStats";
 
 export default function Profile() {
 	const { login, userId } = useAuthContext();
@@ -15,10 +15,10 @@ export default function Profile() {
 		login();
 	}, []);
 
-    useEffect(() => {
-        if ( userId === undefined || userId === "" ) return ;
-        createStats({userId: Number(userId)});
-    }, [userId]);
+    // useEffect(() => {
+    //     if ( userId === undefined || userId === "" ) return ;
+    //     createStats({userId: Number(userId)});
+    // }, [userId]);
 
     return (
         <div className="flex w-full h-full">
