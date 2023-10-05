@@ -65,7 +65,7 @@ const leaderBoard = ( props: { data: any, currentUser: number } ) => {
                                 {item.userName}
                             </button>
                             <div className="flex flex-col justify-center pr-[4vw]">
-                                <div className="flex mb-2 justify-center text-center">Total Score</div>
+                                <div className="flex mb-2 justify-center text-center">Elo</div>
                                 <div className={`flex justify-center text-[1.4rem] md:text-[1.6rem] `+ textColor} style={{color : item.userId === currentUserId ? "peach" : "grey"}}>{item.totalScore} </div>
                             </div>
                         </span>
