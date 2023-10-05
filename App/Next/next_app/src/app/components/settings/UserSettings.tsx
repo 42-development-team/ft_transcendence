@@ -14,10 +14,12 @@ import ThemeContext from '../theme/themeContext';
 import UpdateUsernameById from '../utils/updateUsernameById';
 import getUserNameById from '../utils/getUserNameById';
 import getAvatarById from '../utils/getAvatarById';
+import createStats from '../profile/createUserStats';
 
 
 const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSettings: boolean }) => {
 
+	const Router = useRouter();
 	const [submitable, setSubmitable] = useState<boolean>(onSettings ? false : true);
 	const [usernameMessage, setUsernameMessage] = useState('');
 	const [AvatarMessage, setAvatarMessage] = useState('');
@@ -25,7 +27,6 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [inputUserName, setInputUserName] = useState('');
-	const Router = useRouter();
 	const { theme } = useContext(ThemeContext);
 	const [textColor, setTextColor] = useState<string>(theme === "latte" ? "text-base" : "text-text");
 	let 	isUserAlreadyTaken = false;
@@ -72,8 +73,11 @@ const UserSettingsComponent = ({ userId, onSettings }: { userId: string, onSetti
 	const redirectOrReload = async () => {
 		setOpenUsernameAlert(false);
 		if (!onSettings) {
-			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
 			setAlert("Redirecting ..", true, false, true, false);
+			await fetch(`${process.env.BACK_URL}/auth/jwt`, { credentials: 'include', method: "GET" });
+			// createStats({ userId: Number(userId) }).then( () => {
+				// Router.push('/home');
+			// });
 			Router.push('/home');
 		}
 		else {

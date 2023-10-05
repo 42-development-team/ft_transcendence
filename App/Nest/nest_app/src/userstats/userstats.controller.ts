@@ -15,6 +15,7 @@ export class UserstatsController {
 			const newUserStats = await this.userstatsService.createUserStats(userId);
 			await response.status(HttpStatus.CREATED);
 		} catch (error) {
+			console.log(" erro ,errorMessage", error, error.message);
 			await response.status(HttpStatus.BAD_REQUEST).send(JSON.stringify(error.message));
 		}
 	}
