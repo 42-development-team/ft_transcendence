@@ -31,11 +31,11 @@
   },
   "devDependencies": {
     "@catppuccin/tailwindcss": "^0.1.6",
-    "@material-tailwind/react": "^2.1.2",
-    "@types/bcryptjs": "^2.4.4",
-    "@types/node": "^20.8.2",
-    "@types/react": "^18.2.25",
-    "@types/react-transition-group": "^4.4.7",
+    "@material-tailwind/react": "^2.1.4",
+    "@types/bcryptjs": "^2.4.5",
+    "@types/node": "^20.8.9",
+    "@types/react": "^18.2.33",
+    "@types/react-transition-group": "^4.4.8",
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^2.4.3",
     "buffer": "^6.0.3",
@@ -43,12 +43,12 @@
     "critters": "^0.0.20",
     "file-type": "^18.5.0",
     "image-type": "^5.2.0",
-    "jose": "^4.15.2",
-    "next": "^13.5.4",
-    "react-router-dom": "^6.16.0",
+    "jose": "^4.15.4",
+    "next": "^13.5.6",
+    "react-router-dom": "^6.17.0",
     "react-transition-group": "^4.4.5",
     "socket.io-client": "^4.7.2",
-    "tailwindcss": "^3.3.3"
+    "tailwindcss": "^3.3.5"
   },
   "next-unused": {
     "include": [
